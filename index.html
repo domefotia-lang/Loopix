@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loopix</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Loopix">
+<style>
+:root{color-scheme:dark;--c:#141416;--g:#D4AF37;--gl:#F3E5AB;--m:#A1A1A6;--cy:#0FF;--n:linear-gradient(135deg,#FF007F,#00FFFF,#FFD700)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#000;color:#fff}
+body{display:flex;justify-content:center}
+.app{width:100%;max-width:430px;height:100dvh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+header{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1c1c1e}
+.logo{font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--g),var(--gl));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.on .logo{background:var(--n);-webkit-background-clip:text;background-clip:text}
+.badge{font-size:11px;padding:6px 12px;border-radius:20px;background:var(--c);color:var(--g);border:1px solid rgba(212,175,55,.3);font-weight:600}
+.on .badge{color:var(--cy);border-color:var(--cy);background:rgba(0,255,255,.1)}
+.pane{display:none;flex:1;min-height:0;flex-direction:column}.pane.show{display:flex}
+#setup{padding:20px;gap:12px;overflow-y:auto}
+.card{background:var(--c);border:1px solid #262629;border-radius:22px;padding:20px}
+h2{font-size:18px;margin-bottom:8px}
+p,.hint{font-size:12px;color:var(--m);line-height:1.5;margin-bottom:12px}
+.hint{margin:6px 0 0;min-height:1em}
+input{width:100%;background:#08080a;border:1px solid #2c2c2e;border-radius:12px;padding:12px;color:#fff;font-size:16px;margin-bottom:8px}
+.btn{background:var(--g);color:#000;border:0;width:100%;padding:13px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer}
+.on .btn.go{background:var(--n);color:#fff}
+.btn-o{background:none;color:#fff;border:1px solid #444;padding:9px 12px;border-radius:12px;font-size:12px;font-weight:600;cursor:pointer}
+.strip{display:flex;gap:8px;align-items:center;padding:10px 14px;overflow-x:auto;border-bottom:1px solid #1c1c1e}
+.who{font-size:12px;color:var(--m);white-space:nowrap;flex:1;overflow:hidden;text-overflow:ellipsis}
+.feed{flex:1;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain}
+.item{min-height:100%;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;padding:12px 14px}
+.from{font-size:13px}.from b{color:var(--g)}
+.cm{font-size:13px;overflow-wrap:anywhere}
+.item iframe{flex:1;min-height:360px;width:100%;border:0;border-radius:16px;background:#111}
+.link{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;background:var(--c);border:1px solid #262629;border-radius:16px;padding:20px;text-align:center;overflow-wrap:anywhere}
+.link a{color:var(--cy);font-weight:700}
+.nav{display:flex;gap:8px;justify-content:center}
+.empty{margin:auto;padding:30px;text-align:center;color:var(--m);font-size:13px;line-height:1.6;white-space:pre-line}
+.comp{padding:10px 14px;border-top:1px solid #1c1c1e;display:flex;flex-direction:column;gap:8px}
+.comp .r{display:flex;gap:8px}
+.comp input{margin:0}
+#feed{min-width:0}
+.fw{flex:1;min-height:0;position:relative;display:flex}
+.bar{display:flex;gap:6px;flex-wrap:wrap}
+.r-btn{background:var(--c);border:1px solid #262629;color:#fff;padding:6px 10px;border-radius:12px;font-size:13px;cursor:pointer}
+.r-btn.mine{border-color:var(--cy);background:rgba(0,255,255,.1)}
+.cpanel{background:var(--c);border:1px solid #262629;border-radius:14px;padding:10px;max-height:35%;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.cmt{font-size:13px;overflow-wrap:anywhere}.cmt b{color:var(--g)}
+.cpanel .r{display:flex;gap:6px}.cpanel input{margin:0;padding:9px}
+.pill{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:var(--g);color:#000;border:0;border-radius:20px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.6);z-index:5}
+.seq{margin:10px 14px 0;width:calc(100% - 28px)}
+select{background:#08080a;color:#fff;border:1px solid #2c2c2e;border-radius:12px;padding:8px;font-size:13px}
+.stage{flex:1;min-height:0;display:flex;padding:8px 12px}
+.stage iframe{flex:1;width:100%;border:0;border-radius:16px;background:#111}
+.pbar{padding:10px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid #1c1c1e}
+.pbar .nav{display:flex;gap:8px}
+.inv2{margin:10px 14px 0;display:flex;gap:8px;align-items:center;justify-content:space-between;background:rgba(0,255,255,.1);border:1px solid var(--cy);border-radius:14px;padding:10px 12px;font-size:13px}
+#pl{position:relative}.stage{position:relative}
+.fl{position:absolute;bottom:10px;font-size:34px;animation:up 2s ease-out forwards;pointer-events:none;z-index:6}
+@keyframes up{to{transform:translateY(-320px);opacity:0}}
+.live{padding:6px 14px;border-top:1px solid #1c1c1e;display:flex;flex-direction:column;gap:6px}
+#ll{max-height:90px;overflow-y:auto;font-size:13px;overflow-wrap:anywhere}#ll b{color:var(--g)}
+.live .r{display:flex;gap:6px}.live input{margin:0;padding:9px}
+.cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;background:rgba(0,0,0,.65);z-index:30;text-align:center}
+.cd[hidden]{display:none}
+.mod{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;justify-content:center;align-items:center;padding:24px;z-index:99}
+.mod.open{display:flex}.mod p{color:#d0d0d4}
+.tabs{display:flex;border-top:1px solid #1c1c1e;background:rgba(12,12,14,.96);flex:none}
+.tabs button{flex:1;background:none;border:0;color:var(--m);font-size:11px;font-weight:600;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.tabs button .ic{font-size:19px}
+.tabs button[aria-current="page"]{color:var(--g)}
+.list{flex:1;min-height:0;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:6px;padding:10px 14px 0;overflow-x:auto;flex:none}
+.chip{background:var(--c);border:1px solid #262629;color:#fff;border-radius:16px;padding:7px 12px;font-size:12px;white-space:nowrap;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--g);color:var(--g)}
+.idea .k{font-size:11px;color:var(--m)}.idea h3{font-size:18px;margin:4px 0 6px;overflow-wrap:anywhere}.idea.done{opacity:.55}
+.idea p{margin-bottom:4px;overflow-wrap:anywhere}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+a.r-btn{text-decoration:none;display:inline-flex;align-items:center}
+.ptag{font-size:11px;color:var(--m);margin-top:8px}
+.star{font-size:11px;color:var(--g);font-weight:700;margin-bottom:4px}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #222;font-size:14px;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;background:#555}.dot.on{background:var(--cy);box-shadow:0 0 6px var(--cy)}
+.stat{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;gap:10px}.stat b{color:var(--g)}
+.themes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sw{width:58px;height:58px;border-radius:16px;border:2px solid transparent;cursor:pointer;font-size:10px;color:#000;font-weight:700;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px}
+.sw[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px #000 inset}
+.wide{width:100%;margin-top:8px}
+.danger{color:#ff8a8a;border-color:#5a2a2a}
+select.full{width:100%;padding:12px;font-size:16px;margin-bottom:8px}
+.plus ul{margin:0 0 6px 18px}.plus li{font-size:13px;color:#d0d0d4;margin:5px 0}
+.mod.lock{z-index:200;background:#000}
+#ib{position:relative;z-index:3}
+.btn{font-size:16px;padding:15px;min-height:50px}
+.btn-o{font-size:14px;padding:11px 14px;min-height:44px}
+.r-btn{font-size:15px;padding:8px 12px;min-height:40px}
+p,.hint{font-size:14px}.who{font-size:13px}.from,.cm{font-size:15px}
+.tabs button{font-size:12px}.tabs button .ic{font-size:22px}
+.big p,.big .hint,.big .cm,.big .from,.big .stat,.big .mrow,.big .cmt,.big li{font-size:17px!important}
+.big .btn{font-size:18px;padding:17px}.big .btn-o{font-size:16px}.big .r-btn{font-size:17px;padding:10px 14px}
+.big .tabs button{font-size:14px}.big .tabs button .ic{font-size:25px}.big h2{font-size:21px}.big .idea h3{font-size:21px}
+.steps{list-style:none;margin:6px 0 14px}.steps li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45;margin:12px 0;color:#e6e6ea}
+.steps .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--g);color:#000;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tog{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:15px}
+.tog input{width:26px;height:26px;margin:0;accent-color:var(--g)}
+[hidden]{display:none!important}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header><div class="logo">Loopix</div><div class="badge" id="bd" aria-live="polite">Non collegato</div></header>
+
+<div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>, e apri Loopix da lì.</span><button class="btn-o" id="ix">OK</button></div>
+
+  <div class="inv2" id="ib" hidden><span id="it"></span><button class="btn-o" id="ij">Unisciti</button></div>
+
+<section class="pane" id="setup">
+  <div class="card">
+    <h2 id="sT">Crea il tuo cerchio</h2>
+    <p id="sP">Un posto privato dove tu e fino a 3 persone raccogliete i Reel in un solo feed.</p>
+    <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
+    <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
+    <p>Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
+    <button class="btn" id="go">Inizia</button>
+    <div class="hint" id="sH" aria-live="polite"></div>
+    <button class="btn-o" id="inf2" style="margin-top:10px">ℹ️ Come funziona e privacy</button>
+  </div>
+  <p>I Reel restano sui telefoni del cerchio. Un servizio pubblico di appoggio serve solo a farvi incontrare e non vede i contenuti. Chi crea il cerchio è il centro: deve avere la pagina aperta e vede tutto ciò che viene condiviso.</p>
+</section>
+
+<section class="pane" id="main">
+  <div class="strip"><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
+  <button class="btn go seq" id="sq" hidden>▶ Guarda in sequenza</button>
+  <button class="btn-o seq" id="sp" hidden>👥 Guardiamo insieme</button>
+  <div class="fw"><div class="feed" id="feed" tabindex="0" aria-label="Feed dei Reel"></div><button class="pill" id="nw" hidden></button></div>
+  <div class="comp">
+    <button class="btn go" id="paste">📋 Incolla il Reel che hai copiato</button>
+    <button class="btn-o" id="manual" aria-expanded="false">✏️ Scrivi il link a mano</button>
+    <div id="mbox" hidden><div class="r"><input id="ru" placeholder="Link del Reel" aria-label="Link del Reel" inputmode="url"><input id="rc" placeholder="Commento" aria-label="Commento" maxlength="300"></div>
+    <button class="btn-o" id="add" style="width:100%;margin-top:8px">Aggiungi</button></div>
+    <div class="hint" id="mh" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="pane" id="pl">
+  <div class="strip"><div class="who" id="pc"></div><select id="ps" aria-label="Avanza da solo"><option value="0">Manuale</option><option value="20">Avanti ogni 20 s</option><option value="40">Avanti ogni 40 s</option><option value="60">Avanti ogni 60 s</option></select><button class="btn-o" id="px">Chiudi</button></div>
+  <div class="stage" id="st"></div>
+  <div class="live" id="lv" hidden><div id="ll"></div><div class="r"><input id="li" placeholder="Scrivi in diretta…" aria-label="Commento in diretta" maxlength="300"><button class="btn-o" id="lsend">Invia</button></div></div>
+  <div class="cd" id="cd" hidden></div>
+  <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
+</section>
+
+<section class="pane" id="ideas" aria-label="Idee">
+  <div class="strip"><div class="who">💡 Dal Reel alla realtà</div><button class="btn-o" id="inew">+ Nuova idea</button></div>
+  <div class="chips" id="ichips"></div>
+  <div class="list" id="ilist"></div>
+</section>
+
+<section class="pane" id="circle" aria-label="Cerchio"><div class="list">
+  <div class="card"><h2>Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
+  <div class="card"><button class="btn-o wide" id="help" style="margin-top:0">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
+</div></section>
+
+<section class="pane" id="style" aria-label="Stile"><div class="list">
+  <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
+  <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
+  <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button></div>
+  <div class="card plus"><h2>Gratis per sempre</h2>
+    <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Idee con voti, mappe e ricerche</li><li>Un cerchio fino a 4 persone, 5 temi e PIN</li></ul>
+    <h2 style="margin-top:14px">In arrivo con Loopix Plus</h2>
+    <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Archivio illimitato e temi esclusivi</li></ul>
+    <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
+  <div class="card" id="supC" hidden><h2>❤️ Sostieni Loopix</h2><p>Loopix è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
+</div></section>
+
+<nav class="tabs" id="tabs" hidden aria-label="Sezioni">
+  <button data-p="main"><span class="ic" aria-hidden="true">🎬</span>Reel</button>
+  <button data-p="ideas"><span class="ic" aria-hidden="true">💡</span><span id="tIdea">Idee</span></button>
+  <button data-p="circle"><span class="ic" aria-hidden="true">👥</span>Cerchio</button>
+  <button data-p="style"><span class="ic" aria-hidden="true">✨</span>Stile</button>
+</nav>
+</div>
+
+<div class="mod" id="im" role="dialog" aria-modal="true" aria-labelledby="imT"><div class="card" style="max-width:340px;width:100%;max-height:85dvh;overflow-y:auto">
+  <h2 id="imT">Come funziona</h2>
+  <p>• I Reel e i commenti restano sui telefoni del cerchio. Non c’è un archivio online né un account.</p>
+  <p>• Un servizio pubblico di appoggio (PeerJS) aiuta solo i telefoni a trovarsi: vede indirizzi di rete, non i contenuti.</p>
+  <p>• I video sono quelli incorporati da Instagram, TikTok e YouTube: quelle piattaforme possono registrare che li guardi.</p>
+  <p>• Chi crea il cerchio è il centro: deve avere l’app aperta perché i Reel arrivino, e vede tutto ciò che viene condiviso. Gli ospiti entrano solo se li accetta.</p>
+  <p>• Per ora è gratis. Non servono carte né dati personali. “Esci” cancella tutto da questo telefono.</p>
+  <p>• Su iPhone Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla e invia”.</p>
+  <p>• In “Idee”, i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Loopix riceve una piccola commissione: per te il prezzo non cambia.</p>
+  <p>• Il blocco con PIN nasconde lo schermo, non cifra i dati.</p>
+  <button class="btn" id="imc">Ho capito</button>
+</div></div>
+
+<div class="mod" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdT"><div class="card" style="max-width:350px;width:100%;max-height:88dvh;overflow-y:auto">
+  <h2 id="gdT">Benvenuto in Loopix 👋</h2>
+  <p>Tre passi e ci sei:</p>
+  <ol class="steps" id="gdS"></ol>
+  <button class="btn" id="gdGo"></button>
+  <button class="btn-o wide" id="gdX">Ho capito</button>
+</div></div>
+
+<div class="mod" id="idm" role="dialog" aria-modal="true" aria-labelledby="idT"><div class="card" style="max-width:340px;width:100%">
+  <h2 id="idT">💡 Nuova idea</h2>
+  <p>Trasforma un Reel in un piano: il cerchio lo vede, lo vota e trova hotel, posti e attività.</p>
+  <select id="ik" class="full" aria-label="Tipo di idea"><option value="viaggio">✈️ Viaggio</option><option value="cibo">🍝 Ristorante</option><option value="esperienza">🎟️ Esperienza</option><option value="altro">✨ Altro</option></select>
+  <input id="ip" placeholder="Dove o cosa? (es. Lisbona)" maxlength="60" aria-label="Luogo o cosa">
+  <input id="io" placeholder="Nota (facoltativa)" maxlength="200" aria-label="Nota">
+  <button class="btn" id="iok">Salva idea</button><button class="btn-o wide" id="ino">Annulla</button>
+  <div class="hint" id="iH" aria-live="polite"></div>
+</div></div>
+
+<div class="mod" id="pinm" role="dialog" aria-modal="true" aria-labelledby="pT"><div class="card" style="max-width:320px;width:100%">
+  <h2 id="pT">Imposta un PIN</h2>
+  <input type="password" inputmode="numeric" id="p1" autocomplete="off" aria-label="PIN">
+  <input type="password" inputmode="numeric" id="p2" placeholder="Ripeti il PIN" autocomplete="off" aria-label="Ripeti il PIN">
+  <button class="btn" id="pOk">Salva</button><button class="btn-o wide" id="pNo">Annulla</button>
+  <div class="hint" id="pH" aria-live="polite"></div>
+</div></div>
+
+<div class="mod lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lkT"><div class="card" style="max-width:320px;width:100%;text-align:center">
+  <div class="logo" style="font-size:28px;margin-bottom:8px">Loopix</div>
+  <h2 id="lkT">🔒 Inserisci il PIN</h2>
+  <input type="password" inputmode="numeric" id="lockIn" autocomplete="off" aria-label="PIN" style="text-align:center;font-size:20px;letter-spacing:6px">
+  <button class="btn" id="lockGo">Sblocca</button>
+  <div class="hint" id="lockH" aria-live="polite"></div>
+  <button class="btn-o wide" id="lockF">Ho dimenticato il PIN</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+var $ = function (i) { return document.getElementById(i); };
+var LS = 'loopix3:';
+function get(k, d) { try { var v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function put(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} }
+function uid(n) { return Array.from(crypto.getRandomValues(new Uint8Array(n))).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
+function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; }
+function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
+
+var me = get('me', null), feed = get('feed', []), outbox = get('outbox', []), peer = null, conns = [], hostConn = null, names = [], retry = null;
+var joinId = /^#j=([\w-]{8,64})$/.exec(location.hash);
+joinId = joinId ? joinId[1] : null;
+var incoming = null;
+(function () {
+  var q = new URLSearchParams(location.search);
+  var raw = [q.get('url'), q.get('text'), q.get('add'), q.get('title')].join(' ');
+  var m = /https?:\/\/[^\s<>"']+/.exec(raw);
+  if (m) incoming = m[0].replace(/[.,;)\]]+$/, '');
+  if (location.search) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} }
+})();
+
+/* ---- link e incorporamento ---- */
+function safeUrl(u) { try { var x = new URL(String(u).trim()); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
+function yt(id) { return 'https://www.youtube.com/embed/' + id + '?playsinline=1'; }
+function embedFor(u) {
+  var x, m; try { x = new URL(u); } catch (e) { return null; }
+  var h = x.hostname.replace(/^(www|m)\./, '');
+  if (h === 'instagram.com' && (m = /^\/(?:reels?|p|tv)\/([\w-]{5,})/.exec(x.pathname))) return 'https://www.instagram.com/p/' + m[1] + '/embed/';
+  if (h === 'tiktok.com' && (m = /\/video\/(\d{8,})/.exec(x.pathname))) return 'https://www.tiktok.com/embed/v2/' + m[1];
+  if (h === 'youtube.com') {
+    if ((m = /^\/shorts\/([\w-]{6,})/.exec(x.pathname))) return yt(m[1]);
+    var v = x.searchParams.get('v'); if (v && /^[\w-]{6,}$/.test(v)) return yt(v);
+  }
+  if (h === 'youtu.be' && (m = /^\/([\w-]{6,})/.exec(x.pathname))) return yt(m[1]);
+  return null;
+}
+
+/* ---- feed ---- */
+var nodes = {}, unseen = 0, EMO = ['❤️', '😂', '😮', '🔥'];
+function cleanX(x) { var o = {}; if (x && typeof x === 'object') Object.keys(x).slice(0, 8).forEach(function (n) { if (EMO.indexOf(x[n]) >= 0) o[clean(n, 30)] = x[n]; }); return o; }
+function cleanK(k) {
+  return (Array.isArray(k) ? k : []).slice(-50).map(function (c) {
+    return c && typeof c.id === 'string' ? { id: clean(c.id, 20), n: clean(c.n, 30) || 'Ospite', t: clean(c.t, 300), ts: +c.ts || 0 } : null;
+  }).filter(function (c) { return c && c.t; });
+}
+function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
+function media(r, pl) {
+  var src = embedFor(r.u);
+  if (src) {
+    if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1&enablejsapi=1' + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    var fr = el('iframe'); fr.src = src; if (!pl) fr.loading = 'lazy'; fr.title = 'Reel di ' + r.n;
+    fr.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+    fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-presentation');
+    fr.referrerPolicy = 'strict-origin-when-cross-origin'; return fr;
+  }
+  var l = el('div', 'link'); l.appendChild(el('div', null, new URL(r.u).hostname));
+  var a = el('a', null, 'Apri il link ↗'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
+}
+function build(r) {
+  var d = el('div', 'item'), nd = { el: d, open: false };
+  var f = el('div', 'from'); f.appendChild(el('b', null, r.n)); d.appendChild(f);
+  if (r.c) d.appendChild(el('div', 'cm', r.c));
+  d.appendChild(media(r, false));
+  nd.bar = el('div', 'bar'); d.appendChild(nd.bar);
+  nd.cp = el('div', 'cpanel'); nd.cp.hidden = true; nd.list = el('div'); nd.cp.appendChild(nd.list);
+  var row = el('div', 'r'), inp = el('input'), go = el('button', 'btn-o', 'Invia');
+  inp.placeholder = 'Rispondi…'; inp.maxLength = 300; inp.setAttribute('aria-label', 'Commento');
+  go.onclick = function () { var v = clean(inp.value, 300); if (v) { comment(r.id, v); inp.value = ''; } };
+  inp.onkeydown = function (e) { if (e.key === 'Enter') go.click(); };
+  row.appendChild(inp); row.appendChild(go); nd.cp.appendChild(row); d.appendChild(nd.cp);
+  var nv = el('div', 'nav');
+  var up = el('button', 'btn-o', '⬆ Prima'); up.onclick = function () { if (d.previousElementSibling) d.previousElementSibling.scrollIntoView({ behavior: 'smooth' }); };
+  var dn = el('button', 'btn-o', 'Dopo ⬇'); dn.onclick = function () { if (d.nextElementSibling) d.nextElementSibling.scrollIntoView({ behavior: 'smooth' }); };
+  nv.appendChild(up); nv.appendChild(dn); d.appendChild(nv);
+  nodes[r.id] = nd; refresh(r); return d;
+}
+function refresh(r) {
+  var nd = nodes[r.id]; if (!nd) return;
+  nd.bar.textContent = '';
+  EMO.forEach(function (e) {
+    var n = Object.keys(r.x || {}).filter(function (k) { return r.x[k] === e; }).length;
+    var b = el('button', 'r-btn' + (r.x && r.x[me.name] === e ? ' mine' : ''), e + (n ? ' ' + n : ''));
+    b.setAttribute('aria-label', 'Reagisci ' + e); b.onclick = function () { react(r.id, e); }; nd.bar.appendChild(b);
+  });
+  var has = ideas.some(function (i) { return i.r === r.id; });
+  var ib = el('button', 'r-btn', has ? '💡✓' : '💡'); ib.setAttribute('aria-label', 'Salva come idea'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
+  var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
+  cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; }; nd.bar.appendChild(cb);
+  nd.list.textContent = '';
+  (r.k || []).forEach(function (c) { var l = el('div', 'cmt'); l.appendChild(el('b', null, c.n)); l.appendChild(document.createTextNode(' ' + c.t)); nd.list.appendChild(l); });
+  if (seq && seq.cur === r.id) pbuild(r);
+  if (party && party.id === r.id) { pbuild(r); lines(r); }
+}
+function render() {
+  var box = $('feed'); box.textContent = ''; nodes = {};
+  if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\n1. Invita chi vuoi dalla sezione 👥 Cerchio.\n2. Copia il link di un Reel da Instagram, TikTok o YouTube.\n3. Tocca “Incolla e invia”.')); return; }
+  feed.forEach(function (r) { box.appendChild(build(r)); });
+  box.scrollTop = box.scrollHeight;
+}
+function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.clientHeight < 80; }
+function addReel(r, mine) {
+  if (!r || typeof r.id !== 'string' || r.id.length > 40) return false;
+  var u = safeUrl(r.u); if (!u) return false;
+  var old = find(r.id);
+  if (old) {
+    var x = cleanX(r.x); Object.keys(x).forEach(function (n) { if (!(n in (old.x = old.x || {}))) old.x[n] = x[n]; });
+    cleanK(r.k).forEach(function (c) { old.k = old.k || []; if (!old.k.some(function (y) { return y.id === c.id; })) old.k.push(c); });
+    put('feed', feed); refresh(old); return false;
+  }
+  var n = { id: r.id, u: u, c: clean(r.c, 300), n: clean(r.n, 30) || 'Ospite', ts: +r.ts || Date.now(), x: cleanX(r.x), k: cleanK(r.k) };
+  feed.push(n);
+  if (seq && !mine) seq.q.push(n.id);
+  if (feed.length > 200) { var g = feed.shift(); delete nodes[g.id]; }
+  put('feed', feed);
+  var box = $('feed'); if (box.querySelector('.empty')) box.textContent = '';
+  var node = build(n); box.appendChild(node);
+  if (mine) node.scrollIntoView({ behavior: 'smooth' });
+  else { unseen++; $('nw').textContent = '⬇ ' + unseen + (unseen === 1 ? ' nuovo' : ' nuovi'); $('nw').hidden = false; }
+  seqLabel();
+  return true;
+}
+function sendEv(m) {
+  if (me.role === 'host') cast(m);
+  else if (hostConn && hostConn.open) hostConn.send(m);
+  else { outbox.push(m); put('outbox', outbox); }
+}
+function react(id, e) {
+  var r = find(id); if (!r) return; r.x = r.x || {};
+  var cur = r.x[me.name] === e ? '' : e;
+  if (cur) r.x[me.name] = cur; else delete r.x[me.name];
+  put('feed', feed); refresh(r); sendEv({ t: 'react', id: id, e: cur, n: me.name });
+}
+function comment(id, text) {
+  var r = find(id); if (!r) return;
+  var c = { id: uid(6), n: me.name, t: text, ts: Date.now() };
+  r.k = r.k || []; r.k.push(c); if (r.k.length > 50) r.k.shift();
+  put('feed', feed); refresh(r); sendEv({ t: 'cmt', id: id, c: c });
+}
+function applyEv(d, who) {
+  var r = find(d.id); if (!r) return null;
+  if (d.t === 'react') {
+    var n = who || clean(d.n, 30); if (!n) return null; r.x = r.x || {};
+    if (d.e === '') delete r.x[n]; else if (EMO.indexOf(d.e) >= 0) r.x[n] = d.e; else return null;
+    if (party && party.id === r.id && d.e) floatE(d.e);
+    put('feed', feed); refresh(r); return { t: 'react', id: r.id, e: d.e, n: n };
+  }
+  if (d.t === 'cmt' && d.c && typeof d.c.id === 'string') {
+    var c = cleanK([{ id: d.c.id, n: who || d.c.n, t: d.c.t, ts: d.c.ts }])[0]; if (!c) return null;
+    r.k = r.k || []; if (r.k.some(function (y) { return y.id === c.id; })) return null;
+    r.k.push(c); if (r.k.length > 50) r.k.shift();
+    put('feed', feed); refresh(r); return { t: 'cmt', id: r.id, c: c };
+  }
+  return null;
+}
+$('nw').addEventListener('click', function () { var b = $('feed'); b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }); unseen = 0; $('nw').hidden = true; });
+$('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unseen = 0; $('nw').hidden = true; } });
+/* ---- sequenza: i Reel di ogni piattaforma, uno dopo l'altro ---- */
+var seq = null, seen = get('seen', {}), timer = null;
+function newCount() { return feed.filter(function (r) { return !seen[r.id]; }).length; }
+function seqLabel() {
+  var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length;
+  b.textContent = n ? '▶ Guarda i Reel nuovi (' + n + ')' : '▶ Rivedi tutti i Reel';
+}
+function pbuild(r) {
+  var bar = $('pr'); bar.textContent = '';
+  EMO.forEach(function (e) {
+    var n = Object.keys(r.x || {}).filter(function (k) { return r.x[k] === e; }).length;
+    var b = el('button', 'r-btn' + (r.x && r.x[me.name] === e ? ' mine' : ''), e + (n ? ' ' + n : ''));
+    b.setAttribute('aria-label', 'Reagisci ' + e); b.onclick = function () { if (party) partyReact(r.id, e); else react(r.id, e); }; bar.appendChild(b);
+  });
+  var ib = el('button', 'r-btn', '💡'); ib.setAttribute('aria-label', 'Salva come idea'); ib.onclick = function () { openIdea(r.id); }; bar.appendChild(ib);
+}
+function arm() { clearTimeout(timer); var sec = +$('ps').value; if (sec && seq && seq.cur) timer = setTimeout(function () { showAt(seq.i + 1); }, sec * 1000); }
+function showAt(i) {
+  clearTimeout(timer); var st = $('st'); st.textContent = ''; $('pr').textContent = '';
+  if (i < 0) i = 0;
+  if (i >= seq.q.length) { seq.cur = null; seq.i = seq.q.length; $('pc').textContent = 'Fine'; st.appendChild(el('div', 'empty', 'Hai visto tutto per ora ✓')); return; }
+  var r = find(seq.q[i]); seq.i = i;
+  if (!r) { showAt(i + 1); return; }
+  seq.cur = r.id; seen[r.id] = 1; put('seen', seen);
+  $('pc').textContent = (i + 1) + ' di ' + seq.q.length + ' · ' + r.n;
+  var m = media(r, true); st.appendChild(m); pbuild(r); arm();
+  if (m.tagName === 'IFRAME' && /youtube\.com\/embed/.test(m.src)) m.addEventListener('load', function () { try { m.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
+}
+function openSeq() {
+  var q = feed.filter(function (r) { return !seen[r.id]; }).map(function (r) { return r.id; });
+  if (!q.length) q = feed.map(function (r) { return r.id; });
+  seq = { q: q, i: 0, cur: null };
+  showPane('pl'); showAt(0);
+}
+function closeSeq() { clearTimeout(timer); seq = null; party = null; $('ps').hidden = false; $('lv').hidden = true; $('p3').hidden = true; $('cd').hidden = true; $('st').textContent = ''; showPane(tab); seqLabel(); }
+window.addEventListener('message', function (e) {
+  if (!seq || !seq.cur || !+$('ps').value) return;
+  var fr = $('st').querySelector('iframe'); if (!fr || e.source !== fr.contentWindow) return;
+  var d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+  if (d && ((d.event === 'onStateChange' && d.info === 0) || (d.event === 'infoDelivery' && d.info && d.info.playerState === 0))) showAt(seq.i + 1);
+});
+/* ---- guardiamo insieme: stesso Reel, emoji e commenti in diretta ---- */
+var party = null, pending = null, cdT = null;
+function sorted() { return feed.slice().sort(function (a, b) { return (a.ts - b.ts) || (a.id < b.id ? -1 : 1); }); }
+function neighbor(id, dir) { var s = sorted(), i = s.findIndex(function (r) { return r.id === id; }); return s[i + dir] ? s[i + dir].id : null; }
+function sendNow(m) { if (me.role === 'host') cast(m); else if (hostConn && hostConn.open) hostConn.send(m); }
+function others() { return me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open && names.length > 1); }
+function floatE(e) {
+  var st = $('st'); if (!party || !st) return;
+  var f = el('span', 'fl', e); f.style.left = (8 + Math.random() * 75) + '%'; st.appendChild(f); setTimeout(function () { f.remove(); }, 2100);
+}
+function lines(r) {
+  var l = $('ll'); l.textContent = '';
+  (r.k || []).slice(-20).forEach(function (c) { var d = el('div'); d.appendChild(el('b', null, c.n)); d.appendChild(document.createTextNode(' ' + c.t)); l.appendChild(d); });
+  l.scrollTop = l.scrollHeight;
+}
+function showParty(id) {
+  var r = find(id); if (!r) return;
+  clearTimeout(timer); seq = null; party = { id: id };
+  showPane('pl');
+  var st = $('st'); st.textContent = ''; st.appendChild(media(r, true));
+  seen[id] = 1; put('seen', seen);
+  $('pc').textContent = '👥 Insieme · ' + r.n; $('ps').hidden = true; $('lv').hidden = false; $('p3').hidden = false;
+  pbuild(r); lines(r); seqLabel();
+}
+function goParty(id) { showParty(id); sendNow({ t: 'ses', a: 'go', id: id, n: me.name }); }
+function partyReact(id, e) {
+  var r = find(id); if (!r) return;
+  if (r.x && r.x[me.name] === e) { floatE(e); sendNow({ t: 'live', e: e, n: me.name }); }
+  else { react(id, e); floatE(e); }
+}
+function startParty() {
+  if (!others()) { $('mh').textContent = 'Nessun altro è collegato adesso.'; return; }
+  var s = sorted(), u = s.filter(function (r) { return !seen[r.id]; })[0] || s[s.length - 1];
+  if (u) goParty(u.id);
+}
+function countdown() {
+  if (!party) return;
+  var c = $('cd'), n = 3; clearTimeout(cdT); c.hidden = false; c.textContent = n;
+  (function tick() { n--; if (n > 0) { c.textContent = n; cdT = setTimeout(tick, 1000); } else { c.textContent = '▶ Premi play'; cdT = setTimeout(function () { c.hidden = true; }, 1300); } })();
+}
+function onSes(d, who) {
+  if (d.a === 'go' && typeof d.id === 'string' && find(d.id)) {
+    if (party) showParty(d.id);
+    else { pending = { id: d.id }; $('it').textContent = '👥 ' + who + ' vuole guardare insieme'; $('ib').hidden = false; }
+    return { t: 'ses', a: 'go', id: d.id, n: who };
+  }
+  if (d.a === 'ready') { countdown(); return { t: 'ses', a: 'ready', n: who }; }
+  return null;
+}
+function post(u, c) {
+  var url = safeUrl(u);
+  if (!url) { $('mh').textContent = 'Serve un link che inizi con http o https.'; return; }
+  $('mh').textContent = '';
+  var r = { id: uid(8), u: url, c: clean(c, 300), n: me.name, ts: Date.now() };
+  addReel(r, true);
+  if (me.role === 'host') conns.forEach(function (c2) { if (c2.ok && c2.open) c2.send({ t: 'reel', r: r }); });
+  else if (hostConn && hostConn.open) hostConn.send({ t: 'reel', r: r });
+  else { outbox.push(r); put('outbox', outbox); $('mh').textContent = 'In coda: partirà appena sei collegato.'; }
+}
+
+/* ---- stato ---- */
+function status() {
+  var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
+  $('app').classList.toggle('on', live);
+  $('bd').textContent = live ? 'Collegato' : (me.role === 'host' ? 'In attesa di ospiti' : 'Non collegato');
+  var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
+  $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/4)';
+  $('inv').hidden = me.role !== 'host';
+  if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
+}
+function people() { return [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })); }
+function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }); }
+
+/* ---- io al centro ---- */
+var allowed = get('allowed', {}), hostTries = 0;
+function startHost() {
+  if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
+  peer = new Peer(me.hostId);
+  peer.on('open', function () { hostTries = 0; $('mh').textContent = ''; status(); });
+  peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 2000); });
+  peer.on('error', function (e) {
+    if (e.type === 'unavailable-id' && hostTries < 10) {
+      hostTries++; $('mh').textContent = 'Riapro il cerchio…';
+      try { peer.destroy(); } catch (x) {} setTimeout(startHost, 4000); return;
+    }
+    $('mh').textContent = e.type === 'unavailable-id' ? 'Il cerchio è già aperto su un’altra scheda o un altro dispositivo.' : 'Problema di rete (' + e.type + ').';
+  });
+  peer.on('connection', function (c) {
+    c.on('data', function (d) {
+      if (!d || typeof d !== 'object') return;
+      if (d.t === 'hi' && !c.ok && !c.asked) {
+        c.asked = true; var nm = clean(d.n, 30) || 'Ospite', k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
+        conns.filter(function (x) { return k && x.k === k; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} });
+        var known = k && allowed[k];
+        if (!known && Object.keys(allowed).length >= 3 && conns.filter(function (x) { return x.ok; }).length >= 3) { c.send({ t: 'no', why: 'Il cerchio è pieno (max 3 ospiti).' }); setTimeout(function () { c.close(); }, 300); return; }
+        if (!known && !window.confirm(nm + ' vuole entrare nel tuo cerchio. Accetti?')) { c.send({ t: 'no', why: 'Richiesta rifiutata.' }); setTimeout(function () { c.close(); }, 300); return; }
+        if (!known && Object.keys(allowed).length >= 3) { c.send({ t: 'no', why: 'Il cerchio è pieno (max 3 ospiti).' }); setTimeout(function () { c.close(); }, 300); return; }
+        if (k) { allowed[k] = nm; put('allowed', allowed); }
+        c.ok = true; c.name = nm; c.k = k; conns.push(c);
+        c.send({ t: 'hello', feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+      } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
+        var m = applyEv(d, c.name);
+        if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
+      } else if (d.t === 'ses' && c.ok) {
+        var sm = onSes(d, c.name);
+        if (sm) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(sm); });
+      } else if (d.t === 'live' && c.ok && EMO.indexOf(d.e) >= 0) {
+        floatE(d.e); conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'live', e: d.e, n: c.name }); });
+      } else if (d.t === 'idea' && c.ok) {
+        var im = applyIdea(d, c.name);
+        if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
+      } else if (d.t === 'reel' && c.ok) {
+        var r = d.r || {}; r.n = c.name;
+        if (addReel(r)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: feed[feed.length - 1] }); });
+      }
+    });
+    c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); cast({ t: 'people', people: people() }); status(); });
+  });
+}
+function link() { return location.origin + location.pathname + '#j=' + me.hostId; }
+function invite() {
+  var u = link();
+  if (navigator.share) navigator.share({ title: 'Loopix', text: me.name + ' ti invita nel suo cerchio su Loopix', url: u }).catch(function () {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { $('mh').textContent = 'Link copiato: mandalo alla persona che vuoi invitare.'; $('ch').textContent = $('mh').textContent; });
+  else $('mh').textContent = u;
+}
+
+/* ---- ospite ---- */
+function startGuest() {
+  if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
+  peer = new Peer();
+  peer.on('disconnected', function () { again(); });
+  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Il creatore del cerchio non è online ora.' : 'Problema di rete (' + e.type + ').'; again(); });
+  peer.on('open', function () {
+    hostConn = peer.connect(me.hostId, { reliable: true });
+    hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok }); });
+    hostConn.on('data', function (d) {
+      if (!d || typeof d !== 'object') return;
+      if (d.t === 'hello') { (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
+      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
+      else if (d.t === 'reel') addReel(d.r);
+      else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
+      else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
+      else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
+      else if (d.t === 'idea') applyIdea(d, null);
+      else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 80); status(); }
+    });
+    hostConn.on('close', function () { status(); again(); });
+  });
+}
+function again() { if (blocked) return; clearTimeout(retry); retry = setTimeout(function () { try { peer.destroy(); } catch (e) {} startGuest(); }, 5000); }
+
+/* ---- schede ---- */
+var tab = 'main', ideaSeen = 0, blocked = false;
+function showPane(id) {
+  ['setup', 'main', 'pl', 'ideas', 'circle', 'style'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
+  var on = id !== 'setup' && id !== 'pl';
+  $('tabs').hidden = !on;
+  if (!on) return;
+  tab = id;
+  document.querySelectorAll('#tabs button').forEach(function (b) { if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
+  if (id === 'circle') renderCircle();
+  if (id === 'style') renderStyle();
+}
+function ideaTab() { $('tIdea').textContent = ideaSeen ? 'Idee • ' + ideaSeen : 'Idee'; }
+
+/* ---- idee: dal Reel alla realtà ---- */
+// Codici affiliato: lasciali vuoti finché Booking (via CJ) e GetYourGuide non ti approvano.
+var PARTNER = { booking: '', gyg: '' };
+// Link per i contributi volontari (es. Stripe Payment Link o Ko-fi). Vuoto = la scheda non compare.
+var SUPPORT_URL = '';
+var KINDS = { viaggio: '✈️ Viaggio', cibo: '🍝 Ristorante', esperienza: '🎟️ Esperienza', altro: '✨ Altro' };
+var ideas = get('ideas', []), ifilter = 'tutte', ideaRid = '';
+function cleanV(v) { var o = {}; if (v && typeof v === 'object') Object.keys(v).slice(0, 8).forEach(function (n) { if (v[n] && clean(n, 30)) o[clean(n, 30)] = 1; }); return o; }
+function normIdea(i, who) {
+  if (!i || typeof i.id !== 'string' || i.id.length > 40) return null;
+  var p = clean(i.p, 60); if (!p) return null;
+  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), d: !!i.d };
+}
+function findIdea(id) { return ideas.filter(function (x) { return x.id === id; })[0]; }
+function ideasChanged(rid) {
+  put('ideas', ideas);
+  if (tab === 'ideas' && $('ideas').classList.contains('show')) renderIdeas();
+  var r = rid && find(rid); if (r) refresh(r);
+}
+function applyIdea(d, who) {
+  if (d.a === 'add') {
+    var i = normIdea(d.i, who); if (!i) return null;
+    var old = findIdea(i.id);
+    if (old) { Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.d) old.d = true; ideasChanged(old.r); return null; }
+    ideas.push(i); if (ideas.length > 200) ideas.shift();
+    if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); }
+    ideasChanged(i.r); return { t: 'idea', a: 'add', i: i };
+  }
+  var x = findIdea(d.id); if (!x) return null;
+  if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
+  if (d.a === 'done') { x.d = !!d.on; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d }; }
+  if (d.a === 'del') { ideas = ideas.filter(function (y) { return y !== x; }); ideasChanged(x.r); return { t: 'idea', a: 'del', id: x.id }; }
+  return null;
+}
+function ideaAct(m) { var out = applyIdea(m, me.name); if (out) sendEv(out); }
+function enc(t) { return encodeURIComponent(t); }
+function linksFor(i) {
+  var L = [{ t: '📍 Mappa', u: 'https://www.google.com/maps/search/?api=1&query=' + enc(i.p) }];
+  if (i.k === 'viaggio') L.push({ t: '🏨 Hotel', u: 'https://www.booking.com/searchresults.html?ss=' + enc(i.p) + (PARTNER.booking ? '&aid=' + enc(PARTNER.booking) : ''), p: !!PARTNER.booking });
+  if (i.k === 'viaggio' || i.k === 'esperienza') L.push({ t: '🎟️ Attività', u: 'https://www.getyourguide.com/s/?q=' + enc(i.p) + (PARTNER.gyg ? '&partner_id=' + enc(PARTNER.gyg) : ''), p: !!PARTNER.gyg });
+  if (i.k === 'viaggio') L.push({ t: '🍽️ Ristoranti', u: 'https://www.google.com/maps/search/?api=1&query=' + enc('ristoranti ' + i.p) });
+  return L;
+}
+function renderIdeas() {
+  var ch = $('ichips'); ch.textContent = '';
+  [['tutte', 'Tutte'], ['viaggio', '✈️ Viaggi'], ['cibo', '🍝 Ristoranti'], ['esperienza', '🎟️ Esperienze'], ['fatte', '✓ Fatte']].forEach(function (f) {
+    var b = el('button', 'chip', f[1]); b.setAttribute('aria-pressed', String(ifilter === f[0])); b.onclick = function () { ifilter = f[0]; renderIdeas(); }; ch.appendChild(b);
+  });
+  var box = $('ilist'); box.textContent = '';
+  var list = ideas.filter(function (i) { return ifilter === 'fatte' ? i.d : !i.d && (ifilter === 'tutte' || i.k === ifilter); });
+  list.sort(function (a, b) { return Object.keys(b.v).length - Object.keys(a.v).length || b.ts - a.ts; });
+  if (!list.length) {
+    box.appendChild(el('div', 'empty', ifilter === 'fatte' ? 'Nessuna idea realizzata ancora.\nQuando fate qualcosa, segnatela con ✓ Fatto.' : 'Nessuna idea qui.\n\nQuando un Reel vi ispira un viaggio, un ristorante o un’esperienza, tocca 💡 sotto il Reel.\nIl cerchio la vota e trova subito mappe, hotel e attività.'));
+    return;
+  }
+  var top = !list[0].d && Object.keys(list[0].v).length >= 2 ? list[0].id : null;
+  list.forEach(function (i) {
+    var c = el('div', 'card idea' + (i.d ? ' done' : ''));
+    if (i.id === top) c.appendChild(el('div', 'star', '⭐ La più votata'));
+    c.appendChild(el('div', 'k', KINDS[i.k] + ' · da ' + i.n));
+    c.appendChild(el('h3', null, i.p));
+    if (i.o) c.appendChild(el('p', null, i.o));
+    var voters = Object.keys(i.v), mine = !!i.v[me.name], acts = el('div', 'acts');
+    var vb = el('button', 'r-btn' + (mine ? ' mine' : ''), '👍 ' + voters.length); vb.setAttribute('aria-label', mine ? 'Togli il voto' : 'Vota'); vb.onclick = function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: !mine }); }; acts.appendChild(vb);
+    linksFor(i).forEach(function (l) { var a = el('a', 'r-btn', l.t + (l.p ? ' · partner' : '')); a.href = l.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (l.p ? ' sponsored' : ''); acts.appendChild(a); });
+    if (i.r && find(i.r)) { var rb = el('button', 'r-btn', '▶ Reel'); rb.onclick = function () { goReel(i.r); }; acts.appendChild(rb); }
+    var db = el('button', 'r-btn', i.d ? '↺ Da fare' : '✓ Fatto'); db.onclick = function () { ideaAct({ t: 'idea', a: 'done', id: i.id, on: !i.d }); }; acts.appendChild(db);
+    var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina idea'); xb.onclick = function () { if (window.confirm('Eliminare questa idea per tutto il cerchio?')) ideaAct({ t: 'idea', a: 'del', id: i.id }); }; acts.appendChild(xb);
+    c.appendChild(acts);
+    if (voters.length) c.appendChild(el('div', 'ptag', 'Votata da: ' + voters.join(', ')));
+    box.appendChild(c);
+  });
+  if (PARTNER.booking || PARTNER.gyg) box.appendChild(el('p', null, '“partner”: prenotando da quel link Loopix riceve una piccola commissione. Per te il prezzo non cambia.'));
+}
+function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
+function openIdea(rid) {
+  ideaRid = rid || ''; $('ik').value = 'viaggio'; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
+  $('idT').textContent = rid ? '💡 Dal Reel alla realtà' : '💡 Nuova idea';
+  $('idm').classList.add('open'); setTimeout(function () { $('ip').focus(); }, 50);
+}
+function saveIdea() {
+  var p = clean($('ip').value, 60);
+  if (!p) { $('iH').textContent = 'Scrivi dove o cosa (es. Lisbona, Sushi Ko, concerto).'; return; }
+  var v = {}; v[me.name] = 1;
+  ideaAct({ t: 'idea', a: 'add', i: { id: uid(8), r: ideaRid, k: $('ik').value, p: p, o: clean($('io').value, 200), ts: Date.now(), v: v } });
+  $('idm').classList.remove('open');
+  if (tab === 'main') $('mh').textContent = 'Idea salvata: la trovi in 💡 Idee.';
+}
+
+/* ---- cerchio e ricordi ---- */
+function removeMember(k) {
+  delete allowed[k]; put('allowed', allowed);
+  conns.filter(function (c) { return c.k === k; }).forEach(function (c) {
+    try { c.send({ t: 'no', why: 'Sei stato tolto da questo cerchio.' }); } catch (e) {}
+    setTimeout(function () { try { c.close(); } catch (e) {} }, 300);
+  });
+  conns = conns.filter(function (c) { return c.k !== k; });
+  cast({ t: 'people', people: people() }); status(); renderCircle();
+}
+function renderCircle() {
+  var m = $('mlist'); m.textContent = '';
+  function row(t, on, rm) {
+    var r = el('div', 'mrow'), s = el('span'); s.appendChild(el('i', 'dot' + (on ? ' on' : ''))); s.appendChild(document.createTextNode(t)); r.appendChild(s);
+    if (rm) { var b = el('button', 'btn-o', 'Togli'); b.onclick = rm; r.appendChild(b); }
+    m.appendChild(r);
+  }
+  if (me.role === 'host') {
+    row(me.name + ' (tu, centro)', true, null);
+    var ks = Object.keys(allowed);
+    ks.forEach(function (k) {
+      var on = conns.some(function (c) { return c.k === k && c.ok && c.open; });
+      row(allowed[k] + (on ? '' : ' · non collegato'), on, function () { if (window.confirm('Togliere ' + allowed[k] + ' dal cerchio?')) removeMember(k); });
+    });
+    m.appendChild(el('p', null, ks.length + ' di 3 posti per ospiti usati.' + (ks.length ? '' : ' Invita la prima persona!')));
+    $('inv2').hidden = ks.length >= 3;
+  } else {
+    var live = !!(hostConn && hostConn.open);
+    (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
+    $('inv2').hidden = true;
+    m.appendChild(el('p', null, blocked ? 'Non fai più parte di questo cerchio. Puoi uscire e chiedere un nuovo invito.' : 'Solo chi ha creato il cerchio può invitare altre persone.'));
+  }
+  renderRecap();
+}
+function renderRecap() {
+  var box = $('recap'); box.textContent = '';
+  var wk = Date.now() - 7 * 864e5, rs = feed.filter(function (r) { return r.ts >= wk; });
+  if (!rs.length) { box.appendChild(el('p', null, 'Questa settimana non ci sono ancora Reel. I vostri ricordi compaiono qui.')); return; }
+  function stat(a, v) { var r = el('div', 'stat'); r.appendChild(el('span', null, a)); r.appendChild(el('b', null, String(v))); box.appendChild(r); }
+  var by = {}, emo = {}, cm = 0, best = null, bs = 0;
+  rs.forEach(function (r) {
+    by[r.n] = (by[r.n] || 0) + 1;
+    var s = 0; Object.keys(r.x || {}).forEach(function (n) { emo[r.x[n]] = (emo[r.x[n]] || 0) + 1; s++; });
+    var c = (r.k || []).length; cm += c; s += c;
+    if (s > bs) { bs = s; best = r; }
+  });
+  stat('Reel condivisi', rs.length);
+  Object.keys(by).sort(function (a, b) { return by[b] - by[a]; }).forEach(function (n) { stat('· da ' + n, by[n]); });
+  var te = Object.keys(emo).sort(function (a, b) { return emo[b] - emo[a]; })[0];
+  if (te) stat('Reazione preferita', te + ' × ' + emo[te]);
+  stat('Commenti', cm);
+  var iw = ideas.filter(function (i) { return i.ts >= wk; }).length; if (iw) stat('Nuove idee', iw);
+  if (best) { var b = el('button', 'btn-o wide', '❤️ Rivedi il Reel più amato (di ' + best.n + ')'); b.onclick = function () { goReel(best.id); }; box.appendChild(b); }
+}
+
+/* ---- stile ---- */
+var THEMES = { champagne: ['Champagne', '#D4AF37', '#F3E5AB'], spettro: ['Spettro', '#FF3EA5', '#00FFFF'], oceano: ['Oceano', '#3EC6FF', '#B8ECFF'], rosa: ['Rosa', '#FF6FA8', '#FFD1E3'], smeraldo: ['Smeraldo', '#2ED39A', '#C9F7E4'] };
+function applyTheme(t) { var c = THEMES[t] || THEMES.champagne; document.documentElement.style.setProperty('--g', c[1]); document.documentElement.style.setProperty('--gl', c[2]); }
+function renderStyle() {
+  var box = $('themes'), cur = get('theme', 'champagne'); box.textContent = '';
+  Object.keys(THEMES).forEach(function (k) {
+    var t = THEMES[k], b = el('button', 'sw', t[0]);
+    b.style.background = 'linear-gradient(135deg,' + t[1] + ',' + t[2] + ')'; b.setAttribute('aria-pressed', String(cur === k)); b.setAttribute('aria-label', 'Tema ' + t[0]);
+    b.onclick = function () { put('theme', k); applyTheme(k); renderStyle(); }; box.appendChild(b);
+  });
+  $('pinS').textContent = pinRec ? 'Attivo: Loopix chiede il PIN quando la apri e quando torni dopo 30 secondi. Il blocco nasconde lo schermo, non cifra i dati.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
+  $('pinB').textContent = pinRec ? 'Cambia PIN' : 'Imposta un PIN';
+  $('pinR').hidden = !pinRec;
+}
+
+/* ---- PIN ---- */
+var pinRec = get('pin', null), pinMode = 'set', hidAt = 0;
+async function hashPin(pin, salt) {
+  var k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+  var b = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 150000, hash: 'SHA-256' }, k, 256);
+  return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+}
+function showLock() { if (!pinRec) return; $('lockIn').value = ''; $('lockH').textContent = ''; $('lock').classList.add('open'); setTimeout(function () { $('lockIn').focus(); }, 50); }
+async function tryUnlock() {
+  var v = $('lockIn').value;
+  if (!v) { $('lockH').textContent = 'Inserisci il PIN.'; return; }
+  if (await hashPin(v, pinRec.s) === pinRec.h) { $('lock').classList.remove('open'); $('lockIn').value = ''; }
+  else { $('lockH').textContent = 'PIN errato.'; $('lockIn').value = ''; }
+}
+function openPin(mode) {
+  pinMode = mode;
+  $('pT').textContent = mode === 'set' ? (pinRec ? 'Nuovo PIN' : 'Imposta un PIN') : 'Togli il PIN';
+  $('p1').placeholder = mode === 'set' ? 'Nuovo PIN (4–8 cifre)' : 'PIN attuale';
+  $('p2').hidden = mode !== 'set'; $('p1').value = ''; $('p2').value = ''; $('pH').textContent = '';
+  $('pinm').classList.add('open'); setTimeout(function () { $('p1').focus(); }, 50);
+}
+async function savePin() {
+  var a = $('p1').value;
+  if (pinMode === 'set') {
+    if (!/^\d{4,8}$/.test(a)) { $('pH').textContent = 'Il PIN deve avere da 4 a 8 cifre.'; return; }
+    if (a !== $('p2').value) { $('pH').textContent = 'I due PIN non coincidono.'; return; }
+    var s = uid(16); pinRec = { s: s, h: await hashPin(a, s) }; put('pin', pinRec);
+  } else {
+    if (!pinRec || await hashPin(a, pinRec.s) !== pinRec.h) { $('pH').textContent = 'PIN errato.'; $('p1').value = ''; return; }
+    pinRec = null; try { localStorage.removeItem(LS + 'pin'); } catch (e) {}
+  }
+  $('pinm').classList.remove('open'); renderStyle();
+}
+function guide(force) {
+  if (!force && get('guided', 0)) return;
+  put('guided', 1);
+  var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
+  (host ? [
+    'Tocca “Invita” e manda il link a chi vuoi (fino a 3 persone). Quando chiede di entrare, tocca OK.',
+    'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
+    'Torna qui e tocca il pulsante grande “📋 Incolla il Reel”. Fatto: lo vede tutto il cerchio.'
+  ] : [
+    'Aspetta che chi ti ha invitato accetti: in alto comparirà “Collegato”.',
+    'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
+    'Torna qui e tocca il pulsante grande “📋 Incolla il Reel”. Fatto: lo vede tutto il cerchio.'
+  ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
+  $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene';
+  $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (host) invite(); };
+  $('gd').classList.add('open');
+}
+function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
+function wipe() { ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'pin', 'guided'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} }); location.reload(); }
+
+/* ---- avvio ---- */
+function begin() {
+  if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
+  showPane('main'); render(); status(); seqLabel();
+  if (pinRec) showLock(); else guide(false);
+  if (me.role === 'host') startHost(); else startGuest();
+  if (incoming) { var u = incoming; incoming = null; post(u, ''); }
+}
+function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,64})/.exec(v) || /^([\w-]{8,64})$/.exec(v); return m ? m[1] : null; }
+$('ic').addEventListener('input', function () { $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; });
+$('go').addEventListener('click', function () {
+  var n = clean($('nm').value, 30);
+  if (!n) { $('sH').textContent = 'Scrivi il tuo nome.'; return; }
+  var jid = joinId || pastedId();
+  if (!joinId && $('ic').value.trim() && !jid) { $('sH').textContent = 'Il link di invito non sembra giusto.'; return; }
+  me = jid ? { name: n, role: 'guest', hostId: jid, tok: uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12) };
+  put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
+});
+$('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
+$('inv').addEventListener('click', invite);
+$('add').addEventListener('click', function () { post($('ru').value, $('rc').value); $('ru').value = ''; $('rc').value = ''; });
+$('paste').addEventListener('click', async function () {
+  try { post(await navigator.clipboard.readText(), ''); }
+  catch (e) { $('mbox').hidden = false; $('mh').textContent = 'Il telefono non mi lascia leggere il link: tienilo premuto nel campo qui sopra e scegli “Incolla”.'; }
+});
+$('out').addEventListener('click', function () {
+  if (!window.confirm('Uscire dal cerchio? Reel, idee e impostazioni salvati su questo telefono verranno cancellati.')) return;
+  wipe();
+});
+
+$('ps').value = get('speed', '0'); if (!$('ps').value) $('ps').value = '0';
+$('ps').addEventListener('change', function () { put('speed', $('ps').value); arm(); });
+$('sq').addEventListener('click', openSeq); $('px').addEventListener('click', closeSeq);
+$('pn').addEventListener('click', function () {
+  if (party) { var n = neighbor(party.id, 1); if (n) goParty(n); else $('ll').textContent = 'Nessun altro Reel per ora.'; }
+  else if (seq) showAt(seq.i + 1);
+});
+$('pp').addEventListener('click', function () {
+  if (party) { var n = neighbor(party.id, -1); if (n) goParty(n); }
+  else if (seq) showAt(seq.i - 1);
+});
+$('sp').addEventListener('click', startParty);
+$('ij').addEventListener('click', function () { if (pending) { var id = pending.id; pending = null; $('ib').hidden = true; showParty(id); } });
+$('p3').addEventListener('click', function () { sendNow({ t: 'ses', a: 'ready', n: me.name }); countdown(); });
+$('lsend').addEventListener('click', function () { var v = clean($('li').value, 300); if (v && party) { comment(party.id, v); $('li').value = ''; } });
+$('li').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('lsend').click(); });
+var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone && !get('ios', 0);
+$('ios').hidden = !ios;
+$('ix').addEventListener('click', function () { $('ios').hidden = true; put('ios', 1); });
+['inf', 'inf2'].forEach(function (i) { $(i).addEventListener('click', function () { $('im').classList.add('open'); }); });
+$('imc').addEventListener('click', function () { $('im').classList.remove('open'); });
+document.querySelectorAll('#tabs button').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
+$('inew').addEventListener('click', function () { openIdea(''); });
+$('iok').addEventListener('click', saveIdea);
+$('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
+$('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
+$('inv2').addEventListener('click', invite);
+$('pinB').addEventListener('click', function () { openPin('set'); });
+$('pinR').addEventListener('click', function () { openPin('remove'); });
+$('pOk').addEventListener('click', savePin);
+$('p2').addEventListener('keydown', function (e) { if (e.key === 'Enter') savePin(); });
+$('p1').addEventListener('keydown', function (e) { if (e.key === 'Enter' && pinMode !== 'set') savePin(); });
+$('pNo').addEventListener('click', function () { $('pinm').classList.remove('open'); });
+$('lockGo').addEventListener('click', tryUnlock);
+$('lockIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+$('lockF').addEventListener('click', function () { if (window.confirm('Senza PIN l’unico modo è cancellare Loopix da questo telefono (Reel, idee e cerchio). Procedere?')) wipe(); });
+document.addEventListener('visibilitychange', function () {
+  if (!pinRec || !me) return;
+  if (document.hidden) hidAt = Date.now();
+  else if (hidAt && Date.now() - hidAt > 30000) showLock();
+});
+applyTheme(get('theme', 'champagne'));
+setBig(!!get('big', 0)); $('bigT').checked = !!get('big', 0);
+$('bigT').addEventListener('change', function () { setBig($('bigT').checked); });
+$('help').addEventListener('click', function () { guide(true); });
+$('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); });
+$('manual').addEventListener('click', function () { var o = $('mbox').hidden; $('mbox').hidden = !o; $('manual').setAttribute('aria-expanded', String(o)); if (o) $('ru').focus(); });
+if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
+if (me && !joinId) begin();
+else {
+  if (joinId) { $('sT').textContent = 'Ti hanno invitato'; $('sP').textContent = 'Scrivi il tuo nome per chiedere di entrare. Chi ti ha invitato dovrà accettare.'; $('go').textContent = 'Chiedi di entrare'; $('ic').hidden = true; }
+  showPane('setup');
+}
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
+</script>
+</body>
+</html>
