@@ -72,6 +72,8 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .from time{margin-left:auto;font-size:13px;font-weight:500;color:var(--m)}
 .cm{font-size:16px;line-height:1.4;overflow-wrap:anywhere;padding:10px 14px;background:var(--s1);border:1px solid var(--line);border-radius:18px 18px 18px 6px;align-self:flex-start;max-width:92%}
 .item iframe{flex:1;min-height:380px;width:100%;border:1px solid var(--line);border-radius:26px;background:var(--s1)}
+.item video,.stage video{flex:1;min-height:380px;width:100%;border-radius:26px;background:#000;object-fit:contain}
+.stage video{min-height:0}
 .link{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--line);border-radius:26px;padding:24px;text-align:center;overflow-wrap:anywhere;color:var(--m);font-size:15px}
 .link a{color:var(--ink);background:var(--gold);border-radius:999px;padding:12px 20px;font-weight:800;text-decoration:none}
 .bar{display:flex;gap:8px;flex-wrap:wrap}
@@ -249,7 +251,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <h2 id="imT">Come funziona</h2>
   <p>• I Reel e i commenti restano sui telefoni del cerchio. Non c’è un archivio online né un account.</p>
   <p>• Un servizio pubblico di appoggio (PeerJS) aiuta solo i telefoni a trovarsi: vede indirizzi di rete, non i contenuti.</p>
-  <p>• I video sono quelli incorporati da Instagram, TikTok e YouTube: quelle piattaforme possono registrare che li guardi.</p>
+  <p>• I video sono quelli incorporati da Instagram, TikTok, YouTube, Facebook e dalle altre piattaforme: possono registrare che li guardi, anche senza avere la loro app.</p>
   <p>• Chi crea il cerchio è il centro: deve avere l’app aperta perché i Reel arrivino, e vede tutto ciò che viene condiviso. Gli ospiti entrano solo se li accetta.</p>
   <p>• Per ora è gratis. Non servono carte né dati personali. “Esci” cancella tutto da questo telefono.</p>
   <p>• Su iPhone Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla”.</p>
@@ -328,15 +330,58 @@ function safeUrl(u) { try { var x = new URL(String(u).trim()); return /^https?:$
 function yt(id) { return 'https://www.youtube.com/embed/' + id + '?playsinline=1'; }
 function embedFor(u) {
   var x, m; try { x = new URL(u); } catch (e) { return null; }
-  var h = x.hostname.replace(/^(www|m)\./, '');
-  if (h === 'instagram.com' && (m = /^\/(?:reels?|p|tv)\/([\w-]{5,})/.exec(x.pathname))) return 'https://www.instagram.com/p/' + m[1] + '/embed/';
-  if (h === 'tiktok.com' && (m = /\/video\/(\d{8,})/.exec(x.pathname))) return 'https://www.tiktok.com/embed/v2/' + m[1];
-  if (h === 'youtube.com') {
-    if ((m = /^\/shorts\/([\w-]{6,})/.exec(x.pathname))) return yt(m[1]);
+  var h = x.hostname.replace(/^(www|m|mobile)\./, ''), p = x.pathname, E = encodeURIComponent;
+  // video diretti (mp4, webm, mov)
+  if (/\.(mp4|webm|m4v|mov)$/i.test(p)) return 'video:' + x.href;
+  // Instagram
+  if (h === 'instagram.com' && (m = /^\/(?!share\/)(?:[\w.]+\/)?(?:reels?|p|tv)\/([\w-]{5,})/.exec(p))) return 'https://www.instagram.com/p/' + m[1] + '/embed/';
+  // TikTok
+  if (h === 'tiktok.com' && (m = /\/(?:video|photo)\/(\d{8,})/.exec(p))) return 'https://www.tiktok.com/embed/v2/' + m[1];
+  // YouTube
+  if (h === 'youtube.com' || h === 'music.youtube.com') {
+    if ((m = /^\/(?:shorts|live|embed)\/([\w-]{6,})/.exec(p))) return yt(m[1]);
     var v = x.searchParams.get('v'); if (v && /^[\w-]{6,}$/.test(v)) return yt(v);
   }
-  if (h === 'youtu.be' && (m = /^\/([\w-]{6,})/.exec(x.pathname))) return yt(m[1]);
+  if (h === 'youtu.be' && (m = /^\/([\w-]{6,})/.exec(p))) return yt(m[1]);
+  // Facebook
+  if ((h === 'facebook.com' && /^\/(reel|watch|share\/[rv]|[^/]+\/videos|video)/.test(p)) || h === 'fb.watch')
+    return 'https://www.facebook.com/plugins/video.php?href=' + E(x.href) + '&show_text=false&width=500&height=889';
+  // X / Twitter
+  if ((h === 'x.com' || h === 'twitter.com') && (m = /\/status\/(\d+)/.exec(p))) return 'https://platform.twitter.com/embed/Tweet.html?id=' + m[1] + '&theme=dark&dnt=true';
+  // Threads
+  if ((h === 'threads.net' || h === 'threads.com') && (m = /^\/(@[\w.]+\/post\/[\w-]+)/.exec(p))) return 'https://www.' + h + '/' + m[1] + '/embed';
+  // Pinterest
+  if (/(^|\.)pinterest\./.test(h) && (m = /\/pin\/(\d+)/.exec(p))) return 'https://assets.pinterest.com/ext/embed.html?id=' + m[1];
+  // Reddit
+  if (h === 'reddit.com' && /^\/r\/[\w]+\/comments\//.test(p)) return 'https://embed.reddit.com' + p + '?theme=dark';
+  // Vimeo
+  if (h === 'vimeo.com' && (m = /\/(\d{5,})(?:\/|$)/.exec(p))) return 'https://player.vimeo.com/video/' + m[1];
+  if (h === 'player.vimeo.com' && /^\/video\/\d+/.test(p)) return x.href;
+  // Dailymotion
+  if (h === 'dailymotion.com' && (m = /^\/video\/([\w]+)/.exec(p))) return 'https://www.dailymotion.com/embed/video/' + m[1];
+  if (h === 'dai.ly' && (m = /^\/([\w]+)/.exec(p))) return 'https://www.dailymotion.com/embed/video/' + m[1];
+  // Twitch (clip)
+  if ((h === 'clips.twitch.tv' && (m = /^\/([\w-]+)/.exec(p))) || (h === 'twitch.tv' && (m = /\/clip\/([\w-]+)/.exec(p))))
+    return 'https://clips.twitch.tv/embed?clip=' + m[1] + '&parent=' + E(location.hostname || 'localhost');
+  // Spotify (canzoni, podcast, playlist)
+  if (h === 'open.spotify.com' && (m = /^\/(?:intl-[\w-]+\/)?(track|album|playlist|episode|show|artist)\/(\w+)/.exec(p))) return 'https://open.spotify.com/embed/' + m[1] + '/' + m[2];
+  // SoundCloud
+  if (h === 'soundcloud.com' && p.split('/').length >= 3) return 'https://w.soundcloud.com/player/?url=' + E(x.href) + '&visual=true';
   return null;
+}
+// I link brevi di TikTok (vm.tiktok.com, tiktok.com/t/…) vengono trasformati nel link completo, se TikTok lo permette.
+async function resolveShort(u) {
+  try {
+    var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, '');
+    if (!(h === 'vm.tiktok.com' || h === 'vt.tiktok.com' || (h === 'tiktok.com' && /^\/t\//.test(x.pathname)))) return u;
+    var ctl = new AbortController(), tm = setTimeout(function () { ctl.abort(); }, 5000);
+    var res = await fetch('https://www.tiktok.com/oembed?url=' + encodeURIComponent(u), { signal: ctl.signal }); clearTimeout(tm);
+    if (!res.ok) return u;
+    var j = await res.json(), m = /data-video-id="(\d{8,})"/.exec(j.html || '');
+    var id = m ? m[1] : (/^\d{8,}$/.test(j.embed_product_id || '') ? j.embed_product_id : '');
+    var who = String(j.author_unique_id || 'video').replace(/[^\w.]/g, '') || 'video';
+    return id ? 'https://www.tiktok.com/@' + who + '/video/' + id : u;
+  } catch (e) { return u; }
 }
 
 /* ---- feed ---- */
@@ -350,6 +395,10 @@ function cleanK(k) {
 function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
 function media(r, pl) {
   var src = embedFor(r.u);
+  if (src && src.indexOf('video:') === 0) {
+    var vd = el('video'); vd.src = src.slice(6); vd.controls = true; vd.playsInline = true; vd.preload = 'metadata'; if (pl) vd.autoplay = true;
+    vd.setAttribute('playsinline', ''); vd.title = 'Video di ' + r.n; return vd;
+  }
   if (src) {
     if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1&enablejsapi=1' + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '');
     var fr = el('iframe'); fr.src = src; if (!pl) fr.loading = 'lazy'; fr.title = 'Reel di ' + r.n;
@@ -357,8 +406,10 @@ function media(r, pl) {
     fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-presentation');
     fr.referrerPolicy = 'strict-origin-when-cross-origin'; return fr;
   }
-  var l = el('div', 'link'); l.appendChild(el('div', null, new URL(r.u).hostname));
-  var a = el('a', null, 'Apri il link'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
+  var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
+  var nm = NAMES[host] || host;
+  var l = el('div', 'link'); l.appendChild(el('div', null, 'Questo link di ' + nm + ' non si può vedere qui dentro. Si apre nel browser, non serve avere l’app.'));
+  var a = el('a', null, 'Guarda su ' + nm); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
 }
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false };
@@ -552,8 +603,10 @@ function links(t) {
 function postAll(t, c) {
   var L = links(t);
   if (!L.length) { $('mh').textContent = 'Non trovo nessun link. In Instagram o TikTok tocca Condividi e poi “Copia link”.'; return 0; }
-  L.forEach(function (u) { post(u, L.length === 1 ? c : ''); });
-  if (L.length > 1) $('mh').textContent = L.length + ' Reel aggiunti.';
+  (async function () {
+    for (var i = 0; i < L.length; i++) post(await resolveShort(L[i]), L.length === 1 ? c : '');
+    if (L.length > 1) $('mh').textContent = L.length + ' Reel aggiunti.';
+  })();
   return L.length;
 }
 function post(u, c) {
