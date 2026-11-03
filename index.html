@@ -510,6 +510,19 @@ function cleanK(k) {
     return c && typeof c.id === 'string' ? { id: clean(c.id, 20), n: clean(c.n, 30) || 'Ospite', t: clean(c.t, 300), ts: +c.ts || 0 } : null;
   }).filter(function (c) { return c && c.t; });
 }
+var gone = get('gone', []);
+function canDel(r) { return me.role === 'host' || r.n === me.name; }
+function dropReel(id) {
+  var r = find(id); if (gone.indexOf(id) < 0) { gone.push(id); if (gone.length > 300) gone.shift(); put('gone', gone); }
+  if (!r) return false;
+  feed = feed.filter(function (x) { return x.id !== id; }); delete seen[id]; put('feed', feed);
+  if (seq) seq.q = seq.q.filter(function (x) { return x !== id; });
+  render(); seqLabel(); return true;
+}
+function delReel(id) {
+  var r = find(id); if (!r) return;
+  ask('Eliminare questo Reel?', 'Sparisce per tutto il cerchio, con reazioni e commenti. Non si può annullare.', 'Elimina', true).then(function (y) { if (y && dropReel(id)) sendEv({ t: 'rdel', id: id }); });
+}
 function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
 function media(r, pl) {
   var src = embedFor(r.u);
@@ -573,6 +586,7 @@ function refresh(r) {
   var ib = el('button', 'r-btn plan', has ? '✓ Piano salvato' : 'Trasforma in piano'); ib.setAttribute('aria-label', 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
   var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; }; nd.bar.appendChild(cb);
+  if (canDel(r)) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { delReel(r.id); }; nd.bar.appendChild(xb); }
   nd.list.textContent = '';
   (r.k || []).forEach(function (c) { var l = el('div', 'cmt'); l.appendChild(el('b', null, c.n)); l.appendChild(document.createTextNode(' ' + c.t)); nd.list.appendChild(l); });
   if (seq && seq.cur === r.id) pbuild(r);
@@ -587,6 +601,7 @@ function render() {
 function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.clientHeight < 80; }
 function addReel(r, mine) {
   if (!r || typeof r.id !== 'string' || r.id.length > 40) return false;
+  if (gone.indexOf(r.id) >= 0) return false;
   var u = safeUrl(r.u); if (!u) return false;
   var old = find(r.id);
   if (old) {
@@ -823,7 +838,7 @@ function startHost() {
         if (!known && Object.keys(allowed).length >= cap()) { c.send({ t: 'no', why: 'Il cerchio è pieno.' }); setTimeout(function () { c.close(); }, 300); return; }
         if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
         c.ok = true; c.name = nm; c.k = k; conns.push(c);
-        c.send({ t: 'hello', max: cap() + 1, feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+        c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
       } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
         var m = applyEv(d, c.name);
         if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
@@ -835,6 +850,9 @@ function startHost() {
       } else if (d.t === 'idea' && c.ok) {
         var im = applyIdea(d, c.name);
         if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
+      } else if (d.t === 'rdel' && c.ok && typeof d.id === 'string') {
+        var dr = find(d.id);
+        if (dr && dr.n === c.name && dropReel(d.id)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'rdel', id: d.id }); });
       } else if (d.t === 'reel' && c.ok) {
         var r = d.r || {}; r.n = c.name;
         if (addReel(r)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: feed[feed.length - 1] }); });
@@ -873,10 +891,11 @@ function startGuest() {
     hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok }); });
     hostConn.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
-      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
+      else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
       else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
@@ -1161,7 +1180,7 @@ function guide(force) {
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
 function wipe() {
-  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
+  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
   if (REG.list.length > 1) { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.list[0].id; regSet(REG); }
   else { try { localStorage.removeItem(LSG + 'pin'); } catch (e) {} }
   location.reload();
