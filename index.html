@@ -262,13 +262,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="hero"><svg class="big-mark" viewBox="0 0 40 22" aria-hidden="true"><path d="M20 11c-3.2-4.6-6.2-7-9.6-7A7 7 0 0 0 3.4 11a7 7 0 0 0 7 7c3.4 0 6.4-2.4 9.6-7s6.2-7 9.6-7a7 7 0 0 1 7 7 7 7 0 0 1-7 7c-3.4 0-6.4-2.4-9.6-7z"/></svg><h1>Il vostro posto privato per i Reel</h1><p>Mandateveli, guardateli insieme anche da lontano, trasformateli in piani.</p></div>
   <div class="card">
     <h2 id="sT">Crea il tuo cerchio</h2>
-    <p id="sP">Tu e fino a 3 persone, in privato.</p>
+    <p id="sP">Tu e una persona, in privato.</p>
     <div id="kindBox" role="group" aria-label="Tipo di cerchio"><p style="margin:0 0 6px"><b>Che cerchio vuoi creare?</b></p>
       <div class="chips" style="padding:0 0 10px;flex-wrap:wrap">
         <button type="button" class="chip" id="kC" aria-pressed="true">💑 Coppia (2 persone)</button>
         <button type="button" class="chip" id="kG" aria-pressed="false">👥 Gruppo da 3</button>
+        <button type="button" class="chip" id="kB" aria-pressed="false" hidden>🌟 Gruppo grande (fino a 10)</button>
       </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
+    <button type="button" class="btn-o wide" id="icPaste" style="margin:0 0 8px">📋 Ho ricevuto un invito: incollalo</button>
+    <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Ho già un invito (copiato)</button>
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
     <p>Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
     <div id="inst" hidden class="inv2" style="margin:0 0 12px;flex-direction:column;align-items:stretch">
@@ -284,6 +287,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn" id="go">Inizia</button>
     <button class="btn-o wide" id="sCancel" hidden style="margin-top:8px">Annulla</button>
     <div class="hint" id="sH" aria-live="polite"></div>
+    <button class="btn-o wide" id="bkR2" style="margin-top:10px">📂 Hai una copia di sicurezza? Ripristinala</button>
     <button class="btn-o" id="inf2" style="margin-top:10px">ℹ️ Come funziona e privacy</button>
   </div>
   <p style="font-size:14px;padding:0 4px">I Reel restano sui telefoni del cerchio. Non servono account né carte.</p>
@@ -318,9 +322,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><div class="hint" id="ch" aria-live="polite"></div></div>
-  <div class="card"><h2>I tuoi cerchi</h2><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
+  <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
+  <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
+  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
+  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
+  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Loopix, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
 </div></section>
 
 <section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div>
@@ -338,11 +345,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <p id="modeP"></p></div>
   <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
   <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
-  <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button></div>
+  <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
   <div class="card plus"><h2>Gratis per sempre</h2>
-    <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Un cerchio fino a 4 persone, 5 temi e PIN</li></ul>
+    <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Una coppia e un gruppo da 3, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
     <h2 style="margin-top:14px">In arrivo con Loopix Plus</h2>
-    <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Archivio illimitato e temi esclusivi</li></ul>
+    <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
   <div class="card" id="supC" hidden><h2>❤️ Sostieni Loopix</h2><p>Loopix è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
 </div></section>
@@ -358,15 +365,18 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod" id="im" role="dialog" aria-modal="true" aria-labelledby="imT"><div class="card" style="max-width:340px;width:100%;max-height:85dvh;overflow-y:auto">
   <h2 id="imT">Come funziona</h2>
-  <p>• I Reel e i commenti restano sui telefoni del cerchio. Non c’è un archivio online né un account.</p>
-  <p>• Un servizio pubblico di appoggio (PeerJS) aiuta solo i telefoni a trovarsi: vede indirizzi di rete, non i contenuti.</p>
-  <p>• I video sono quelli incorporati da Instagram, TikTok, YouTube, Facebook e dalle altre piattaforme: possono registrare che li guardi, anche senza avere la loro app.</p>
-  <p>• Chi crea il cerchio è il centro: deve avere l’app aperta perché i Reel arrivino, e vede tutto ciò che viene condiviso. Entra solo chi ha ricevuto un suo invito (ogni invito vale per una persona).</p>
-  <p>• Per ora è gratis. Non servono carte né dati personali. “Esci” cancella tutto da questo telefono.</p>
-  <p>• Su iPhone Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla”.</p>
-  <p>• In “Piani”, i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Loopix riceve una piccola commissione: per te il prezzo non cambia.</p>
-  <p>• Il blocco con PIN nasconde lo schermo, non cifra i dati.</p>
+  <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
+  <p>• <b>Su invito:</b> per ora Loopix è in beta. Si entra con un link d’invito, che vale 10 minuti. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
+  <p>• <b>Cerchi:</b> una coppia (2 persone) o un gruppo da 3, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
+  <p>• <b>Chi crea il cerchio</b> è il centro: deve avere Loopix aperta perché Reel e messaggi arrivino. Può togliere chi vuole.</p>
+  <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
+  <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Loopix. Quelle piattaforme possono registrare che li guardi.</p>
+  <p>• <b>Copia di sicurezza:</b> in Cerchio puoi salvare tutto in un file protetto da password. Senza copia, cancellando l’app i dati di questo telefono si perdono.</p>
+  <p>• <b>Su iPhone</b> Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla”. Apri Loopix sempre dall’icona sulla schermata Home.</p>
+  <p>• <b>Piani:</b> i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Loopix riceve una piccola commissione: per te il prezzo non cambia.</p>
+  <p>• <b>PIN:</b> chiede il PIN all’apertura e cifra i dati salvati sul telefono: senza PIN non si leggono. Se lo dimentichi, i dati si possono solo cancellare (o ripristinare da una copia di sicurezza).</p>
   <p id="statP" hidden>• Contiamo in modo anonimo quante volte si usa Loopix (aperture, Reel condivisi, cerchi creati), senza cookie, senza nomi e senza vedere i contenuti.</p>
+  <p>• <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">Leggi la privacy policy completa</a></p>
   <button class="btn" id="imc">Ho capito</button>
 </div></div>
 
@@ -384,6 +394,31 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="invX" style="margin-top:8px">Chiudi</button>
 </div></div>
 
+<div class="mod" id="pwM" role="dialog" aria-modal="true" aria-labelledby="pwT"><div class="card" style="max-width:340px;width:100%">
+  <h2 id="pwT"></h2><p id="pwP"></p>
+  <input id="pwI" type="password" autocomplete="new-password" aria-label="Password" placeholder="Password (almeno 6 caratteri)">
+  <div class="hint" id="pwH" aria-live="polite"></div>
+  <button class="btn" id="pwOk">Continua</button>
+  <button class="btn-o wide" id="pwNo">Annulla</button>
+</div></div>
+<input type="file" id="bkF" accept=".loopix,application/json,text/plain" hidden>
+
+<div class="mod" id="actM" role="dialog" aria-modal="true" aria-labelledby="actT"><div class="card" style="max-width:340px;width:100%">
+  <h2 id="actT"></h2><p id="actP" style="margin-top:0"></p>
+  <div id="actB"></div>
+  <button class="btn-o wide" id="actX">Annulla</button>
+</div></div>
+
+<div class="mod" id="bugM" role="dialog" aria-modal="true" aria-labelledby="bugT"><div class="card" style="max-width:350px;width:100%">
+  <h2 id="bugT">Segnala un problema</h2>
+  <p style="margin-top:0">Scrivi in due parole cosa è successo. Aggiungo io i dettagli tecnici (niente Reel, messaggi o chiavi).</p>
+  <textarea id="bugI" rows="3" maxlength="500" placeholder="Es. tocco Incolla ma non succede niente" style="width:100%;border-radius:16px;padding:10px 12px;font:inherit;border:1px solid var(--line);background:var(--s1);color:var(--t)"></textarea>
+  <button class="btn" id="bugWA" style="margin-top:10px">💬 Manda su WhatsApp</button>
+  <button class="btn-o wide" id="bugCp" style="margin-top:8px">📋 Copia il testo</button>
+  <div class="hint" id="bugH" aria-live="polite"></div>
+  <button class="btn-o wide" id="bugX" style="margin-top:8px">Chiudi</button>
+</div></div>
+
 <div class="mod" id="ask" role="alertdialog" aria-modal="true" aria-labelledby="askT" aria-describedby="askP"><div class="card" style="max-width:340px;width:100%">
   <h2 id="askT"></h2><p id="askP"></p>
   <button class="btn" id="askOk"></button>
@@ -392,7 +427,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdT"><div class="card" style="max-width:350px;width:100%;max-height:88dvh;overflow-y:auto">
   <h2 id="gdT">Benvenuto in Loopix 👋</h2>
-  <p>Tre passi e ci sei:</p>
+  <p>Quattro passi e ci sei:</p>
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
   <button class="btn-o wide" id="gdX">Ho capito</button>
@@ -420,13 +455,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="logo" style="font-size:28px;margin-bottom:8px">Loopix</div>
   <h2 id="lkT">🔒 Inserisci il PIN</h2>
   <input type="password" inputmode="numeric" id="lockIn" autocomplete="off" aria-label="PIN" style="text-align:center;font-size:20px;letter-spacing:6px">
+  <button class="btn" id="lockBio" hidden>🙂 Sblocca con Face ID / impronta</button>
   <button class="btn" id="lockGo">Sblocca</button>
   <div class="hint" id="lockH" aria-live="polite"></div>
   <button class="btn-o wide" id="lockF">Ho dimenticato il PIN</button>
 </div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script>
+<script type="text/plain" id="mainjs">
 var $ = function (i) { return document.getElementById(i); };
 var LSG = 'loopix3:', REGK = 'loopixreg';
 function regGet() { try { var r = JSON.parse(localStorage.getItem(REGK)); if (r && Array.isArray(r.list)) return r; } catch (e) {} return null; }
@@ -435,15 +471,120 @@ var REG = regGet();
 if (!REG) { REG = { active: 'c1', list: [{ id: 'c1', label: '' }] }; regSet(REG); }
 function lsOf(id) { return id === 'c1' ? LSG : LSG + id + ':'; }
 var LS = lsOf(REG.active);
-var GLOBALK = { big: 1, pin: 1, theme: 1 };
+var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1 };
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
 function regLabel() {
   var e = REG.list.filter(function (x) { return x.id === REG.active; })[0]; if (!e || !me) return;
-  var l = me.role === 'host' ? (me.kind === 'group' ? 'Gruppo da 3' : 'Coppia') : (names[0] ? 'Cerchio di ' + names[0] : 'Cerchio di gruppo');
+  var l = me.role === 'host' ? kindName(me.kind) : (names[0] ? 'Cerchio di ' + names[0] : 'Cerchio di gruppo');
   if (e.label !== l) { e.label = l; regSet(REG); }
 }
+/* ---- modalità sviluppatore (chiave firmata) e beta su invito ---- */
+var BETA_CHIUSA = true;           // true = solo lo sviluppatore crea cerchi; gli altri entrano con un invito
+var BIG_MAX = 10;                 // persone in un "Gruppo grande" (solo sviluppatore)
+var DEV_PUB = { kty: 'EC', crv: 'P-256', x: 'tpTFlyJrTobDI6bpVw9hhnqjNoMqhQQ6FsLvQ4WsSvI', y: 'uHJoIFyyxZBnbfoVqNELDyg4clgRrX12LeQQgCk-zfY', ext: true };
+var isDev = false;
+function b64u(t) { t = t.replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; var b = atob(t), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function checkDev(tok) {
+  var m = /^LOOPIX-DEV:([\w-]+)\.([\w-]+)$/.exec(String(tok || '').trim()); if (!m) return Promise.resolve(false);
+  return crypto.subtle.importKey('jwk', DEV_PUB, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify'])
+    .then(function (k) { return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, k, b64u(m[2]), new TextEncoder().encode(m[1])); })
+    .catch(function () { return false; });
+}
+function tryDev(text) {
+  var m = /LOOPIX-DEV:[\w-]+\.[\w-]+/.exec(String(text || '')); if (!m) return false;
+  checkDev(m[0]).then(function (ok) {
+    if (ok) { put('dev', m[0]); isDev = true; applyDev(); ask('🛠️ Modalità sviluppatore attiva', 'Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ' + BIG_MAX + ' persone.', 'Ottimo'); }
+    else ask('Chiave non valida', 'Questa chiave sviluppatore non è giusta.', 'Ho capito');
+  });
+  return true;
+}
+function hosted() { var out = { couple: 0, group: 0, big: 0 }; REG.list.forEach(function (x) { try { var m = JSON.parse(localStorage.getItem(lsOf(x.id) + 'me')); if (m && m.role === 'host') out[m.kind === 'group' || m.kind === 'big' ? m.kind : 'couple']++; } catch (e) {} }); return out; }
+function canCreate(kind) {
+  if (isDev) return true;
+  if (BETA_CHIUSA || kind === 'big') return false;
+  return hosted()[kind] < 1;
+}
+function canCreateAny() { return canCreate('couple') || canCreate('group') || canCreate('big'); }
+function kindName(k) { return k === 'big' ? 'Gruppo grande' : k === 'group' ? 'Gruppo da 3' : 'Coppia'; }
+function applyDev() {
+  if ($('kB')) $('kB').hidden = !isDev;
+  if ($('devC')) $('devC').hidden = !isDev;
+  if ($('newC')) $('newC').hidden = !canCreateAny();
+  if ($('setup').classList.contains('show')) syncKind();
+}
+/* ---- copia di sicurezza (cifrata con password) ---- */
+var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed'];
+function askPw(t, p) {
+  return new Promise(function (res) {
+    $('pwT').textContent = t; $('pwP').textContent = p; $('pwI').value = ''; $('pwH').textContent = '';
+    function done(v) { $('pwM').classList.remove('open'); $('pwOk').onclick = $('pwNo').onclick = null; res(v); }
+    $('pwOk').onclick = function () { var v = $('pwI').value; if (v.length < 6) { $('pwH').textContent = 'Almeno 6 caratteri.'; return; } done(v); };
+    $('pwNo').onclick = function () { done(null); };
+    $('pwM').classList.add('open'); setTimeout(function () { $('pwI').focus(); }, 60);
+  });
+}
+function b64e(a) { var s = ''; a = new Uint8Array(a); for (var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); }
+function b64d(t) { var b = atob(t), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function pwKey(pw, salt) {
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey'])
+    .then(function (k) { return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 250000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']); });
+}
+function bkCollect() {
+  var out = { app: 'loopix', v: 1, ts: Date.now(), circles: [], global: {} };
+  REG.list.forEach(function (x) {
+    var d = {}; BK_KEYS.forEach(function (k) { var v = localStorage.getItem(lsOf(x.id) + k); if (v != null) d[k] = v; });
+    if (d.me) out.circles.push({ label: x.label, data: d });
+  });
+  BK_GLOBAL.forEach(function (k) { var v = localStorage.getItem(LSG + k); if (v != null) out.global[k] = v; });
+  return out;
+}
+async function bkSave() {
+  var data = bkCollect();
+  if (!data.circles.length) { $('bkH').textContent = 'Non ci sono ancora cerchi da salvare.'; return; }
+  var pw = await askPw('Scegli una password', 'Proteggerà la copia: senza password nessuno può aprirla. Scrivila da qualche parte: se la dimentichi, la copia non si può più aprire.');
+  if (!pw) return;
+  var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  var key = await pwKey(pw, salt);
+  var enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(data)));
+  var body = JSON.stringify({ app: 'loopix-backup', v: 1, salt: b64e(salt), iv: b64e(iv), data: b64e(enc) });
+  var name = 'Loopix-copia-' + new Date().toISOString().slice(0, 10) + '.loopix';
+  var file = new File([body], name, { type: 'application/json' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Copia di Loopix' }); $('bkH').textContent = 'Fatto ✓ Tienila in File o iCloud. Contiene ' + data.circles.length + (data.circles.length === 1 ? ' cerchio.' : ' cerchi.'); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  var a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  $('bkH').textContent = 'Copia scaricata ✓ (' + name + ')';
+}
+async function bkRestore(text) {
+  var box; try { box = JSON.parse(text); } catch (e) { box = null; }
+  if (!box || box.app !== 'loopix-backup') { ask('File non valido', 'Questo non è una copia di Loopix.', 'Ho capito'); return; }
+  var data = null;
+  while (!data) {
+    var pw = await askPw('Password della copia', 'Scrivi la password che hai scelto quando hai salvato la copia.');
+    if (!pw) return;
+    try { var key = await pwKey(pw, b64d(box.salt)); data = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(box.iv) }, key, b64d(box.data)))); }
+    catch (e) { await ask('Password sbagliata', 'Riprova con la password giusta.', 'Riprova'); }
+  }
+  var have = {}; REG.list.forEach(function (x) { try { var m = JSON.parse(localStorage.getItem(lsOf(x.id) + 'me')); if (m) have[m.hostId] = 1; } catch (e) {} });
+  var added = 0, skipped = 0;
+  (data.circles || []).forEach(function (c) {
+    var m; try { m = JSON.parse(c.data.me); } catch (e) { return; }
+    if (!m || !m.hostId) return; if (have[m.hostId]) { skipped++; return; }
+    var empty = REG.list.filter(function (x) { return !localStorage.getItem(lsOf(x.id) + 'me'); })[0], id;
+    if (empty) id = empty.id; else { var n = 1; while (REG.list.some(function (x) { return x.id === 'c' + n; })) n++; id = 'c' + n; REG.list.push({ id: id, label: c.label || '' }); }
+    REG.list.forEach(function (x) { if (x.id === id) x.label = c.label || x.label; });
+    Object.keys(c.data).forEach(function (k) { if (BK_KEYS.indexOf(k) >= 0) try { localStorage.setItem(lsOf(id) + k, c.data[k]); } catch (e) {} });
+    if (!localStorage.getItem(lsOf(REG.active) + 'me')) REG.active = id;
+    added++;
+  });
+  Object.keys(data.global || {}).forEach(function (k) { if (BK_GLOBAL.indexOf(k) >= 0 && localStorage.getItem(LSG + k) == null) try { localStorage.setItem(LSG + k, data.global[k]); } catch (e) {} });
+  delete REG.prev; delete REG.after; regSet(REG);
+  await ask('Copia ripristinata ✓', added ? 'Ho ripristinato ' + added + (added === 1 ? ' cerchio' : ' cerchi') + (skipped ? ' (' + skipped + ' c’erano già)' : '') + '. Loopix si riapre adesso.' : 'Tutti i cerchi della copia sono già su questo telefono.', 'Ok');
+  history.replaceState(null, '', location.pathname); location.reload();
+}
 function goGroupInvite() {
+  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })) { ask('Per ora non puoi creare gruppi', 'Loopix è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
   var g = REG.list.filter(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })[0];
   REG.after = 'invite'; REG.nm = me ? me.name : '';
   if (g && !(me && me.kind === 'group')) { REG.active = g.id; regSet(REG); location.reload(); }
@@ -486,7 +627,9 @@ function embedFor(u) {
   // Instagram
   if (h === 'instagram.com' && (m = /^\/(?!share\/)(?:[\w.]+\/)?(?:reels?|p|tv)\/([\w-]{5,})/.exec(p))) return 'https://www.instagram.com/p/' + m[1] + '/embed/';
   // TikTok
-  if (h === 'tiktok.com' && (m = /\/(?:video|photo)\/(\d{8,})/.exec(p))) return 'https://www.tiktok.com/player/v1/' + m[1] + '?rel=0&native_context_menu=0&closed_caption=0';
+  // i caroselli di foto non funzionano nel lettore video di TikTok: usano l'incorporamento classico
+  if (h === 'tiktok.com' && (m = /\/photo\/(\d{8,})/.exec(p))) return 'https://www.tiktok.com/embed/v2/' + m[1];
+  if (h === 'tiktok.com' && (m = /\/video\/(\d{8,})/.exec(p))) return 'https://www.tiktok.com/player/v1/' + m[1] + '?rel=0&native_context_menu=0&closed_caption=0';
   // YouTube
   if (h === 'youtube.com' || h === 'music.youtube.com') {
     if ((m = /^\/(?:shorts|live|embed)\/([\w-]{6,})/.exec(p))) return yt(m[1]);
@@ -531,7 +674,8 @@ async function resolveShort(u) {
     var j = await res.json(), m = /data-video-id="(\d{8,})"/.exec(j.html || '');
     var id = m ? m[1] : (/^\d{8,}$/.test(j.embed_product_id || '') ? j.embed_product_id : '');
     var who = String(j.author_unique_id || 'video').replace(/[^\w.]/g, '') || 'video';
-    return id ? 'https://www.tiktok.com/@' + who + '/video/' + id : u;
+    var kind = /\/photo\/\d/.test(j.html || '') ? 'photo' : 'video';
+    return id ? 'https://www.tiktok.com/@' + who + '/' + kind + '/' + id : u;
   } catch (e) { return u; }
 }
 
@@ -544,6 +688,84 @@ function cleanK(k) {
   }).filter(function (c) { return c && c.t; });
 }
 var gone = get('gone', []);
+/* ---- segnala un problema ---- */
+var APP_VER = 'v40', errLog = [];
+window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
+window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
+function bugText() {
+  var ua = navigator.userAgent, dev = /iPhone|iPad/.test(ua) ? 'iPhone/iPad iOS ' + ((/OS (\d+[_\d]*)/.exec(ua) || [])[1] || '?').replace(/_/g, '.') : /Android/.test(ua) ? 'Android ' + ((/Android ([\d.]+)/.exec(ua) || [])[1] || '?') : 'Computer';
+  var sa = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+  var live = me ? (me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open)) : false;
+  var lines = [
+    '🛠️ Problema su Loopix', '', 'Cosa è successo: ' + (clean($('bugI').value, 500) || '(non descritto)'), '',
+    '— Dettagli tecnici —',
+    'Versione: ' + APP_VER + ' · ' + new Date().toLocaleString('it-IT'),
+    'Telefono: ' + dev + (sa ? ' · app dalla Home' : ' · nel browser'),
+    'Cerchio: ' + (me ? (me.role === 'host' ? 'creatore · ' + kindName(me.kind) + ' · ospiti ' + Object.keys(allowed).length + '/' + cap() : 'ospite') : 'nessuno') + ' · cerchi: ' + REG.list.length,
+    'Collegato: ' + (live ? 'sì' : 'no') + (blocked ? ' (bloccato)' : '') + ' · Reel: ' + feed.length + ' · messaggi: ' + msgs.length,
+    'PIN: ' + (pinRec ? 'sì' : 'no') + ' · sviluppatore: ' + (isDev ? 'sì' : 'no'),
+    'Ultimo avviso: ' + ($('mh').textContent || '-').slice(0, 140),
+    'Errori: ' + (errLog.length ? errLog.join(' | ') : 'nessuno')
+  ];
+  return lines.join('\n');
+}
+function openBug() { $('bugI').value = ''; $('bugH').textContent = ''; $('bugM').classList.add('open'); setTimeout(function () { $('bugI').focus(); }, 60); }
+/* ---- segnala e silenzia ---- */
+var muted = get('muted', []), reps = get('reps', []);
+function isMuted(n) { return muted.indexOf(n) >= 0; }
+function sheet(t, p, opts) {
+  $('actT').textContent = t; $('actP').textContent = p || ''; var b = $('actB'); b.textContent = '';
+  opts.forEach(function (o) { var x = el('button', o.red ? 'btn-o wide danger' : 'btn-o wide', o.t); x.style.marginTop = '8px'; x.onclick = function () { $('actM').classList.remove('open'); o.f(); }; b.appendChild(x); });
+  $('actX').onclick = function () { $('actM').classList.remove('open'); };
+  $('actM').classList.add('open');
+}
+function memberKey(n) { return Object.keys(allowed).filter(function (k) { return allowed[k] === n; })[0]; }
+function moreFor(kind, item) {
+  var who = item.n, opts = [];
+  if (who === me.name) return;
+  if (me.role !== 'host') opts.push({ t: '🚩 Segnala a ' + (names[0] || 'chi ha creato il cerchio'), f: function () { report(kind, item); } });
+  if (me.role === 'host') opts.push({ t: kind === 'reel' ? '🗑 Elimina questo Reel' : '🗑 Elimina questo messaggio', red: true, f: function () { if (kind === 'reel') delReel(item.id); else ask('Eliminare il messaggio?', 'Sparisce per tutto il cerchio.', 'Elimina', true).then(function (y) { if (y) delMsg(item.id, true); }); } });
+  opts.push({ t: '🔇 Silenzia ' + who, f: function () { mute(who); } });
+  if (me.role === 'host' && memberKey(who)) opts.push({ t: '🚫 Togli ' + who + ' dal cerchio', red: true, f: function () { ask('Togliere ' + who + '?', who + ' non vedrà più i nuovi Reel, piani e messaggi del cerchio.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(memberKey(who)); }); } });
+  sheet(kind === 'reel' ? 'Reel di ' + who : 'Messaggio di ' + who, '', opts);
+}
+function report(kind, item) {
+  sheet('Perché lo segnali?', 'La segnalazione arriva solo a chi ha creato il cerchio, che può eliminarlo o togliere la persona.', ['Offensivo o violento', 'Contenuto sessuale', 'Spam o truffa', 'Altro'].map(function (why) {
+    return { t: why, f: function () { sendEv({ t: 'rep', k: kind, id: item.id, why: why, who: item.n, n: me.name }); ask('Segnalazione inviata ✓', 'Grazie. Se vuoi non vederlo più, puoi anche silenziare ' + item.n + '.', 'Ok'); } };
+  }));
+}
+function addReport(d, from) {
+  if (!d || typeof d.id !== 'string' || (d.k !== 'reel' && d.k !== 'msg')) return;
+  if (reps.some(function (x) { return x.id === d.id && x.from === from; })) return;
+  reps.push({ k: d.k, id: d.id.slice(0, 40), why: clean(d.why, 40), who: clean(d.who, 30), from: from, ts: Date.now() }); if (reps.length > 50) reps.shift(); put('reps', reps);
+  $('mh').textContent = '🚩 ' + from + ' ha segnalato ' + (d.k === 'reel' ? 'un Reel' : 'un messaggio') + '. Guarda in Cerchio.';
+  try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
+  if (tab === 'circle') renderCircle();
+}
+function renderReports() {
+  var c = $('repC'), l = $('repL'); l.textContent = '';
+  c.hidden = me.role !== 'host' || !reps.length; if (c.hidden) return;
+  reps.slice().reverse().forEach(function (x) {
+    var box = el('div', 'inv2'); box.style.flexDirection = 'column'; box.style.alignItems = 'stretch'; box.style.margin = '0 0 8px';
+    box.appendChild(el('span', null, x.from + ' ha segnalato ' + (x.k === 'reel' ? 'un Reel' : 'un messaggio') + ' di ' + x.who + ': “' + x.why + '”'));
+    var row = el('div', 'duo'); row.style.margin = '0';
+    function done() { reps = reps.filter(function (y) { return y !== x; }); put('reps', reps); renderCircle(); }
+    if (x.k === 'reel' && find(x.id)) { var v = el('button', 'btn-o', 'Vedi'); v.onclick = function () { showPane('main'); goReel(x.id); }; row.appendChild(v); }
+    var del = el('button', 'btn-o danger', 'Elimina'); del.onclick = function () { if (x.k === 'reel') { if (dropReel(x.id)) cast({ t: 'rdel', id: x.id }); } else delMsg(x.id, true); done(); }; row.appendChild(del);
+    var ig = el('button', 'btn-o', 'Ignora'); ig.onclick = done; row.appendChild(ig);
+    box.appendChild(row); l.appendChild(box);
+  });
+}
+function mute(n) { if (!isMuted(n)) { muted.push(n); put('muted', muted); } render(); renderChat(); seqLabel(); ask(n + ' è silenziato', 'Non vedrai più i suoi Reel e messaggi su questo telefono. Puoi riattivarlo in Cerchio.', 'Ok'); }
+function unmute(n) { muted = muted.filter(function (x) { return x !== n; }); put('muted', muted); render(); renderChat(); seqLabel(); renderCircle(); }
+function renderMuted() {
+  var c = $('mutC'), l = $('mutL'); l.textContent = ''; c.hidden = !muted.length;
+  muted.forEach(function (n) { var r = el('div', 'mrow'), s = el('span'); s.appendChild(avatar(n)); s.appendChild(document.createTextNode(n)); r.appendChild(s); var b = el('button', 'btn-o', 'Riattiva'); b.onclick = function () { unmute(n); }; r.appendChild(b); l.appendChild(r); });
+}
+function delMsg(id, spread) {
+  var before = msgs.length; msgs = msgs.filter(function (m) { return m.id !== id; }); if (msgs.length === before) return false;
+  put('msgs', msgs); renderChat(); if (spread) { if (me.role === 'host') cast({ t: 'mdel', id: id }); else sendEv({ t: 'mdel', id: id }); } return true;
+}
 function canDel(r) { return me.role === 'host' || r.n === me.name; }
 function dropReel(id) {
   var r = find(id); if (gone.indexOf(id) < 0) { gone.push(id); if (gone.length > 300) gone.shift(); put('gone', gone); }
@@ -617,7 +839,8 @@ function refresh(r) {
   });
   var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; }; nd.bar.appendChild(cb);
-  if (canDel(r)) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { delReel(r.id); }; nd.bar.appendChild(xb); }
+  if (r.n !== me.name) { var mb = el('button', 'r-btn', '⋯'); mb.setAttribute('aria-label', 'Altre azioni'); mb.onclick = function () { moreFor('reel', r); }; nd.bar.appendChild(mb); }
+  if (r.n === me.name) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { delReel(r.id); }; nd.bar.appendChild(xb); }
   var has = ideas.some(function (i) { return i.r === r.id; });
   var ib = el('button', 'r-btn plan', has ? '✓ Piano' : '✨ Piano'); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
   nd.list.textContent = '';
@@ -633,7 +856,7 @@ function render() {
   syncComp();
   var box = $('feed'); box.textContent = ''; nodes = {};
   if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\nCopia il link di un Reel da Instagram, TikTok o YouTube, poi tocca il pulsante dorato “Incolla” qui sotto.')); return; }
-  feed.forEach(function (r) { box.appendChild(build(r)); });
+  feed.forEach(function (r) { if (!isMuted(r.n)) box.appendChild(build(r)); });
   box.scrollTop = box.scrollHeight;
 }
 function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.clientHeight < 80; }
@@ -654,6 +877,7 @@ function addReel(r, mine) {
   if (feed.length > 200) { var g = feed.shift(); delete nodes[g.id]; }
   put('feed', feed); syncComp();
   var box = $('feed'); if (box.querySelector('.empty')) box.textContent = '';
+  if (isMuted(n.n)) { seqLabel(); return true; }
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
   else { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; }
@@ -697,8 +921,9 @@ $('nw').addEventListener('click', function () { var b = $('feed'); b.scrollTo({ 
 $('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unseen = 0; $('nw').hidden = true; } });
 /* ---- sequenza: i Reel di ogni piattaforma, uno dopo l'altro ---- */
 var seq = null, seen = get('seen', {}), timer = null;
-function newCount() { return feed.filter(function (r) { return !seen[r.id]; }).length; }
+function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n); }).length; }
 function seqLabel() {
+  appBadge();
   var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length;
   b.textContent = n ? '▶  Guarda ' + n + (n === 1 ? ' nuovo' : ' nuovi') : '▶  Rivedi tutti';
 }
@@ -724,8 +949,9 @@ function showAt(i) {
   if (m.tagName === 'IFRAME' && /youtube\.com\/embed/.test(m.src)) m.addEventListener('load', function () { try { m.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
 }
 function openSeq() {
-  var q = feed.filter(function (r) { return !seen[r.id]; }).map(function (r) { return r.id; });
-  if (!q.length) q = feed.map(function (r) { return r.id; });
+  var vis = feed.filter(function (r) { return !isMuted(r.n); });
+  var q = vis.filter(function (r) { return !seen[r.id]; }).map(function (r) { return r.id; });
+  if (!q.length) q = vis.map(function (r) { return r.id; });
   seq = { q: q, i: 0, cur: null };
   showPane('pl'); showAt(0);
 }
@@ -812,6 +1038,7 @@ function links(t) {
   return out;
 }
 function postAll(t, c) {
+  if (tryDev(t)) return 0;
   var L = links(t);
   if (!L.length && skippedInv) {
     var jm = /#j=([\w-]{8,100})/.exec(String(t || ''));
@@ -842,7 +1069,7 @@ function post(u, c) {
 
 /* ---- stato ---- */
 function status() {
-  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'group' ? 'Il tuo gruppo da 3' : 'Il tuo cerchio di coppia') : 'Cerchio di ' + (names[0] || 'gruppo');
+  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo gruppo grande' : me.kind === 'group' ? 'Il tuo gruppo da 3' : 'Il tuo cerchio di coppia') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
   $('bd').textContent = live ? 'Collegato' : (me.role === 'host' ? 'In attesa di ospiti' : 'Non collegato');
@@ -861,7 +1088,7 @@ function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }
 
 /* ---- io al centro ---- */
 var allowed = get('allowed', {}), hostTries = 0;
-function cap() { return me && me.kind === 'group' ? 2 : 1; }
+function cap() { return !me ? 1 : me.kind === 'big' ? BIG_MAX - 1 : me.kind === 'group' ? 2 : 1; }
 var circMax = 0;
 function startHost() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
@@ -904,6 +1131,10 @@ function startHost() {
       } else if (d.t === 'idea' && c.ok) {
         var im = applyIdea(d, c.name);
         if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
+      } else if (d.t === 'rep' && c.ok) { addReport(d, c.name);
+      } else if (d.t === 'mdel' && c.ok && typeof d.id === 'string') {
+        var om = msgs.filter(function (m) { return m.id === d.id; })[0];
+        if (om && om.n === c.name && delMsg(d.id, false)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'mdel', id: d.id }); });
       } else if (d.t === 'msg' && c.ok) {
         var mm = addMsg(d.m, c.name);
         if (mm) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'msg', m: mm }); });
@@ -923,7 +1154,7 @@ function hex(b) { return Array.from(new Uint8Array(b)).map(function (x) { return
 function idOf(k) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode('loopix-id:' + k)).then(function (h) { return hex(h).slice(0, 24); }); }
 function hmac(k, m) { return crypto.subtle.importKey('raw', new TextEncoder().encode(k), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']).then(function (key) { return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(m)); }).then(hex); }
 function keyOfId(id) { var ks = Object.keys(allowed); return Promise.all(ks.map(idOf)).then(function (ids) { var i = ids.indexOf(String(id)); return i >= 0 ? ks[i] : null; }); }
-var INV_MS = 60 * 60 * 1000; // un invito vale 1 ora
+var INV_MS = 10 * 60 * 1000; // un invito vale 10 minuti
 function codesNow() { var cs = get('codes', []), now = Date.now(), ch = false; cs = cs.map(function (x) { if (typeof x === 'string') { ch = true; return { c: x, ts: now }; } return x; }).filter(function (x) { return x && x.c && now - x.ts < INV_MS; }); if (ch) put('codes', cs); return cs; }
 function validCode(code) { return codesNow().some(function (x) { return x.c === code; }); }
 function hostHi(c, d) {
@@ -948,7 +1179,7 @@ function hostHi(c, d) {
           return;
         }
         if (code && validCode(code)) { accept(); return; }
-        try { c.send({ t: 'wait', why: (code ? 'Il tuo invito è scaduto (vale 1 ora). ' : '') + 'Aspetta un attimo: ' + me.name + ' deve accettarti.' }); } catch (e) {}
+        try { c.send({ t: 'wait', why: (code ? 'Il tuo invito è scaduto (vale 10 minuti). ' : '') + 'Aspetta un attimo: ' + me.name + ' deve accettarti.' }); } catch (e) {}
         try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
         ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
           if (!c.open) return;
@@ -960,18 +1191,18 @@ function hostHi(c, d) {
 function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 1 ora.\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
+  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
 }
 function invite() {
   if (me.role !== 'host') return;
   if (Object.keys(allowed).length >= cap()) {
-    var grp = me.kind === 'group';
+    var grp = me.kind === 'group' || me.kind === 'big';
     ask(grp ? 'Questo gruppo è al completo' : 'Il cerchio di coppia è già completo', grp ? 'Ti preparo un nuovo gruppo da 3 e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un gruppo da 3, separato dalla coppia, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
     return;
   }
   var left = cap() - Object.keys(allowed).length;
-  $('invT').textContent = 'Invita ' + (me.kind === 'group' ? 'qualcuno nel gruppo' : 'la tua persona');
-  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 1 ora.';
+  $('invT').textContent = 'Invita ' + (me.kind === 'group' || me.kind === 'big' ? 'qualcuno nel gruppo' : 'la tua persona');
+  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 10 minuti.';
   $('invH').textContent = ''; $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
@@ -1009,6 +1240,7 @@ function startGuest() {
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'msg') addMsg(d.m);
+      else if (d.t === 'mdel' && typeof d.id === 'string') delMsg(d.id, false);
       else if (d.t === 'wait') $('mh').textContent = clean(d.why, 180);
       else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
@@ -1042,16 +1274,20 @@ function showPane(id) {
   if (id === 'style') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;
-function chatTab() { $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
+function appBadge() {
+  try { var n = (typeof newCount === 'function' ? newCount() : 0) + (chatSeen || 0); if (!navigator.setAppBadge) return; if (n > 0) navigator.setAppBadge(n).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); } catch (e) {}
+}
+function chatTab() { appBadge(); $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
 function msgNode(m) {
   var d = el('div', 'msg' + (m.n === me.name ? ' me' : ''));
-  if (m.n !== me.name) d.appendChild(el('span', 'mn', m.n));
+  if (m.n === me.name) { d.style.cursor = 'pointer'; d.onclick = function () { sheet('Il tuo messaggio', '', [{ t: '🗑 Elimina per tutti', red: true, f: function () { delMsg(m.id, true); } }]); }; }
+  if (m.n !== me.name) { d.appendChild(el('span', 'mn', m.n)); d.style.cursor = 'pointer'; d.title = 'Tocca per segnalare o silenziare'; d.onclick = function () { moreFor('msg', m); }; }
   d.appendChild(document.createTextNode(m.t)); d.appendChild(el('time', null, ago(m.ts))); return d;
 }
 function renderChat() {
   var b = $('clog'); b.textContent = '';
   if (!msgs.length) { b.appendChild(el('div', 'empty', 'Nessun messaggio ancora.\n\nScrivetevi qui: lo legge solo chi è nel cerchio.')); return; }
-  msgs.forEach(function (m) { b.appendChild(msgNode(m)); }); b.scrollTop = b.scrollHeight;
+  msgs.forEach(function (m) { if (!isMuted(m.n)) b.appendChild(msgNode(m)); }); b.scrollTop = b.scrollHeight;
 }
 function addMsg(m, who) {
   if (!m || typeof m.id !== 'string' || m.id.length > 30) return null;
@@ -1059,6 +1295,7 @@ function addMsg(m, who) {
   if (msgs.some(function (x) { return x.id === m.id; })) return null;
   var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now() };
   msgs.push(n); if (msgs.length > 300) msgs.shift(); put('msgs', msgs);
+  if (isMuted(n.n)) return n;
   if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; }
   else if (n.n !== me.name) { chatSeen++; chatTab(); }
   return n;
@@ -1196,6 +1433,7 @@ function removeMember(k) {
   cast({ t: 'people', people: people() }); status(); renderCircle();
 }
 function renderCircles() {
+  $('devC').hidden = !isDev; $('newC').hidden = !canCreateAny();
   var b = $('clist'); b.textContent = '';
   REG.list.forEach(function (x) {
     var r = el('div', 'mrow'), on = x.id === REG.active, s = el('span', null, (x.label || 'Cerchio') + (on ? ' · aperto' : '')); r.appendChild(s);
@@ -1205,7 +1443,7 @@ function renderCircles() {
   if (REG.list.length > 1) b.appendChild(el('p', null, 'Un cerchio alla volta resta collegato: per ricevere i Reel di un altro cerchio, aprilo da qui.'));
 }
 function renderCircle() {
-  renderCircles();
+  renderCircles(); renderReports(); renderMuted();
   var m = $('mlist'); m.textContent = '';
   function row(t, on, rm) {
     var r = el('div', 'mrow'), s = el('span'); s.appendChild(avatar(t)); s.appendChild(document.createTextNode(t)); s.appendChild(el('i', 'dot' + (on ? ' on' : ''))); r.appendChild(s);
@@ -1270,9 +1508,10 @@ function renderStyle() {
   var md = get('mode', 'auto');
   document.querySelectorAll('#modeB button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.m === md)); });
   $('modeP').textContent = md === 'auto' ? 'Chiaro di giorno, scuro dalle 19 alle 7. Cambia da solo.' : md === 'light' ? 'Sempre chiaro.' : 'Sempre scuro, riposante per gli occhi la sera.';
-  $('pinS').textContent = pinRec ? 'Attivo: Loopix chiede il PIN quando la apri e quando torni dopo 30 secondi. Il blocco nasconde lo schermo, non cifra i dati.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
+  $('pinS').textContent = pinRec ? 'Attivo: Loopix chiede il PIN quando la apri e quando torni dopo 30 secondi. I dati salvati su questo telefono sono cifrati: senza PIN non si leggono.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
   $('pinB').textContent = pinRec ? 'Cambia PIN' : 'Imposta un PIN';
   $('pinR').hidden = !pinRec;
+  if (window.lxVault) lxVault.bioSupported().then(function (ok) { $('bioBox').hidden = !(ok && pinRec && lxVault.on()); $('bioT').checked = lxVault.bioOn(); });
 }
 
 /* ---- PIN ---- */
@@ -1282,7 +1521,7 @@ async function hashPin(pin, salt) {
   var b = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 150000, hash: 'SHA-256' }, k, 256);
   return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
 }
-function showLock() { if (!pinRec) return; $('lockIn').value = ''; $('lockH').textContent = ''; $('lock').classList.add('open'); setTimeout(function () { $('lockIn').focus(); }, 50); }
+function showLock() { if (!pinRec) return; $('lockIn').value = ''; $('lockH').textContent = ''; var b = !!(window.lxVault && lxVault.bioOn()); $('lockBio').hidden = !b; $('lock').classList.add('open'); if (!b) setTimeout(function () { $('lockIn').focus(); }, 50); }
 async function tryUnlock() {
   var v = $('lockIn').value;
   if (!v) { $('lockH').textContent = 'Inserisci il PIN.'; return; }
@@ -1302,9 +1541,11 @@ async function savePin() {
     if (!/^\d{4,8}$/.test(a)) { $('pH').textContent = 'Il PIN deve avere da 4 a 8 cifre.'; return; }
     if (a !== $('p2').value) { $('pH').textContent = 'I due PIN non coincidono.'; return; }
     var s = uid(16); pinRec = { s: s, h: await hashPin(a, s) }; put('pin', pinRec);
+    try { if (window.lxVault) { if (lxVault.on()) await lxVault.rekey(a); else await lxVault.enable(a); } } catch (e) { $('pH').textContent = 'PIN salvato, ma non sono riuscito a cifrare i dati.'; return; }
   } else {
     if (!pinRec || await hashPin(a, pinRec.s) !== pinRec.h) { $('pH').textContent = 'PIN errato.'; $('p1').value = ''; return; }
     pinRec = null; try { localStorage.removeItem(LSG + 'pin'); } catch (e) {}
+    try { if (window.lxVault && lxVault.on()) await lxVault.disable(); } catch (e) {}
   }
   $('pinm').classList.remove('open'); renderStyle();
 }
@@ -1313,21 +1554,21 @@ function guide(force) {
   put('guided', 1);
   var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
   (host ? [
-    'Tocca “Invita” e manda il link a chi vuoi (fino a 3 persone). Quando chiede di entrare, tocca OK.',
+    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 10 minuti). Tieni Loopix aperta mentre entra.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ] : [
-    'Entri da solo: in alto comparirà “Collegato”. Chi ti ha invitato deve avere Loopix aperta.',
+    'Sei dentro! In alto vedi “Collegato” quando chi ti ha invitato ha Loopix aperta.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
-  ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
+  ]).concat(['Scrivetevi in “Messaggi”, e in Cerchio salva una copia di sicurezza: se cambi telefono ritrovi tutto.']).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
   $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene';
   $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (host) invite(); };
   $('gd').classList.add('open');
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
 function wipe() {
-  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone', 'msgs', 'codes'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
+  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone', 'msgs', 'codes', 'muted', 'reps'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
   if (REG.list.length > 1) { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.list[0].id; regSet(REG); }
   else { try { localStorage.removeItem(LSG + 'pin'); } catch (e) {} }
   location.reload();
@@ -1337,24 +1578,45 @@ function wipe() {
 function begin() {
   if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
   showPane('main'); render(); status(); seqLabel();
-  if (pinRec) showLock(); else guide(false);
+  if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
 function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,100})/.exec(v) || /^([\w-]{8,100})$/.exec(v); return m ? m[1] : null; }
 var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia'; }) ? 'group' : 'couple';
-function paintKind() { $('kC').setAttribute('aria-pressed', kindSel === 'couple'); $('kG').setAttribute('aria-pressed', kindSel === 'group'); $('sP').textContent = kindSel === 'group' ? 'Tu e altre 2 persone, in privato.' : 'Tu e una persona, in privato.'; }
+function paintKind() {
+  ['couple', 'group', 'big'].forEach(function (k) { var b = $(k === 'couple' ? 'kC' : k === 'group' ? 'kG' : 'kB'); b.setAttribute('aria-pressed', kindSel === k); b.hidden = !canCreate(k) || (k === 'big' && !isDev); });
+  if (!canCreate(kindSel)) kindSel = ['couple', 'group', 'big'].filter(canCreate)[0] || kindSel;
+  ['couple', 'group', 'big'].forEach(function (k) { $(k === 'couple' ? 'kC' : k === 'group' ? 'kG' : 'kB').setAttribute('aria-pressed', kindSel === k); });
+  $('sP').textContent = kindSel === 'big' ? 'Tu e fino a ' + (BIG_MAX - 1) + ' persone, in privato.' : kindSel === 'group' ? 'Tu e altre 2 persone, in privato.' : 'Tu e una persona, in privato.';
+}
 $('kC').onclick = function () { kindSel = 'couple'; paintKind(); };
 $('kG').onclick = function () { kindSel = 'group'; paintKind(); };
-function syncKind() { var j = !!pastedId() || !!joinId; $('kindBox').hidden = j; if (!j) paintKind(); }
-$('ic').addEventListener('input', function () { $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; syncKind(); });
+$('kB').onclick = function () { kindSel = 'big'; paintKind(); };
+function syncKind() {
+  var j = !!pastedId() || !!joinId, any = canCreateAny();
+  $('kindBox').hidden = j || !any;
+  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo da 3' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
+  if (!j && !any) { $('sT').textContent = 'Loopix è su invito'; $('sP').textContent = 'Per ora si entra solo con un invito. Apri il link che ti hanno mandato, oppure incollalo qui sotto.'; $('go').textContent = 'Entra con l’invito'; }
+}
+$('icPaste').addEventListener('click', async function () {
+  try {
+    var t = await navigator.clipboard.readText();
+    if (tryDev(t)) return;
+    var m = /#j=([\w-]{8,100})/.exec(t || '');
+    if (!m) { $('sH').textContent = 'Non trovo un invito tra le cose copiate. In WhatsApp tieni premuto il messaggio d’invito, tocca “Copia”, poi riprova.'; return; }
+    location.hash = '#j=' + m[1]; location.reload();
+  } catch (e) { $('ic').focus(); $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; }
+});
+$('ic').addEventListener('input', function () { if (tryDev($('ic').value)) { $('ic').value = ''; return; } $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; syncKind(); });
 $('sCancel').onclick = function () { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.prev && REG.list.some(function (x) { return x.id === REG.prev; }) ? REG.prev : REG.list[0].id; delete REG.prev; delete REG.after; delete REG.nm; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); };
 $('go').addEventListener('click', function () {
   var n = clean($('nm').value, 30);
   if (!n) { $('sH').textContent = 'Scrivi il tuo nome.'; return; }
   var jid = joinId || pastedId();
   if (!joinId && $('ic').value.trim() && !jid) { $('sH').textContent = 'Il link di invito non sembra giusto.'; return; }
+  if (!jid && !canCreate(kindSel)) { $('sH').textContent = 'Per entrare serve un invito: incolla qui sopra il link che ti hanno mandato.'; return; }
   me = jid ? { name: n, role: 'guest', hostId: jid.split('_')[0], code: jid.split('_')[1] || '', tok: /^[\w]{8,40}$/.test(jid.split('_')[2] || '') ? jid.split('_')[2] : uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12), kind: kindSel };
   track(jid ? 'richiesta-ingresso' : 'cerchio-creato');
   if (jid && me.role === 'guest') {
@@ -1372,7 +1634,7 @@ $('paste').addEventListener('click', async function () {
   catch (e) { if (!$('main').classList.contains('show')) showPane('main'); compOpen = true; syncComp(); $('ru').focus(); $('mh').textContent = 'Il telefono non mi lascia leggere il link: tieni premuto nel campo qui sopra e scegli “Incolla”.'; }
 });
 $('out').addEventListener('click', function () {
-  ask('Uscire dal cerchio?', 'Reel, piani e impostazioni salvati su questo telefono verranno cancellati.', 'Esci e cancella', true).then(function (y) { if (y) wipe(); });
+  ask('Uscire da questo cerchio?', 'Reel, piani e messaggi di questo cerchio verranno cancellati da questo telefono. Gli altri tuoi cerchi restano. Se vuoi tenerli, prima salva una copia di sicurezza (qui sotto).', 'Esci e cancella', true).then(function (y) { if (y) wipe(); });
 });
 
 $('ps').value = get('speed', '0'); if (!$('ps').value) $('ps').value = '0';
@@ -1391,9 +1653,28 @@ $('ij').addEventListener('click', function () { if (pending) { var id = pending.
 $('p3').addEventListener('click', function () { sendNow({ t: 'ses', a: 'ready', n: me.name }); countdown(); });
 $('lsend').addEventListener('click', function () { var v = clean($('li').value, 300); if (v && party) { comment(party.id, v); $('li').value = ''; } });
 $('li').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('lsend').click(); });
-var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone && !get('ios', 0);
-$('ios').hidden = !ios;
-$('ix').addEventListener('click', function () { $('ios').hidden = true; put('ios', 1); });
+var isStandalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent), isAndroid = /android/i.test(navigator.userAgent);
+var inBrowser = (isIOS || isAndroid) && !isStandalone;
+var seenBanner = false; try { seenBanner = sessionStorage.getItem('lx-banner') === '1'; } catch (e) {}
+if (inBrowser) {
+  $('ios').querySelector('span').innerHTML = isIOS
+    ? '⚠️ <b>Stai usando Loopix in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
+    : '⚠️ <b>Stai usando Loopix nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
+}
+$('ios').hidden = !inBrowser || seenBanner;
+$('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
+$('haveInv').addEventListener('click', async function () {
+  var t = '';
+  try { t = await navigator.clipboard.readText(); } catch (e) { $('ic').focus(); $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; return; }
+  if (tryDev(t)) return;
+  var m = /#j=([\w-]{8,100})/.exec(t || '');
+  if (!m) { $('sH').textContent = 'Non trovo un invito copiato. In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi torna qui e riprova.'; return; }
+  $('ic').value = location.origin + location.pathname + '#j=' + m[1];
+  $('ic').dispatchEvent(new Event('input'));
+  $('sH').textContent = 'Invito trovato ✓ Scrivi il tuo nome e tocca il bottone.';
+  if (clean($('nm').value, 30)) $('go').click(); else $('nm').focus();
+});
 ['inf', 'inf2'].forEach(function (i) { $(i).addEventListener('click', function () { $('im').classList.add('open'); }); });
 $('imc').addEventListener('click', function () { $('im').classList.remove('open'); });
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
@@ -1402,12 +1683,28 @@ $('iok').addEventListener('click', saveIdea);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
+$('bug').addEventListener('click', openBug);
+$('bugX').addEventListener('click', function () { $('bugM').classList.remove('open'); });
+$('bugWA').addEventListener('click', function () { window.open('https://wa.me/?text=' + encodeURIComponent(bugText()), '_blank'); $('bugH').textContent = 'Si è aperto WhatsApp: mandalo a chi ti ha invitato (o a chi gestisce Loopix).'; });
+$('bugCp').addEventListener('click', function () { var t = bugText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('bugH').textContent = 'Copiato ✓ Incollalo in un messaggio.'; }, function () { $('bugH').textContent = t; }); else $('bugH').textContent = t; });
+$('bkS').addEventListener('click', function () { bkSave().catch(function () { $('bkH').textContent = 'Non sono riuscito a creare la copia.'; }); });
+function pickBackup() { $('bkF').value = ''; $('bkF').click(); }
+$('bkR').addEventListener('click', pickBackup); $('bkR2').addEventListener('click', pickBackup);
+$('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if (!f) return; if (f.size > 20e6) { ask('File troppo grande', 'Questo non sembra una copia di Loopix.', 'Ho capito'); return; } f.text().then(bkRestore); });
 $('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
 $('goStyle').addEventListener('click', function () { showPane('style'); });
-$('newC').addEventListener('click', function () { ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano. Potrai scegliere se è di coppia o un gruppo da 3.', 'Continua').then(function (y) { if (y) newCircle(); }); });
+$('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { try { localStorage.removeItem(LSG + 'dev'); } catch (e) {} isDev = false; applyDev(); } }); });
+$('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
+$('bioT').addEventListener('change', function () {
+  var on = $('bioT').checked; $('bioH').textContent = '';
+  if (on) lxVault.bioEnable(me && me.name).then(function () { $('bioH').textContent = 'Fatto ✓ Alla prossima apertura basta il tuo volto o la tua impronta. Il PIN resta come riserva.'; })
+    .catch(function (e) { $('bioT').checked = false; $('bioH').textContent = e && e.message === 'noprf' ? 'Questo telefono non permette di usare Face ID/impronta per aprire i dati. Serve iOS 18 o più recente (su Android: Chrome aggiornato). Il PIN funziona come sempre.' : 'Non attivato. Puoi riprovare quando vuoi.'; });
+  else lxVault.bioDisable().then(function () { $('bioH').textContent = 'Disattivato: Loopix chiederà solo il PIN.'; });
+});
+$('lockBio').addEventListener('click', function () { if (!window.__lxBootUnlocked && !$('lock').classList.contains('open')) return; if (!lxVault.bioOn()) return; lxVault.bioCheck().then(function () { $('lock').classList.remove('open'); $('lockIn').value = ''; }).catch(function () { $('lockH').textContent = 'Non riconosciuto. Riprova o usa il PIN.'; }); });
 $('pinR').addEventListener('click', function () { openPin('remove'); });
 $('pOk').addEventListener('click', savePin);
 $('p2').addEventListener('keydown', function (e) { if (e.key === 'Enter') savePin(); });
@@ -1415,7 +1712,7 @@ $('p1').addEventListener('keydown', function (e) { if (e.key === 'Enter' && pinM
 $('pNo').addEventListener('click', function () { $('pinm').classList.remove('open'); });
 $('lockGo').addEventListener('click', tryUnlock);
 $('lockIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
-$('lockF').addEventListener('click', function () { if (window.confirm('Senza PIN l’unico modo è cancellare Loopix da questo telefono (Reel, idee e cerchio). Procedere?')) wipe(); });
+$('lockF').addEventListener('click', function () { if (window.__lxBootUnlocked === undefined && !pinRec) return; if (window.confirm('Senza PIN l’unico modo è cancellare Loopix da questo telefono (Reel, piani, messaggi e cerchi). Se hai una copia di sicurezza potrai ripristinarla. Procedere?')) { if (window.lxVault && lxVault.on()) { lxVault.destroy(); location.reload(); } else wipe(); } });
 document.addEventListener('visibilitychange', function () {
   if (!pinRec || !me) return;
   if (document.hidden) hidAt = Date.now();
@@ -1454,6 +1751,7 @@ $('ru').addEventListener('input', function () { $('rc').hidden = !$('ru').value.
 $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add').click(); });
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
 startStats();
+checkDev(get('dev', '')).then(function (ok) { isDev = ok; applyDev(); });
 function circleOfHost(h) {
   for (var i = 0; i < REG.list.length; i++) { try { var m = JSON.parse(localStorage.getItem(lsOf(REG.list[i].id) + 'me')); if (m && m.hostId === h) return REG.list[i].id; } catch (e) {} }
   return null;
@@ -1467,7 +1765,7 @@ if (joinId) {
 if (me && !joinId) begin();
 else {
   if (joinId) {
-    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
+    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true; $('icPaste').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
       $('ios').hidden = true;
@@ -1483,6 +1781,152 @@ else {
   syncKind(); showPane('setup');
 }
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
+</script>
+<script>
+/* ---- Cassaforte: con il PIN attivo, i dati di Loopix sono salvati cifrati.
+   Una chiave dati casuale cifra tutto; la chiave dati è chiusa due volte: con il PIN e (se attivo) con Face ID / impronta. ---- */
+(function () {
+  var VK = 'loopixvault', LS = window.localStorage, P = Storage.prototype;
+  var oGet = P.getItem, oSet = P.setItem, oDel = P.removeItem;
+  var mem = null, dk = null, dkRaw = null, wraps = null, timer = null;
+  function isV(k) { return typeof k === 'string' && (k.indexOf('loopix3:') === 0 || k === 'loopixreg'); }
+  function enc(t) { return new TextEncoder().encode(t); }
+  function b64e(a) { var s = ''; a = new Uint8Array(a); for (var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); }
+  function b64d(t) { var b = atob(t), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+  function rnd(n) { return crypto.getRandomValues(new Uint8Array(n)); }
+  function pinKey(pin, salt) {
+    return crypto.subtle.importKey('raw', enc(pin), 'PBKDF2', false, ['deriveKey']).then(function (k) {
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 310000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    });
+  }
+  function aesKey(raw) { return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']); }
+  function wrapWith(kek) { var iv = rnd(12); return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, kek, dkRaw).then(function (c) { return { iv: b64e(iv), c: b64e(c) }; }); }
+  function unwrapWith(kek, w) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(w.iv) }, kek, b64d(w.c)); }
+  function setDK(raw) { dkRaw = new Uint8Array(raw); return aesKey(dkRaw).then(function (k) { dk = k; }); }
+  function patch() {
+    P.getItem = function (k) { if (mem && this === LS && isV(k)) return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; return oGet.apply(this, arguments); };
+    P.setItem = function (k, v) { if (mem && this === LS && isV(k)) { mem[k] = String(v); later(); return; } return oSet.apply(this, arguments); };
+    P.removeItem = function (k) { if (mem && this === LS && isV(k)) { delete mem[k]; later(); return; } return oDel.apply(this, arguments); };
+  }
+  function unpatch() { P.getItem = oGet; P.setItem = oSet; P.removeItem = oDel; }
+  function flush() {
+    clearTimeout(timer); if (!mem || !dk) return Promise.resolve();
+    var iv = rnd(12);
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, dk, enc(JSON.stringify(mem))).then(function (c) {
+      oSet.call(LS, VK, JSON.stringify({ v: 2, w: wraps, iv: b64e(iv), data: b64e(c) }));
+    });
+  }
+  function later() { clearTimeout(timer); timer = setTimeout(flush, 250); }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
+  window.addEventListener('pagehide', flush);
+  function plainKeys() { var out = []; for (var i = 0; i < LS.length; i++) { var k = LS.key(i); if (isV(k)) out.push(k); } return out; }
+  function openData(box) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(box.iv) }, dk, b64d(box.data)).then(function (pt) { mem = JSON.parse(new TextDecoder().decode(pt)); patch(); }); }
+  // ---- Face ID / impronta (passkey con estensione PRF) ----
+  function bioSupported() {
+    if (!window.PublicKeyCredential || !navigator.credentials || !PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) return Promise.resolve(false);
+    return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function () { return false; });
+  }
+  function prfGet(idB64, saltB64) {
+    return navigator.credentials.get({ publicKey: {
+      challenge: rnd(32), timeout: 60000, userVerification: 'required',
+      allowCredentials: [{ type: 'public-key', id: b64d(idB64), transports: ['internal', 'hybrid'] }],
+      extensions: { prf: { eval: { first: b64d(saltB64) } } }
+    } }).then(function (cred) {
+      var r = cred && cred.getClientExtensionResults && cred.getClientExtensionResults();
+      var out = r && r.prf && r.prf.results && r.prf.results.first;
+      if (!out) throw new Error('noprf');
+      return aesKey(new Uint8Array(out).slice(0, 32));
+    });
+  }
+  window.lxVault = {
+    on: function () { return !!oGet.call(LS, VK); },
+    enable: function (pin) {
+      var salt = rnd(16), raw = rnd(32);
+      return setDK(raw).then(function () { return pinKey(pin, salt); }).then(wrapWith).then(function (w) {
+        wraps = { p: { s: b64e(salt), iv: w.iv, c: w.c } };
+        var m = {}; plainKeys().forEach(function (x) { m[x] = oGet.call(LS, x); }); mem = m; patch();
+        return flush().then(function () { Object.keys(m).forEach(function (x) { oDel.call(LS, x); }); });
+      });
+    },
+    rekey: function (pin) {
+      var salt = rnd(16);
+      return pinKey(pin, salt).then(wrapWith).then(function (w) { wraps.p = { s: b64e(salt), iv: w.iv, c: w.c }; return flush(); });
+    },
+    disable: function () {
+      if (!mem) return Promise.resolve(); var m = mem; mem = null; dk = null; dkRaw = null; wraps = null; unpatch();
+      Object.keys(m).forEach(function (x) { oSet.call(LS, x, m[x]); }); oDel.call(LS, VK); return Promise.resolve();
+    },
+    destroy: function () { mem = null; dk = null; dkRaw = null; wraps = null; unpatch(); plainKeys().forEach(function (x) { oDel.call(LS, x); }); oDel.call(LS, VK); },
+    flush: flush,
+    bioSupported: bioSupported,
+    bioOn: function () { return !!(wraps && wraps.b); },
+    bioEnable: function (label) {
+      if (!dkRaw) return Promise.reject(new Error('nopin'));
+      var salt = rnd(32);
+      return navigator.credentials.create({ publicKey: {
+        rp: { name: 'Loopix' }, challenge: rnd(32), timeout: 60000,
+        user: { id: rnd(16), name: 'loopix-' + (label || 'utente'), displayName: 'Loopix · ' + (label || 'utente') },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', residentKey: 'preferred', userVerification: 'required' },
+        extensions: { prf: { eval: { first: salt } } }
+      } }).then(function (cred) {
+        var r = cred.getClientExtensionResults ? cred.getClientExtensionResults() : {};
+        if (!r.prf || r.prf.enabled === false) throw new Error('noprf');
+        var id = b64e(cred.rawId), first = r.prf.results && r.prf.results.first;
+        var keyP = first ? aesKey(new Uint8Array(first).slice(0, 32)) : prfGet(id, b64e(salt));
+        return keyP.then(wrapWith).then(function (w) { wraps.b = { id: id, s: b64e(salt), iv: w.iv, c: w.c }; return flush(); });
+      });
+    },
+    bioDisable: function () { if (wraps) delete wraps.b; return flush(); },
+    bioCheck: function () { // per lo sblocco al ritorno nell'app: verifica il volto/impronta aprendo davvero la chiave
+      if (!wraps || !wraps.b) return Promise.reject(new Error('off'));
+      return prfGet(wraps.b.id, wraps.b.s).then(function (k) { return unwrapWith(k, wraps.b); }).then(function () { return true; });
+    }
+  };
+  function runMain() { var sc = document.createElement('script'); sc.textContent = document.getElementById('mainjs').textContent; document.body.appendChild(sc); }
+  var raw = oGet.call(LS, VK);
+  if (!raw) { runMain(); return; }
+  var box; try { box = JSON.parse(raw); } catch (e) { box = null; }
+  var lk = document.getElementById('lock'), inp = document.getElementById('lockIn'), go = document.getElementById('lockGo'), hint = document.getElementById('lockH'), forgot = document.getElementById('lockF'), bioB = document.getElementById('lockBio');
+  lk.classList.add('open');
+  var hasBio = !!(box && box.v === 2 && box.w && box.w.b);
+  bioB.hidden = !hasBio;
+  if (!hasBio) setTimeout(function () { inp.focus(); }, 60);
+  function opened() {
+    go.onclick = null; inp.onkeydown = null; forgot.onclick = null; bioB.onclick = null; go.disabled = false;
+    inp.value = ''; hint.textContent = ''; lk.classList.remove('open'); window.__lxBootUnlocked = true; runMain();
+  }
+  function attempt() {
+    var pin = inp.value; if (!pin) { hint.textContent = 'Inserisci il PIN.'; return; }
+    hint.textContent = 'Apro…'; go.disabled = true;
+    var p;
+    if (box.v === 2) {
+      wraps = box.w;
+      p = pinKey(pin, b64d(wraps.p.s)).then(function (k) { return unwrapWith(k, wraps.p); }).then(setDK).then(function () { return openData(box); });
+    } else { // vecchio formato: il PIN cifrava direttamente i dati → passo al nuovo formato
+      p = pinKey(pin, b64d(box.salt)).then(function (k) {
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(box.iv) }, k, b64d(box.data)).then(function (pt) {
+          mem = JSON.parse(new TextDecoder().decode(pt)); patch();
+          var salt = rnd(16); return setDK(rnd(32)).then(function () { return pinKey(pin, salt); }).then(wrapWith).then(function (w) { wraps = { p: { s: b64e(salt), iv: w.iv, c: w.c } }; return flush(); });
+        });
+      });
+    }
+    p.then(opened).catch(function () { mem = null; unpatch(); go.disabled = false; inp.value = ''; hint.textContent = 'PIN errato.'; });
+  }
+  function bio() {
+    hint.textContent = '';
+    wraps = box.w;
+    prfGet(wraps.b.id, wraps.b.s).then(function (k) { return unwrapWith(k, wraps.b); }).then(setDK).then(function () { return openData(box); })
+      .then(opened).catch(function () { hint.textContent = 'Non riconosciuto. Riprova o usa il PIN.'; setTimeout(function () { inp.focus(); }, 60); });
+  }
+  go.onclick = attempt; inp.onkeydown = function (e) { if (e.key === 'Enter') attempt(); };
+  bioB.onclick = bio;
+  forgot.onclick = function () {
+    if (!window.confirm('Senza PIN i dati di Loopix su questo telefono non si possono aprire. Vuoi cancellarli e ripartire? (Se hai una copia di sicurezza, potrai ripristinarla.)')) return;
+    window.lxVault.destroy(); location.reload();
+  };
+  if (!box) { hint.textContent = 'Dati danneggiati.'; }
+})();
 </script>
 </body>
 </html>
