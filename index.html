@@ -105,6 +105,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .light .lbar{background:#fff;border-color:var(--s3)}
 #rc{margin:8px 0 0}
 .comp{padding-bottom:14px!important}
+.comp:has(#mbox[hidden]):has(.hint:empty){padding:0!important}
 #manual{background:none;border:0;color:var(--m);min-height:34px;padding:4px;font-weight:500;font-size:14px;text-decoration:underline;text-underline-offset:3px}
 
 /* lettore */
@@ -223,6 +224,18 @@ html.light body{background:radial-gradient(110% 50% at 50% -8%,#F1E2D4 0%,var(--
 [hidden]{display:none!important}
 button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2.5px solid var(--cy);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Reel a schermo quasi intero: video + una riga di bottoni sempre in vista */
+.item{height:100%;min-height:0;gap:8px;padding:8px 14px 10px}
+.item iframe,.item video,.item .mwrap,.item>.igcrop{min-height:0}
+.item .cm{flex:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:8px 12px;font-size:15px}
+.item .from{flex:none}
+.item .bar,#pr{flex:none;flex-wrap:nowrap;gap:5px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.item .bar::-webkit-scrollbar,#pr::-webkit-scrollbar{display:none}
+.item .bar .r-btn,#pr .r-btn{flex:none;padding:6px 8px;min-width:40px;min-height:42px;font-size:15px;justify-content:center}
+.item .bar .r-btn.plan,#pr .r-btn.plan{flex:1 0 auto;justify-content:center;font-size:15px}
+.item .cpanel{flex:none;max-height:34dvh;overflow-y:auto}
+.light .r-btn.plan{background:var(--gold);color:#fff;border:0}
 </style>
 </head>
 <body>
@@ -582,17 +595,20 @@ function refresh(r) {
     var b = el('button', 'r-btn' + (r.x && r.x[me.name] === e ? ' mine' : ''), e + (n ? ' ' + n : ''));
     b.setAttribute('aria-label', 'Reagisci ' + e); b.onclick = function () { react(r.id, e); }; nd.bar.appendChild(b);
   });
-  var has = ideas.some(function (i) { return i.r === r.id; });
-  var ib = el('button', 'r-btn plan', has ? '✓ Piano salvato' : 'Trasforma in piano'); ib.setAttribute('aria-label', 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
   var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; }; nd.bar.appendChild(cb);
   if (canDel(r)) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { delReel(r.id); }; nd.bar.appendChild(xb); }
+  var has = ideas.some(function (i) { return i.r === r.id; });
+  var ib = el('button', 'r-btn plan', has ? '✓ Piano' : '✨ Piano'); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
   nd.list.textContent = '';
   (r.k || []).forEach(function (c) { var l = el('div', 'cmt'); l.appendChild(el('b', null, c.n)); l.appendChild(document.createTextNode(' ' + c.t)); nd.list.appendChild(l); });
   if (seq && seq.cur === r.id) pbuild(r);
   if (party && party.id === r.id) { pbuild(r); lines(r); }
 }
+var compOpen = false;
+function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
 function render() {
+  syncComp();
   var box = $('feed'); box.textContent = ''; nodes = {};
   if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\nCopia il link di un Reel da Instagram, TikTok o YouTube, poi tocca il pulsante dorato “Incolla” qui sotto.')); return; }
   feed.forEach(function (r) { box.appendChild(build(r)); });
@@ -613,7 +629,7 @@ function addReel(r, mine) {
   feed.push(n);
   if (seq && !mine) seq.q.push(n.id);
   if (feed.length > 200) { var g = feed.shift(); delete nodes[g.id]; }
-  put('feed', feed);
+  put('feed', feed); syncComp();
   var box = $('feed'); if (box.querySelector('.empty')) box.textContent = '';
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
@@ -670,7 +686,7 @@ function pbuild(r) {
     var b = el('button', 'r-btn' + (r.x && r.x[me.name] === e ? ' mine' : ''), e + (n ? ' ' + n : ''));
     b.setAttribute('aria-label', 'Reagisci ' + e); b.onclick = function () { if (party) partyReact(r.id, e); else react(r.id, e); }; bar.appendChild(b);
   });
-  var ib = el('button', 'r-btn plan', 'Trasforma in piano'); ib.setAttribute('aria-label', 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; bar.appendChild(ib);
+  var ib = el('button', 'r-btn plan', '✨ Piano'); ib.setAttribute('aria-label', 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; bar.appendChild(ib);
 }
 function arm() { clearTimeout(timer); var sec = +$('ps').value; if (sec && seq && seq.cur) timer = setTimeout(function () { showAt(seq.i + 1); }, sec * 1000); }
 function showAt(i) {
@@ -1213,11 +1229,11 @@ $('go').addEventListener('click', function () {
 });
 $('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
 $('inv').addEventListener('click', invite);
-$('add').addEventListener('click', function () { if (postAll($('ru').value, $('rc').value)) { $('ru').value = ''; $('rc').value = ''; $('rc').hidden = true; } });
+$('add').addEventListener('click', function () { if (postAll($('ru').value, $('rc').value)) { $('ru').value = ''; $('rc').value = ''; $('rc').hidden = true; compOpen = false; syncComp(); } });
 $('paste').addEventListener('click', async function () {
   $('pb').hidden = true; if (!$('main').classList.contains('show')) showPane('main');
   try { postAll(await navigator.clipboard.readText(), ''); }
-  catch (e) { if (!$('main').classList.contains('show')) showPane('main'); $('ru').focus(); $('mh').textContent = 'Il telefono non mi lascia leggere il link: tieni premuto nel campo qui sopra e scegli “Incolla”.'; }
+  catch (e) { if (!$('main').classList.contains('show')) showPane('main'); compOpen = true; syncComp(); $('ru').focus(); $('mh').textContent = 'Il telefono non mi lascia leggere il link: tieni premuto nel campo qui sopra e scegli “Incolla”.'; }
 });
 $('out').addEventListener('click', function () {
   ask('Uscire dal cerchio?', 'Reel, piani e impostazioni salvati su questo telefono verranno cancellati.', 'Esci e cancella', true).then(function (y) { if (y) wipe(); });
