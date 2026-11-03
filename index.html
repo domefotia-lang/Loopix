@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Loopix</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -316,7 +317,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </section>
 
 <section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
-  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
   <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
@@ -878,34 +879,20 @@ function startHost() {
     c.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
       if (d.t === 'hi' && !c.ok && !c.asked) {
-        c.asked = true; var nm = clean(d.n, 30) || 'Ospite', k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
-        conns.filter(function (x) { return k && x.k === k; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} });
-        var known = k && allowed[k], code = typeof d.c === 'string' ? d.c.slice(0, 20) : '', codes = get('codes', []);
-        function refuse(why) { try { c.send({ t: 'no', why: why }); } catch (e) {} setTimeout(function () { try { c.close(); } catch (e) {} }, 400); }
-        function accept() {
-          if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
-          c.ok = true; c.name = nm; c.k = k; conns.push(c);
-          c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
-          $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
-        }
-        if (!known && code && codes.indexOf(code) >= 0) {
-          var same = Object.keys(allowed).filter(function (x) { return allowed[x].toLowerCase() === nm.toLowerCase(); })[0];
-          if (same) { delete allowed[same]; conns.filter(function (x) { return x.k === same; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} }); put('allowed', allowed); }
-        }
-        if (known) { accept(); return; }
-        if (Object.keys(allowed).length >= cap()) {
-          refuse('Questo invito era per un cerchio già completo. ' + me.name + ' ti sta mandando quello giusto: aprilo appena arriva.');
-          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del cerchio di coppia, che è già completo.') + ' Ti preparo il gruppo da 3 e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
+        c.asked = true;
+        if (typeof d.id === 'string' && !d.k) {
+          var nm0 = clean(d.n, 30) || 'Ospite', ng = String(d.ng || '').slice(0, 64);
+          keyOfId(d.id).then(function (kk) {
+            if (!kk) { try { c.send({ t: 'no', why: 'Non fai più parte di questo cerchio. Chiedi un nuovo invito.' }); } catch (e) {} setTimeout(function () { try { c.close(); } catch (e) {} }, 400); return; }
+            c.pk = kk; c.nh = uid(16); c.nm = nm0;
+            hmac(kk, 'h' + ng).then(function (ph) { c.send({ t: 'ch', nh: c.nh, ph: ph }); });
+          });
           return;
         }
-        if (code && codes.indexOf(code) >= 0) { accept(); return; }
-        try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
-        ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
-          if (!c.open) return;
-          if (!y) { refuse('Richiesta non accettata.'); return; }
-          if (Object.keys(allowed).length >= cap()) { refuse('Il cerchio è pieno.'); return; }
-          accept();
-        });
+        hostHi(c, d);
+      } else if (d.t === 'pr' && !c.ok && c.pk) {
+        var pk = c.pk; c.pk = null;
+        hmac(pk, 'g' + c.nh).then(function (pg) { if (pg === d.pg) hostHi(c, { n: c.nm, k: pk, c: '' }); else { try { c.close(); } catch (e) {} } });
       } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
         var m = applyEv(d, c.name);
         if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
@@ -931,10 +918,49 @@ function startHost() {
     c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); cast({ t: 'people', people: people() }); status(); });
   });
 }
-function link() { var cs = get('codes', []), c = uid(5); cs.push(c); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
+/* ---- sicurezza: identità verificata in entrambe le direzioni ---- */
+function hex(b) { return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
+function idOf(k) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode('loopix-id:' + k)).then(function (h) { return hex(h).slice(0, 24); }); }
+function hmac(k, m) { return crypto.subtle.importKey('raw', new TextEncoder().encode(k), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']).then(function (key) { return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(m)); }).then(hex); }
+function keyOfId(id) { var ks = Object.keys(allowed); return Promise.all(ks.map(idOf)).then(function (ids) { var i = ids.indexOf(String(id)); return i >= 0 ? ks[i] : null; }); }
+var INV_MS = 60 * 60 * 1000; // un invito vale 1 ora
+function codesNow() { var cs = get('codes', []), now = Date.now(), ch = false; cs = cs.map(function (x) { if (typeof x === 'string') { ch = true; return { c: x, ts: now }; } return x; }).filter(function (x) { return x && x.c && now - x.ts < INV_MS; }); if (ch) put('codes', cs); return cs; }
+function validCode(code) { return codesNow().some(function (x) { return x.c === code; }); }
+function hostHi(c, d) {
+        var nm = clean(d.n, 30) || 'Ospite', k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
+        conns.filter(function (x) { return k && x.k === k; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} });
+        var known = k && allowed[k], code = typeof d.c === 'string' ? d.c.slice(0, 20) : '', codes = [];
+        function refuse(why) { try { c.send({ t: 'no', why: why }); } catch (e) {} setTimeout(function () { try { c.close(); } catch (e) {} }, 400); }
+        function accept() {
+          if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
+          c.ok = true; c.name = nm; c.k = k; conns.push(c);
+          c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+          $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
+        }
+        if (!known && code && validCode(code)) {
+          var same = Object.keys(allowed).filter(function (x) { return allowed[x].toLowerCase() === nm.toLowerCase(); })[0];
+          if (same) { delete allowed[same]; conns.filter(function (x) { return x.k === same; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} }); put('allowed', allowed); }
+        }
+        if (known) { accept(); return; }
+        if (Object.keys(allowed).length >= cap()) {
+          refuse('Questo invito era per un cerchio già completo. ' + me.name + ' ti sta mandando quello giusto: aprilo appena arriva.');
+          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del cerchio di coppia, che è già completo.') + ' Ti preparo il gruppo da 3 e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
+          return;
+        }
+        if (code && validCode(code)) { accept(); return; }
+        try { c.send({ t: 'wait', why: (code ? 'Il tuo invito è scaduto (vale 1 ora). ' : '') + 'Aspetta un attimo: ' + me.name + ' deve accettarti.' }); } catch (e) {}
+        try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
+        ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
+          if (!c.open) return;
+          if (!y) { refuse('Richiesta non accettata.'); return; }
+          if (Object.keys(allowed).length >= cap()) { refuse('Il cerchio è pieno.'); return; }
+          accept();
+        });
+}
+function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
+  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 1 ora.\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -945,7 +971,7 @@ function invite() {
   }
   var left = cap() - Object.keys(allowed).length;
   $('invT').textContent = 'Invita ' + (me.kind === 'group' ? 'qualcuno nel gruppo' : 'la tua persona');
-  $('invS').textContent = left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.';
+  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 1 ora.';
   $('invH').textContent = ''; $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
@@ -961,16 +987,29 @@ function startGuest() {
   peer.on('disconnected', function () { again(); });
   peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Chi ti ha invitato non ha Loopix aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.' : 'Problema di rete (' + e.type + ').'; again(); });
   peer.on('open', function () {
-    hostConn = peer.connect(me.hostId, { reliable: true });
-    hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok, c: me.code || '' }); if (!names.length) $('mh').textContent = 'Collegato. Un attimo che entri nel cerchio…'; });
+    hostConn = peer.connect(me.hostId, { reliable: true }); var hc = hostConn; hc.auth = !me.joined; hc.ng = uid(16);
+    hostConn.on('open', function () {
+      if (me.joined) idOf(me.tok).then(function (id) { hc.send({ t: 'hi', n: me.name, id: id, ng: hc.ng }); });
+      else hostConn.send({ t: 'hi', n: me.name, k: me.tok, c: me.code || '' }); if (!names.length) $('mh').textContent = 'Collegato. Un attimo che entri nel cerchio…'; });
     hostConn.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
+      if (!hc.auth) {
+        if (d.t === 'ch' && typeof d.ph === 'string') {
+          hmac(me.tok, 'h' + hc.ng).then(function (ph) {
+            if (ph !== d.ph) { hc.bad = true; $('mh').textContent = '⚠️ Qualcuno ha provato a fingersi il creatore del cerchio: non ti ho collegato. I tuoi dati sono al sicuro.'; try { hc.close(); } catch (e) {} return; }
+            hc.auth = true; hmac(me.tok, 'g' + d.nh).then(function (pg) { hc.send({ t: 'pr', pg: pg }); });
+          });
+        } else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 180); status(); }
+        return;
+      }
+      if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'msg') addMsg(d.m);
+      else if (d.t === 'wait') $('mh').textContent = clean(d.why, 180);
       else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
       else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
@@ -1181,11 +1220,11 @@ function renderCircle() {
       row(allowed[k] + (on ? '' : ' · non collegato'), on, function () { var nm = allowed[k]; ask('Togliere ' + nm + '?', nm + ' non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(k); }); });
     });
     m.appendChild(el('p', null, ks.length + ' di ' + cap() + (cap() === 1 ? ' posto' : ' posti') + ' usati.' + (ks.length ? '' : ' Invita la prima persona!')));
-    $('inv2').hidden = ks.length >= cap();
+    $('inv2').hidden = ks.length >= cap(); $('invKill').hidden = false;
   } else {
     var live = !!(hostConn && hostConn.open);
     (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
-    $('inv2').hidden = true;
+    $('inv2').hidden = true; $('invKill').hidden = true;
     m.appendChild(el('p', null, blocked ? 'Non fai più parte di questo cerchio. Puoi uscire e chiedere un nuovo invito.' : 'Solo chi ha creato il cerchio può invitare altre persone.'));
   }
   renderRecap();
@@ -1363,6 +1402,7 @@ $('iok').addEventListener('click', saveIdea);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
+$('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
 $('goStyle').addEventListener('click', function () { showPane('style'); });
