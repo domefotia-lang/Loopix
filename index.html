@@ -241,6 +241,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card">
     <h2 id="sT">Crea il tuo cerchio</h2>
     <p id="sP">Tu e fino a 3 persone, in privato.</p>
+    <div id="kindBox" role="group" aria-label="Tipo di cerchio"><p style="margin:0 0 6px"><b>Che cerchio vuoi creare?</b></p>
+      <div class="chips" style="padding:0 0 10px;flex-wrap:wrap">
+        <button type="button" class="chip" id="kC" aria-pressed="true">💑 Coppia (2 persone)</button>
+        <button type="button" class="chip" id="kG" aria-pressed="false">👥 Gruppo da 3</button>
+      </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
     <p>Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
@@ -255,6 +260,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
       <button class="btn-o" id="instX" style="margin-top:8px">Continua qui senza installare</button>
     </div>
     <button class="btn" id="go">Inizia</button>
+    <button class="btn-o wide" id="sCancel" hidden style="margin-top:8px">Annulla</button>
     <div class="hint" id="sH" aria-live="polite"></div>
     <button class="btn-o" id="inf2" style="margin-top:10px">ℹ️ Come funziona e privacy</button>
   </div>
@@ -289,7 +295,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </section>
 
 <section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
-  <div class="card"><h2>Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2>I tuoi cerchi</h2><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
   <div class="card"><button class="btn-o wide" id="help" style="margin-top:0">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
 </div></section>
@@ -336,6 +343,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn" id="imc">Ho capito</button>
 </div></div>
 
+ <div class="mod" id="invM" role="dialog" aria-modal="true" aria-labelledby="invT"><div class="card" style="max-width:350px;width:100%;max-height:88dvh;overflow-y:auto">
+  <h2 id="invT"></h2><p id="invS" style="margin-top:0"></p>
+  <ol class="steps" style="margin:6px 0 12px">
+    <li><span class="n">1</span><span>Manda l’invito a chi vuoi (basta un tocco qui sotto).</span></li>
+    <li><span class="n">2</span><span>Lei/lui apre il link e scrive il suo nome.</span></li>
+    <li><span class="n">3</span><span>A te arriva la richiesta: tocca <b>OK</b> per accettare. Tieni Loopix aperto.</span></li>
+  </ol>
+  <button class="btn" id="invWA">💬 Invia su WhatsApp</button>
+  <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
+  <button class="btn-o wide" id="invCp" style="margin-top:8px">📋 Copia invito</button>
+  <div class="hint" id="invH" aria-live="polite" style="white-space:pre-wrap;word-break:break-all"></div>
+  <button class="btn-o wide" id="invX" style="margin-top:8px">Chiudi</button>
+</div></div>
+
 <div class="mod" id="ask" role="alertdialog" aria-modal="true" aria-labelledby="askT" aria-describedby="askP"><div class="card" style="max-width:340px;width:100%">
   <h2 id="askT"></h2><p id="askP"></p>
   <button class="btn" id="askOk"></button>
@@ -380,9 +401,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 var $ = function (i) { return document.getElementById(i); };
-var LS = 'loopix3:';
-function get(k, d) { try { var v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
-function put(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} }
+var LSG = 'loopix3:', REGK = 'loopixreg';
+function regGet() { try { var r = JSON.parse(localStorage.getItem(REGK)); if (r && Array.isArray(r.list)) return r; } catch (e) {} return null; }
+function regSet(r) { try { localStorage.setItem(REGK, JSON.stringify(r)); } catch (e) {} }
+var REG = regGet();
+if (!REG) { REG = { active: 'c1', list: [{ id: 'c1', label: '' }] }; regSet(REG); }
+function lsOf(id) { return id === 'c1' ? LSG : LSG + id + ':'; }
+var LS = lsOf(REG.active);
+var GLOBALK = { big: 1, pin: 1 };
+function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
+function regLabel() {
+  var e = REG.list.filter(function (x) { return x.id === REG.active; })[0]; if (!e || !me) return;
+  var l = me.role === 'host' ? (me.kind === 'group' ? 'Gruppo da 3' : 'Coppia') : (names[0] ? 'Cerchio di ' + names[0] : 'Cerchio di gruppo');
+  if (e.label !== l) { e.label = l; regSet(REG); }
+}
+function switchCircle(id) { REG.active = id; regSet(REG); location.reload(); }
+function newCircle() { var n = 2; while (REG.list.some(function (x) { return x.id === 'c' + n; })) n++; var id = 'c' + n; REG.list.push({ id: id, label: 'Nuovo' }); REG.prev = REG.active; REG.active = id; regSet(REG); location.reload(); }
 function uid(n) { return Array.from(crypto.getRandomValues(new Uint8Array(n))).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
 var AVC = ['#7A4FB8', '#B0466E', '#3C7A9E', '#9A7430', '#3F8A63', '#A3577F'];
 function avatar(n) { n = String(n || '?'); var h = 0; for (var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0; var a = el('span', 'av', n.trim().charAt(0).toUpperCase() || '?'); a.style.background = AVC[h % AVC.length]; a.title = n; return a; }
@@ -743,14 +778,15 @@ function post(u, c) {
 
 /* ---- stato ---- */
 function status() {
+  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'group' ? 'Il tuo gruppo da 3' : 'Il tuo cerchio di coppia') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
   $('bd').textContent = live ? 'Collegato' : (me.role === 'host' ? 'In attesa di ospiti' : 'Non collegato');
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
-  $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/4)';
+  $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/' + (me.role === 'host' ? cap() + 1 : (circMax || 4)) + ')';
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
   av.setAttribute('aria-label', 'Nel cerchio: ' + (list.length ? list.join(', ') : me.name));
-  if (me.role === 'host' && Object.keys(allowed).length < 3) { var pl = el('button', 'av add', '+'); pl.setAttribute('aria-label', 'Invita una persona'); pl.onclick = invite; av.appendChild(pl); }
+  if (me.role === 'host' && Object.keys(allowed).length < cap()) { var pl = el('button', 'av add', '+'); pl.setAttribute('aria-label', 'Invita una persona'); pl.onclick = invite; av.appendChild(pl); }
   $('bd').textContent = live ? 'Collegato' : (me.role === 'host' ? 'In attesa 🔔' : 'Non collegato 🔔');
   $('bd').setAttribute('aria-label', live ? 'Collegato' : 'Non collegato: tocca per avvisare con un messaggio');
   $('inv').hidden = me.role !== 'host';
@@ -761,6 +797,8 @@ function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }
 
 /* ---- io al centro ---- */
 var allowed = get('allowed', {}), hostTries = 0;
+function cap() { return me && me.kind === 'group' ? 2 : 1; }
+var circMax = 0;
 function startHost() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
   peer = new Peer(me.hostId);
@@ -780,12 +818,12 @@ function startHost() {
         c.asked = true; var nm = clean(d.n, 30) || 'Ospite', k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
         conns.filter(function (x) { return k && x.k === k; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} });
         var known = k && allowed[k];
-        if (!known && Object.keys(allowed).length >= 3 && conns.filter(function (x) { return x.ok; }).length >= 3) { c.send({ t: 'no', why: 'Il cerchio è pieno (max 3 ospiti).' }); setTimeout(function () { c.close(); }, 300); return; }
+        if (!known && Object.keys(allowed).length >= cap() && conns.filter(function (x) { return x.ok; }).length >= cap()) { c.send({ t: 'no', why: 'Il cerchio è pieno.' }); setTimeout(function () { c.close(); }, 300); return; }
         if (!known && !window.confirm(nm + ' vuole entrare nel tuo cerchio. Accetti?')) { c.send({ t: 'no', why: 'Richiesta rifiutata.' }); setTimeout(function () { c.close(); }, 300); return; }
-        if (!known && Object.keys(allowed).length >= 3) { c.send({ t: 'no', why: 'Il cerchio è pieno (max 3 ospiti).' }); setTimeout(function () { c.close(); }, 300); return; }
+        if (!known && Object.keys(allowed).length >= cap()) { c.send({ t: 'no', why: 'Il cerchio è pieno.' }); setTimeout(function () { c.close(); }, 300); return; }
         if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
         c.ok = true; c.name = nm; c.k = k; conns.push(c);
-        c.send({ t: 'hello', feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+        c.send({ t: 'hello', max: cap() + 1, feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
       } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
         var m = applyEv(d, c.name);
         if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
@@ -806,14 +844,23 @@ function startHost() {
   });
 }
 function link() { return location.origin + location.pathname + '#j=' + me.hostId; }
-function invite() {
-  var u = link(), sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  var txt = me.name + ' ti invita su Loopix, per mandarci i Reel e guardarli insieme.\n\nSe non hai ancora Loopix, guarda qui come si installa (1 minuto): ' + sc + '\n\nPoi apri questo invito:';
-  track('invito-inviato');
-  if (navigator.share) navigator.share({ title: 'Loopix', text: txt, url: u }).catch(function () {});
-  else if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { $('mh').textContent = 'Link copiato: mandalo alla persona che vuoi invitare.'; $('ch').textContent = $('mh').textContent; });
-  else $('mh').textContent = u;
+function invText() {
+  var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
+  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome\n3️⃣ Aspetta che ' + me.name + ' ti accetti\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
 }
+function invite() {
+  if (me.role !== 'host') return;
+  if (Object.keys(allowed).length >= cap()) { ask('Cerchio pieno', 'In questo cerchio non c’è più posto. Puoi togliere qualcuno oppure creare un altro cerchio.', 'Ho capito'); return; }
+  var left = cap() - Object.keys(allowed).length;
+  $('invT').textContent = 'Invita ' + (me.kind === 'group' ? 'qualcuno nel gruppo' : 'la tua persona');
+  $('invS').textContent = left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.';
+  $('invH').textContent = ''; $('invM').classList.add('open');
+}
+function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
+$('invWA').onclick = function () { window.open('https://wa.me/?text=' + encodeURIComponent(invText()), '_blank'); invDone('Si è aperto WhatsApp: scegli la persona e premi invia.'); };
+$('invSh').onclick = function () { if (navigator.share) navigator.share({ title: 'Loopix', text: invText() }).then(function () { invDone('Invito inviato.'); }).catch(function () {}); else $('invCp').click(); };
+$('invCp').onclick = function () { var t = invText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { invDone('Copiato ✓ Ora incollalo in un messaggio a chi vuoi invitare.'); }, function () { $('invH').textContent = t; }); else $('invH').textContent = t; };
+$('invX').onclick = function () { $('invM').classList.remove('open'); };
 
 /* ---- ospite ---- */
 function startGuest() {
@@ -826,7 +873,7 @@ function startGuest() {
     hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok }); });
     hostConn.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
-      if (d.t === 'hello') { (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
@@ -982,7 +1029,17 @@ function removeMember(k) {
   conns = conns.filter(function (c) { return c.k !== k; });
   cast({ t: 'people', people: people() }); status(); renderCircle();
 }
+function renderCircles() {
+  var b = $('clist'); b.textContent = '';
+  REG.list.forEach(function (x) {
+    var r = el('div', 'mrow'), on = x.id === REG.active, s = el('span', null, (x.label || 'Cerchio') + (on ? ' · aperto' : '')); r.appendChild(s);
+    if (!on) { var g = el('button', 'btn-o', 'Apri'); g.onclick = function () { switchCircle(x.id); }; r.appendChild(g); }
+    b.appendChild(r);
+  });
+  if (REG.list.length > 1) b.appendChild(el('p', null, 'Un cerchio alla volta resta collegato: per ricevere i Reel di un altro cerchio, aprilo da qui.'));
+}
 function renderCircle() {
+  renderCircles();
   var m = $('mlist'); m.textContent = '';
   function row(t, on, rm) {
     var r = el('div', 'mrow'), s = el('span'); s.appendChild(avatar(t)); s.appendChild(document.createTextNode(t)); s.appendChild(el('i', 'dot' + (on ? ' on' : ''))); r.appendChild(s);
@@ -996,8 +1053,8 @@ function renderCircle() {
       var on = conns.some(function (c) { return c.k === k && c.ok && c.open; });
       row(allowed[k] + (on ? '' : ' · non collegato'), on, function () { var nm = allowed[k]; ask('Togliere ' + nm + '?', nm + ' non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(k); }); });
     });
-    m.appendChild(el('p', null, ks.length + ' di 3 posti per ospiti usati.' + (ks.length ? '' : ' Invita la prima persona!')));
-    $('inv2').hidden = ks.length >= 3;
+    m.appendChild(el('p', null, ks.length + ' di ' + cap() + (cap() === 1 ? ' posto' : ' posti') + ' usati.' + (ks.length ? '' : ' Invita la prima persona!')));
+    $('inv2').hidden = ks.length >= cap();
   } else {
     var live = !!(hostConn && hostConn.open);
     (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
@@ -1081,7 +1138,7 @@ async function savePin() {
     var s = uid(16); pinRec = { s: s, h: await hashPin(a, s) }; put('pin', pinRec);
   } else {
     if (!pinRec || await hashPin(a, pinRec.s) !== pinRec.h) { $('pH').textContent = 'PIN errato.'; $('p1').value = ''; return; }
-    pinRec = null; try { localStorage.removeItem(LS + 'pin'); } catch (e) {}
+    pinRec = null; try { localStorage.removeItem(LSG + 'pin'); } catch (e) {}
   }
   $('pinm').classList.remove('open'); renderStyle();
 }
@@ -1103,7 +1160,12 @@ function guide(force) {
   $('gd').classList.add('open');
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
-function wipe() { ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'pin', 'guided'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} }); location.reload(); }
+function wipe() {
+  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
+  if (REG.list.length > 1) { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.list[0].id; regSet(REG); }
+  else { try { localStorage.removeItem(LSG + 'pin'); } catch (e) {} }
+  location.reload();
+}
 
 /* ---- avvio ---- */
 function begin() {
@@ -1114,13 +1176,19 @@ function begin() {
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
 }
 function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,64})/.exec(v) || /^([\w-]{8,64})$/.exec(v); return m ? m[1] : null; }
-$('ic').addEventListener('input', function () { $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; });
+var kindSel = REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia'; }) ? 'group' : 'couple';
+function paintKind() { $('kC').setAttribute('aria-pressed', kindSel === 'couple'); $('kG').setAttribute('aria-pressed', kindSel === 'group'); $('sP').textContent = kindSel === 'group' ? 'Tu e altre 2 persone, in privato.' : 'Tu e una persona, in privato.'; }
+$('kC').onclick = function () { kindSel = 'couple'; paintKind(); };
+$('kG').onclick = function () { kindSel = 'group'; paintKind(); };
+function syncKind() { var j = !!pastedId() || !!joinId; $('kindBox').hidden = j; if (!j) paintKind(); }
+$('ic').addEventListener('input', function () { $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; syncKind(); });
+$('sCancel').onclick = function () { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.prev && REG.list.some(function (x) { return x.id === REG.prev; }) ? REG.prev : REG.list[0].id; delete REG.prev; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); };
 $('go').addEventListener('click', function () {
   var n = clean($('nm').value, 30);
   if (!n) { $('sH').textContent = 'Scrivi il tuo nome.'; return; }
   var jid = joinId || pastedId();
   if (!joinId && $('ic').value.trim() && !jid) { $('sH').textContent = 'Il link di invito non sembra giusto.'; return; }
-  me = jid ? { name: n, role: 'guest', hostId: jid, tok: uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12) };
+  me = jid ? { name: n, role: 'guest', hostId: jid, tok: uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12), kind: kindSel };
   track(jid ? 'richiesta-ingresso' : 'cerchio-creato');
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
 });
@@ -1163,6 +1231,7 @@ $('iok').addEventListener('click', saveIdea);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
+$('newC').addEventListener('click', function () { ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano. Potrai scegliere se è di coppia o un gruppo da 3.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
 $('pinR').addEventListener('click', function () { openPin('remove'); });
 $('pOk').addEventListener('click', savePin);
@@ -1213,7 +1282,7 @@ startStats();
 if (me && !joinId) begin();
 else {
   if (joinId) {
-    $('sT').textContent = 'Ti hanno invitato'; $('sP').textContent = 'Scrivi il tuo nome per chiedere di entrare. Chi ti ha invitato dovrà accettare.'; $('go').textContent = 'Chiedi di entrare'; $('ic').hidden = true;
+    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('sP').textContent = 'Scrivi il tuo nome per chiedere di entrare. Chi ti ha invitato dovrà accettare.'; $('go').textContent = 'Chiedi di entrare'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
       $('inst').hidden = false; $('nm').hidden = true; $('go').hidden = true; $('ios').hidden = true;
@@ -1224,7 +1293,8 @@ else {
       $('instX').onclick = function () { $('inst').hidden = true; $('nm').hidden = false; $('go').hidden = false; };
     }
   }
-  showPane('setup');
+  if (REG.list.length > 1) { $('sCancel').hidden = false; $('sT').textContent = 'Nuovo cerchio'; }
+  syncKind(); showPane('setup');
 }
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
 </script>
