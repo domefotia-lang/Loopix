@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Loopix">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#241A13;--s1:#31251B;--s2:#3E2F23;--s3:#55412F;--line:rgba(226,190,128,.26);--g:#DDB574;--gl:#F6E2B4;--ink:#2B1B0D;--t:#FBF2E4;--m:#CDB89D;--cy:#3BE8D8;
 --gold:linear-gradient(180deg,var(--gl),var(--g) 62%,#B98B4E);--spec:linear-gradient(120deg,#FF4FA3,#9A6BFF 50%,#3BE8D8);
@@ -163,6 +163,40 @@ select.full{width:100%;padding:14px 16px;font-size:16px;margin-bottom:10px;borde
 .big .btn{font-size:19px;padding:18px}.big .btn-o{font-size:17px}.big .r-btn{font-size:18px;padding:10px 16px}
 .big .tabs button{font-size:14px}.big .tabs svg{width:30px;height:30px}.big h2{font-size:25px}.big .idea h3{font-size:29px}
 
+
+/* aspetto chiaro (giorno) */
+html.light{color-scheme:light;--bg:#F9F5F0;--s1:#FFFFFF;--s2:#F2E8DE;--s3:#E3D3C4;--line:rgba(62,47,42,.11);--t:#3E2F2A;--m:#8B6F60;--ink:#FFFFFF;--cy:#14897F;
+--gold:linear-gradient(180deg,var(--gl),var(--g));--dis:"DM Sans","Inter",system-ui,sans-serif;--txt:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+html.light body{background:radial-gradient(110% 50% at 50% -8%,#F1E2D4 0%,var(--bg) 60%) var(--bg)}
+.light .logo,.light h1,.light h2,.light .idea h3,.light .who,.light .cd{color:var(--t)}
+.light .logo,.light h1,.light h2,.light .idea h3,.light .stat b{font-weight:700;letter-spacing:-.02em}
+.light .mark path,.light .hero .big-mark path{stroke:var(--g)}
+.light .hero .big-mark{filter:none}
+.light .on .mark path{stroke:url(#lg2)}.light .on .mark{filter:drop-shadow(0 0 5px rgba(154,107,255,.5))}
+.light .card{background:var(--s1);box-shadow:0 1px 2px rgba(62,47,42,.04),0 8px 24px rgba(62,47,42,.06)}
+.light .btn{box-shadow:0 6px 18px rgba(181,104,63,.25)}
+.light .btn-o,.light .r-btn,.light .chip{background:var(--s2);border-color:transparent}
+.light .chip[aria-pressed="true"]{background:var(--gold);color:#fff}
+.light .r-btn.mine{background:rgba(181,104,63,.14);border-color:var(--g)}
+.light input,.light select,.light select.full{background:#FFFFFF;border-color:var(--s3);color:var(--t)}
+.light input::placeholder{color:#A8958A}
+.light .ppl{background:rgba(181,104,63,.16)}
+.light .av.add{color:var(--g)}
+.light .tabs{background:rgba(249,245,240,.95)}
+.light .tabs button[aria-current="page"],.light .tabs .fab{color:var(--g)}
+.light .tabs .fab .ring svg{stroke:#fff}
+.light .tabs .fab .ring{box-shadow:0 0 0 4px var(--bg),0 8px 22px rgba(181,104,63,.35)}
+.light .mod{background:rgba(62,47,42,.32)}
+.light .mod.lock{background:var(--bg)}
+.light .cd{background:rgba(249,245,240,.8)}
+.light .item iframe,.light .stage iframe,.light .link,.light .cpanel,.light .cm{background:var(--s1)}
+.light .danger{color:#B23B2B;background:rgba(178,59,43,.07);border-color:rgba(178,59,43,.2)}
+.light .star,.light .steps .n{color:#fff}
+.light .on .badge{color:var(--cy)}
+.mode{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.mode button{flex:1;min-width:92px;background:var(--s2);border:1px solid var(--line);color:var(--t);border-radius:16px;padding:12px 8px;font-size:15px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mode button span{font-size:22px}
+.mode button[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:transparent}
 [hidden]{display:none!important}
 button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2.5px solid var(--cy);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -237,6 +271,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></section>
 
 <section class="pane" id="style" aria-label="Stile"><div class="head"><h2>Stile</h2></div><div class="list">
+  <div class="card"><h2>Aspetto</h2>
+    <div class="mode" id="modeB" role="group" aria-label="Aspetto">
+      <button data-m="light"><span aria-hidden="true">☀️</span>Chiaro</button>
+      <button data-m="dark"><span aria-hidden="true">🌙</span>Scuro</button>
+      <button data-m="auto"><span aria-hidden="true">🌗</span>Automatico</button>
+    </div>
+    <p id="modeP"></p></div>
   <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
   <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
   <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button></div>
@@ -381,6 +422,7 @@ function embedFor(u) {
   return null;
 }
 // I link brevi di TikTok (vm.tiktok.com, tiktok.com/t/…) vengono trasformati nel link completo, se TikTok lo permette.
+function isShort(u) { try { var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, ''); return h === 'vm.tiktok.com' || h === 'vt.tiktok.com' || (h === 'tiktok.com' && /^\/t\//.test(x.pathname)); } catch (e) { return false; } }
 async function resolveShort(u) {
   try {
     var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, '');
@@ -419,8 +461,17 @@ function media(r, pl) {
   }
   var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
   var nm = NAMES[host] || host;
-  var l = el('div', 'link'); l.appendChild(el('div', null, 'Questo link di ' + nm + ' non si può vedere qui dentro. Si apre nel browser, non serve avere l’app.'));
-  var a = el('a', null, 'Guarda su ' + nm); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
+  var l = el('div', 'link'); l.appendChild(el('div', null, nm));
+  var a = el('a', null, '▶  Guarda il video');
+  if (isShort(r.u)) {
+    a.hidden = true; var wait = el('div', null, 'Carico il video…'); l.appendChild(wait);
+    resolveShort(r.u).then(function (u2) {
+      if (u2 !== r.u && embedFor(u2)) {
+        var keep = r.u; r.u = u2; feed.forEach(function (x) { if (x.u === keep) x.u = u2; }); put('feed', feed);
+        if (l.isConnected) l.replaceWith(media(r, pl));
+      } else { wait.remove(); a.hidden = false; }
+    });
+  } a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
 }
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false };
@@ -909,15 +960,25 @@ function renderRecap() {
 }
 
 /* ---- stile ---- */
-var THEMES = { champagne: ['Oro', '#DDB574', '#F6E2B4'], spettro: ['Rosa oro', '#E8A38C', '#FBE0D4'], oceano: ['Sabbia', '#D9C29A', '#F7EBD3'], rosa: ['Bronzo', '#C98E5A', '#F1CFA8'], smeraldo: ['Salvia', '#A9BE8E', '#E3EDD3'] };
-function applyTheme(t) { var c = THEMES[t] || THEMES.champagne; document.documentElement.style.setProperty('--g', c[1]); document.documentElement.style.setProperty('--gl', c[2]); }
+var THEMES = { champagne: ['Oro', '#DDB574', '#F6E2B4', '#B5683F', '#D08A63', 'Terracotta'], spettro: ['Rosa oro', '#E8A38C', '#FBE0D4', '#B5565E', '#D07A80', 'Rosa antico'], oceano: ['Sabbia', '#D9C29A', '#F7EBD3', '#8E6B47', '#AE8A64', 'Taupe'], rosa: ['Bronzo', '#C98E5A', '#F1CFA8', '#9C5730', '#B9744B', 'Cannella'], smeraldo: ['Salvia', '#A9BE8E', '#E3EDD3', '#587A48', '#779866', 'Salvia'] };
+function isLight() { var m = get('mode', 'auto'); if (m === 'light') return true; if (m === 'dark') return false; var h = new Date().getHours(); return h >= 7 && h < 19; }
+function applyTheme(t) {
+  var c = THEMES[t] || THEMES.champagne, L = isLight(), r = document.documentElement;
+  r.classList.toggle('light', L);
+  r.style.setProperty('--g', L ? c[3] : c[1]); r.style.setProperty('--gl', L ? c[4] : c[2]);
+  var tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', L ? '#F9F5F0' : '#241A13');
+}
+function applyMode() { applyTheme(get('theme', 'champagne')); if (tab === 'style' && $('style').classList.contains('show')) renderStyle(); }
 function renderStyle() {
   var box = $('themes'), cur = get('theme', 'champagne'); box.textContent = '';
   Object.keys(THEMES).forEach(function (k) {
-    var t = THEMES[k], b = el('button', 'sw', t[0]);
-    b.style.background = 'linear-gradient(135deg,' + t[1] + ',' + t[2] + ')'; b.setAttribute('aria-pressed', String(cur === k)); b.setAttribute('aria-label', 'Tema ' + t[0]);
+    var t = THEMES[k], b = el('button', 'sw', isLight() ? t[5] : t[0]);
+    var L = isLight(); b.style.background = 'linear-gradient(135deg,' + (L ? t[3] : t[1]) + ',' + (L ? t[4] : t[2]) + ')'; if (L) b.style.color = '#fff'; b.setAttribute('aria-pressed', String(cur === k)); b.setAttribute('aria-label', 'Colore ' + (isLight() ? t[5] : t[0]));
     b.onclick = function () { put('theme', k); applyTheme(k); renderStyle(); }; box.appendChild(b);
   });
+  var md = get('mode', 'auto');
+  document.querySelectorAll('#modeB button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.m === md)); });
+  $('modeP').textContent = md === 'auto' ? 'Chiaro di giorno, scuro dalle 19 alle 7. Cambia da solo.' : md === 'light' ? 'Sempre chiaro.' : 'Sempre scuro, riposante per gli occhi la sera.';
   $('pinS').textContent = pinRec ? 'Attivo: Loopix chiede il PIN quando la apri e quando torni dopo 30 secondi. Il blocco nasconde lo schermo, non cifra i dati.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
   $('pinB').textContent = pinRec ? 'Cambia PIN' : 'Imposta un PIN';
   $('pinR').hidden = !pinRec;
@@ -1050,6 +1111,9 @@ document.addEventListener('visibilitychange', function () {
   else if (hidAt && Date.now() - hidAt > 30000) showLock();
 });
 applyTheme(get('theme', 'champagne'));
+document.querySelectorAll('#modeB button').forEach(function (x) { x.addEventListener('click', function () { put('mode', x.dataset.m); applyMode(); }); });
+setInterval(applyMode, 60000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) applyMode(); });
 $('home').addEventListener('click', function () {
   if (!me || $('setup').classList.contains('show')) return;
   if ($('pl').classList.contains('show')) closeSeq();
