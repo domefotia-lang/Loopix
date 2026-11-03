@@ -236,6 +236,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .item .bar .r-btn.plan,#pr .r-btn.plan{flex:1 0 auto;justify-content:center;font-size:15px}
 .item .cpanel{flex:none;max-height:34dvh;overflow-y:auto}
 .light .r-btn.plan{background:var(--gold);color:#fff;border:0}
+
+/* messaggi */
+#clog{display:flex;flex-direction:column;gap:6px;padding:10px 14px}
+.msg{max-width:82%;align-self:flex-start;padding:8px 12px;border-radius:18px 18px 18px 6px;background:var(--s1);border:1px solid var(--line);font-size:16px;line-height:1.35;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;border-radius:18px 18px 6px 18px;background:var(--gold);color:#fff;border:0}
+.msg .mn{display:block;font-size:12px;font-weight:700;color:var(--g);margin-bottom:2px}
+.msg time{display:block;font-size:11px;opacity:.7;margin-top:3px;text-align:right}
+.cbar{padding:8px 14px 22px;flex:none}
 </style>
 </head>
 <body>
@@ -243,7 +251,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="app" id="app">
 <header><button class="logo" id="home" aria-label="Loopix, torna alla Home"><svg class="mark" viewBox="0 0 40 22" aria-hidden="true"><path d="M20 11c-3.2-4.6-6.2-7-9.6-7A7 7 0 0 0 3.4 11a7 7 0 0 0 7 7c3.4 0 6.4-2.4 9.6-7s6.2-7 9.6-7a7 7 0 0 1 7 7 7 7 0 0 1-7 7c-3.4 0-6.4-2.4-9.6-7z"/></svg><span>Loopix</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
 
-<div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>, e apri Loopix da lì.</span><button class="btn-o" id="ix">OK</button></div>
+<div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
 
   <div class="inv2" id="ib" hidden><span id="it"></span><button class="btn-o" id="ij">Unisciti</button></div>
 
@@ -311,8 +319,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="help" style="margin-top:0">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
+  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci e cancella i dati da questo telefono</button></div>
 </div></section>
+
+<section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div>
+  <div class="list" id="clog" aria-live="polite"></div>
+  <div class="cbar"><div class="lbar"><input id="cin" placeholder="Scrivi un messaggio…" aria-label="Messaggio" maxlength="1000" autocomplete="off"><button class="btn" id="csend">Invia</button></div></div>
+</section>
 
 <section class="pane" id="style" aria-label="Stile"><div class="head"><h2>Stile</h2></div><div class="list">
   <div class="card"><h2>Aspetto</h2>
@@ -338,7 +351,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
   <button class="fab" id="paste" aria-label="Incolla il Reel che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Incolla</button>
   <button data-p="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>Cerchio</button>
-  <button data-p="style"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>Stile</button>
+  <button data-p="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg><span id="tChat">Messaggi</span></button>
 </nav>
 </div>
 
@@ -347,7 +360,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <p>• I Reel e i commenti restano sui telefoni del cerchio. Non c’è un archivio online né un account.</p>
   <p>• Un servizio pubblico di appoggio (PeerJS) aiuta solo i telefoni a trovarsi: vede indirizzi di rete, non i contenuti.</p>
   <p>• I video sono quelli incorporati da Instagram, TikTok, YouTube, Facebook e dalle altre piattaforme: possono registrare che li guardi, anche senza avere la loro app.</p>
-  <p>• Chi crea il cerchio è il centro: deve avere l’app aperta perché i Reel arrivino, e vede tutto ciò che viene condiviso. Gli ospiti entrano solo se li accetta.</p>
+  <p>• Chi crea il cerchio è il centro: deve avere l’app aperta perché i Reel arrivino, e vede tutto ciò che viene condiviso. Entra solo chi ha ricevuto un suo invito (ogni invito vale per una persona).</p>
   <p>• Per ora è gratis. Non servono carte né dati personali. “Esci” cancella tutto da questo telefono.</p>
   <p>• Su iPhone Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla”.</p>
   <p>• In “Piani”, i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Loopix riceve una piccola commissione: per te il prezzo non cambia.</p>
@@ -361,7 +374,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <ol class="steps" style="margin:6px 0 12px">
     <li><span class="n">1</span><span>Manda l’invito a chi vuoi (basta un tocco qui sotto).</span></li>
     <li><span class="n">2</span><span>Lei/lui apre il link e scrive il suo nome.</span></li>
-    <li><span class="n">3</span><span>A te arriva la richiesta: tocca <b>OK</b> per accettare. Tieni Loopix aperto.</span></li>
+    <li><span class="n">3</span><span>Entra da solo nel cerchio. Tieni Loopix aperta mentre lo fa.</span></li>
   </ol>
   <button class="btn" id="invWA">💬 Invia su WhatsApp</button>
   <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
@@ -429,6 +442,12 @@ function regLabel() {
   var l = me.role === 'host' ? (me.kind === 'group' ? 'Gruppo da 3' : 'Coppia') : (names[0] ? 'Cerchio di ' + names[0] : 'Cerchio di gruppo');
   if (e.label !== l) { e.label = l; regSet(REG); }
 }
+function goGroupInvite() {
+  var g = REG.list.filter(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })[0];
+  REG.after = 'invite'; REG.nm = me ? me.name : '';
+  if (g && !(me && me.kind === 'group')) { REG.active = g.id; regSet(REG); location.reload(); }
+  else newCircle();
+}
 function switchCircle(id) { REG.active = id; regSet(REG); location.reload(); }
 function newCircle() { var n = 2; while (REG.list.some(function (x) { return x.id === 'c' + n; })) n++; var id = 'c' + n; REG.list.push({ id: id, label: 'Nuovo' }); REG.prev = REG.active; REG.active = id; regSet(REG); location.reload(); }
 function uid(n) { return Array.from(crypto.getRandomValues(new Uint8Array(n))).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
@@ -444,7 +463,7 @@ function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c
 function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
 
 var me = get('me', null), feed = get('feed', []), outbox = get('outbox', []), peer = null, conns = [], hostConn = null, names = [], retry = null;
-var joinId = /^#j=([\w-]{8,64})$/.exec(location.hash);
+var joinId = /^#j=([\w-]{8,100})$/.exec(location.hash);
 joinId = joinId ? joinId[1] : null;
 var incoming = null;
 (function () {
@@ -608,6 +627,8 @@ function refresh(r) {
 var compOpen = false;
 function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
 function render() {
+  var bad = feed.filter(function (r) { return isInvite(r.u); });
+  if (bad.length) { bad.forEach(function (r) { if (gone.indexOf(r.id) < 0) gone.push(r.id); }); feed = feed.filter(function (r) { return !isInvite(r.u); }); put('feed', feed); put('gone', gone); }
   syncComp();
   var box = $('feed'); box.textContent = ''; nodes = {};
   if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\nCopia il link di un Reel da Instagram, TikTok o YouTube, poi tocca il pulsante dorato “Incolla” qui sotto.')); return; }
@@ -618,6 +639,7 @@ function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.cl
 function addReel(r, mine) {
   if (!r || typeof r.id !== 'string' || r.id.length > 40) return false;
   if (gone.indexOf(r.id) >= 0) return false;
+  if (isInvite(r.u)) return false;
   var u = safeUrl(r.u); if (!u) return false;
   var old = find(r.id);
   if (old) {
@@ -781,13 +803,23 @@ function onSes(d, who) {
   if (d.a === 'ready') { countdown(); return { t: 'ses', a: 'ready', n: who }; }
   return null;
 }
+function isInvite(u) { u = String(u || ''); return /#j=/.test(u) || u.indexOf(location.origin + location.pathname.replace(/index\.html$/, '')) === 0 || /github\.io\/Loopix/i.test(u); }
+var skippedInv = 0;
 function links(t) {
-  var out = [], m, re = /https?:\/\/[^\s<>"']+/g;
-  while ((m = re.exec(String(t || ''))) && out.length < 20) { var u = safeUrl(m[0].replace(/[.,;:!?)\]]+$/, '')); if (u && out.indexOf(u) < 0) out.push(u); }
+  var out = [], m, re = /https?:\/\/[^\s<>"']+/g; skippedInv = 0;
+  while ((m = re.exec(String(t || ''))) && out.length < 20) { var u = safeUrl(m[0].replace(/[.,;:!?)\]]+$/, '')); if (u && isInvite(u)) { skippedInv++; continue; } if (u && out.indexOf(u) < 0) out.push(u); }
   return out;
 }
 function postAll(t, c) {
   var L = links(t);
+  if (!L.length && skippedInv) {
+    var jm = /#j=([\w-]{8,100})/.exec(String(t || ''));
+    if (jm) { var jh = jm[1].split('_')[0];
+      if (me && jh === me.hostId) { $('mh').textContent = 'Questo è il tuo invito: mandalo alla persona che vuoi invitare.'; return 0; }
+      ask('Hai copiato un invito di Loopix', circleOfHost(jh) ? 'Sei già in quel cerchio: te lo apro.' : 'Vuoi entrare in questo nuovo cerchio? I tuoi cerchi di adesso restano come sono.', circleOfHost(jh) ? 'Apri' : 'Entra').then(function (y) { if (y) { location.hash = '#j=' + jm[1]; location.reload(); } });
+      return 0; }
+    $('mh').textContent = 'Questo è un invito di Loopix, non un Reel: non lo metto tra i Reel.'; return 0;
+  }
   if (!L.length) { $('mh').textContent = 'Non trovo nessun link. In Instagram o TikTok tocca Condividi e poi “Copia link”.'; return 0; }
   (async function () {
     for (var i = 0; i < L.length; i++) post(await resolveShort(L[i]), L.length === 1 ? c : '');
@@ -848,13 +880,32 @@ function startHost() {
       if (d.t === 'hi' && !c.ok && !c.asked) {
         c.asked = true; var nm = clean(d.n, 30) || 'Ospite', k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
         conns.filter(function (x) { return k && x.k === k; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} });
-        var known = k && allowed[k];
-        if (!known && Object.keys(allowed).length >= cap() && conns.filter(function (x) { return x.ok; }).length >= cap()) { c.send({ t: 'no', why: 'Il cerchio è pieno.' }); setTimeout(function () { c.close(); }, 300); return; }
-        if (!known && !window.confirm(nm + ' vuole entrare nel tuo cerchio. Accetti?')) { c.send({ t: 'no', why: 'Richiesta rifiutata.' }); setTimeout(function () { c.close(); }, 300); return; }
-        if (!known && Object.keys(allowed).length >= cap()) { c.send({ t: 'no', why: 'Il cerchio è pieno.' }); setTimeout(function () { c.close(); }, 300); return; }
-        if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
-        c.ok = true; c.name = nm; c.k = k; conns.push(c);
-        c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+        var known = k && allowed[k], code = typeof d.c === 'string' ? d.c.slice(0, 20) : '', codes = get('codes', []);
+        function refuse(why) { try { c.send({ t: 'no', why: why }); } catch (e) {} setTimeout(function () { try { c.close(); } catch (e) {} }, 400); }
+        function accept() {
+          if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
+          c.ok = true; c.name = nm; c.k = k; conns.push(c);
+          c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+          $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
+        }
+        if (!known && code && codes.indexOf(code) >= 0) {
+          var same = Object.keys(allowed).filter(function (x) { return allowed[x].toLowerCase() === nm.toLowerCase(); })[0];
+          if (same) { delete allowed[same]; conns.filter(function (x) { return x.k === same; }).forEach(function (x) { conns = conns.filter(function (y) { return y !== x; }); try { x.close(); } catch (e) {} }); put('allowed', allowed); }
+        }
+        if (known) { accept(); return; }
+        if (Object.keys(allowed).length >= cap()) {
+          refuse('Questo invito era per un cerchio già completo. ' + me.name + ' ti sta mandando quello giusto: aprilo appena arriva.');
+          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del cerchio di coppia, che è già completo.') + ' Ti preparo il gruppo da 3 e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
+          return;
+        }
+        if (code && codes.indexOf(code) >= 0) { accept(); return; }
+        try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
+        ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
+          if (!c.open) return;
+          if (!y) { refuse('Richiesta non accettata.'); return; }
+          if (Object.keys(allowed).length >= cap()) { refuse('Il cerchio è pieno.'); return; }
+          accept();
+        });
       } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
         var m = applyEv(d, c.name);
         if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
@@ -866,6 +917,9 @@ function startHost() {
       } else if (d.t === 'idea' && c.ok) {
         var im = applyIdea(d, c.name);
         if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
+      } else if (d.t === 'msg' && c.ok) {
+        var mm = addMsg(d.m, c.name);
+        if (mm) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'msg', m: mm }); });
       } else if (d.t === 'rdel' && c.ok && typeof d.id === 'string') {
         var dr = find(d.id);
         if (dr && dr.n === c.name && dropReel(d.id)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'rdel', id: d.id }); });
@@ -877,14 +931,18 @@ function startHost() {
     c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); cast({ t: 'people', people: people() }); status(); });
   });
 }
-function link() { return location.origin + location.pathname + '#j=' + me.hostId; }
+function link() { var cs = get('codes', []), c = uid(5); cs.push(c); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome\n3️⃣ Aspetta che ' + me.name + ' ti accetti\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
+  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
 }
 function invite() {
   if (me.role !== 'host') return;
-  if (Object.keys(allowed).length >= cap()) { ask('Cerchio pieno', 'In questo cerchio non c’è più posto. Puoi togliere qualcuno oppure creare un altro cerchio.', 'Ho capito'); return; }
+  if (Object.keys(allowed).length >= cap()) {
+    var grp = me.kind === 'group';
+    ask(grp ? 'Questo gruppo è al completo' : 'Il cerchio di coppia è già completo', grp ? 'Ti preparo un nuovo gruppo da 3 e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un gruppo da 3, separato dalla coppia, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
+    return;
+  }
   var left = cap() - Object.keys(allowed).length;
   $('invT').textContent = 'Invita ' + (me.kind === 'group' ? 'qualcuno nel gruppo' : 'la tua persona');
   $('invS').textContent = left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.';
@@ -901,22 +959,23 @@ function startGuest() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
   peer = new Peer();
   peer.on('disconnected', function () { again(); });
-  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Il creatore del cerchio non è online ora.' : 'Problema di rete (' + e.type + ').'; again(); });
+  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Chi ti ha invitato non ha Loopix aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.' : 'Problema di rete (' + e.type + ').'; again(); });
   peer.on('open', function () {
     hostConn = peer.connect(me.hostId, { reliable: true });
-    hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok }); });
+    hostConn.on('open', function () { hostConn.send({ t: 'hi', n: me.name, k: me.tok, c: me.code || '' }); if (!names.length) $('mh').textContent = 'Collegato. Un attimo che entri nel cerchio…'; });
     hostConn.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
-      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
+      else if (d.t === 'msg') addMsg(d.m);
       else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
       else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
       else if (d.t === 'idea') applyIdea(d, null);
-      else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 80); status(); }
+      else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 180); status(); }
     });
     hostConn.on('close', function () { status(); again(); });
   });
@@ -925,8 +984,13 @@ function again() { if (blocked) return; clearTimeout(retry); retry = setTimeout(
 
 /* ---- schede ---- */
 var tab = 'main', ideaSeen = 0, blocked = false;
+function stopFeed() {
+  document.querySelectorAll('#feed iframe').forEach(function (f) { var u = f.src; f.src = 'about:blank'; f.dataset.u = u; setTimeout(function () { f.src = f.dataset.u; }, 50); });
+  document.querySelectorAll('#feed video').forEach(function (v) { try { v.pause(); } catch (e) {} });
+}
 function showPane(id) {
-  ['setup', 'main', 'pl', 'ideas', 'circle', 'style'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
+  if (id !== 'main') stopFeed();
+  ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
   var on = id !== 'setup' && id !== 'pl';
   document.querySelector('header').hidden = id === 'pl';
   $('tabs').hidden = !on;
@@ -934,8 +998,36 @@ function showPane(id) {
   tab = id;
   document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
+  if (id === 'chat') { chatSeen = 0; chatTab(); renderChat(); }
   if (id === 'circle') renderCircle();
   if (id === 'style') renderStyle();
+}
+var msgs = get('msgs', []), chatSeen = 0;
+function chatTab() { $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
+function msgNode(m) {
+  var d = el('div', 'msg' + (m.n === me.name ? ' me' : ''));
+  if (m.n !== me.name) d.appendChild(el('span', 'mn', m.n));
+  d.appendChild(document.createTextNode(m.t)); d.appendChild(el('time', null, ago(m.ts))); return d;
+}
+function renderChat() {
+  var b = $('clog'); b.textContent = '';
+  if (!msgs.length) { b.appendChild(el('div', 'empty', 'Nessun messaggio ancora.\n\nScrivetevi qui: lo legge solo chi è nel cerchio.')); return; }
+  msgs.forEach(function (m) { b.appendChild(msgNode(m)); }); b.scrollTop = b.scrollHeight;
+}
+function addMsg(m, who) {
+  if (!m || typeof m.id !== 'string' || m.id.length > 30) return null;
+  var t = clean(m.t, 1000); if (!t) return null;
+  if (msgs.some(function (x) { return x.id === m.id; })) return null;
+  var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now() };
+  msgs.push(n); if (msgs.length > 300) msgs.shift(); put('msgs', msgs);
+  if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; }
+  else if (n.n !== me.name) { chatSeen++; chatTab(); }
+  return n;
+}
+function sendMsg() {
+  var t = clean($('cin').value, 1000); if (!t) return;
+  var m = addMsg({ id: uid(8), n: me.name, t: t, ts: Date.now() }); $('cin').value = '';
+  if (m) sendEv({ t: 'msg', m: m });
 }
 function ideaTab() { $('tIdea').textContent = ideaSeen ? 'Piani (' + ideaSeen + ')' : 'Piani'; }
 
@@ -1186,7 +1278,7 @@ function guide(force) {
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ] : [
-    'Aspetta che chi ti ha invitato accetti: in alto comparirà “Collegato”.',
+    'Entri da solo: in alto comparirà “Collegato”. Chi ti ha invitato deve avere Loopix aperta.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
@@ -1196,7 +1288,7 @@ function guide(force) {
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
 function wipe() {
-  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
+  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone', 'msgs', 'codes'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
   if (REG.list.length > 1) { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.list[0].id; regSet(REG); }
   else { try { localStorage.removeItem(LSG + 'pin'); } catch (e) {} }
   location.reload();
@@ -1209,22 +1301,27 @@ function begin() {
   if (pinRec) showLock(); else guide(false);
   if (me.role === 'host') startHost(); else startGuest();
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
+  if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
-function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,64})/.exec(v) || /^([\w-]{8,64})$/.exec(v); return m ? m[1] : null; }
-var kindSel = REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia'; }) ? 'group' : 'couple';
+function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,100})/.exec(v) || /^([\w-]{8,100})$/.exec(v); return m ? m[1] : null; }
+var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia'; }) ? 'group' : 'couple';
 function paintKind() { $('kC').setAttribute('aria-pressed', kindSel === 'couple'); $('kG').setAttribute('aria-pressed', kindSel === 'group'); $('sP').textContent = kindSel === 'group' ? 'Tu e altre 2 persone, in privato.' : 'Tu e una persona, in privato.'; }
 $('kC').onclick = function () { kindSel = 'couple'; paintKind(); };
 $('kG').onclick = function () { kindSel = 'group'; paintKind(); };
 function syncKind() { var j = !!pastedId() || !!joinId; $('kindBox').hidden = j; if (!j) paintKind(); }
 $('ic').addEventListener('input', function () { $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; syncKind(); });
-$('sCancel').onclick = function () { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.prev && REG.list.some(function (x) { return x.id === REG.prev; }) ? REG.prev : REG.list[0].id; delete REG.prev; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); };
+$('sCancel').onclick = function () { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.prev && REG.list.some(function (x) { return x.id === REG.prev; }) ? REG.prev : REG.list[0].id; delete REG.prev; delete REG.after; delete REG.nm; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); };
 $('go').addEventListener('click', function () {
   var n = clean($('nm').value, 30);
   if (!n) { $('sH').textContent = 'Scrivi il tuo nome.'; return; }
   var jid = joinId || pastedId();
   if (!joinId && $('ic').value.trim() && !jid) { $('sH').textContent = 'Il link di invito non sembra giusto.'; return; }
-  me = jid ? { name: n, role: 'guest', hostId: jid, tok: uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12), kind: kindSel };
+  me = jid ? { name: n, role: 'guest', hostId: jid.split('_')[0], code: jid.split('_')[1] || '', tok: /^[\w]{8,40}$/.test(jid.split('_')[2] || '') ? jid.split('_')[2] : uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12), kind: kindSel };
   track(jid ? 'richiesta-ingresso' : 'cerchio-creato');
+  if (jid && me.role === 'guest') {
+    var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
+  }
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
 });
 $('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
@@ -1266,6 +1363,9 @@ $('iok').addEventListener('click', saveIdea);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
+$('csend').addEventListener('click', sendMsg);
+$('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
+$('goStyle').addEventListener('click', function () { showPane('style'); });
 $('newC').addEventListener('click', function () { ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano. Potrai scegliere se è di coppia o un gruppo da 3.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
 $('pinR').addEventListener('click', function () { openPin('remove'); });
@@ -1314,13 +1414,23 @@ $('ru').addEventListener('input', function () { $('rc').hidden = !$('ru').value.
 $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add').click(); });
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
 startStats();
+function circleOfHost(h) {
+  for (var i = 0; i < REG.list.length; i++) { try { var m = JSON.parse(localStorage.getItem(lsOf(REG.list[i].id) + 'me')); if (m && m.hostId === h) return REG.list[i].id; } catch (e) {} }
+  return null;
+}
+if (joinId) {
+  var jh = joinId.split('_')[0], have = circleOfHost(jh);
+  if (have && have !== REG.active) { REG.active = have; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); }
+  else if (have) { joinId = null; history.replaceState(null, '', location.pathname); }
+  else if (me) { var nid = 2; while (REG.list.some(function (x) { return x.id === 'c' + nid; })) nid++; REG.list.push({ id: 'c' + nid, label: 'Nuovo' }); REG.prev = REG.active; REG.active = 'c' + nid; regSet(REG); location.reload(); }
+}
 if (me && !joinId) begin();
 else {
   if (joinId) {
-    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('sP').textContent = 'Scrivi il tuo nome per chiedere di entrare. Chi ti ha invitato dovrà accettare.'; $('go').textContent = 'Chiedi di entrare'; $('ic').hidden = true;
+    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
-      $('inst').hidden = false; $('nm').hidden = true; $('go').hidden = true; $('ios').hidden = true;
+      $('ios').hidden = true;
       $('instC').onclick = function () {
         var t = location.origin + location.pathname + '#j=' + joinId;
         (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('instC').textContent = 'Copiato ✓  Ora aggiungi alla Home'; }, function () { $('sH').textContent = 'Copia questo invito a mano: ' + t; });
@@ -1328,7 +1438,8 @@ else {
       $('instX').onclick = function () { $('inst').hidden = true; $('nm').hidden = false; $('go').hidden = false; };
     }
   }
-  if (REG.list.length > 1) { $('sCancel').hidden = false; $('sT').textContent = 'Nuovo cerchio'; }
+  if (REG.list.length > 1) { $('sCancel').hidden = false; if (!joinId) $('sT').textContent = 'Nuovo cerchio'; }
+  if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo gruppo da 3'; }
   syncKind(); showPane('setup');
 }
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
