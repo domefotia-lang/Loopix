@@ -2557,6 +2557,190 @@
 "Not now",
 "Ahora no"
 ],
+"Cosa vi ha colpito?": [
+"What caught your eye?",
+"¿Qué os ha llamado la atención?"
+],
+"✈️ Un posto": [
+"✈️ A place",
+"✈️ Un lugar"
+],
+"🛍️ Da comprare": [
+"🛍️ To buy",
+"🛍️ Para comprar"
+],
+"🍝 Da mangiare": [
+"🍝 To eat",
+"🍝 Para comer"
+],
+"🎟️ Da fare": [
+"🎟️ To do",
+"🎟️ Para hacer"
+],
+"👨‍🍳 Ricetta": [
+"👨‍🍳 Recipe",
+"👨‍🍳 Receta"
+],
+"💡 Idea": [
+"💡 Idea",
+"💡 Idea"
+],
+"✈️ Posti": [
+"✈️ Places",
+"✈️ Lugares"
+],
+"👨‍🍳 Ricette": [
+"👨‍🍳 Recipes",
+"👨‍🍳 Recetas"
+],
+"Dove? (es. Lisbona)": [
+"Where? (e.g. Lisbon)",
+"¿Dónde? (ej. Lisboa)"
+],
+"Quando? (es. a maggio)": [
+"When? (e.g. in May)",
+"¿Cuándo? (ej. en mayo)"
+],
+"Cosa? (es. BMW i7, borsa Zara)": [
+"What? (e.g. BMW i7, Zara bag)",
+"¿Qué? (ej. BMW i7, bolso Zara)"
+],
+"Budget o nota (es. max 500 €)": [
+"Budget or note (e.g. max €500)",
+"Presupuesto o nota (ej. máx. 500 €)"
+],
+"Dove o cosa? (es. Sushi Ko, carbonara)": [
+"Where or what? (e.g. Sushi Ko, carbonara)",
+"¿Dónde o qué? (ej. Sushi Ko, carbonara)"
+],
+"Cosa? (es. concerto, spa, escape room)": [
+"What? (e.g. concert, spa, escape room)",
+"¿Qué? (ej. concierto, spa, escape room)"
+],
+"Quando? (facoltativo)": [
+"When? (optional)",
+"¿Cuándo? (opcional)"
+],
+"Quale piatto? (es. tiramisù)": [
+"Which dish? (e.g. tiramisù)",
+"¿Qué plato? (ej. tiramisú)"
+],
+"Cosa? (es. idea regalo)": [
+"What? (e.g. gift idea)",
+"¿Qué? (ej. idea de regalo)"
+],
+"Sembra un posto: lo mettiamo in ✈️ Un posto?": [
+"Looks like a place: put it in ✈️ A place?",
+"Parece un lugar: ¿lo ponemos en ✈️ Un lugar?"
+],
+"Sembra una cosa da comprare: la mettiamo in 🛍️ Da comprare?": [
+"Looks like something to buy: put it in 🛍️ To buy?",
+"Parece algo para comprar: ¿lo ponemos en 🛍️ Para comprar?"
+],
+"Sembra un posto dove mangiare: lo mettiamo in 🍝 Da mangiare?": [
+"Looks like a place to eat: put it in 🍝 To eat?",
+"Parece un sitio para comer: ¿lo ponemos en 🍝 Para comer?"
+],
+"Sembra una cosa da fare: la mettiamo in 🎟️ Da fare?": [
+"Looks like something to do: put it in 🎟️ To do?",
+"Parece algo para hacer: ¿lo ponemos en 🎟️ Para hacer?"
+],
+"Sembra una ricetta: la mettiamo in 👨‍🍳 Ricetta?": [
+"Looks like a recipe: put it in 👨‍🍳 Recipe?",
+"Parece una receta: ¿la ponemos en 👨‍🍳 Receta?"
+],
+"🌐 Sito ufficiale": [
+"🌐 Official site",
+"🌐 Web oficial"
+],
+"💶 Prezzi": [
+"💶 Prices",
+"💶 Precios"
+],
+"📍 Negozi vicini": [
+"📍 Nearby shops",
+"📍 Tiendas cercanas"
+],
+"🔎 La ricetta": [
+"🔎 The recipe",
+"🔎 La receta"
+],
+"▶ Video": [
+"▶ Video",
+"▶ Vídeo"
+],
+"🔎 Cerca": [
+"🔎 Search",
+"🔎 Buscar"
+],
+"✈️ Voli": [
+"✈️ Flights",
+"✈️ Vuelos"
+],
+"Ti piace? Tocca 😍 per dirlo.": [
+"Like it? Tap 😍 to say so.",
+"¿Te gusta? Toca 😍 para decirlo."
+],
+"Nessun piano qui.": [
+"No plans here.",
+"No hay planes aquí."
+],
+"Dai Reel ai piani": [
+"From Reels to plans",
+"De los Reels a los planes"
+],
+"🎬 Vedete un Reel che vi piace": [
+"🎬 You see a Reel you like",
+"🎬 Veis un Reel que os gusta"
+],
+"✨ Toccate Piano sotto il video": [
+"✨ Tap Plan under the video",
+"✨ Tocad Plan debajo del vídeo"
+],
+"👍 Votate e organizzate insieme": [
+"👍 Vote and organise together",
+"👍 Votad y organizad juntos"
+],
+"ESEMPIO": [
+"EXAMPLE",
+"EJEMPLO"
+],
+"Weekend a Lisbona": [
+"Weekend in Lisbon",
+"Fin de semana en Lisboa"
+],
+"Esempio di piano": [
+"Example plan",
+"Ejemplo de plan"
+],
+"▶ Vai ai Reel": [
+"▶ Go to Reels",
+"▶ Ir a los Reels"
+],
+"+ Crea un piano": [
+"+ Create a plan",
+"+ Crear un plan"
+],
+"Scrivi cosa o dove, anche solo una parola.": [
+"Write what or where, even just one word.",
+"Escribe qué o dónde, aunque sea una palabra."
+],
+"Solo tu, per ora": [
+"Just you, for now",
+"Solo tú, por ahora"
+],
+"Gli altri sono offline 🔔": [
+"The others are offline 🔔",
+"Los demás están desconectados 🔔"
+],
+" offline 🔔": [
+" offline 🔔",
+" desconectado 🔔"
+],
+"Questo sito non lascia vedere il video qui dentro: si apre a parte e poi torni qui.": [
+"This site doesn’t let the video play in here: it opens separately, then you come back.",
+"Este sitio no deja ver el vídeo aquí: se abre aparte y luego vuelves."
+],
 "adesso": [
 "now",
 "ahora"
@@ -2654,7 +2838,7 @@
 " personas."
 ]
 };
-  var FR = ["\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "Era l’invito del cerchio di coppia, che è già completo.", " ti sta mandando quello giusto: aprilo appena arriva.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", " vuole guardare i Reel insieme a te", "⏳ I messaggi si cancellano da soli ", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", "Copia questo invito a mano: ", ", aprila dall’icona e tocca ", " Per averla come app: menu ", " (l’invito è già copiato).", ". Reelta si riapre adesso.", " Invita la prima persona!", ", poi aprila dall’icona.", " è entrato nel cerchio ✓", " Il link vale 10 minuti.", " persone, in privato.", " deve farti entrare.", "Modalità riservata: ", "Aspetta un attimo: ", "Copia scaricata ✓ (", "Problema di rete (", " nel tuo cerchio?", "Insieme, Reel di ", "Ho ripristinato ", " · non collegato", "Gruppo grande · ", "Ci sono ancora ", " Reel aggiunti.", "Vuoi accettare ", "Gruppo da 3 · ", ", proposto da ", " ha segnalato ", " vuole entrare", " Reel nuovo ↓", "✓✓ Letto da: ", "Nel cerchio: ", " (tu, centro)", " Reel nuovi ↓", " è silenziato", "Messaggio di ", " c’erano già)", "🕶️ Video da ", "🚩 Segnala a ", " dal cerchio", "Tu e fino a ", "Cerchio di ", "Votato da: ", "🔇 Silenzia ", "Recuperati ", "Messaggi (", "▶  Guarda ", " (partner)", "Togliere ", " · aperto", "Coppia · ", " cerchio.", " (centro)", "Video di ", " persone.", "Reagisci ", " Reel da ", "🚫 Togli ", " cerchi.", "Reel di ", "Colore ", "Piani (", " posti.", " ora fa", "Invita ", " ore fa", " min fa", "Ciao! ", ", da ", " (tu)"];
+  var FR = ["\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "Era l’invito del cerchio di coppia, che è già completo.", " ti sta mandando quello giusto: aprilo appena arriva.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", " vuole guardare i Reel insieme a te", "⏳ I messaggi si cancellano da soli ", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", ", aprila dall’icona e tocca ", "Copia questo invito a mano: ", " Per averla come app: menu ", " (l’invito è già copiato).", ". Reelta si riapre adesso.", " Invita la prima persona!", " è entrato nel cerchio ✓", ", poi aprila dall’icona.", " Il link vale 10 minuti.", " persone, in privato.", "Modalità riservata: ", " deve farti entrare.", "Copia scaricata ✓ (", "Aspetta un attimo: ", "Problema di rete (", "Insieme, Reel di ", " nel tuo cerchio?", " · non collegato", "Ho ripristinato ", "Gruppo grande · ", "Ci sono ancora ", " Reel aggiunti.", "Vuoi accettare ", ", proposto da ", " ha segnalato ", "Gruppo da 3 · ", " vuole entrare", " Reel nuovo ↓", " è silenziato", "Nel cerchio: ", " Reel nuovi ↓", " (tu, centro)", " c’erano già)", "✓✓ Letto da: ", "Messaggio di ", "Tu e fino a ", "🚩 Segnala a ", " dal cerchio", "🕶️ Video da ", "Cerchio di ", "🔇 Silenzia ", "Recuperati ", "Votato da: ", " (partner)", " offline 🔔", "▶  Guarda ", "Messaggi (", " Reel da ", " · aperto", "Video di ", " cerchio.", "Togliere ", "Coppia · ", "Reagisci ", " (centro)", " persone.", "Reel di ", "🚫 Togli ", " cerchi.", "Invita ", "Piani (", " ore fa", " ora fa", " posti.", " min fa", "Colore ", "Ciao! ", ", da ", " (tu)"];
   var RX = [[/(\d+) nuovi\b/g, '$1 new', '$1 nuevos'], [/(\d+) nuovo\b/g, '$1 new', '$1 nuevo'], [/(\d+) di (\d+) post[oi] usati\./g, '$1 of $2 spots used.', '$1 de $2 plazas usadas.'], [/^da ([A-ZÀ-Ú])/, 'by $1', 'de $1'], [/^ha mandato (\d+) Reel$/, 'sent $1 Reels', 'ha enviado $1 Reels'], [/^(\d+) di (\d+)/, '$1 of $2', '$1 de $2']];
   var lang = 'it';
   try { var s = localStorage.getItem('lxlang'); if (s === 'it' || s === 'en' || s === 'es') lang = s; else { var n = String(navigator.language || 'it').slice(0, 2).toLowerCase(); lang = n === 'it' ? 'it' : n === 'es' ? 'es' : 'en'; } } catch (e) {}
