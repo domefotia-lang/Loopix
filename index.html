@@ -219,6 +219,10 @@ a.r-btn{text-decoration:none}
 .svo button[aria-pressed="true"]{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
 #svQ textarea{width:100%;min-height:64px;margin:6px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
 .svpl{font-weight:700;color:var(--t)}.svpre{white-space:pre-wrap;font-size:13px;background:var(--s2);border-radius:12px;padding:10px 12px;color:var(--t);max-height:220px;overflow:auto;font-family:inherit}
+.refl{list-style:none;margin:10px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.refl li{display:flex;gap:12px;align-items:center;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.refl b{flex:none;min-width:78px;color:#B98B4E;font-size:15px}.refl span{color:var(--t);font-size:14px;line-height:1.35}
+.refn{font-size:13px;color:var(--m)}
 .iq{font-weight:700;color:var(--t);margin:2px 0 8px}
 .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .kgrid button{background:var(--s2);border:1.5px solid transparent;color:var(--t);border-radius:16px;padding:11px 8px;font-size:15px;font-weight:700;cursor:pointer;min-height:46px}
@@ -565,6 +569,19 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="gdX">Ho capito</button>
 </div></div>
 
+<div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
+  <h2 id="refT">Consiglia Reelta</h2>
+  <p>Manda l’app a un’altra coppia: crea la sua coppia, separata dalla vostra. Conta quando la usano davvero (almeno 3 Reel).</p>
+  <ol class="refl">
+    <li><b>1 coppia</b><span>1 mese di Stile: temi, effetti luce e suoni</span></li>
+    <li><b>3 coppie</b><span>Stile per sempre</span></li>
+    <li><b>5 coppie</b><span>3 mesi di “Riconosci dal video”</span></li>
+    <li><b>10 coppie</b><span>1 anno di Reelta Plus completo</span></li>
+  </ol>
+  <p class="refn">Anche la coppia che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: le coppie che consigli da oggi contano già.</p>
+  <button class="btn" id="refSend">💌 Manda l’app</button><button class="btn-o wide" id="refNo">Chiudi</button>
+</div></div>
+
 <div class="mod" id="svM" role="dialog" aria-modal="true" aria-labelledby="svT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
   <h2 id="svT">Il tuo parere</h2>
   <p>Bastano 30 secondi. Prima di inviare vedi tutto quello che parte.</p>
@@ -880,7 +897,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v57', errLog = [];
+var APP_VER = 'v58', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2284,13 +2301,15 @@ $('haveInv').addEventListener('click', async function () {
 });
 ['inf', 'inf2'].forEach(function (i) { $(i).addEventListener('click', function () { $('im').classList.add('open'); }); });
 $('imc').addEventListener('click', function () { $('im').classList.remove('open'); });
-['im', 'invM', 'actM', 'bugM', 'idm', 'svM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
+['im', 'invM', 'actM', 'bugM', 'idm', 'svM', 'refM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
 $('iok').addEventListener('click', saveIdea);
 $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
 $('svGo').addEventListener('click', function () { svOpen(); });
-$('refGo').addEventListener('click', recommend); $('refGo2').addEventListener('click', function () { $('invM').classList.remove('open'); recommend(); }); $('ip').addEventListener('input', ideaSug);
+function refOpen() { $('refM').classList.add('open'); }
+$('refGo').addEventListener('click', refOpen); $('refGo2').addEventListener('click', function () { $('invM').classList.remove('open'); refOpen(); });
+$('refSend').addEventListener('click', function () { $('refM').classList.remove('open'); recommend(); }); $('refNo').addEventListener('click', function () { $('refM').classList.remove('open'); }); $('ip').addEventListener('input', ideaSug);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
