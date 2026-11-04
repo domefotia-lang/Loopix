@@ -380,9 +380,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
     <p id="icHelp">Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
     <div id="inst" hidden class="inv2" style="margin:0 0 12px;flex-direction:column;align-items:stretch">
-      <span><b>📲 Hai già Reelta sulla schermata Home?</b> Su iPhone i link si aprono in Safari, che è una copia separata. Entra dall’app:</span>
+      <span id="instA"><b>📲 Hai già Reelta sulla schermata Home?</b> Su iPhone i link si aprono in Safari, che è una copia separata. Entra dall’app:</span>
       <button class="btn" id="instC" style="margin-top:8px">Sì: copia l’invito per l’app</button>
       <span id="instT" hidden style="margin-top:8px">Copiato ✓ Ora chiudi Safari, apri <b>Reelta dall’icona</b> e tocca <b>“Incolla l’invito che hai ricevuto”</b>.</span>
+      <span id="instTA" hidden style="margin-top:8px">Copiato ✓ Ora apri <b>Reelta dall’icona</b> e tocca <b>“Incolla”</b> (il pulsante dorato in basso, oppure “Incolla l’invito che hai ricevuto”). Poi tocca <b>Entra</b>.</span>
       <span style="margin-top:10px;font-size:14px">Non ce l’hai? Entra qui sotto con il tuo nome: dopo ti spiego come metterla sulla Home.</span>
     </div>
     <button class="btn" id="go">Inizia</button>
@@ -503,7 +504,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="mod" id="im" role="dialog" aria-modal="true" aria-labelledby="imT"><div class="card" style="max-width:340px;width:100%;max-height:85dvh;overflow-y:auto">
   <h2 id="imT">Come funziona</h2>
   <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
-  <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 10 minuti. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
+  <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 24 ore. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
   <p>• <b>Cerchi:</b> una coppia (2 persone) o un gruppo da 3, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
   <p>• <b>Chi crea il cerchio</b> è il centro: deve avere Reelta aperta perché Reel e messaggi arrivino. Può togliere chi vuole.</p>
   <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
@@ -914,7 +915,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v63', errLog = [];
+var APP_VER = 'v64', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1453,7 +1454,7 @@ function hex(b) { return Array.from(new Uint8Array(b)).map(function (x) { return
 function idOf(k) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode('loopix-id:' + k)).then(function (h) { return hex(h).slice(0, 24); }); }
 function hmac(k, m) { return crypto.subtle.importKey('raw', new TextEncoder().encode(k), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']).then(function (key) { return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(m)); }).then(hex); }
 function keyOfId(id) { var ks = Object.keys(allowed); return Promise.all(ks.map(idOf)).then(function (ids) { var i = ids.indexOf(String(id)); return i >= 0 ? ks[i] : null; }); }
-var INV_MS = 10 * 60 * 1000; // un invito vale 10 minuti
+var INV_MS = 24 * 60 * 60 * 1000; // un invito vale 24 ore
 function codesNow() { var cs = get('codes', []), now = Date.now(), ch = false; cs = cs.map(function (x) { if (typeof x === 'string') { ch = true; return { c: x, ts: now }; } return x; }).filter(function (x) { return x && x.c && now - x.ts < INV_MS; }); if (ch) put('codes', cs); return cs; }
 function validCode(code) { return codesNow().some(function (x) { return x.c === code; }); }
 function hostHi(c, d) {
@@ -1481,7 +1482,7 @@ function hostHi(c, d) {
           return;
         }
         if (code && validCode(code)) { accept(); return; }
-        try { c.send({ t: 'wait', why: code ? '⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ' + me.name + ' di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.' : 'Aspetta un attimo: ' + me.name + ' deve farti entrare.' }); } catch (e) {}
+        try { c.send({ t: 'wait', why: code ? '⏱️ Il tuo pass è scaduto (valeva 24 ore). Ho chiesto a ' + me.name + ' di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.' : 'Aspetta un attimo: ' + me.name + ' deve farti entrare.' }); } catch (e) {}
         try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
         ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
           if (!c.open) return;
@@ -1493,7 +1494,7 @@ function hostHi(c, d) {
 function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc);
+  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 24 ore.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc);
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -1504,7 +1505,7 @@ function invite() {
   }
   var left = cap() - Object.keys(allowed).length;
   $('invT').textContent = 'Invita ' + (me.kind === 'group' || me.kind === 'big' ? 'qualcuno nel gruppo' : 'la tua persona');
-  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 10 minuti.';
+  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 24 ore.';
   $('invH').textContent = ''; $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
@@ -2246,7 +2247,7 @@ function guide(force) {
   put('guided', 1);
   var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
   (host ? [
-    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 10 minuti). Tieni Reelta aperta mentre entra.',
+    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 24 ore). Tieni Reelta aperta mentre entra.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ] : [
@@ -2498,11 +2499,13 @@ else {
   if (joinId) {
     $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
-    if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
+    var andr = /android/i.test(navigator.userAgent);
+    if ((/iphone|ipad|ipod/i.test(navigator.userAgent) || andr) && !standalone) {
       $('ios').hidden = true; $('inst').hidden = false;
+      if (andr) $('instA').innerHTML = '<b>📲 Hai già Reelta tra le app o sulla Home?</b> I link si aprono nel browser, che è una copia separata: se entri da qui, nell’app non ti ritrovi. Entra dall’app:';
       $('instC').onclick = function () {
         var t = location.origin + location.pathname + '#j=' + joinId;
-        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('instC').textContent = 'Copiato ✓'; $('instT').hidden = false; }, function () { $('sH').textContent = 'Copia questo invito a mano: ' + t; });
+        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('instC').textContent = 'Copiato ✓'; $((andr ? 'instTA' : 'instT')).hidden = false; }, function () { $('sH').textContent = 'Copia questo invito a mano: ' + t; });
       };
     }
   }
