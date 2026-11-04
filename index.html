@@ -962,7 +962,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v70', errLog = [];
+var APP_VER = 'v71', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1412,7 +1412,6 @@ function status() {
   regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo gruppo grande' : me.kind === 'group' ? 'Il tuo gruppo da 3' : 'Il tuo cerchio di coppia') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
-  $('bd').textContent = live ? 'Collegato' : (me.role === 'host' ? 'In attesa di ospiti' : 'Non collegato');
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
   $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/' + (me.role === 'host' ? cap() + 1 : (circMax || 4)) + ')';
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
@@ -1510,7 +1509,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false };
+var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -1541,7 +1540,7 @@ function mbToGuests(m, except) {
 // membro: al creatore, se non è collegato
 function mbToHost(m, fail, quiet) { mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
 function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
-var mbBusy = false, mbLast = 0;
+var mbBusy = false, mbLast = 0, srvSeen = 0;
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
@@ -1558,12 +1557,12 @@ function mbPull(force) {
             else guestData(d);
           }, function () {}); });
         }, Promise.resolve()).then(function () { return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
-      });
+      }).then(function () { var was = srvSeen; srvSeen = Date.now(); if (me && Date.now() - was > 60000) status(); });
     });
   })).catch(function () {}).then(function () { mbBusy = false; });
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) mbPull(true); });
-setInterval(function () { if (!document.hidden) mbPull(false); }, 30000);
+setInterval(function () { if (document.hidden || !me) return; var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open); if (!live || Date.now() - mbLast > 30000) mbPull(true); }, 10000);
 // notifiche ad app chiusa: il telefono si iscrive alle sue caselle (solo un avviso generico, mai il contenuto)
 function pushOK() { return srvOn() && 'serviceWorker' in navigator && 'PushManager' in window && window.Notification; }
 function pushBoxes() {
@@ -1613,7 +1612,7 @@ function hostJoinVirt(d) {
 var joinTries = 0, joinT = null;
 function srvJoin() {
   clearTimeout(joinT);
-  if (!srvOn() || !me || me.role === 'host' || me.joined || blocked || !me.code || !me.tok || !me.hostId || joinTries >= 12) return;
+  if (!srvOn() || !me || me.role === 'host' || (me.joined && !me.rejoin) || blocked || !me.code || !me.tok || !me.hostId || joinTries >= 12) return;
   joinTries++;
   mbPut(me.hostId + '_' + me.code, 'j', { t: 'jhi', n: me.name, k: me.tok, c: me.code }, joinTries > 1 && joinTries % 4).catch(function () {});
   setTimeout(function () { mbPull(true); }, 4000);
@@ -1625,8 +1624,9 @@ function gSend(m) {
 }
 function srvStart() {
   if (!srvOn() || !me) return;
+  if (me.rejoin && Date.now() - me.rejoin > 2 * 864e5) { delete me.rejoin; put('me', me); }
   setTimeout(function () { mbPull(true); }, 1500);
-  if (me.role !== 'host' && !me.joined) setTimeout(function () { if (!me.joined) srvJoin(); }, 7000);
+  if (me.role !== 'host' && (!me.joined || me.rejoin)) setTimeout(function () { if (!me.joined || me.rejoin) srvJoin(); }, me.rejoin ? 1500 : 7000);
   if (pushOK() && Notification.permission === 'granted') pushSync();
   else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
     setTimeout(function () {
@@ -1717,9 +1717,9 @@ function startGuest() {
   peer.on('disconnected', function () { again(); });
   peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? (srvOn() && !me.joined ? 'Chi ti ha invitato ha Reelta chiusa: gli ho mandato un avviso. Entri da solo appena la apre, anche se chiudi l’app.' : 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.') : 'Problema di rete (' + e.type + ').'; if (e.type === 'peer-unavailable' && !me.joined) srvJoin(); again(); });
   peer.on('open', function () {
-    hostConn = peer.connect(me.hostId, { reliable: true }); var hc = hostConn; hc.auth = !me.joined; hc.ng = uid(16);
+    hostConn = peer.connect(me.hostId, { reliable: true }); var hc = hostConn; hc.auth = !me.joined || !!me.rejoin; hc.ng = uid(16);
     hostConn.on('open', function () {
-      if (me.joined) idOf(me.tok).then(function (id) { hc.send({ t: 'hi', n: me.name, id: id, ng: hc.ng }); });
+      if (me.joined && !me.rejoin) idOf(me.tok).then(function (id) { hc.send({ t: 'hi', n: me.name, id: id, ng: hc.ng }); });
       else hostConn.send({ t: 'hi', n: me.name, k: me.tok, c: me.code || '' }); if (!names.length) $('mh').textContent = 'Collegato. Un attimo che entri nel cerchio…'; });
     hostConn.on('data', function (d) {
       if (!d || typeof d !== 'object') return;
@@ -1740,7 +1740,7 @@ function startGuest() {
 // tutto ciò che arriva a un membro dal creatore: dal collegamento diretto o dalla casella del server
 function guestData(d) {
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
-      if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
+      if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         var ob = outbox; outbox = []; put('outbox', []); ob.forEach(function (o) { gSend(o && o.t ? o : { t: 'reel', r: o }); }); if (tab === 'chat') renderChat(true);
         clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
@@ -2624,6 +2624,8 @@ $('go').addEventListener('click', function () {
   var n = clean($('nm').value, 30);
   if (!n) { $('sH').textContent = 'Scrivi il tuo nome.'; return; }
   var jid = joinId || pastedId();
+  var haveP = jid && typeof circleOfHost === 'function' && circleOfHost(jid.split('_')[0]);
+  if (haveP) { markRejoin(haveP, jid); REG.list = REG.list.filter(function (x) { return x.id === haveP || x.id !== REG.active || x.label !== 'Nuovo'; }); REG.active = haveP; regSet(REG); history.replaceState(null, '', location.pathname); safeReload(); return; }
   if (!joinId && $('ic').value.trim() && !jid) { $('sH').textContent = 'Il link di invito non sembra giusto.'; return; }
   if (!jid && !canCreate(kindSel)) { $('sH').textContent = 'Per entrare serve un invito: incolla qui sopra il link che ti hanno mandato.'; return; }
   me = jid ? { name: n, role: 'guest', hostId: jid.split('_')[0], code: jid.split('_')[1] || '', tok: /^[\w]{8,40}$/.test(jid.split('_')[2] || '') ? jid.split('_')[2] : uid(12) } : { name: n, role: 'host', hostId: 'lpx' + uid(12), kind: kindSel };
@@ -2759,11 +2761,19 @@ $('bd').addEventListener('click', function () {
   var app = location.origin + location.pathname.replace(/index\.html$/, '');
   var T = window.LX_T || function (x) { return x; };
   var t = '🔔 ' + me.name + T(' ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ') + app + ')';
-  track('avviso-inviato'); put('trillAt', Date.now());
   if (srvOn()) {
-    if (me.role === 'host') mbToGuests({ t: 'trill', n: me.name }, null); else mbToHost({ t: 'trill', n: me.name });
-    $('mh').textContent = '🔔 Trillo mandato: le arriva un avviso sul telefono.'; return;
+    var who = (me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }));
+    var wn = who.length === 1 ? who[0] : (who.length ? 'gli altri' : '');
+    if (!wn) { $('mh').textContent = 'Nel cerchio ci sei solo tu: invita qualcuno.'; return; }
+    ask('🔔 Avvisare ' + wn + '?', 'Riceve una notifica sul telefono e, quando apre Reelta, vede che stavi aspettando.', '🔔 Manda l’avviso').then(function (y) {
+      if (!y) return;
+      track('avviso-inviato'); put('trillAt', Date.now());
+      if (me.role === 'host') mbToGuests({ t: 'trill', n: me.name }, null); else mbToHost({ t: 'trill', n: me.name });
+      setTimeout(function () { ask('🔔 Avviso mandato', 'Appena ' + wn + ' apre Reelta vi collegate da soli. Intanto puoi mandare Reel e messaggi: arrivano lo stesso.', 'Ok'); }, 250);
+    });
+    return;
   }
+  track('avviso-inviato'); put('trillAt', Date.now());
   if (navigator.share) navigator.share({ text: t }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('mh').textContent = 'Messaggio copiato: incollalo su WhatsApp.'; });
 });
@@ -2797,12 +2807,18 @@ $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
 startStats(); tcount(); svyCheck();
 checkDev(get('dev', '')).then(function (ok) { isDev = ok; applyDev(); });
+// un nuovo invito dello stesso creatore: il cerchio che ho già si ricollega con il codice nuovo (ripara pass non più riconosciuti)
+function markRejoin(cid, jid) {
+  try { var P = lsOf(cid), m = JSON.parse(localStorage.getItem(P + 'me') || 'null'), c = String(jid).split('_')[1] || '';
+    if (m && m.role !== 'host' && c) { m.code = c; m.rejoin = Date.now(); localStorage.setItem(P + 'me', JSON.stringify(m)); if (cid === REG.active && me && me.hostId === m.hostId) { me.code = c; me.rejoin = m.rejoin; } } } catch (e) {}
+}
 function circleOfHost(h) {
   for (var i = 0; i < REG.list.length; i++) { try { var m = JSON.parse(localStorage.getItem(lsOf(REG.list[i].id) + 'me')); if (m && m.hostId === h) return REG.list[i].id; } catch (e) {} }
   return null;
 }
 if (joinId) {
   var jh = joinId.split('_')[0], have = circleOfHost(jh);
+  if (have) markRejoin(have, joinId);
   if (have && have !== REG.active) { REG.active = have; regSet(REG); history.replaceState(null, '', location.pathname); safeReload(); }
   else if (have) { joinId = null; history.replaceState(null, '', location.pathname); }
   else if (me) { var nid = 2; while (REG.list.some(function (x) { return x.id === 'c' + nid; })) nid++; REG.list.push({ id: 'c' + nid, label: 'Nuovo' }); REG.prev = REG.active; REG.active = 'c' + nid; regSet(REG); safeReload(); }
