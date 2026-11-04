@@ -2741,6 +2741,114 @@
 "This site doesn’t let the video play in here: it opens separately, then you come back.",
 "Este sitio no deja ver el vídeo aquí: se abre aparte y luego vuelves."
 ],
+"Di cosa parla?": [
+"What’s it about?",
+"¿De qué trata?"
+],
+"📝 Di cosa parla?": [
+"📝 What’s it about?",
+"📝 ¿De qué trata?"
+],
+"📝 Riassunto": [
+"📝 Summary",
+"📝 Resumen"
+],
+"📝 Chiesto": [
+"📝 Asked",
+"📝 Preguntado"
+],
+"😂 Fa ridere": [
+"😂 Funny",
+"😂 Divertido"
+],
+"❤️ Per noi": [
+"❤️ For us",
+"❤️ Para nosotros"
+],
+"🍝 Ricetta": [
+"🍝 Recipe",
+"🍝 Receta"
+],
+"📰 Notizia": [
+"📰 News",
+"📰 Noticia"
+],
+"chiede di cosa parla il tuo Reel": [
+"asks what your Reel is about",
+"pregunta de qué trata tu Reel"
+],
+"ti spiega il Reel": [
+"explains the Reel",
+"te explica el Reel"
+],
+"Rispondi in una riga": [
+"Answer in one line",
+"Responde en una línea"
+],
+"Scritto da ": [
+"Written by ",
+"Escrito por "
+],
+"Hai già chiesto a ": [
+"You already asked ",
+"Ya le preguntaste a "
+],
+". Appena risponde lo vedi qui, e ti arriva un avviso.": [
+". As soon as they answer you’ll see it here, and you’ll get a heads-up.",
+". En cuanto responda lo verás aquí y te llegará un aviso."
+],
+"Chiedi a ": [
+"Ask ",
+"Pregunta a "
+],
+" di raccontartelo in una riga. Così decidi tu se guardarlo tutto.": [
+" to tell you in one line. Then you decide whether to watch it all.",
+" que te lo cuente en una línea. Así decides tú si verlo entero."
+],
+"📝 Chiedi a ": [
+"📝 Ask ",
+"📝 Pregunta a "
+],
+" vuole sapere di cosa parla. Basta un tocco, la riga è facoltativa.": [
+" wants to know what it’s about. One tap is enough, the line is optional.",
+" quiere saber de qué trata. Basta un toque, la línea es opcional."
+],
+" vogliono sapere di cosa parla. Basta un tocco, la riga è facoltativa.": [
+" want to know what it’s about. One tap is enough, the line is optional.",
+" quieren saber de qué trata. Basta un toque, la línea es opcional."
+],
+"Scrivi in breve di cosa parla: chi non ha tempo di guardarlo tutto lo legge qui.": [
+"Write briefly what it’s about: anyone short on time can read it here.",
+"Escribe en breve de qué trata: quien no tenga tiempo de verlo entero lo lee aquí."
+],
+"Es. guarda il finale 😂": [
+"E.g. watch the ending 😂",
+"Ej. mira el final 😂"
+],
+"Aggiorna": [
+"Update",
+"Actualizar"
+],
+"Scegli un motivo o scrivi una riga.": [
+"Pick a reason or write a line.",
+"Elige un motivo o escribe una línea."
+],
+"Fatto: ": [
+"Done: ",
+"Hecho: "
+],
+" riceve la richiesta.": [
+" gets the request.",
+" recibe la petición."
+],
+" chiede": [
+" asks",
+" pregunta"
+],
+" chiedono": [
+" ask",
+" preguntan"
+],
 "ti stava aspettando 🔔": [
 "was waiting for you 🔔",
 "te estaba esperando 🔔"
@@ -3066,7 +3174,7 @@
 " personas."
 ]
 };
-  var FR = [": ogni tanto Reelta chiede 3 domande. Se tocchi “Invia”, partono le risposte e alcuni numeri d’uso di quel telefono (Reel e piani a settimana, giorni di uso), con un codice casuale al posto dei nomi. Prima di inviare vedi esattamente il testo che parte. Le risposte sono conservate su Supabase, a Londra (Regno Unito), e lette solo da chi sviluppa Reelta.", "\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.", ": il link che mandi a un’altra coppia contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quante coppie sono arrivate grazie a te, per i premi futuri.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "Era l’invito del cerchio di coppia, che è già completo.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", " ti sta mandando quello giusto: aprilo appena arriva.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", " vuole guardare i Reel insieme a te", "⏳ I messaggi si cancellano da soli ", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", ", aprila dall’icona e tocca ", "Copia questo invito a mano: ", " Per averla come app: menu ", ". Reelta si riapre adesso.", " (l’invito è già copiato).", " Invita la prima persona!", ", poi aprila dall’icona.", " Il link vale 10 minuti.", " è entrato nel cerchio ✓", " persone, in privato.", "Modalità riservata: ", " deve farti entrare.", "Copia scaricata ✓ (", "Aspetta un attimo: ", "Problema di rete (", " nel tuo cerchio?", "Insieme, Reel di ", " · non collegato", "Ho ripristinato ", " Apri Reelta in ", "Gruppo grande · ", " Reel aggiunti.", "Vuoi accettare ", "Ci sono ancora ", "Gruppo da 3 · ", ", proposto da ", " vuole entrare", " ha segnalato ", " c’erano già)", " Reel nuovi ↓", " Reel nuovo ↓", "Nel cerchio: ", "Messaggio di ", "✓✓ Letto da: ", " è silenziato", " (tu, centro)", "Tu e fino a ", "🕶️ Video da ", " dal cerchio", " e lì: menu ", "🚩 Segnala a ", "🔇 Silenzia ", "Recuperati ", "Votato da: ", "Cerchio di ", "Messaggi (", " offline 🔔", " (partner)", "▶  Guarda ", "Togliere ", "Coppia · ", " cerchio.", "Video di ", "Reagisci ", " persone.", " · aperto", " (centro)", " Reel da ", "Reel di ", "🚫 Togli ", " cerchi.", "Piani (", "Invita ", " posti.", " ora fa", " ore fa", "Colore ", " min fa", "Ciao! ", ", da ", " (tu)"];
+  var FR = [": ogni tanto Reelta chiede 3 domande. Se tocchi “Invia”, partono le risposte e alcuni numeri d’uso di quel telefono (Reel e piani a settimana, giorni di uso), con un codice casuale al posto dei nomi. Prima di inviare vedi esattamente il testo che parte. Le risposte sono conservate su Supabase, a Londra (Regno Unito), e lette solo da chi sviluppa Reelta.", "\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.", ": il link che mandi a un’altra coppia contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quante coppie sono arrivate grazie a te, per i premi futuri.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " vogliono sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " vuole sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " di raccontartelo in una riga. Così decidi tu se guardarlo tutto.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "Era l’invito del cerchio di coppia, che è già completo.", " ti sta mandando quello giusto: aprilo appena arriva.", ". Appena risponde lo vedi qui, e ti arriva un avviso.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", "⏳ I messaggi si cancellano da soli ", " vuole guardare i Reel insieme a te", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", ", aprila dall’icona e tocca ", "Copia questo invito a mano: ", " Per averla come app: menu ", ". Reelta si riapre adesso.", " (l’invito è già copiato).", " Invita la prima persona!", ", poi aprila dall’icona.", " Il link vale 10 minuti.", " è entrato nel cerchio ✓", " riceve la richiesta.", " persone, in privato.", "Modalità riservata: ", " deve farti entrare.", "Copia scaricata ✓ (", "Aspetta un attimo: ", "Problema di rete (", "Hai già chiesto a ", " nel tuo cerchio?", "Insieme, Reel di ", " · non collegato", " Apri Reelta in ", "Gruppo grande · ", "Ho ripristinato ", "Vuoi accettare ", " Reel aggiunti.", "Ci sono ancora ", "Gruppo da 3 · ", " vuole entrare", " ha segnalato ", ", proposto da ", "✓✓ Letto da: ", " c’erano già)", " è silenziato", " Reel nuovi ↓", "Nel cerchio: ", " (tu, centro)", "Messaggio di ", " Reel nuovo ↓", " e lì: menu ", "Tu e fino a ", "🚩 Segnala a ", " dal cerchio", "🕶️ Video da ", "📝 Chiedi a ", "Recuperati ", "Scritto da ", "🔇 Silenzia ", "Votato da: ", "Cerchio di ", "▶  Guarda ", " offline 🔔", "Messaggi (", " (partner)", "Togliere ", "Video di ", " persone.", " (centro)", "Chiedi a ", " chiedono", "Reagisci ", " · aperto", "Coppia · ", " cerchio.", " Reel da ", "Reel di ", " cerchi.", "🚫 Togli ", "Colore ", "Invita ", " ore fa", " ora fa", "Fatto: ", " chiede", " posti.", "Piani (", " min fa", "Ciao! ", " (tu)", ", da "];
   var RX = [[/(\d+) nuovi\b/g, '$1 new', '$1 nuevos'], [/(\d+) nuovo\b/g, '$1 new', '$1 nuevo'], [/(\d+) di (\d+) post[oi] usati\./g, '$1 of $2 spots used.', '$1 de $2 plazas usadas.'], [/^da ([A-ZÀ-Ú])/, 'by $1', 'de $1'], [/^ha mandato (\d+) Reel$/, 'sent $1 Reels', 'ha enviado $1 Reels'], [/^(\d+) di (\d+)/, '$1 of $2', '$1 de $2']];
   var lang = 'it';
   try { var s = localStorage.getItem('lxlang'); if (s === 'it' || s === 'en' || s === 'es') lang = s; else { var n = String(navigator.language || 'it').slice(0, 2).toLowerCase(); lang = n === 'it' ? 'it' : n === 'es' ? 'es' : 'en'; } } catch (e) {}

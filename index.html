@@ -219,6 +219,12 @@ a.r-btn{text-decoration:none}
 .svo button[aria-pressed="true"]{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
 #svQ textarea{width:100%;min-height:64px;margin:6px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
 .svpl{font-weight:700;color:var(--t)}.svpre{white-space:pre-wrap;font-size:13px;background:var(--s2);border-radius:12px;padding:10px 12px;color:var(--t);max-height:220px;overflow:auto;font-family:inherit}
+.sumb{margin-left:8px;background:var(--s2);border:1px solid transparent;color:var(--t);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.sumb.ask{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
+.sumtag{display:inline-block;font-weight:800;color:var(--t);background:var(--s2);border-radius:999px;padding:6px 12px;margin:4px 0 8px}
+.sumtx{font-size:17px;line-height:1.45;color:var(--t);overflow-wrap:anywhere;margin:0 0 6px}
+#sumB textarea{width:100%;min-height:60px;margin:8px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
+#sumB .btn{margin-top:10px}
 .refl{list-style:none;margin:10px 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .refl li{display:flex;gap:12px;align-items:center;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
 .refl b{flex:none;min-width:78px;color:#B98B4E;font-size:15px}.refl span{color:var(--t);font-size:14px;line-height:1.35}
@@ -403,7 +409,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <section class="pane" id="pl">
   <div class="grab" aria-hidden="true"></div>
-  <div class="strip"><div class="who" id="pc"></div><select id="ps" aria-label="Come passare al Reel successivo"><option value="0">Avanzi tu</option><option value="20">Da solo ogni 20 s</option><option value="40">Da solo ogni 40 s</option><option value="60">Da solo ogni 60 s</option></select><button class="btn-o" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="px">Chiudi</button></div>
+  <div class="strip"><div class="who" id="pc"></div><select id="ps" aria-label="Come passare al Reel successivo"><option value="0">Avanzi tu</option><option value="20">Da solo ogni 20 s</option><option value="40">Da solo ogni 40 s</option><option value="60">Da solo ogni 60 s</option></select><button class="btn-o" id="psum" aria-label="Di cosa parla?">📝</button><button class="btn-o" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="px">Chiudi</button></div>
   <div class="immc" id="immX" hidden><button id="immOut" aria-label="Esci dallo schermo intero">✕</button></div><div class="immc" id="immR" hidden></div>
   <div class="stage" id="st"></div>
   <div class="live" id="lv" hidden><div id="ll"></div><div class="r"><input id="li" placeholder="Scrivi in diretta…" aria-label="Commento in diretta" maxlength="300"><button class="btn-o" id="lsend">Invia</button></div></div>
@@ -567,6 +573,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
   <button class="btn-o wide" id="gdX">Ho capito</button>
+</div></div>
+
+<div class="mod" id="sumM" role="dialog" aria-modal="true" aria-labelledby="sumT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
+  <h2 id="sumT">Di cosa parla?</h2>
+  <div id="sumB"></div>
+  <div class="hint" id="sumH" aria-live="polite"></div>
+  <button class="btn-o wide" id="sumX">Chiudi</button>
 </div></div>
 
 <div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
@@ -890,6 +903,8 @@ async function resolveShort(u) {
 
 /* ---- feed ---- */
 var nodes = {}, unseen = 0, EMO = ['❤️', '😂', '😮', '🔥'];
+var SUMTAG = ['😂 Fa ridere', '❤️ Per noi', '🍝 Ricetta', '✈️ Un posto', '🛍️ Da comprare', '💡 Idea', '📰 Notizia'];
+function cleanQ(q) { var o = {}; if (q && typeof q === 'object') Object.keys(q).slice(0, 8).forEach(function (n) { var c = clean(n, 30); if (c) o[c] = 1; }); return o; }
 function cleanX(x) { var o = {}; if (x && typeof x === 'object') Object.keys(x).slice(0, 8).forEach(function (n) { if (EMO.indexOf(x[n]) >= 0) o[clean(n, 30)] = x[n]; }); return o; }
 function cleanK(k) {
   return (Array.isArray(k) ? k : []).slice(-50).map(function (c) {
@@ -898,7 +913,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v61', errLog = [];
+var APP_VER = 'v62', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1040,7 +1055,7 @@ function mediaRaw(r, pl) {
 function orig(r) { var a = el('a', 'orig', 'Non si vede? Apri l’originale'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; }
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false };
-  var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); d.appendChild(f);
+  var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); nd.sb = el('button', 'sumb'); nd.sb.hidden = true; nd.sb.onclick = function () { sumOpen(r); }; f.appendChild(nd.sb); d.appendChild(f);
   if (r.c) d.appendChild(el('div', 'cm', r.c));
   d.appendChild(media(r, false));
   nd.bar = el('div', 'bar'); d.appendChild(nd.bar);
@@ -1052,8 +1067,14 @@ function build(r) {
   row.appendChild(inp); row.appendChild(go); nd.cp.appendChild(row); d.appendChild(nd.cp);
   nodes[r.id] = nd; refresh(r); return d;
 }
+function sumLabel(r) {
+  var has = !!(r.s || r.g), asks = Object.keys(r.q || {}).length;
+  if (r.n === me.name) return has ? ['📝 Riassunto', ''] : asks ? ['📝 ' + asks + (asks === 1 ? ' chiede' : ' chiedono'), 'ask'] : null;
+  return has ? ['📝 Riassunto', ''] : r.q && r.q[me.name] ? ['📝 Chiesto', ''] : ['📝 Di cosa parla?', ''];
+}
 function refresh(r) {
   var nd = nodes[r.id]; if (!nd) return;
+  if (nd.sb) { var sl = sumLabel(r); nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
   nd.bar.textContent = '';
   EMO.forEach(function (e) {
     var n = Object.keys(r.x || {}).filter(function (k) { return r.x[k] === e; }).length;
@@ -1093,9 +1114,11 @@ function addReel(r, mine) {
   if (old) {
     var x = cleanX(r.x); Object.keys(x).forEach(function (n) { if (!(n in (old.x = old.x || {}))) old.x[n] = x[n]; });
     cleanK(r.k).forEach(function (c) { old.k = old.k || []; if (!old.k.some(function (y) { return y.id === c.id; })) old.k.push(c); });
+    var sq = cleanQ(r.q); Object.keys(sq).forEach(function (n) { (old.q = old.q || {})[n] = 1; });
+    if (!old.s && !old.g && (r.s || r.g)) { old.s = clean(r.s, 200); old.g = SUMTAG.indexOf(r.g) >= 0 ? r.g : ''; }
     put('feed', feed); refresh(old); return false;
   }
-  var n = { id: r.id, u: u, c: clean(r.c, 300), n: clean(r.n, 30) || 'Ospite', ts: +r.ts || Date.now(), x: cleanX(r.x), k: cleanK(r.k) };
+  var n = { id: r.id, u: u, c: clean(r.c, 300), n: clean(r.n, 30) || 'Ospite', ts: +r.ts || Date.now(), x: cleanX(r.x), k: cleanK(r.k), q: cleanQ(r.q), s: clean(r.s, 200), g: SUMTAG.indexOf(r.g) >= 0 ? r.g : '' };
   feed.push(n);
   if (seq && !mine) seq.q.push(n.id);
   if (feed.length > 200) { var g = feed.shift(); delete nodes[g.id]; }
@@ -1133,6 +1156,19 @@ function applyEv(d, who) {
     if (party && party.id === r.id && d.e) floatE(d.e);
     put('feed', feed); refresh(r); return { t: 'react', id: r.id, e: d.e, n: n };
   }
+  if (d.t === 'sumq') {
+    var aq = who || clean(d.n, 30); if (!aq || aq === r.n || r.s || r.g) return null;
+    r.q = r.q || {}; if (r.q[aq]) return null; r.q[aq] = 1; put('feed', feed); refresh(r);
+    if (r.n === me.name) showNote({ kind: 'sumq', who: aq, text: 'Rispondi in una riga', n: 1 }, Object.assign({}, ntCfg(), { pill: true }), true);
+    return { t: 'sumq', id: r.id, n: aq };
+  }
+  if (d.t === 'sum') {
+    var as = who || clean(d.n, 30); if (as !== r.n) return null;
+    var sx = clean(d.s, 200), sg = SUMTAG.indexOf(d.g) >= 0 ? d.g : ''; if (!sx && !sg) return null;
+    r.s = sx; r.g = sg; put('feed', feed); refresh(r); sumRefresh(r);
+    if (r.q && r.q[me.name]) showNote({ kind: 'sum', who: r.n, text: (sg ? sg + ' · ' : '') + sx, n: 1 }, Object.assign({}, ntCfg(), { pill: true }), true);
+    return { t: 'sum', id: r.id, s: sx, g: sg, n: as };
+  }
   if (d.t === 'cmt' && d.c && typeof d.c.id === 'string') {
     var c = cleanK([{ id: d.c.id, n: who || d.c.n, t: d.c.t, ts: d.c.ts }])[0]; if (!c) return null;
     r.k = r.k || []; if (r.k.some(function (y) { return y.id === c.id; })) return null;
@@ -1161,6 +1197,7 @@ function pbuild(r) {
   if (canDel(r)) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { pdel(r); }; bar.appendChild(xb); }
   var ib = el('button', 'r-btn plan', '✨ Piano'); ib.setAttribute('aria-label', 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; bar.appendChild(ib);
   immBuild(r);
+  var ps = $('psum'); var pl2 = sumLabel(r); ps.hidden = !pl2; ps.onclick = function () { sumOpen(r); };
 }
 function canDel(r) { return r && (r.n === me.name || me.role === 'host'); }
 function pdel(r) {
@@ -1368,7 +1405,7 @@ function startHost() {
       } else if (d.t === 'pr' && !c.ok && c.pk) {
         var pk = c.pk; c.pk = null;
         hmac(pk, 'g' + c.nh).then(function (pg) { if (pg === d.pg) hostHi(c, { n: c.nm, k: pk, c: '' }); else { try { c.close(); } catch (e) {} } });
-      } else if ((d.t === 'react' || d.t === 'cmt') && c.ok) {
+      } else if ((d.t === 'react' || d.t === 'cmt' || d.t === 'sumq' || d.t === 'sum') && c.ok) {
         var m = applyEv(d, c.name);
         if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
       } else if (d.t === 'ses' && c.ok) {
@@ -1528,7 +1565,7 @@ function startGuest() {
       else if (d.t === 'cfg') { if (typeof d.ttl === 'number') { put('ttl', d.ttl); renderChat(true); } }
       else if (d.t === 'mdel' && typeof d.id === 'string') delMsg(d.id, false);
       else if (d.t === 'wait') $('mh').textContent = clean(d.why, 180);
-      else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
+      else if (d.t === 'react' || d.t === 'cmt' || d.t === 'sumq' || d.t === 'sum') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
       else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
       else if (d.t === 'idea') applyIdea(d, null);
@@ -1750,6 +1787,40 @@ function svNext() {
   var txt = svText(svPayload);
   if (navigator.share) navigator.share({ text: txt }).then(function () { done(true); }).catch(function () {});
   else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); done(true); }
+}
+/* ---- di cosa parla: chi guarda chiede, chi l'ha mandato risponde in una riga ---- */
+var sumCur = null;
+function sumOpen(r) { sumCur = r; sumRender(); $('sumH').textContent = ''; $('sumM').classList.add('open'); }
+function sumRefresh(r) { if (sumCur && sumCur.id === r.id && $('sumM').classList.contains('open')) sumRender(); if (seq && seq.cur === r.id) { var pl2 = sumLabel(r); $('psum').hidden = !pl2; } }
+function sumRender() {
+  var r = sumCur, b = $('sumB'); b.textContent = ''; if (!r) return;
+  var has = !!(r.s || r.g), mine = r.n === me.name, asks = Object.keys(r.q || {});
+  if (has && !mine) {
+    $('sumH').textContent = '';
+    if (r.g) b.appendChild(el('div', 'sumtag', r.g));
+    if (r.s) b.appendChild(el('p', 'sumtx', r.s));
+    b.appendChild(el('p', 'refn', 'Scritto da ' + r.n + '.'));
+    return;
+  }
+  if (!mine) {
+    if (r.q && r.q[me.name]) { b.appendChild(el('p', null, 'Hai già chiesto a ' + r.n + '. Appena risponde lo vedi qui, e ti arriva un avviso.')); return; }
+    b.appendChild(el('p', null, 'Chiedi a ' + r.n + ' di raccontartelo in una riga. Così decidi tu se guardarlo tutto.'));
+    var go = el('button', 'btn', '📝 Chiedi a ' + r.n); go.onclick = function () { sumAsk(r); }; b.appendChild(go); return;
+  }
+  b.appendChild(el('p', null, asks.length ? asks.join(', ') + (asks.length === 1 ? ' vuole' : ' vogliono') + ' sapere di cosa parla. Basta un tocco, la riga è facoltativa.' : 'Scrivi in breve di cosa parla: chi non ha tempo di guardarlo tutto lo legge qui.'));
+  var pick = r.g || '', o = el('div', 'svo');
+  SUMTAG.forEach(function (t) { var x = el('button', null, t); x.type = 'button'; x.setAttribute('aria-pressed', String(t === pick)); x.onclick = function () { pick = pick === t ? '' : t; o.querySelectorAll('button').forEach(function (y) { y.setAttribute('aria-pressed', String(y.textContent === pick)); }); }; o.appendChild(x); });
+  b.appendChild(o);
+  var ta = el('textarea'); ta.maxLength = 200; ta.placeholder = 'Es. guarda il finale 😂'; ta.value = r.s || ''; ta.setAttribute('aria-label', 'Di cosa parla'); b.appendChild(ta);
+  var ok = el('button', 'btn', has ? 'Aggiorna' : 'Invia'); ok.onclick = function () {
+    var sx = clean(ta.value, 200); if (!sx && !pick) { $('sumH').textContent = 'Scegli un motivo o scrivi una riga.'; return; }
+    r.s = sx; r.g = pick; put('feed', feed); refresh(r); sendEv({ t: 'sum', id: r.id, s: sx, g: pick, n: me.name });
+    $('sumM').classList.remove('open'); sumRefresh(r);
+  }; b.appendChild(ok);
+}
+function sumAsk(r) {
+  r.q = r.q || {}; r.q[me.name] = 1; put('feed', feed); refresh(r); sendEv({ t: 'sumq', id: r.id, n: me.name });
+  sumRender(); $('sumH').textContent = 'Fatto: ' + r.n + ' riceve la richiesta.'; sumRefresh(r);
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
 // data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
@@ -2048,7 +2119,7 @@ function showNote(q, c, force) {
   if (!c.pill) return;
   var a = $('islA'); a.textContent = ''; a.appendChild(avatar(q.who));
   $('islN').textContent = q.who;
-  $('islW').textContent = q.kind === 'trill' ? 'ti stava aspettando 🔔' : q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
+  $('islW').textContent = q.kind === 'sumq' ? 'chiede di cosa parla il tuo Reel' : q.kind === 'sum' ? 'ti spiega il Reel' : q.kind === 'trill' ? 'ti stava aspettando 🔔' : q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
   $('islT').textContent = q.text || '';
   var isl = $('isl'); isl.dataset.k = q.kind; isl.classList.add('on'); clearTimeout(islT); islT = setTimeout(function () { isl.classList.remove('on'); }, 3000);
 }
@@ -2312,7 +2383,7 @@ $('haveInv').addEventListener('click', async function () {
 });
 ['inf', 'inf2'].forEach(function (i) { $(i).addEventListener('click', function () { $('im').classList.add('open'); }); });
 $('imc').addEventListener('click', function () { $('im').classList.remove('open'); });
-['im', 'invM', 'actM', 'bugM', 'idm', 'svM', 'refM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
+['im', 'invM', 'actM', 'bugM', 'idm', 'svM', 'refM', 'sumM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
 $('iok').addEventListener('click', saveIdea);
@@ -2320,7 +2391,8 @@ $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click',
 $('svGo').addEventListener('click', function () { svOpen(); });
 function refOpen() { $('refM').classList.add('open'); }
 $('refGo').addEventListener('click', refOpen); $('refGo2').addEventListener('click', function () { $('invM').classList.remove('open'); refOpen(); });
-$('refSend').addEventListener('click', function () { $('refM').classList.remove('open'); recommend(); }); $('refNo').addEventListener('click', function () { $('refM').classList.remove('open'); }); $('ip').addEventListener('input', ideaSug);
+$('refSend').addEventListener('click', function () { $('refM').classList.remove('open'); recommend(); }); $('refNo').addEventListener('click', function () { $('refM').classList.remove('open'); });
+$('sumX').addEventListener('click', function () { $('sumM').classList.remove('open'); }); $('ip').addEventListener('input', ideaSug);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
