@@ -1684,12 +1684,21 @@ function invText() {
 }
 function invite() {
   if (me.role !== 'host') return;
+  if (Object.keys(allowed).length >= cap() && !(arguments[0] && arguments[0].again)) {
+    var grp = me.kind === 'group' || me.kind === 'big', mem = Object.keys(allowed).map(function (k) { return allowed[k]; });
+    sheet(grp ? 'Il gruppo è al completo' : 'Il cerchio di coppia è completo', 'Se con ' + mem.join(', ') + ' non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.', [
+      { t: '🔗 Rimanda l’invito a ' + (mem.length === 1 ? mem[0] : 'chi è nel cerchio'), f: function () { invite({ again: true }); } },
+      { t: grp ? '👥 Crea un nuovo gruppo da 3 e invita' : '👥 Invita altre persone in un gruppo da 3', f: goGroupInvite }
+    ]);
+    return;
+  }
   if (Object.keys(allowed).length >= cap()) {
     var grp = me.kind === 'group' || me.kind === 'big';
     ask(grp ? 'Questo gruppo è al completo' : 'Il cerchio di coppia è già completo', grp ? 'Ti preparo un nuovo gruppo da 3 e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un gruppo da 3, separato dalla coppia, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
     return;
   }
   var left = cap() - Object.keys(allowed).length;
+  if (left <= 0) { $('invT').textContent = 'Rimanda l’invito'; $('invS').textContent = 'Mandalo a chi è già nel cerchio: aprendolo si ricollega. Il link vale 24 ore.'; $('invH').textContent = ''; $('invM').classList.add('open'); return; }
   $('invT').textContent = 'Invita ' + (me.kind === 'group' || me.kind === 'big' ? 'qualcuno nel gruppo' : 'la tua persona');
   $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 24 ore.';
   $('invH').textContent = ''; $('invM').classList.add('open');
@@ -2331,7 +2340,7 @@ function renderCircle() {
       row(allowed[k] + (on ? '' : ' · non collegato'), on, function () { var nm = allowed[k]; ask('Togliere ' + nm + '?', nm + ' non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(k); }); });
     });
     m.appendChild(el('p', null, ks.length + ' di ' + cap() + (cap() === 1 ? ' posto' : ' posti') + ' usati.' + (ks.length ? '' : ' Invita la prima persona!')));
-    $('inv2').hidden = ks.length >= cap(); $('invKill').hidden = false;
+    $('inv2').hidden = false; $('inv2').textContent = ks.length >= cap() ? '🔗 Non vi collegate? Rimanda l’invito' : 'Invita una persona'; $('invKill').hidden = false;
   } else {
     var live = !!(hostConn && hostConn.open);
     (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
