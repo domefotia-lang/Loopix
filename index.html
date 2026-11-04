@@ -419,7 +419,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
+  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="refGo">💌 Consiglia Reelta a un’altra coppia</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
   <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
 </div></section>
 
@@ -519,6 +519,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
   <button class="btn-o wide" id="invCp" style="margin-top:8px">📋 Copia invito</button>
   <div class="hint" id="invH" aria-live="polite" style="white-space:pre-wrap;word-break:break-all"></div>
+  <button class="btn-o wide" id="refGo2" style="margin-top:10px;font-size:14px">💌 Vuoi solo consigliare Reelta? Manda l’app a un’altra coppia</button>
   <button class="btn-o wide" id="invX" style="margin-top:8px">Chiudi</button>
 </div></div>
 
@@ -794,6 +795,7 @@ var incoming = null;
   var q = new URLSearchParams(location.search);
   var raw = [q.get('url'), q.get('text'), q.get('add'), q.get('title')].join(' ');
   var m = /https?:\/\/[^\s<>"']+/.exec(raw);
+  var rf = q.get('r'); if (rf && /^R-[A-Z2-9]{6}$/.test(rf)) { try { if (!localStorage.getItem(LSG + 'refBy') && localStorage.getItem(LSG + 'ref') !== rf) localStorage.setItem(LSG + 'refBy', rf); } catch (e) {} }
   if (m) incoming = m[0].replace(/[.,;)\]]+$/, '');
   if (location.search) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} }
 })();
@@ -878,7 +880,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v56', errLog = [];
+var APP_VER = 'v57', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1688,10 +1690,12 @@ function svCode() {
 function svData(code) {
   var t = tst(), weeks = [];
   for (var w = 1; w <= tweek(t); w++) { var x = t.w[w] || { r: 0, p: 0, d: [] }; weeks.push({ sett: w, reel: x.r || 0, piani: x.p || 0, giorni: (x.d || []).length }); }
-  return { coppia: code, ruolo: me.role === 'host' ? 'creatore' : 'ospite', persone: Math.max(1, (me.role === 'host' ? people() : names).length), giorni: Math.floor((Date.now() - t.s) / 864e5), settimane: weeks, risposte: svAns, questionario: svCur, versione: APP_VER, lingua: (window.LX_LANG || 'it') };
+  var rb = ''; try { rb = localStorage.getItem(LSG + 'refBy') || ''; } catch (e) {}
+  return { consigliato_da: rb, coppia: code, ruolo: me.role === 'host' ? 'creatore' : 'ospite', persone: Math.max(1, (me.role === 'host' ? people() : names).length), giorni: Math.floor((Date.now() - t.s) / 864e5), settimane: weeks, risposte: svAns, questionario: svCur, versione: APP_VER, lingua: (window.LX_LANG || 'it') };
 }
 function svText(d) {
   var L = ['Reelta · parere ' + (d.questionario === 's4' ? 'dopo un mese' : 'dopo una settimana'), 'Coppia: ' + d.coppia + ' · ' + d.ruolo + ' · ' + d.persone + ' persone · giorno ' + d.giorni];
+  if (d.consigliato_da) L.push('Consigliata da: ' + d.consigliato_da);
   d.settimane.forEach(function (w) { L.push('Sett. ' + w.sett + ': ' + w.reel + ' Reel, ' + w.piani + ' piani, ' + w.giorni + (w.giorni === 1 ? ' giorno' : ' giorni') + ' aperta'); });
   SVQ[d.questionario].forEach(function (q) { L.push(q.q + ' → ' + (d.risposte[q.id] || '—')); });
   return L.join('\n');
@@ -1726,6 +1730,19 @@ function svNext() {
   var txt = svText(svPayload);
   if (navigator.share) navigator.share({ text: txt }).then(function () { done(true); }).catch(function () {});
   else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); done(true); }
+}
+/* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
+function refCode() {
+  try { var c = localStorage.getItem(LSG + 'ref'); if (c && /^R-[A-Z2-9]{6}$/.test(c)) return c;
+    var A = 'ABCDEFGHJKMNPQRSTVWXYZ23456789', u = crypto.getRandomValues(new Uint8Array(6)); c = 'R-'; for (var i = 0; i < 6; i++) c += A.charAt(u[i] % A.length);
+    localStorage.setItem(LSG + 'ref', c); return c; } catch (e) { return ''; }
+}
+function recommend() {
+  var c = refCode(), url = location.origin + location.pathname + (c ? '?r=' + c : '');
+  var txt = 'Ti consiglio Reelta: per mandarvi i Reel in coppia in un posto solo, privato e senza account. Create la vostra coppia da qui: ' + url;
+  track('consiglia');
+  if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
 }
 var KINDS = { viaggio: '✈️ Un posto', compra: '🛍️ Da comprare', cibo: '🍝 Da mangiare', esperienza: '🎟️ Da fare', ricetta: '👨‍🍳 Ricetta', altro: '💡 Idea' };
 var KPH = {
@@ -2272,7 +2289,8 @@ document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEv
 $('inew').addEventListener('click', function () { openIdea(''); });
 $('iok').addEventListener('click', saveIdea);
 $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
-$('svGo').addEventListener('click', function () { svOpen(); }); $('ip').addEventListener('input', ideaSug);
+$('svGo').addEventListener('click', function () { svOpen(); });
+$('refGo').addEventListener('click', recommend); $('refGo2').addEventListener('click', function () { $('invM').classList.remove('open'); recommend(); }); $('ip').addEventListener('input', ideaSug);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
