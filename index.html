@@ -241,6 +241,16 @@ a.r-btn{text-decoration:none}
 .kgrid button[aria-checked="true"]{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30));color:var(--t)}
 .isug{display:block;width:100%;text-align:left;background:none;border:1px dashed #C9A266;color:var(--t);border-radius:12px;padding:9px 12px;margin:-4px 0 10px;font-size:14px;cursor:pointer}
 .idea .ask2{font-size:14px;color:var(--m);margin:2px 0 6px}
+.aibtn.love{background:linear-gradient(120deg,#ff4f7b 0%,#ff7a59 55%,#ffb347 100%);box-shadow:0 6px 22px rgba(255,90,110,.35)}
+.idea .match{display:inline-block;font-size:13px;font-weight:800;color:#fff;background:linear-gradient(120deg,#ff4f7b,#ff9a5a);border-radius:999px;padding:3px 10px;margin-bottom:6px}
+.idea .when{font-size:14px;font-weight:700;color:var(--gl);margin:2px 0 6px}
+#decM .card{max-width:380px;width:100%;text-align:center;touch-action:pan-y}
+#decC{border-radius:24px;border:1px solid var(--line);background:var(--s1);padding:26px 18px;margin:8px 0 16px;min-height:190px;display:flex;flex-direction:column;justify-content:center;transition:transform .25s ease,opacity .25s ease;user-select:none;-webkit-user-select:none}
+#decC .e{font-size:46px;line-height:1}#decC h3{font-family:var(--dis);font-size:28px;margin:10px 0 4px;color:var(--gl);overflow-wrap:anywhere}#decC p{margin:4px 0 0;font-size:14px;color:var(--m)}
+#decC.l{transform:translateX(-120%) rotate(-12deg);opacity:0}#decC.r{transform:translateX(120%) rotate(12deg);opacity:0}
+.decbtns{display:flex;gap:12px}.decbtns button{flex:1;min-height:58px;font-size:18px;font-weight:800;border-radius:999px}
+#decNo{background:var(--s1);color:var(--t);border:1px solid var(--line)}#decSi{border:0;color:#fff;background:linear-gradient(120deg,#ff4f7b,#ff9a5a)}
+#decM .big{font-size:56px;margin:6px 0}
 .iempty{margin:8px 14px 20px;display:flex;flex-direction:column;gap:14px}
 .iempty h3{font-family:var(--dis);font-size:24px;margin:6px 0 0;color:var(--gl)}
 .light .iempty h3{color:var(--t)}
@@ -591,6 +601,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="sumX">Chiudi</button>
 </div></div>
 
+<div class="mod" id="decM" role="dialog" aria-modal="true" aria-labelledby="decT"><div class="card">
+  <h2 id="decT">Decidete insieme</h2>
+  <p id="decP">Ti va? Se piace anche all’altra persona, è un match.</p>
+  <div id="decC"></div>
+  <div class="decbtns" id="decB"><button type="button" id="decNo">👋 Passo</button><button type="button" id="decSi">😍 Sì!</button></div>
+  <button class="btn-o wide" id="decX" style="margin-top:12px">Chiudi</button>
+</div></div>
 <div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
   <h2 id="refT">Consiglia Reelta</h2>
   <p>Manda l’app a un’altra coppia: crea la sua coppia, separata dalla vostra. Conta quando la usano davvero (almeno 3 Reel).</p>
@@ -623,7 +640,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <input id="ip" placeholder="Dove? (es. Lisbona)" maxlength="60" aria-label="Luogo o cosa">
   <button class="isug" id="iSg" hidden></button>
   <input id="io" placeholder="Nota (facoltativa)" maxlength="200" aria-label="Nota">
-  <button class="btn" id="iok">Salva il piano</button><button class="btn-o wide" id="ino">Annulla</button>
+  <button class="btn" id="iok">Salva il piano</button><button class="btn-o wide" id="iok2" hidden>＋ Salva e fanne un altro da questo Reel</button><button class="btn-o wide" id="ino">Annulla</button>
   <div class="hint" id="iH" aria-live="polite"></div>
 </div></div>
 
@@ -945,7 +962,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v69', errLog = [];
+var APP_VER = 'v70', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1493,7 +1510,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false };
+var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -1528,7 +1545,7 @@ var mbBusy = false, mbLast = 0;
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
-  var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }) : (me.tok && me.joined ? [{ sec: me.tok, dir: 'g' }] : []);
+  var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }).concat(codesNow().map(function (x) { return { sec: me.hostId + '_' + x.c, dir: 'j' }; })) : (me.tok ? [{ sec: me.tok, dir: 'g' }] : []);
   Promise.all(jobs.map(function (j) {
     return mbBox(j.sec, j.dir).then(function (box) {
       return mbCall({ a: 'get', box: box }).then(function (res) {
@@ -1536,7 +1553,8 @@ function mbPull(force) {
         return items.reduce(function (p, it) {
           return p.then(function () { return mbOpen(j.sec, it.payload).then(function (d) {
             if (!d || typeof d !== 'object' || MBT[d.t] === undefined) return;
-            if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
+            if (j.dir === 'j') { if (d.t === 'jhi') hostJoinVirt(d); }
+            else if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
             else guestData(d);
           }, function () {}); });
         }, Promise.resolve()).then(function () { return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
@@ -1549,7 +1567,7 @@ setInterval(function () { if (!document.hidden) mbPull(false); }, 30000);
 // notifiche ad app chiusa: il telefono si iscrive alle sue caselle (solo un avviso generico, mai il contenuto)
 function pushOK() { return srvOn() && 'serviceWorker' in navigator && 'PushManager' in window && window.Notification; }
 function pushBoxes() {
-  if (me.role === 'host') return Promise.all(Object.keys(allowed).map(function (k) { return mbBox(k, 'h'); }));
+  if (me.role === 'host') return Promise.all(Object.keys(allowed).map(function (k) { return mbBox(k, 'h'); }).concat(codesNow().map(function (x) { return mbBox(me.hostId + '_' + x.c, 'j'); })));
   return me.tok ? mbBox(me.tok, 'g').then(function (b) { return [b]; }) : Promise.resolve([]);
 }
 function pushSync() {
@@ -1575,9 +1593,40 @@ function renderPush() {
   b.disabled = on; h.hidden = !srvOn();
   h.textContent = on ? 'Ti arriva solo “Hai qualcosa di nuovo su Reelta”: mai chi, né cosa.' : 'Una notifica discreta quando arriva un Reel o un messaggio, anche con Reelta chiusa.';
 }
+/* primo ingresso anche senza collegamento diretto: l'ospite lascia la richiesta in una casella che solo
+   chi ha il link può aprire (la chiave nasce dal codice dell'invito); il creatore la trova e risponde nella casella dell'ospite */
+function slimHello(m) {
+  var h = Object.assign({}, m, { pics: {} });
+  [100, 50, 25, 12, 5, 0].some(function (n) {
+    h.feed = (m.feed || []).slice(-n || m.feed.length); h.msgs = (m.msgs || []).slice(-2 * n || m.msgs.length); h.ideas = (m.ideas || []).slice(-n || m.ideas.length); h.gone = (m.gone || []).slice(-2 * n || m.gone.length);
+    if (!n) { h.feed = []; h.msgs = []; h.ideas = []; h.gone = []; }
+    return JSON.stringify(h).length < 42000;
+  });
+  return h;
+}
+function hostJoinVirt(d) {
+  var k = typeof d.k === 'string' ? d.k.slice(0, 40) : '';
+  if (!k || conns.some(function (x) { return x.ok && x.open && x.k === k; })) return;
+  var c = { virt: true, open: true, ok: false, k: k, send: function (m) { if (m && m.t === 'hello') m = slimHello(m); mbPut(k, 'g', m, false).catch(function () {}); }, close: function () { c.open = false; } };
+  hostHi(c, { n: d.n, k: k, c: d.c });
+}
+var joinTries = 0, joinT = null;
+function srvJoin() {
+  clearTimeout(joinT);
+  if (!srvOn() || !me || me.role === 'host' || me.joined || blocked || !me.code || !me.tok || !me.hostId || joinTries >= 12) return;
+  joinTries++;
+  mbPut(me.hostId + '_' + me.code, 'j', { t: 'jhi', n: me.name, k: me.tok, c: me.code }, joinTries > 1 && joinTries % 4).catch(function () {});
+  setTimeout(function () { mbPull(true); }, 4000);
+  joinT = setTimeout(srvJoin, 60000);
+}
+function gSend(m) {
+  if (hostConn && hostConn.open) { hostConn.send(m); return; }
+  if (srvOn() && MBT[m.t] !== undefined) mbToHost(m, function () { if (m.t === 'reel' || m.t === 'msg') { outbox.push(m); put('outbox', outbox); } });
+}
 function srvStart() {
   if (!srvOn() || !me) return;
   setTimeout(function () { mbPull(true); }, 1500);
+  if (me.role !== 'host' && !me.joined) setTimeout(function () { if (!me.joined) srvJoin(); }, 7000);
   if (pushOK() && Notification.permission === 'granted') pushSync();
   else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
     setTimeout(function () {
@@ -1604,7 +1653,7 @@ function hostHi(c, d) {
           if (prevN && people().indexOf(nm) >= 0) nm = prevN; // nome già usato da un altro: resta quello di prima
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
-          c.ok = true; c.name = nm; c.k = k; conns.push(c); ntQuietUntil = Date.now() + 3000; trillOut(c);
+          c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
           c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
@@ -1631,7 +1680,7 @@ function hostHi(c, d) {
 function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 24 ore.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc);
+  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link() + '\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ' + sc);
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -1666,7 +1715,7 @@ function startGuest() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
   peer = new Peer();
   peer.on('disconnected', function () { again(); });
-  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.' : 'Problema di rete (' + e.type + ').'; again(); });
+  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? (srvOn() && !me.joined ? 'Chi ti ha invitato ha Reelta chiusa: gli ho mandato un avviso. Entri da solo appena la apre, anche se chiudi l’app.' : 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.') : 'Problema di rete (' + e.type + ').'; if (e.type === 'peer-unavailable' && !me.joined) srvJoin(); again(); });
   peer.on('open', function () {
     hostConn = peer.connect(me.hostId, { reliable: true }); var hc = hostConn; hc.auth = !me.joined; hc.ng = uid(16);
     hostConn.on('open', function () {
@@ -1693,13 +1742,16 @@ function guestData(d) {
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
       if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
-        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); if (tab === 'chat') renderChat(true);
+        var ob = outbox; outbox = []; put('outbox', []); ob.forEach(function (o) { gSend(o && o.t ? o : { t: 'reel', r: o }); }); if (tab === 'chat') renderChat(true);
+        clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
         if (d.aka && typeof d.aka === 'object') Object.keys(d.aka).slice(0, 50).forEach(function (o) { renameIn(o, d.aka[o]); });
         if (d.pics && typeof d.pics === 'object') Object.keys(d.pics).slice(0, 20).forEach(function (n) { if (n !== me.name) setPic(n, d.pics[n]); });
-        if (me.pic !== undefined) hostConn.send({ t: 'pf', p: me.pic || '' });
+        if (me.pic !== undefined) gSend({ t: 'pf', p: me.pic || '' });
         var hasH = {}; (Array.isArray(d.feed) ? d.feed : []).forEach(function (r) { if (r && r.id) hasH[r.id] = 1; }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { hasH[g] = 1; });
         var miss = feed.filter(function (r) { return !hasH[r.id]; }).slice(-100);
-        if (miss.length && (d.feed || []).length < 100) hostConn.send({ t: 'back', feed: miss }); }
+        if (miss.length && (d.feed || []).length < 100 && hostConn && hostConn.open) hostConn.send({ t: 'back', feed: miss }); }
+      else if (d.t === 'no') { if (!me.joined) { blocked = true; clearTimeout(retry); clearTimeout(joinT); } $('mh').textContent = clean(d.why, 180); status(); }
+      else if (d.t === 'wait') { if (!me.joined) $('mh').textContent = clean(d.why, 180); }
       else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
       else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
       else if (d.t === 'trill' && typeof d.n === 'string') trillIn(clean(d.n, 30));
@@ -1971,17 +2023,19 @@ function sumAsk(r) {
   sumRender(); $('sumH').textContent = 'Fatto: ' + r.n + ' riceve la richiesta.'; sumRefresh(r);
 }
 /* ---- intelligenza artificiale su richiesta: il server legge titolo e descrizione pubblici del video ---- */
-function aiAsk(r) {
-  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it' }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
+var aiLast = null, KAI = { viaggio: 'il viaggio', compra: 'cosa comprare', cibo: 'cosa mangiare', esperienza: 'cosa fare', ricetta: 'la ricetta', altro: 'un’altra idea' };
+function aiAsk(r, want, avoid) {
+  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it', want: want || '', avoid: avoid || [] }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
 }
 function aiPlan() {
   var r = ideaRid && find(ideaRid), b = $('iAi'), lb = b.querySelector('b'), out = $('iAiR'); if (!r) return;
-  b.disabled = true; b.classList.add('busy'); lb.textContent = '✨ Guardo il video…'; $('iH').textContent = ''; out.hidden = true;
-  aiAsk(r).then(function (x) {
-    b.classList.remove('busy');
+  var cur = $('ik').value, want = aiLast && cur !== aiLast.k ? cur : '', avoid = (aiLast && aiLast.done) || [];
+  b.disabled = true; b.classList.add('busy'); lb.textContent = want ? '✨ Cerco ' + KAI[want] + '…' : '✨ Guardo il video…'; $('iH').textContent = ''; out.hidden = true;
+  aiAsk(r, want, avoid.slice(-5)).then(function (x) {
+    b.classList.remove('busy'); b.disabled = false;
     var sure = x.k !== 'altro' || (x.p && !/^(sconosciut|unknown|desconocid)/i.test(x.p));
-    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; lb.textContent = '✨ Fatto: controlla e salva'; }
-    else { b.disabled = false; lb.textContent = '✨ Riprova'; }
+    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; aiLast = { k: x.k, done: avoid.concat(x.p ? [x.p] : []) }; lb.textContent = '✨ Fatto: controlla e salva'; b.querySelector('span').textContent = 'Tocca di nuovo per un’altra idea, o scegli un tipo qui sotto'; }
+    else { lb.textContent = '✨ Riprova'; }
     out.textContent = (x.sum ? '✨ ' + x.sum : '') + (sure ? '' : ' Scegli tu qui sotto: ci metti un attimo.'); out.hidden = !out.textContent; ideaSug();
   }, function () { b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
 }
@@ -2026,6 +2080,8 @@ function guessKind(t) {
 }
 function setKind(k) {
   $('ik').value = k;
+  if (aiLast && aiLast.k !== k && !$('iAi').classList.contains('busy')) { $('iAi').querySelector('b').textContent = '✨ Cerca ' + KAI[k] + ' nel video'; $('iAi').querySelector('span').textContent = 'L’AI riparte con questo tipo'; }
+  else if (aiLast && aiLast.k === k) { $('iAi').querySelector('b').textContent = '✨ Un’altra idea dal video'; $('iAi').querySelector('span').textContent = 'L’AI ne propone una diversa'; }
   $('ikg').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.k === k)); });
   $('ip').placeholder = KPH[k][0]; $('io').placeholder = KPH[k][1];
   ideaSug();
@@ -2040,7 +2096,7 @@ function cleanV(v) { var o = {}; if (v && typeof v === 'object') Object.keys(v).
 function normIdea(i, who) {
   if (!i || typeof i.id !== 'string' || i.id.length > 40) return null;
   var p = clean(i.p, 60); if (!p) return null;
-  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), d: !!i.d };
+  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), d: !!i.d, w: /^\d{4}-\d{2}-\d{2}$/.test(i.w || '') ? i.w : '' };
 }
 function findIdea(id) { return ideas.filter(function (x) { return x.id === id; })[0]; }
 function ideasChanged(rid) {
@@ -2052,13 +2108,14 @@ function applyIdea(d, who) {
   if (d.a === 'add') {
     var i = normIdea(d.i, who); if (!i) return null;
     var old = findIdea(i.id);
-    if (old) { Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.d) old.d = true; ideasChanged(old.r); return null; }
+    if (old) { Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.d) old.d = true; if (i.w && !old.w) old.w = i.w; ideasChanged(old.r); return null; }
     ideas.push(i); if (ideas.length > 200) ideas.shift();
     if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); noteIn('idea', i.n, i.p); }
     ideasChanged(i.r); return { t: 'idea', a: 'add', i: i };
   }
   var x = findIdea(d.id); if (!x) return null;
-  if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
+  if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; var was = isMatch(x); if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); if (!was && isMatch(x)) matchIn(x); return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
+  if (d.a === 'when') { x.w = /^\d{4}-\d{2}-\d{2}$/.test(d.w || '') ? d.w : ''; ideasChanged(); return { t: 'idea', a: 'when', id: x.id, w: x.w }; }
   if (d.a === 'done') { x.d = !!d.on; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d }; }
   if (d.a === 'del') { ideas = ideas.filter(function (y) { return y !== x; }); ideasChanged(x.r); return { t: 'idea', a: 'del', id: x.id }; }
   return null;
@@ -2083,8 +2140,10 @@ function renderIdeas() {
     var b = el('button', 'chip', f[1]); b.setAttribute('aria-pressed', String(ifilter === f[0])); b.onclick = function () { ifilter = f[0]; renderIdeas(); }; ch.appendChild(b);
   });
   var box = $('ilist'); box.textContent = '';
+  var todo = toDecide();
+  if (todo.length && ifilter !== 'fatte') { var db0 = el('button', 'aibtn love'); db0.appendChild(el('b', null, '💘 Decidete insieme')); db0.appendChild(el('span', null, todo.length === 1 ? '1 piano aspetta il tuo sì o no' : todo.length + ' piani aspettano il tuo sì o no')); db0.onclick = decOpen; box.appendChild(db0); }
   var list = ideas.filter(function (i) { return ifilter === 'fatte' ? i.d : !i.d && (ifilter === 'tutte' || i.k === ifilter); });
-  list.sort(function (a, b) { return Object.keys(b.v).length - Object.keys(a.v).length || b.ts - a.ts; });
+  list.sort(function (a, b) { return (isMatch(b) - isMatch(a)) || Object.keys(b.v).length - Object.keys(a.v).length || b.ts - a.ts; });
   if (!list.length) {
     if (ifilter === 'fatte') box.appendChild(el('div', 'empty', 'Nessun piano fatto ancora.\nQuando lo realizzate, toccate ✓ Fatto.'));
     else if (ideas.some(function (i) { return !i.d; })) box.appendChild(el('div', 'empty', 'Nessun piano qui.'));
@@ -2094,15 +2153,19 @@ function renderIdeas() {
   var top = !list[0].d && Object.keys(list[0].v).length >= 2 ? list[0].id : null;
   list.forEach(function (i) {
     var c = el('div', 'card idea' + (i.d ? ' done' : ''));
-    if (i.id === top) c.appendChild(el('div', 'star', '⭐ Il più votato'));
+    if (isMatch(i) && !i.d) c.appendChild(el('div', 'match', '💞 Lo volete ' + (circleSize() > 2 ? 'tutti' : 'entrambi')));
+    else if (i.id === top) c.appendChild(el('div', 'star', '⭐ Il più votato'));
     c.appendChild(el('div', 'k', KINDS[i.k] + ', proposto da ' + i.n));
     c.appendChild(el('h3', null, i.p));
     if (i.o) c.appendChild(el('p', null, i.o));
+    if (i.w) c.appendChild(el('div', 'when', '📅 ' + fmtDay(i.w)));
     var voters = Object.keys(i.v), mine = !!i.v[me.name], acts = el('div', 'acts');
     if (i.k === 'compra' && !mine) c.appendChild(el('div', 'ask2', 'Ti piace? Tocca 😍 per dirlo.'));
     var vb = el('button', 'r-btn' + (mine ? ' mine' : ''), (i.k === 'compra' ? '😍 ' : '👍 ') + voters.length); vb.setAttribute('aria-label', mine ? 'Togli il voto' : 'Vota'); vb.onclick = function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: !mine }); }; acts.appendChild(vb);
     linksFor(i).forEach(function (l) { var a = el('a', 'r-btn', l.t + (l.p ? ' (partner)' : '')); a.href = l.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (l.p ? ' sponsored' : ''); acts.appendChild(a); });
     if (i.r && find(i.r)) { var rb = el('button', 'r-btn', '▶ Reel'); rb.onclick = function () { goReel(i.r); }; acts.appendChild(rb); }
+    if (!i.d) { var wb = el('button', 'r-btn', i.w ? '📅 Cambia data' : '📅 Quando?'); wb.onclick = function () { pickDay(i); }; acts.appendChild(wb); }
+    if (i.w && !i.d) { var cb = el('button', 'r-btn', '🗓️ Calendario'); cb.onclick = function () { toCal(i); }; acts.appendChild(cb); }
     var db = el('button', 'r-btn', i.d ? '↺ Da fare' : '✓ Fatto'); db.onclick = function () { ideaAct({ t: 'idea', a: 'done', id: i.id, on: !i.d }); }; acts.appendChild(db);
     var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina idea'); xb.onclick = function () { ask('Eliminare questo piano?', 'Sparisce per tutto il cerchio.', 'Elimina', true).then(function (y) { if (y) ideaAct({ t: 'idea', a: 'del', id: i.id }); }); }; acts.appendChild(xb);
     c.appendChild(acts);
@@ -2111,10 +2174,84 @@ function renderIdeas() {
   });
   if (PARTNER.booking || PARTNER.gyg) box.appendChild(el('p', null, '“partner”: prenotando da quel link Reelta riceve una piccola commissione. Per te il prezzo non cambia.'));
 }
+function circleSize() { return me.role === 'host' ? Object.keys(allowed).length + 1 : Math.max(names.length, circMax ? 2 : 2); }
+function isMatch(i) { var n = circleSize(); return n >= 2 && Object.keys(i.v || {}).length >= n; }
+function toDecide() { var sk = get('iskip', {}); return ideas.filter(function (i) { return !i.d && !i.v[me.name] && !sk[i.id]; }); }
+var decCur = null;
+function decOpen() { $('decM').classList.add('open'); decShow(); }
+function decShow() {
+  var c = $('decC'), q = toDecide(); c.className = ''; c.textContent = ''; decCur = q[0] || null;
+  $('decB').hidden = !decCur;
+  if (!decCur) { c.appendChild(el('div', 'e', '🎉')); c.appendChild(el('h3', null, 'Fatto!')); c.appendChild(el('p', null, 'Hai risposto a tutti i piani. I match li trovi in cima ai Piani.')); return; }
+  c.appendChild(el('div', 'e', (KINDS[decCur.k] || '💡').split(' ')[0]));
+  c.appendChild(el('h3', null, decCur.p));
+  if (decCur.o) c.appendChild(el('p', null, decCur.o));
+  c.appendChild(el('p', null, 'Proposto da ' + decCur.n + (q.length > 1 ? ' · ne restano ' + q.length : '')));
+}
+function decAnswer(yes) {
+  var i = decCur; if (!i) return; var c = $('decC'); c.className = yes ? 'r' : 'l';
+  try { navigator.vibrate && navigator.vibrate(yes ? 18 : 8); } catch (e) {}
+  setTimeout(function () {
+    if (yes) ideaAct({ t: 'idea', a: 'vote', id: i.id, on: true });
+    else { var sk = get('iskip', {}); sk[i.id] = Date.now(); put('iskip', sk); renderIdeas(); }
+    if (!$('decC').querySelector('.big')) decShow();
+  }, 230);
+}
+function matchIn(i) {
+  var seen = get('imatch', {}); if (seen[i.id]) return; seen[i.id] = 1; put('imatch', seen);
+  try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
+  var c = $('decC'), m = $('decM'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
+  c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, 'È un match!'));
+  c.appendChild(el('p', null, (circleSize() > 2 ? 'Lo volete tutti: ' : 'Lo volete entrambi: ') + i.p));
+  var go = el('button', 'btn', '📅 Scegliamo quando'); go.style.marginTop = '14px'; go.onclick = function () { m.classList.remove('open'); showPane('ideas'); pickDay(i); };
+  c.appendChild(go);
+}
+$('decSi').addEventListener('click', function () { decAnswer(true); });
+$('decNo').addEventListener('click', function () { decAnswer(false); });
+$('decX').addEventListener('click', function () { $('decM').classList.remove('open'); });
+(function () { var x0 = null, c = $('decC');
+  c.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  c.addEventListener('touchmove', function (e) { if (x0 === null || !decCur) return; var dx = e.touches[0].clientX - x0; c.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 20 + 'deg)'; }, { passive: true });
+  c.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; c.style.transform = ''; if (decCur && Math.abs(dx) > 80) decAnswer(dx > 0); });
+})();
+function fmtDay(w) { try { var d = new Date(w + 'T12:00:00'); return d.toLocaleDateString(window.LX_LANG === 'en' ? 'en-GB' : window.LX_LANG === 'es' ? 'es-ES' : 'it-IT', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return w; } }
+function pickDay(i) {
+  var inp = document.createElement('input'); inp.type = 'date'; inp.value = i.w || ''; inp.min = new Date().toISOString().slice(0, 10);
+  inp.style.cssText = 'position:fixed;left:50%;top:50%;opacity:0;width:1px;height:1px';
+  document.body.appendChild(inp);
+  var done = function () { var v = inp.value; inp.remove(); if (v !== (i.w || '')) { ideaAct({ t: 'idea', a: 'when', id: i.id, w: v }); if (v) $('mh').textContent = '📅 ' + i.p + ': ' + fmtDay(v) + '. Lo vede tutto il cerchio.'; } };
+  inp.addEventListener('change', done); inp.addEventListener('blur', function () { setTimeout(function () { if (inp.parentNode) inp.remove(); }, 300); });
+  try { if (inp.showPicker) inp.showPicker(); else { inp.focus(); inp.click(); } } catch (e) { inp.focus(); inp.click(); }
+}
+function toCal(i) {
+  var d = i.w.replace(/-/g, ''), nd = new Date(i.w + 'T12:00:00'); nd.setDate(nd.getDate() + 1);
+  var d2 = nd.toISOString().slice(0, 10).replace(/-/g, ''), r = i.r && find(i.r);
+  var ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Reelta//IT\r\nBEGIN:VEVENT\r\nUID:' + i.id + '@reelta\r\nDTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z\r\nDTSTART;VALUE=DATE:' + d + '\r\nDTEND;VALUE=DATE:' + d2 + '\r\nSUMMARY:' + i.p.replace(/[,;\\]/g, ' ') + '\r\nDESCRIPTION:' + ((i.o || '') + (r ? ' ' + r.u : '')).replace(/[,;\\\r\n]/g, ' ') + '\r\nBEGIN:VALARM\r\nTRIGGER:-P1D\r\nACTION:DISPLAY\r\nDESCRIPTION:' + i.p.replace(/[,;\\]/g, ' ') + '\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n';
+  var f; try { f = new File([ics], 'reelta-piano.ics', { type: 'text/calendar' }); } catch (e) {}
+  if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: i.p }).catch(function () {}); return; }
+  if (isIOS) { location.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics); return; }
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })); a.download = 'reelta-piano.ics'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+// promemoria gentile: al massimo una volta a settimana, solo se ci sono piani fermi da un po'
+function planNudge() {
+  if (!ideas.length || Date.now() - (+get('inudge', 0)) < 7 * 864e5) return;
+  var today = new Date().toISOString().slice(0, 10);
+  var soon = ideas.filter(function (i) { if (!i.w || i.d) return false; var dd = (new Date(i.w + 'T12:00:00') - Date.now()) / 864e5; return dd >= -1 && dd <= 2; });
+  var old = ideas.filter(function (i) { return !i.d && !i.w && Date.now() - i.ts > 10 * 864e5; });
+  var dec = toDecide();
+  if (!soon.length && !old.length && !dec.length) return;
+  put('inudge', Date.now());
+  var t, b;
+  if (soon.length) { t = '📅 ' + soon[0].p; b = soon[0].w === today ? 'È oggi! Tutto pronto?' : '📅 ' + fmtDay(soon[0].w) + ' · Tutto pronto?'; }
+  else if (dec.length) { t = '💘 ' + (dec.length === 1 ? '1 piano aspetta' : dec.length + ' piani aspettano') + ' il tuo sì'; b = 'Ci metti 10 secondi: sì o passo, e scoprite i match.'; }
+  else { t = '💡 ' + (old.length === 1 ? '1 piano è fermo' : old.length + ' piani sono fermi') + ' da un po’'; b = '“' + old[0].p + '” e gli altri: scegliete una data, così succede davvero.'; }
+  if (document.querySelector('.mod.open')) { put('inudge', 0); return; }
+  ask(t, b, dec.length && !soon.length ? 'Decidiamo' : 'Vedi i piani').then(function (y) { if (!y) return; showPane('ideas'); if (dec.length && !soon.length) decOpen(); });
+}
 function ideaGuide() {
   var g = el('div', 'iempty');
   g.appendChild(el('h3', null, 'Dai Reel ai piani'));
-  var ol = el('ol'); ['🎬 Vedete un Reel che vi piace', '✨ Toccate Piano sotto il video', '👍 Votate e organizzate insieme'].forEach(function (t) { ol.appendChild(el('li', null, t)); }); g.appendChild(ol);
+  var ol = el('ol'); ['🎬 Vedete un Reel che vi piace', '✨ Toccate Piano sotto il video', '💘 Dite sì o passo: se piace a entrambi è un match', '📅 Scegliete la data e mettetela in calendario'].forEach(function (t) { ol.appendChild(el('li', null, t)); }); g.appendChild(ol);
   var ex = el('div', 'card idea ex'); ex.appendChild(el('span', 'tag', 'ESEMPIO'));
   ex.appendChild(el('div', 'k', KINDS.viaggio)); ex.appendChild(el('h3', null, 'Weekend a Lisbona'));
   var ac = el('div', 'acts'); ['👍 2', '📍 Mappa', '✈️ Voli', '🏨 Hotel'].forEach(function (t) { ac.appendChild(el('span', 'r-btn', t)); }); ex.appendChild(ac);
@@ -2125,20 +2262,22 @@ function ideaGuide() {
   return g;
 }
 function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
-function openIdea(rid) {
+function openIdea(rid, opts) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
   var g = $('ikg'); if (!g.children.length) Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); });
   var r0 = rid && find(rid); setKind(guessKind(r0 && r0.c) || 'viaggio');
-  $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = '✨ Riconosci dal video'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
+  if (!(opts && opts.again)) aiLast = null; $('iok2').hidden = !r0;
+  $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = aiLast ? '✨ Un’altra idea dal video' : '✨ Riconosci dal video'; $('iAi').querySelector('span').textContent = aiLast ? 'Oppure scegli prima un tipo: es. ✈️ per il viaggio' : 'L’AI compila il piano per te'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
   $('idT').textContent = rid ? 'Trasforma in piano' : 'Nuovo piano';
   $('idm').classList.add('open'); setTimeout(function () { $('ip').focus(); }, 50);
 }
-function saveIdea() {
+function saveIdea(more) {
   var p = clean($('ip').value, 60);
   if (!p) { $('iH').textContent = 'Scrivi cosa o dove, anche solo una parola.'; $('ip').focus(); return; }
   var v = {}; v[me.name] = 1; track('piano-creato'); tcount('p');
   ideaAct({ t: 'idea', a: 'add', i: { id: uid(8), r: ideaRid, k: $('ik').value, p: p, o: clean($('io').value, 200), ts: Date.now(), v: v } });
+  if (more === true && ideaRid) { var rr = ideaRid; openIdea(rr, { again: true }); $('iH').textContent = '✓ “' + p + '” salvato. Ora il prossimo: scegli un tipo o chiedi all’AI.'; return; }
   $('idm').classList.remove('open');
   if (tab === 'main') $('mh').textContent = 'Piano salvato: lo trovi in Piani.';
 }
@@ -2453,7 +2592,7 @@ function begin() {
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
-  srvStart();
+  srvStart(); setTimeout(planNudge, 15000);
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
@@ -2474,7 +2613,8 @@ function syncKind() {
   if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo da 3' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
   $('icHelp').hidden = !!joinId;
   $('icHelp').textContent = any ? 'Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.' : 'In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi tocca “Incolla l’invito” qui sopra e scrivi il tuo nome.';
-  $('haveInv').className = any ? 'btn-o wide' : 'btn wide'; $('haveInv').style.margin = '0 0 10px';
+  var fresh = REG.list.length <= 1 && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
+  $('haveInv').className = any && !fresh ? 'btn-o wide' : 'btn wide'; $('haveInv').style.margin = '0 0 10px';
   if (!j && !any) { $('sT').textContent = 'Reelta è su invito'; $('sP').textContent = 'Per ora si entra solo con un invito. Apri il link che ti hanno mandato, oppure incollalo qui sotto.'; $('go').textContent = 'Entra con l’invito'; }
 }
 
@@ -2490,7 +2630,7 @@ $('go').addEventListener('click', function () {
   track(jid ? 'richiesta-ingresso' : 'cerchio-creato');
   if (jid && me.role === 'guest') {
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
-    if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
+    if (/iphone|ipad|ipod|android/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
   }
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
 });
@@ -2556,7 +2696,7 @@ $('imc').addEventListener('click', function () { $('im').classList.remove('open'
 ['im', 'invM', 'actM', 'bugM', 'idm', 'svM', 'refM', 'sumM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
-$('iok').addEventListener('click', saveIdea); $('iAi').addEventListener('click', aiPlan);
+$('iok').addEventListener('click', function () { saveIdea(false); }); $('iok2').addEventListener('click', function () { saveIdea(true); }); $('iAi').addEventListener('click', aiPlan);
 $('pushB').addEventListener('click', pushAsk);
 $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
 $('svGo').addEventListener('click', function () { svOpen(); });
