@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://rvtxhsasngpqtojntpcn.supabase.co https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="lang.js"></script>
 <script>
@@ -928,7 +928,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v65', errLog = [];
+var APP_VER = 'v66', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1706,7 +1706,7 @@ function startStats() {
 }
 /* ---- pareri delle prime coppie: i conti restano sul telefono, partono solo se l'utente tocca Invia ---- */
 // Server per le risposte (Supabase, tabella "feedback"). Vuoti = si inviano con WhatsApp o mail.
-var FEEDBACK = { url: '', anon: '', mail: '' };
+var FEEDBACK = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', anon: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', mail: '' };
 function tst() { var t = get('tst', null); if (!t || typeof t !== 'object' || !t.s) { t = { s: Date.now(), w: {}, done: {}, snooze: 0 }; put('tst', t); } return t; }
 function tweek(t) { return Math.max(1, Math.min(12, Math.floor((Date.now() - t.s) / 6048e5) + 1)); }
 function tcount(k) {
@@ -1792,7 +1792,7 @@ function svNext() {
   };
   if (FEEDBACK.url && FEEDBACK.anon) {
     $('svOk').disabled = true;
-    fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Authorization: 'Bearer ' + FEEDBACK.anon, Prefer: 'return=minimal' },
+    fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' },
       body: JSON.stringify({ survey: svCur, code: svPayload.coppia, data: svPayload }) })
       .then(function (r) { if (!r.ok) throw 0; done(true); })
       .catch(function () { $('svH').textContent = 'Non è partito: controlla la connessione e riprova.'; })
