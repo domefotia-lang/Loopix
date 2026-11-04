@@ -578,6 +578,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <li><b>5 coppie</b><span>3 mesi di “Riconosci dal video”</span></li>
     <li><b>10 coppie</b><span>6 mesi di Reelta Plus completo</span></li>
   </ol>
+  <p class="refn"><b>🏅 Traguardi da pioniere:</b> chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.</p>
   <p class="refn">Anche la coppia che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: le coppie che consigli da oggi contano già.</p>
   <button class="btn" id="refSend">💌 Manda l’app</button><button class="btn-o wide" id="refNo">Chiudi</button>
 </div></div>
@@ -897,7 +898,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v59', errLog = [];
+var APP_VER = 'v60', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1749,6 +1750,8 @@ function svNext() {
   else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); done(true); }
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
+// data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
+(function () { try { if (!localStorage.getItem(LSG + 'since')) localStorage.setItem(LSG + 'since', String(Date.now())); } catch (e) {} })();
 function refCode() {
   try { var c = localStorage.getItem(LSG + 'ref'); if (c && /^R-[A-Z2-9]{6}$/.test(c)) return c;
     var A = 'ABCDEFGHJKMNPQRSTVWXYZ23456789', u = crypto.getRandomValues(new Uint8Array(6)); c = 'R-'; for (var i = 0; i < 6; i++) c += A.charAt(u[i] % A.length);
