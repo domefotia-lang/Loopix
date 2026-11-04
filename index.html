@@ -898,7 +898,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v60', errLog = [];
+var APP_VER = 'v61', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1390,6 +1390,7 @@ function startHost() {
       } else if (d.t === 'rdel' && c.ok && typeof d.id === 'string') {
         var dr = find(d.id);
         if (dr && dr.n === c.name && dropReel(d.id)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'rdel', id: d.id }); });
+      } else if (d.t === 'trill' && c.ok) { trillIn(c.name);
       } else if (d.t === 'pf' && c.ok) {
         if (setPic(c.name, d.p)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'pf', n: c.name, p: d.p }); });
       } else if (d.t === 'back' && c.ok && Array.isArray(d.feed)) {
@@ -1427,7 +1428,7 @@ function hostHi(c, d) {
           if (prevN && people().indexOf(nm) >= 0) nm = prevN; // nome già usato da un altro: resta quello di prima
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
-          c.ok = true; c.name = nm; c.k = k; conns.push(c); ntQuietUntil = Date.now() + 3000;
+          c.ok = true; c.name = nm; c.k = k; conns.push(c); ntQuietUntil = Date.now() + 3000; trillOut(c);
           c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
@@ -1518,7 +1519,8 @@ function startGuest() {
         if (miss.length && (d.feed || []).length < 100) hostConn.send({ t: 'back', feed: miss }); }
       else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
       else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
-      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
+      else if (d.t === 'trill' && typeof d.n === 'string') trillIn(clean(d.n, 30));
+      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); trillOut(hostConn); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'msg') addMsg(d.m);
@@ -2012,6 +2014,12 @@ var NT_FX = { filo: '✨ Filo di luce', respiro: '🌫️ Respiro', alto: '🔆 
 var NT_COL = { oro: ['#C8963E', '#FFE7A8', 'Oro'], champagne: ['#D9BF8C', '#FFF6E4', 'Champagne'], rosa: ['#D98A9A', '#FFD9E0', 'Rosa'], azzurro: ['#6FA8DC', '#D9ECFF', 'Azzurro'], verde: ['#6DBE9C', '#D8F5E8', 'Verde'], bianco: ['#D8D8D8', '#FFFFFF', 'Bianco'] };
 var ntQ = null, ntT = 0, islT = 0;
 var ntQuietUntil = Date.now() + 4000; // niente avvisi per i Reel già arrivati mentre l'app si collega
+// trillo: chi aspetta tocca "offline 🔔"; appena l'altra persona apre Reelta, le compare "… ti stava aspettando"
+function trillOut(c) {
+  var t = +get('trillAt', 0); if (!t || Date.now() - t > 3 * 36e5 || !c || !c.open) return;
+  put('trillAt', 0); try { c.send({ t: 'trill', n: me.name }); } catch (e) {}
+}
+function trillIn(who) { if (!who || who === me.name || isMuted(who)) return; showNote({ kind: 'trill', who: who, text: '', n: 1 }, Object.assign({}, ntCfg(), { pill: true }), true); }
 function noteIn(kind, who, text) {
   var c = ntCfg(); if (!c[kind] || document.hidden || isMuted(who) || Date.now() < ntQuietUntil) return;
   if (c.quiet) { var h = new Date().getHours(); if (h >= 23 || h < 7) return; }
@@ -2040,7 +2048,7 @@ function showNote(q, c, force) {
   if (!c.pill) return;
   var a = $('islA'); a.textContent = ''; a.appendChild(avatar(q.who));
   $('islN').textContent = q.who;
-  $('islW').textContent = q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
+  $('islW').textContent = q.kind === 'trill' ? 'ti stava aspettando 🔔' : q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
   $('islT').textContent = q.text || '';
   var isl = $('isl'); isl.dataset.k = q.kind; isl.classList.add('on'); clearTimeout(islT); islT = setTimeout(function () { isl.classList.remove('on'); }, 3000);
 }
@@ -2366,8 +2374,9 @@ $('bd').addEventListener('click', function () {
   if (!me) return;
   if ($('app').classList.contains('on')) { $('mh').textContent = 'Siete collegati.'; return; }
   var app = location.origin + location.pathname.replace(/index\.html$/, '');
-  var t = me.name + ' ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ' + app;
-  track('avviso-inviato');
+  var T = window.LX_T || function (x) { return x; };
+  var t = '🔔 ' + me.name + T(' ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ') + app + ')';
+  track('avviso-inviato'); put('trillAt', Date.now());
   if (navigator.share) navigator.share({ text: t }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('mh').textContent = 'Messaggio copiato: incollalo su WhatsApp.'; });
 });
