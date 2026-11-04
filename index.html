@@ -225,6 +225,12 @@ a.r-btn{text-decoration:none}
 .sumtx{font-size:17px;line-height:1.45;color:var(--t);overflow-wrap:anywhere;margin:0 0 6px}
 #sumB textarea{width:100%;min-height:60px;margin:8px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
 #sumB .btn{margin-top:10px}
+.aibtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:62px;margin:2px 0 14px;padding:14px 18px;border:0;border-radius:999px;cursor:pointer;color:#fff;font-weight:800;
+  background:linear-gradient(120deg,#6d4aff 0%,#a64bf4 45%,#ff6fb5 100%);box-shadow:0 6px 22px rgba(166,75,244,.35)}
+.aibtn b{font-size:18px}.aibtn span{font-size:12.5px;font-weight:600;opacity:.92}
+.aibtn:disabled{opacity:.75;cursor:default}.aibtn.busy b::after{content:'';display:inline-block;width:12px;height:12px;margin-left:8px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:-1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.aires{margin:-6px 0 12px;padding:10px 12px;border-radius:14px;background:rgba(166,75,244,.12);border:1px solid rgba(166,75,244,.35);color:var(--t);font-size:14px;line-height:1.45}
 .refl{list-style:none;margin:10px 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .refl li{display:flex;gap:12px;align-items:center;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
 .refl b{flex:none;min-width:78px;color:#B98B4E;font-size:15px}.refl span{color:var(--t);font-size:14px;line-height:1.35}
@@ -610,8 +616,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod" id="idm" role="dialog" aria-modal="true" aria-labelledby="idT"><div class="card" style="max-width:340px;width:100%">
   <h2 id="idT">Nuovo piano</h2>
-  <button class="isug" id="iAi" type="button" hidden style="margin:0 0 10px;border-style:solid;font-weight:700">✨ Riconosci dal video</button>
-  <p class="iq">Cosa vi ha colpito?</p>
+  <button class="aibtn" id="iAi" type="button" hidden><b>✨ Riconosci dal video</b><span>L’AI compila il piano per te</span></button>
+  <div class="aires" id="iAiR" hidden></div>
+  <p class="iq" id="iQ">Cosa vi ha colpito?</p>
   <div class="kgrid" id="ikg" role="radiogroup" aria-label="Tipo di piano"></div><input type="hidden" id="ik" value="viaggio">
   <input id="ip" placeholder="Dove? (es. Lisbona)" maxlength="60" aria-label="Luogo o cosa">
   <button class="isug" id="iSg" hidden></button>
@@ -938,7 +945,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v68', errLog = [];
+var APP_VER = 'v69', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1941,7 +1948,7 @@ function sumRender() {
   if (!mine) {
     if (r.q && r.q[me.name]) { b.appendChild(el('p', null, 'Hai già chiesto a ' + r.n + '. Appena risponde lo vedi qui, e ti arriva un avviso.')); return; }
     if (srvOn()) {
-      var ab = el('button', 'btn-o wide', r.ai ? '✨ ' + r.ai : '✨ Riassunto automatico'); ab.type = 'button'; ab.style.whiteSpace = 'normal';
+      var ab = el('button', 'aibtn', r.ai ? '✨ ' + r.ai : '✨ Riassunto automatico'); ab.type = 'button'; ab.style.whiteSpace = 'normal'; ab.style.fontSize = '17px';
       ab.onclick = function () { if (r.ai) return; ab.disabled = true; ab.textContent = '✨ Guardo il video…'; aiAsk(r).then(function (x) { r.ai = clean(x.sum, 200) || '—'; ab.textContent = '✨ ' + r.ai; }, function () { ab.disabled = false; ab.textContent = 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; }); };
       b.appendChild(ab); b.appendChild(el('p', 'refn', 'Lo scrive l’intelligenza artificiale di Google leggendo il titolo pubblico del video: niente dei vostri nomi né messaggi.'));
     }
@@ -1968,12 +1975,15 @@ function aiAsk(r) {
   return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it' }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
 }
 function aiPlan() {
-  var r = ideaRid && find(ideaRid), b = $('iAi'); if (!r) return;
-  b.disabled = true; b.textContent = '✨ Guardo il video…'; $('iH').textContent = '';
+  var r = ideaRid && find(ideaRid), b = $('iAi'), lb = b.querySelector('b'), out = $('iAiR'); if (!r) return;
+  b.disabled = true; b.classList.add('busy'); lb.textContent = '✨ Guardo il video…'; $('iH').textContent = ''; out.hidden = true;
   aiAsk(r).then(function (x) {
-    setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o;
-    $('iH').textContent = x.sum ? '✨ ' + x.sum : ''; b.textContent = '✨ Fatto: controlla e salva'; ideaSug();
-  }, function () { b.disabled = false; b.textContent = '✨ Riconosci dal video'; $('iH').textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; });
+    b.classList.remove('busy');
+    var sure = x.k !== 'altro' || (x.p && !/^(sconosciut|unknown|desconocid)/i.test(x.p));
+    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; lb.textContent = '✨ Fatto: controlla e salva'; }
+    else { b.disabled = false; lb.textContent = '✨ Riprova'; }
+    out.textContent = (x.sum ? '✨ ' + x.sum : '') + (sure ? '' : ' Scegli tu qui sotto: ci metti un attimo.'); out.hidden = !out.textContent; ideaSug();
+  }, function () { b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
 // data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
@@ -2119,7 +2129,7 @@ function openIdea(rid) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
   var g = $('ikg'); if (!g.children.length) Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); });
   var r0 = rid && find(rid); setKind(guessKind(r0 && r0.c) || 'viaggio');
-  $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').textContent = '✨ Riconosci dal video';
+  $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = '✨ Riconosci dal video'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
   $('idT').textContent = rid ? 'Trasforma in piano' : 'Nuovo piano';
   $('idm').classList.add('open'); setTimeout(function () { $('ip').focus(); }, 50);
