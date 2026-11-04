@@ -1,4 +1,6 @@
-var C='loopix-v44',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.png'];
+var C='loopix-v47',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.png', 'lang.js'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(F)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
 self.addEventListener('fetch',function(e){if(e.request.method!=='GET')return;var u=new URL(e.request.url);var f=u.origin===location.origin?fetch(u.href,{cache:'no-cache'}):fetch(e.request);e.respondWith(f.catch(function(){return caches.match(e.request,{ignoreSearch:true})}))});
+self.addEventListener('push',function(e){var d={};try{d=e.data?e.data.json():{}}catch(x){}e.waitUntil(self.registration.showNotification(d.title||'Reelta',{body:d.body||'',icon:'icon-192.png',badge:'icon-192.png',tag:'reelta'}))});
+self.addEventListener('notificationclick',function(e){e.notification.close();e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(l){for(var i=0;i<l.length;i++){if('focus' in l[i])return l[i].focus()}return self.clients.openWindow('./')}))});

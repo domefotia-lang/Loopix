@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Reelta, i Reel che vi mandate in un posto solo</title>
-<meta name="description" content="Raccogli i Reel che vi mandate da Instagram, TikTok, YouTube e Facebook, guardateli uno dopo l'altro o insieme anche da lontano, e trasformateli in piani. Gratis, senza account.">
+<script src="lang.js"></script>
+<title>Reelta · I video che vi mandate, solo vostri</title>
+<meta name="description" content="I video che vi mandate, in un posto solo vostro: guardateli insieme anche da lontano e trasformateli in piani. Senza account e senza dare via i vostri dati.">
 <meta property="og:title" content="Reelta">
-<meta property="og:description" content="I Reel che vi mandate, in un posto solo. Da guardare insieme anche da lontano.">
+<meta property="og:description" content="I video che vi mandate. Senza dare via niente di voi.">
 <meta property="og:image" content="https://domefotia-lang.github.io/Loopix/logo-reelta.png">
 <meta property="og:url" content="https://domefotia-lang.github.io/Loopix/scopri.html">
 <meta property="og:type" content="website">
@@ -52,6 +53,7 @@ h2{text-wrap:balance;font-family:var(--dis);font-weight:600;font-size:clamp(28px
 .plats{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .plats span{background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:15px;font-weight:600}
 .note{color:var(--m);font-size:15px;margin-top:12px;max-width:60ch}
+.plats.mini span{font-size:12px!important;padding:4px 9px!important;opacity:.75}.compat{padding-top:0}
 
 .trust{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .tile{background:linear-gradient(180deg,rgba(255,236,200,.05),rgba(255,236,200,0) 60%),var(--s1);border:1px solid var(--line);border-radius:22px;padding:20px}
@@ -88,25 +90,20 @@ a:focus-visible,button:focus-visible{outline:2.5px solid #3BE8D8;outline-offset:
 <main class="wrap">
   <div class="hero">
     <img class="big" src="logo-reelta.png" alt="Reelta">
-    <h1>Il vostro posto privato per i Reel</h1>
-    <p class="lead">Ti mandano dieci Reel su WhatsApp, ne apri uno e perdi gli altri. Con Reelta arrivano tutti in un posto, si guardano uno dopo l’altro e, se siete lontani, anche nello stesso momento.</p>
+    <h1>I video che vi mandate. Senza dare via niente di voi.</h1>
+    <p class="lead">Vi mandate video tutto il giorno: ne aprite uno e perdete gli altri. Con Reelta arrivano in un posto solo vostro, si guardano uno dopo l’altro e, se siete lontani, anche nello stesso momento. Senza account e senza iscrivervi a niente.</p>
     <div class="cta"><a class="btn" href="#installa">Installa Reelta, è gratis</a></div>
   </div>
 
   <div class="shots" aria-label="Come appare Reelta">
     <figure class="shot"><div class="phone"><img src="shot-feed.jpg" alt="Il feed di Reelta con un Reel mandato da Giulia, un commento e le reazioni" width="600" height="1299" loading="lazy"></div>
-      <h3>Tutti i Reel in un posto</h3><p>Copi il link, tocchi “Incolla”, e lo vede tutto il cerchio.</p></figure>
+      <h3>Tutti i video in un posto</h3><p>Copi il link, tocchi “Incolla”, e lo vede tutto il cerchio.</p></figure>
     <figure class="shot"><div class="phone"><img src="shot-insieme.jpg" alt="Due persone guardano lo stesso Reel e si scrivono in diretta" width="600" height="1299" loading="lazy"></div>
       <h3>Guardateli insieme</h3><p>Lo stesso Reel sui due telefoni, con cuori e commenti in diretta.</p></figure>
     <figure class="shot"><div class="phone"><img src="shot-piani.jpg" alt="La sezione Piani con una trattoria votata da due persone" width="600" height="1299" loading="lazy"></div>
       <h3>Dal Reel al piano</h3><p>Un posto che vi piace diventa un piano: lo votate e trovate mappa e hotel.</p></figure>
   </div>
 
-  <section>
-    <h2>Funziona con le app che usate già</h2>
-    <div class="plats"><span>Instagram</span><span>TikTok</span><span>YouTube</span><span>Facebook</span><span>X</span><span>Threads</span><span>Pinterest</span><span>Reddit</span><span>Vimeo</span><span>Spotify</span><span>SoundCloud</span></div>
-    <p class="note">I video si guardano dentro Reelta, anche se non hai l’app di quella piattaforma. Si vedono i contenuti pubblici.</p>
-  </section>
 
   <section>
     <h2>Privato, davvero</h2>
@@ -116,6 +113,12 @@ a:focus-visible,button:focus-visible{outline:2.5px solid #3BE8D8;outline-offset:
       <div class="tile"><b>Solo chi scegli tu</b><span>Una coppia o un gruppo da 3. Si entra solo con un invito, che vale 10 minuti.</span></div>
       <div class="tile"><b>Gratis, senza carta</b><span>Reelta è in beta su invito: non ti chiediamo carte né dati personali.</span></div>
     </div>
+  </section>
+
+  <section class="compat">
+    <p class="note" style="margin-top:0">Funziona con i link delle app più usate:</p>
+    <div class="plats mini"><span>Instagram</span><span>TikTok</span><span>YouTube</span><span>Facebook</span><span>X</span><span>Threads</span><span>Pinterest</span><span>Reddit</span><span>Vimeo</span><span>Spotify</span><span>SoundCloud</span></div>
+    <p class="note">I video si guardano dentro Reelta, anche se non hai l’app di quella piattaforma. Si vedono i contenuti pubblici.</p>
   </section>
 
   <section id="installa">

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="lang.js"></script>
 <title>Reelta</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#241A13">
@@ -20,12 +21,13 @@
 --gold:linear-gradient(180deg,var(--gl),var(--g) 62%,#B98B4E);--spec:linear-gradient(120deg,#FF4FA3,#9A6BFF 50%,#3BE8D8);
 --dis:"Fraunces",Georgia,"Times New Roman",serif;--txt:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--txt);-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--t);font-family:var(--txt);-webkit-font-smoothing:antialiased}
 body{display:flex;justify-content:center;background:radial-gradient(110% 55% at 50% -8%,#4A3624 0%,var(--bg) 62%) var(--bg)}
 button,input,select{font-family:inherit;color:inherit}
-.app{width:100%;max-width:440px;height:100dvh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.app{position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:440px;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
 
 /* testata */
+.hset{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g)}.hset svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;align-items:center;gap:10px}
 .logo{display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;padding:4px 0;font-family:var(--dis);font-weight:600;font-size:27px;letter-spacing:-.01em;color:var(--gl)}
 .mark{width:32px;height:32px;flex:none;border-radius:8px}
@@ -36,6 +38,27 @@ header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;
 @keyframes glow{to{background-position:200% 0}}
 .av{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;border:2.5px solid var(--bg);flex:none}
 .ppl .av+.av{margin-left:-9px}
+@property --ea{syntax:'<angle>';inherits:false;initial-value:0deg}
+#edgeL{position:fixed;inset:0;z-index:400;pointer-events:none;opacity:0;padding:2px;border-radius:44px;--c1:#C8963E;--c2:#FFE7A8;background:conic-gradient(from var(--ea),transparent 0deg,var(--c1) 30deg,var(--c2) 60deg,var(--c1) 90deg,transparent 135deg,transparent 180deg,var(--c1) 210deg,var(--c2) 240deg,var(--c1) 270deg,transparent 315deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;filter:drop-shadow(0 0 5px var(--c2))}
+#edgeL.fx-filo.go{animation:edgeRun 2.8s ease-in-out forwards}
+#edgeL.fx-respiro{background:none;-webkit-mask:none;mask:none;padding:0;filter:none;box-shadow:inset 0 0 22px 3px var(--c1),inset 0 0 4px 1px var(--c2)}
+#edgeL.fx-respiro.go{animation:edgeBreath 2.6s ease-in-out forwards}
+@keyframes edgeBreath{0%{opacity:0}40%{opacity:.75}60%{opacity:.75}100%{opacity:0}}
+#edgeL.fx-alto{inset:0 0 auto 0;height:90px;border-radius:0;padding:0;-webkit-mask:none;mask:none;filter:blur(2px);background:radial-gradient(ellipse 120px 34px at 50% calc(env(safe-area-inset-top,0px) + 16px),var(--c2) 0%,var(--c1) 35%,transparent 75%)}
+#edgeL.fx-alto.go{animation:edgeTop 2.4s ease-in-out forwards}
+@keyframes edgeTop{0%{opacity:0;transform:scaleX(.6)}35%{opacity:.85;transform:scaleX(1)}65%{opacity:.85}100%{opacity:0;transform:scaleX(1.1)}}
+.fxs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fxs .btn-o{font-size:14px;padding:10px 8px}.fxs .btn-o.on{border-color:var(--g);box-shadow:0 0 0 1.5px var(--g) inset}
+.cols{display:flex;gap:10px;flex-wrap:wrap}.cols button{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer}.cols button.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--g)}.cols button{position:relative}.cols button.pl::after{content:'✦';position:absolute;right:-4px;top:-6px;font-size:11px;color:var(--g)}.fxs .plus{margin-left:6px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:8px;background:var(--g);color:#1a120c;vertical-align:middle}
+@keyframes edgeRun{0%{opacity:0;--ea:0deg}20%{opacity:.7}70%{opacity:.7}100%{opacity:0;--ea:360deg}}
+#isl{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:410;display:flex;align-items:center;gap:10px;max-width:min(92vw,420px);padding:6px 14px 6px 6px;border-radius:26px;background:rgba(12,9,6,.94);color:#f6e9cf;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 1px rgba(226,184,107,.35);transform:translate(-50%,-160%);opacity:0;transition:transform .5s ease,opacity .5s ease;cursor:pointer;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#isl.on{transform:translate(-50%,0);opacity:1}
+#isl .av{width:30px;height:30px;font-size:13px;border-color:transparent}
+#isl .it{font-size:13.5px;line-height:1.3;min-width:0}#isl b{color:#FFE7A8}#islT{opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw}
+@media (prefers-reduced-motion:reduce){#edgeL.go{animation-duration:.6s}#isl{transition:none}}
+.av.ph{background-size:cover!important;background-position:center!important}.av.emo{background:var(--card,#3a2c22)!important;font-size:17px}
+.prof{display:flex;align-items:center;gap:14px;margin-bottom:12px}.prof .av{width:64px;height:64px;font-size:26px}.prof .av.emo{font-size:34px}
+.prow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.prow .btn-o{flex:1}
+.emos{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px}.emos button{font-size:22px;padding:6px 0;border-radius:12px;border:1.5px solid transparent;background:rgba(255,255,255,.06);cursor:pointer}.emos button.on{border-color:var(--g)}
 .av.add{background:var(--s2);color:var(--gl);font-size:20px;font-weight:600;cursor:pointer}
 .badge{background:none;border:0;cursor:pointer;padding:6px 2px;font-family:inherit;font-size:12px;color:var(--m);font-weight:600;white-space:nowrap}
 .on .badge{color:var(--cy)}
@@ -260,7 +283,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
 <div class="app" id="app">
-<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
+<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button><button class="hset" id="hdSet" aria-label="Profilo e impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
 
 <div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
 
@@ -331,7 +354,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
+  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
   <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
 </div></section>
 
@@ -340,7 +363,35 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="cbar"><div class="lbar"><input id="cin" placeholder="Scrivi un messaggio…" aria-label="Messaggio" maxlength="1000" autocomplete="off"><button class="btn" id="csend">Invia</button></div></div>
 </section>
 
-<section class="pane" id="style" aria-label="Stile"><div class="head"><h2>Stile</h2></div><div class="list">
+<section class="pane" id="style" aria-label="Impostazioni"><div class="head"><h2>Impostazioni</h2></div><div class="list">
+  <div class="card" id="prC"><h2>Il tuo profilo</h2>
+    <div class="prof"><span id="prA"></span><div><b id="prN"></b><div class="hint" style="margin:2px 0 0">Lo vedono le persone di questo cerchio.</div></div></div>
+    <input id="prI" maxlength="30" autocomplete="off" aria-label="Il tuo nome" placeholder="Il tuo nome">
+    <div class="prow"><button class="btn-o" id="prF">📷 Scegli una foto</button><button class="btn-o" id="prX">Nessuna immagine</button></div>
+    <div class="hint" style="margin:10px 0 6px">Oppure scegli un avatar:</div>
+    <div class="emos" id="prE"></div>
+    <button class="btn wide" id="prS">Salva il profilo</button><div class="hint" id="prH" aria-live="polite"></div>
+    <input type="file" id="prFile" accept="image/*" hidden>
+  </div>
+  <div class="card" id="ntC"><h2>🔔 Notifiche</h2>
+    <p class="hint" style="margin-top:0">Come ti avviso quando arriva qualcosa mentre Reelta è aperta.</p>
+    <div class="hint" style="margin:4px 0 6px">Effetto luce (tocca per provarlo):</div>
+    <div class="fxs" id="ntFx"></div>
+    <div class="hint" style="margin:12px 0 6px">Colore della luce:</div>
+    <div class="cols" id="ntCol"></div>
+    <p class="hint" id="ntPlus" style="margin:10px 0 0"></p><div class="hint" id="ntH" aria-live="polite"></div>
+    <label class="tog" style="margin-top:14px">Avviso elegante in alto<input type="checkbox" id="ntPill"></label>
+    <label class="tog" style="margin-top:10px">Suono discreto<input type="checkbox" id="ntSound"></label>
+    <label class="tog" style="margin-top:10px" id="ntVibL">Vibrazione<input type="checkbox" id="ntVib"></label>
+    <div class="hint" style="margin:14px 0 6px">Avvisami per:</div>
+    <label class="tog">Nuovi Reel<input type="checkbox" id="ntReel"></label>
+    <label class="tog" style="margin-top:10px">Messaggi<input type="checkbox" id="ntMsg"></label>
+    <label class="tog" style="margin-top:10px">Nuovi piani<input type="checkbox" id="ntIdea"></label>
+    <label class="tog" style="margin-top:14px">Silenzioso di notte (23–7)<input type="checkbox" id="ntQuiet"></label>
+    <button class="btn-o wide" id="ntTry" style="margin-top:14px">✨ Prova l’effetto</button>
+    <p class="hint">Ad app chiusa gli avvisi arriveranno con le notifiche del telefono, appena attiviamo il server. Lì la luce dei bordi (Samsung: Illuminazione bordi) e il flash della fotocamera (iPhone: Impostazioni → Accessibilità → Audio e immagini → Flash LED per avvisi) si accendono da soli.</p>
+  </div>
+  <div class="card"><h2>Lingua</h2><select id="langSel" aria-label="Lingua"><option value="">Automatica (lingua del telefono)</option><option value="it">Italiano</option><option value="en">English</option><option value="es">Español</option></select><p class="hint">La lingua cambia subito. Messaggi e Reel restano come sono stati scritti.</p></div>
   <div class="card"><h2>Aspetto</h2>
     <div class="mode" id="modeB" role="group" aria-label="Aspetto">
       <button data-m="light"><span aria-hidden="true">☀️</span>Chiaro</button>
@@ -430,6 +481,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="bugX" style="margin-top:8px">Chiudi</button>
 </div></div>
 
+<div id="edgeL" aria-hidden="true"></div><div id="isl" role="status" aria-live="polite"><span id="islA"></span><div class="it"><b id="islN"></b> <span id="islW"></span><div id="islT" data-nt></div></div></div>
 <div id="veil" role="button" aria-label="Tocca per tornare a Reelta"><img src="icon-180.png" alt=""><span>Tocca per tornare</span></div>
 
 <div class="mod" id="ask" role="alertdialog" aria-modal="true" aria-labelledby="askT" aria-describedby="askP"><div class="card" style="max-width:340px;width:100%">
@@ -484,7 +536,7 @@ var REG = regGet();
 if (!REG) { REG = { active: 'c1', list: [{ id: 'c1', label: '' }] }; regSet(REG); }
 function lsOf(id) { return id === 'c1' ? LSG : LSG + id + ':'; }
 var LS = lsOf(REG.active);
-var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1 };
+var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1 };
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
 function regLabel() {
@@ -527,7 +579,7 @@ function applyDev() {
   if ($('setup').classList.contains('show')) syncKind();
 }
 /* ---- copia di sicurezza (cifrata con password) ---- */
-var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps', 'ttl'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed', 'riserv', 'rcpt'];
+var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps', 'ttl', 'pics', 'aka'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed', 'riserv', 'nt', 'rcpt'];
 function askPw(t, p) {
   return new Promise(function (res) {
     $('pwT').textContent = t; $('pwP').textContent = p; $('pwI').value = ''; $('pwH').textContent = '';
@@ -607,12 +659,36 @@ function switchCircle(id) { REG.active = id; regSet(REG); location.reload(); }
 function newCircle() { var n = 2; while (REG.list.some(function (x) { return x.id === 'c' + n; })) n++; var id = 'c' + n; REG.list.push({ id: id, label: 'Nuovo' }); REG.prev = REG.active; REG.active = id; regSet(REG); location.reload(); }
 function uid(n) { return Array.from(crypto.getRandomValues(new Uint8Array(n))).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
 var AVC = ['#7A4FB8', '#B0466E', '#3C7A9E', '#9A7430', '#3F8A63', '#A3577F'];
-function avatar(n) { n = String(n || '?'); var h = 0; for (var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0; var a = el('span', 'av', n.trim().charAt(0).toUpperCase() || '?'); a.style.background = AVC[h % AVC.length]; a.title = n; return a; }
+function avatar(n) {
+  n = String(n || '?'); var h = 0; for (var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0; var a = el('span', 'av', n.trim().charAt(0).toUpperCase() || '?'); a.style.background = AVC[h % AVC.length]; a.title = n;
+  var p = (typeof me !== 'undefined' && me && n === me.name && me.pic !== undefined) ? me.pic : (typeof pics !== 'undefined' ? pics[n] : '');
+  if (p && /^data:image\//.test(p)) { a.textContent = ''; a.classList.add('ph'); a.style.backgroundImage = 'url("' + p + '")'; }
+  else if (p) { a.textContent = p; a.classList.add('emo'); }
+  return a;
+}
+/* ---- profilo: nome, foto o avatar ---- */
+var pics = get('pics', {}), aka = get('aka', {});
+var EMOJI_AV = ['😊', '😎', '🥰', '🦊', '🐻', '🐱', '🐶', '🌸', '🌻', '⭐', '🌙', '🔥', '🍕', '⚽', '🎵', '✈️'];
+function validPic(p) { if (p === '') return true; if (typeof p !== 'string') return false; if (/^data:image\/(jpeg|webp|png);base64,[A-Za-z0-9+\/=]+$/.test(p)) return p.length <= 20000; return EMOJI_AV.indexOf(p) >= 0; }
+function setPic(n, p) { n = clean(n, 30); if (!n || !validPic(p)) return false; if ((pics[n] || '') === p) return false; if (p) pics[n] = p; else delete pics[n]; put('pics', pics); refreshAvatars(); return true; }
+function refreshAvatars() { try { status(); } catch (e) {} try { render(); } catch (e) {} try { if (tab === 'chat') renderChat(true); } catch (e) {} }
+function renameIn(from, to) {
+  from = clean(from, 30); to = clean(to, 30); if (!from || !to || from === to) return false;
+  function mv(o) { if (o && Object.prototype.hasOwnProperty.call(o, from)) { if (!Object.prototype.hasOwnProperty.call(o, to)) o[to] = o[from]; delete o[from]; } }
+  feed.forEach(function (r) { if (r.n === from) r.n = to; mv(r.x); (r.k || []).forEach(function (c) { if (c.n === from) c.n = to; }); });
+  msgs.forEach(function (m) { if (m.n === from) m.n = to; mv(m.rd); });
+  ideas.forEach(function (i) { if (i.n === from) i.n = to; mv(i.v); });
+  muted = muted.map(function (x) { return x === from ? to : x; });
+  mv(pics);
+  put('feed', feed); put('msgs', msgs); put('ideas', ideas); put('muted', muted); put('pics', pics);
+  refreshAvatars(); try { renderIdeas(); } catch (e) {}
+  return true;
+}
 function ago(ts) {
   var d = (Date.now() - ts) / 1000;
   if (d < 60) return 'adesso'; if (d < 3600) return Math.floor(d / 60) + ' min fa'; if (d < 86400) return Math.floor(d / 3600) + (d < 7200 ? ' ora fa' : ' ore fa');
   if (d < 172800) return 'ieri';
-  return new Date(ts).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+  return new Date(ts).toLocaleDateString(window.LX_LANG === 'en' ? 'en-GB' : window.LX_LANG === 'es' ? 'es-ES' : 'it-IT', { day: 'numeric', month: 'short' });
 }
 function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; }
 function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
@@ -702,7 +778,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v44', errLog = [];
+var APP_VER = 'v47', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -905,7 +981,7 @@ function addReel(r, mine) {
   if (isMuted(n.n)) { seqLabel(); return true; }
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
-  else { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; }
+  else { noteIn('reel', n.n, n.c); unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; }
   seqLabel();
   return true;
 }
@@ -1167,6 +1243,17 @@ function startHost() {
       } else if (d.t === 'rdel' && c.ok && typeof d.id === 'string') {
         var dr = find(d.id);
         if (dr && dr.n === c.name && dropReel(d.id)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'rdel', id: d.id }); });
+      } else if (d.t === 'pf' && c.ok) {
+        if (setPic(c.name, d.p)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'pf', n: c.name, p: d.p }); });
+      } else if (d.t === 'back' && c.ok && Array.isArray(d.feed)) {
+        // un membro rimanda i Reel che a questo telefono mancano (es. dopo una reinstallazione)
+        var okN = {}; okN[me.name] = 1; Object.keys(allowed).forEach(function (kk) { okN[allowed[kk]] = 1; });
+        var got = d.feed.slice(0, 100).filter(function (r) { return r && okN[clean(r.n, 30)] && addReel(r, true); });
+        if (got.length) {
+          feed.sort(function (a, b) { return a.ts - b.ts; }); put('feed', feed); render();
+          got.forEach(function (r) { var nr = find(r.id); if (nr) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: nr }); }); });
+          $('mh').textContent = 'Recuperati ' + got.length + (got.length === 1 ? ' Reel' : ' Reel') + ' da ' + c.name + ' ✓';
+        }
       } else if (d.t === 'reel' && c.ok) {
         var r = d.r || {}; r.n = c.name;
         if (addReel(r)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: feed[feed.length - 1] }); });
@@ -1189,9 +1276,12 @@ function hostHi(c, d) {
         var known = k && allowed[k], code = typeof d.c === 'string' ? d.c.slice(0, 20) : '', codes = [];
         function refuse(why) { try { c.send({ t: 'no', why: why }); } catch (e) {} setTimeout(function () { try { c.close(); } catch (e) {} }, 400); }
         function accept() {
+          var prevN = known && allowed[k] !== nm ? allowed[k] : null;
+          if (prevN && people().indexOf(nm) >= 0) nm = prevN; // nome già usato da un altro: resta quello di prima
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
+          if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
           c.ok = true; c.name = nm; c.k = k; conns.push(c);
-          c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+          c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
@@ -1217,7 +1307,7 @@ function hostHi(c, d) {
 function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return 'Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
+  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc);
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -1271,7 +1361,15 @@ function startGuest() {
       }
       if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
-        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); if (tab === 'chat') renderChat(true); }
+        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); if (tab === 'chat') renderChat(true);
+        if (d.aka && typeof d.aka === 'object') Object.keys(d.aka).slice(0, 50).forEach(function (o) { renameIn(o, d.aka[o]); });
+        if (d.pics && typeof d.pics === 'object') Object.keys(d.pics).slice(0, 20).forEach(function (n) { if (n !== me.name) setPic(n, d.pics[n]); });
+        if (me.pic !== undefined) hostConn.send({ t: 'pf', p: me.pic || '' });
+        var hasH = {}; (Array.isArray(d.feed) ? d.feed : []).forEach(function (r) { if (r && r.id) hasH[r.id] = 1; }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { hasH[g] = 1; });
+        var miss = feed.filter(function (r) { return !hasH[r.id]; }).slice(-100);
+        if (miss.length && (d.feed || []).length < 100) hostConn.send({ t: 'back', feed: miss }); }
+      else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
+      else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
@@ -1366,7 +1464,7 @@ function addMsg(m, who) {
   msgs.push(n); if (msgs.length > 300) msgs.shift(); put('msgs', msgs);
   if (isMuted(n.n)) return n;
   if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; if (n.n !== me.name) markSeen(); }
-  else if (n.n !== me.name) { chatSeen++; chatTab(); }
+  else if (n.n !== me.name) { chatSeen++; chatTab(); noteIn('msg', n.n, n.t); }
   return n;
 }
 function sendMsg() {
@@ -1420,7 +1518,7 @@ function applyIdea(d, who) {
     var old = findIdea(i.id);
     if (old) { Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.d) old.d = true; ideasChanged(old.r); return null; }
     ideas.push(i); if (ideas.length > 200) ideas.shift();
-    if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); }
+    if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); noteIn('idea', i.n, i.p); }
     ideasChanged(i.r); return { t: 'idea', a: 'add', i: i };
   }
   var x = findIdea(d.id); if (!x) return null;
@@ -1573,7 +1671,120 @@ function renderPriv() {
   var on = !!get('riserv', 0); $('rsT').checked = on; $('rcT').checked = rcptOn();
   $('rsP').textContent = on ? 'Attiva: statistiche spente, i video si caricano solo quando tocchi ▶, lo schermo si copre quando esci dall’app. Per coprirlo al volo: doppio tocco con due dita.' : 'Per chi vuole il massimo della discrezione: niente statistiche, video solo al tocco, schermo coperto quando esci dall’app.';
 }
+/* ---- notifiche dentro l'app: luce sui bordi, avviso in alto, suono, vibrazione ---- */
+var NT_DEF = { fx: 'filo', col: 'oro', pill: true, sound: false, vib: false, reel: true, msg: true, idea: true, quiet: false };
+function ntCfg() {
+  var c = get('nt', {}) || {}, o = {};
+  Object.keys(NT_DEF).forEach(function (k) { o[k] = Object.prototype.hasOwnProperty.call(c, k) ? (typeof NT_DEF[k] === 'boolean' ? !!c[k] : c[k]) : NT_DEF[k]; });
+  if (c.edge === false && !c.fx) o.fx = 'off';
+  if (!NT_FX[o.fx]) o.fx = 'filo'; if (!NT_COL[o.col]) o.col = 'oro';
+  return o;
+}
+// Effetti extra: gratis durante la beta, poi con Reelta Plus. Per bloccarli basta mettere PLUS_LOCK = true.
+var PLUS_LOCK = false;
+function hasPlus() { return isDev || !!get('plus', 0); }
+function ntFree(c) { return (c.fx === 'filo' || c.fx === 'off') && c.col === 'oro'; }
+var NT_FX = { filo: '✨ Filo di luce', respiro: '🌫️ Respiro', alto: '🔆 Bagliore in alto', off: '🚫 Nessuna luce' };
+var NT_COL = { oro: ['#C8963E', '#FFE7A8', 'Oro'], champagne: ['#D9BF8C', '#FFF6E4', 'Champagne'], rosa: ['#D98A9A', '#FFD9E0', 'Rosa'], azzurro: ['#6FA8DC', '#D9ECFF', 'Azzurro'], verde: ['#6DBE9C', '#D8F5E8', 'Verde'], bianco: ['#D8D8D8', '#FFFFFF', 'Bianco'] };
+var ntQ = null, ntT = 0, islT = 0;
+function noteIn(kind, who, text) {
+  var c = ntCfg(); if (!c[kind] || document.hidden || isMuted(who)) return;
+  if (c.quiet) { var h = new Date().getHours(); if (h >= 23 || h < 7) return; }
+  ntQ = ntQ && ntQ.kind === kind && ntQ.who === who ? { kind: kind, who: who, text: text, n: ntQ.n + 1 } : { kind: kind, who: who, text: text, n: 1 };
+  clearTimeout(ntT); ntT = setTimeout(function () { var q = ntQ; ntQ = null; if (q) showNote(q, ntCfg()); }, 350);
+}
+function edgeGlow(c) {
+  c = c || ntCfg(); if (c.fx === 'off') return;
+  var e = $('edgeL'), k = NT_COL[c.col] || NT_COL.oro;
+  e.style.setProperty('--c1', k[0]); e.style.setProperty('--c2', k[1]);
+  e.className = 'fx-' + c.fx; void e.offsetWidth; e.classList.add('go');
+}
+function chime() {
+  try {
+    var A = window.AudioContext || window.webkitAudioContext; if (!A) return; var a = chime.ctx || (chime.ctx = new A()); if (a.state === 'suspended') a.resume();
+    [[880, 0], [1318.5, 0.12]].forEach(function (n) { var o = a.createOscillator(), g = a.createGain(), t = a.currentTime + n[1]; o.type = 'sine'; o.frequency.value = n[0]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.55); });
+  } catch (e) {}
+}
+var ntLast = 0;
+function showNote(q, c, force) {
+  var now = Date.now(); if (!force && now - ntLast < 8000) return; ntLast = now; // mai più di un avviso ogni 8 secondi
+  if (!force && q.kind === 'reel' && tab === 'main' && $('main').classList.contains('show')) c.pill = false; // stai già guardando i Reel
+  edgeGlow(c);
+  if (c.vib && navigator.vibrate) try { navigator.vibrate([25, 60, 25]); } catch (e) {}
+  if (c.sound) chime();
+  if (!c.pill) return;
+  var a = $('islA'); a.textContent = ''; a.appendChild(avatar(q.who));
+  $('islN').textContent = q.who;
+  $('islW').textContent = q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
+  $('islT').textContent = q.text || '';
+  var isl = $('isl'); isl.dataset.k = q.kind; isl.classList.add('on'); clearTimeout(islT); islT = setTimeout(function () { isl.classList.remove('on'); }, 3000);
+}
+$('isl').addEventListener('click', function () { var k = $('isl').dataset.k; $('isl').classList.remove('on'); showPane(k === 'msg' ? 'chat' : k === 'idea' ? 'ideas' : 'main'); });
+var NT_IDS = { pill: 'ntPill', sound: 'ntSound', vib: 'ntVib', reel: 'ntReel', msg: 'ntMsg', idea: 'ntIdea', quiet: 'ntQuiet' };
+function renderNt() {
+  var c = ntCfg(); Object.keys(NT_IDS).forEach(function (k) { $(NT_IDS[k]).checked = c[k]; }); $('ntVibL').hidden = !navigator.vibrate;
+  var fb = $('ntFx'); fb.textContent = '';
+  var locked = PLUS_LOCK && !hasPlus();
+  function pick(n) { edgeGlow(n); if (locked && !ntFree(n)) { $('ntH').textContent = 'Questo effetto sarà disponibile con Reelta Plus.'; return; } put('nt', n); $('ntH').textContent = ''; renderNt(); }
+  Object.keys(NT_FX).forEach(function (f) { var b = el('button', 'btn-o' + (c.fx === f ? ' on' : ''), NT_FX[f]); if (f === 'respiro' || f === 'alto') b.appendChild(el('span', 'plus', 'Plus')); b.type = 'button'; b.addEventListener('click', function () { var n = ntCfg(); n.fx = f; pick(n); }); fb.appendChild(b); });
+  var cb = $('ntCol'); cb.textContent = '';
+  Object.keys(NT_COL).forEach(function (k) { var b = el('button', c.col === k ? 'on' : null); b.type = 'button'; b.title = NT_COL[k][2]; b.setAttribute('aria-label', NT_COL[k][2]); b.style.background = 'linear-gradient(135deg,' + NT_COL[k][0] + ',' + NT_COL[k][1] + ')'; if (k !== 'oro') b.classList.add('pl'); b.addEventListener('click', function () { var n = ntCfg(); n.col = k; if (n.fx === 'off') n.fx = 'filo'; pick(n); }); cb.appendChild(b); });
+  $('ntPlus').textContent = locked ? 'Effetti e colori con ✦ sono inclusi in Reelta Plus. Puoi provarli toccandoli.' : 'Durante la beta tutti gli effetti sono gratis. Con l’arrivo di Plus, quelli segnati ✦ saranno inclusi in Plus.';
+}
+Object.keys(NT_IDS).forEach(function (k) { $(NT_IDS[k]).addEventListener('change', function () { var c = ntCfg(); c[k] = $(NT_IDS[k]).checked; put('nt', c); if (k === 'sound' && c.sound) chime(); }); });
+$('ntTry').addEventListener('click', function () { var c = ntCfg(); c.pill = c.pill || !c.edge; showNote({ kind: 'reel', who: me && me.name ? me.name : 'Reelta', text: '✨', n: 1 }, c, true); });
+/* ---- profilo ---- */
+var prPic;
+function renderProfile() {
+  if (!me || !$('prA')) return;
+  var keep = me.pic; if (prPic !== undefined) me.pic = prPic;
+  var a = $('prA'); a.textContent = ''; a.appendChild(avatar(me.name)); me.pic = keep;
+  $('prN').textContent = me.name; if (document.activeElement !== $('prI') && !$('prI').dataset.edit) $('prI').value = me.name;
+  var cur = prPic !== undefined ? prPic : (me.pic || ''), box = $('prE'); box.textContent = '';
+  EMOJI_AV.forEach(function (e) { var b = el('button', e === cur ? 'on' : null, e); b.type = 'button'; b.setAttribute('aria-label', 'Avatar ' + e); b.addEventListener('click', function () { prPic = e; renderProfile(); }); box.appendChild(b); });
+}
+function saveProfile() {
+  var nn = clean($('prI').value, 30);
+  if (!nn) { $('prH').textContent = 'Scrivi il tuo nome.'; return; }
+  var others = people().concat(names || []).filter(function (x) { return x !== me.name; });
+  if (nn !== me.name && others.indexOf(nn) >= 0) { $('prH').textContent = 'Questo nome lo usa già un’altra persona del cerchio.'; return; }
+  var old = me.name, picCh = prPic !== undefined && prPic !== (me.pic || ''), nameCh = nn !== old;
+  if (!picCh && !nameCh) { $('prH').textContent = 'Non c’è niente da cambiare.'; return; }
+  if (picCh) me.pic = prPic;
+  if (nameCh) me.name = nn;
+  put('me', me); prPic = undefined; delete $('prI').dataset.edit;
+  if (nameCh) renameIn(old, nn);
+  if (me.role === 'host') {
+    if (nameCh) { Object.keys(aka).forEach(function (o) { if (aka[o] === old) aka[o] = nn; }); aka[old] = nn; put('aka', aka); cast({ t: 'ren', a: old, b: nn }); cast({ t: 'people', people: people() }); }
+    setPic(me.name, me.pic || ''); cast({ t: 'pf', n: me.name, p: me.pic || '' });
+  } else if (nameCh) { $('prH').textContent = 'Profilo salvato ✓ Mi ricollego con il nuovo nome…'; setTimeout(function () { location.reload(); }, 900); return; }
+  else if (hostConn && hostConn.open) hostConn.send({ t: 'pf', p: me.pic || '' });
+  $('prH').textContent = 'Profilo salvato ✓'; refreshAvatars(); renderProfile();
+}
+function pickPhoto(f) {
+  if (!f) return; if (!/^image\//.test(f.type || 'image/')) { $('prH').textContent = 'Scegli un’immagine.'; return; }
+  var url = URL.createObjectURL(f), img = new Image();
+  img.onload = function () {
+    var out = '', tries = [[160, 0.8], [128, 0.7], [112, 0.6], [96, 0.5], [80, 0.45]];
+    for (var i = 0; i < tries.length; i++) {
+      var S = tries[i][0], c = document.createElement('canvas'); c.width = c.height = S; var x = c.getContext('2d');
+      var m = Math.min(img.width, img.height); x.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+      out = c.toDataURL('image/jpeg', tries[i][1]); if (out.length <= 19000) break;
+    }
+    URL.revokeObjectURL(url);
+    if (!validPic(out)) { $('prH').textContent = 'Non riesco a usare questa foto. Provane un’altra.'; return; }
+    prPic = out; $('prH').textContent = 'Foto pronta: tocca “Salva il profilo”.'; renderProfile();
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); $('prH').textContent = 'Non riesco a leggere questa foto. Provane un’altra.'; };
+  img.src = url;
+}
+$('prF').addEventListener('click', function () { $('prFile').value = ''; $('prFile').click(); });
+$('prFile').addEventListener('change', function () { pickPhoto($('prFile').files[0]); });
+$('prX').addEventListener('click', function () { prPic = ''; $('prH').textContent = ''; renderProfile(); });
+$('prS').addEventListener('click', saveProfile);
+$('prI').addEventListener('input', function () { $('prI').dataset.edit = '1'; });
 function renderStyle() {
+  renderProfile(); renderNt();
   renderPriv();
   var box = $('themes'), cur = get('theme', 'champagne'); box.textContent = '';
   Object.keys(THEMES).forEach(function (k) {
@@ -1780,6 +1991,7 @@ $('invKill').addEventListener('click', function () { ask('Annullare gli inviti g
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
 $('goStyle').addEventListener('click', function () { showPane('style'); });
+$('hdSet').addEventListener('click', function () { showPane('style'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { try { localStorage.removeItem(LSG + 'dev'); } catch (e) {} isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
