@@ -628,7 +628,7 @@ function regLabel() {
   if (e.label !== l) { e.label = l; regSet(REG); }
 }
 /* ---- modalità sviluppatore (chiave firmata) e beta su invito ---- */
-var BETA_CHIUSA = true;           // true = solo lo sviluppatore crea cerchi; gli altri entrano con un invito
+var BETA_CHIUSA = false;          // true = solo lo sviluppatore crea cerchi; gli altri entrano con un invito
 var BIG_MAX = 10;                 // persone in un "Gruppo grande" (solo sviluppatore)
 var DEV_PUB = { kty: 'EC', crv: 'P-256', x: 'tpTFlyJrTobDI6bpVw9hhnqjNoMqhQQ6FsLvQ4WsSvI', y: 'uHJoIFyyxZBnbfoVqNELDyg4clgRrX12LeQQgCk-zfY', ext: true };
 var isDev = false;
@@ -878,7 +878,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v54', errLog = [];
+var APP_VER = 'v55', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
