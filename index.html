@@ -655,9 +655,22 @@ var LS = lsOf(REG.active);
 var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1 };
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
+// nome leggibile di un cerchio: con chi è, non solo "Coppia"
+function circName(id) {
+  try {
+    var P = lsOf(id), m = JSON.parse(localStorage.getItem(P + 'me') || 'null'); if (!m || !m.role) return '';
+    if (m.role === 'host') {
+      var al = JSON.parse(localStorage.getItem(P + 'allowed') || '{}'), who = Object.keys(al).map(function (k) { return al[k]; }).filter(Boolean);
+      return kindName(m.kind) + (who.length ? ' con ' + who.join(', ') : ' · ancora nessuno');
+    }
+    var hn = JSON.parse(localStorage.getItem(P + 'hn') || '""');
+    return hn ? 'Cerchio di ' + hn : 'Cerchio di gruppo';
+  } catch (e) { return ''; }
+}
 function regLabel() {
   var e = REG.list.filter(function (x) { return x.id === REG.active; })[0]; if (!e || !me) return;
-  var l = me.role === 'host' ? kindName(me.kind) : (names[0] ? 'Cerchio di ' + names[0] : 'Cerchio di gruppo');
+  if (me.role !== 'host' && names[0] && get('hn', '') !== names[0]) put('hn', names[0]);
+  var l = circName(REG.active) || e.label;
   if (e.label !== l) { e.label = l; regSet(REG); }
 }
 /* ---- modalità sviluppatore (chiave firmata) e beta su invito ---- */
@@ -915,7 +928,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v64', errLog = [];
+var APP_VER = 'v65', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2002,6 +2015,10 @@ function removeMember(k) {
 function renderCircles() {
   $('devC').hidden = !isDev; $('newC').hidden = !canCreateAny();
   var b = $('clist'); b.textContent = '';
+  // cerchi "Nuovo" mai completati: li tolgo dall'elenco
+  var keep = REG.list.filter(function (x) { return x.id === REG.active || x.label !== 'Nuovo' || circName(x.id); });
+  if (keep.length !== REG.list.length) { REG.list = keep; regSet(REG); }
+  REG.list.forEach(function (x) { var cn = circName(x.id); if (cn && cn !== x.label) { x.label = cn; regSet(REG); } });
   REG.list.forEach(function (x) {
     var r = el('div', 'mrow'), on = x.id === REG.active, s = el('span', null, (x.label || 'Cerchio') + (on ? ' · aperto' : '')); r.appendChild(s);
     if (!on) { var g = el('button', 'btn-o', 'Apri'); g.onclick = function () { switchCircle(x.id); }; r.appendChild(g); }
