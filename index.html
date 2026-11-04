@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Loopix</title>
+<title>Reelta</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#241A13">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Loopix">
+<meta name="apple-mobile-web-app-title" content="Reelta">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@ button,input,select{font-family:inherit;color:inherit}
 /* testata */
 header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;align-items:center;gap:10px}
 .logo{display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;padding:4px 0;font-family:var(--dis);font-weight:600;font-size:27px;letter-spacing:-.01em;color:var(--gl)}
-.mark{width:40px;height:22px;flex:none;overflow:visible}
+.mark{width:32px;height:32px;flex:none;border-radius:8px}
 .mark path{fill:none;stroke:url(#lg);stroke-width:3.4;stroke-linecap:round}
 .on .mark{filter:drop-shadow(0 0 6px rgba(154,107,255,.8))}
 .ppl{margin-left:auto;display:flex;align-items:center;padding:3px;border-radius:999px;background:rgba(226,190,128,.22)}
@@ -44,7 +44,7 @@ header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;
 .pane{display:none;flex:1;min-height:0;flex-direction:column}.pane.show{display:flex}
 #setup{padding:8px 20px 24px;gap:16px;overflow-y:auto}
 .hero{padding:22px 4px 4px;text-align:center}
-.hero .big-mark{width:132px;height:72px;margin:0 auto 18px;display:block;filter:drop-shadow(0 0 18px rgba(154,107,255,.45))}
+.hero .big-mark{width:150px;height:150px;margin:0 auto 18px;display:block;border-radius:34px;filter:drop-shadow(0 0 18px rgba(255,140,60,.35))}
 .hero .big-mark path{fill:none;stroke:url(#lg2);stroke-width:5;stroke-linecap:round}
 .hero h1{font-family:var(--dis);font-weight:600;font-size:34px;line-height:1.1;letter-spacing:-.01em;color:var(--gl)}
 .hero p{font-size:17px;color:var(--m);margin:12px auto 0;line-height:1.45;max-width:28ch}
@@ -245,12 +245,22 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .msg .mn{display:block;font-size:12px;font-weight:700;color:var(--g);margin-bottom:2px}
 .msg time{display:block;font-size:11px;opacity:.7;margin-top:3px;text-align:right}
 .cbar{padding:8px 14px 22px;flex:none}
+
+/* spunte di lettura */
+.msg .tick{margin-left:6px;font-weight:700;letter-spacing:-2px}.msg .tick.rd{color:#7FE3FF;letter-spacing:-2px}
+.light .msg .tick.rd{color:#0A84FF}
+#ttlNote{font-size:13px;color:var(--m);padding:0 16px 4px}
+/* modalità riservata: velo */
+#veil{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:var(--bg);color:var(--m);font-size:15px}
+#veil.on{display:flex}#veil img{width:84px;height:84px;border-radius:20px}#veil svg path{fill:none;stroke:var(--g);stroke-width:3.4;stroke-linecap:round}
+.tap-load{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:22px;text-align:center;color:var(--m);font-size:14px;min-height:0}
+.tap-load b{color:var(--t);font-size:17px}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
 <div class="app" id="app">
-<header><button class="logo" id="home" aria-label="Loopix, torna alla Home"><svg class="mark" viewBox="0 0 40 22" aria-hidden="true"><path d="M20 11c-3.2-4.6-6.2-7-9.6-7A7 7 0 0 0 3.4 11a7 7 0 0 0 7 7c3.4 0 6.4-2.4 9.6-7s6.2-7 9.6-7a7 7 0 0 1 7 7 7 7 0 0 1-7 7c-3.4 0-6.4-2.4-9.6-7z"/></svg><span>Loopix</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
+<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
 
 <div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
 
@@ -259,7 +269,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="inv2" id="pb" hidden style="cursor:pointer"><span>Hai copiato un Reel? <b>Tocca qui</b> per aggiungerlo.</span><button class="btn-o" id="pbx" aria-label="Chiudi">✕</button></div>
 
 <section class="pane" id="setup">
-  <div class="hero"><svg class="big-mark" viewBox="0 0 40 22" aria-hidden="true"><path d="M20 11c-3.2-4.6-6.2-7-9.6-7A7 7 0 0 0 3.4 11a7 7 0 0 0 7 7c3.4 0 6.4-2.4 9.6-7s6.2-7 9.6-7a7 7 0 0 1 7 7 7 7 0 0 1-7 7c-3.4 0-6.4-2.4-9.6-7z"/></svg><h1>Il vostro posto privato per i Reel</h1><p>Mandateveli, guardateli insieme anche da lontano, trasformateli in piani.</p></div>
+  <div class="hero"><img class="big-mark" src="logo-reelta.png" alt="Reelta"><h1>Il vostro posto privato per i Reel</h1><p>Mandateveli, guardateli insieme anche da lontano, trasformateli in piani.</p></div>
   <div class="card">
     <h2 id="sT">Crea il tuo cerchio</h2>
     <p id="sP">Tu e una persona, in privato.</p>
@@ -270,19 +280,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
         <button type="button" class="chip" id="kB" aria-pressed="false" hidden>🌟 Gruppo grande (fino a 10)</button>
       </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
-    <button type="button" class="btn-o wide" id="icPaste" style="margin:0 0 8px">📋 Ho ricevuto un invito: incollalo</button>
-    <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Ho già un invito (copiato)</button>
+    <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Incolla l’invito che hai ricevuto</button>
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
-    <p>Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
+    <p id="icHelp">Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
     <div id="inst" hidden class="inv2" style="margin:0 0 12px;flex-direction:column;align-items:stretch">
-      <span><b>Prima installa Loopix</b>, poi entri nel cerchio:</span>
-      <ol class="steps" style="margin:4px 0 6px">
-        <li><span class="n">1</span><span>Tocca qui sotto “Copia l’invito”.</span></li>
-        <li><span class="n">2</span><span>In Safari tocca Condividi ⬆, poi “Aggiungi alla schermata Home”.</span></li>
-        <li><span class="n">3</span><span>Apri Loopix dall’icona, scrivi il tuo nome e incolla l’invito.</span></li>
-      </ol>
-      <button class="btn" id="instC">Copia l’invito</button>
-      <button class="btn-o" id="instX" style="margin-top:8px">Continua qui senza installare</button>
+      <span><b>📲 Hai già Reelta sulla schermata Home?</b> Su iPhone i link si aprono in Safari, che è una copia separata. Entra dall’app:</span>
+      <button class="btn" id="instC" style="margin-top:8px">Sì: copia l’invito per l’app</button>
+      <span id="instT" hidden style="margin-top:8px">Copiato ✓ Ora chiudi Safari, apri <b>Reelta dall’icona</b> e tocca <b>“Incolla l’invito che hai ricevuto”</b>.</span>
+      <span style="margin-top:10px;font-size:14px">Non ce l’hai? Entra qui sotto con il tuo nome: dopo ti spiego come metterla sulla Home.</span>
     </div>
     <button class="btn" id="go">Inizia</button>
     <button class="btn-o wide" id="sCancel" hidden style="margin-top:8px">Annulla</button>
@@ -321,16 +326,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </section>
 
 <section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
-  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
   <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">🎨 Stile e tema</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
-  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Loopix, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
 </div></section>
 
-<section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div>
+<section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div><div id="ttlNote" hidden></div>
   <div class="list" id="clog" aria-live="polite"></div>
   <div class="cbar"><div class="lbar"><input id="cin" placeholder="Scrivi un messaggio…" aria-label="Messaggio" maxlength="1000" autocomplete="off"><button class="btn" id="csend">Invia</button></div></div>
 </section>
@@ -343,15 +348,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
       <button data-m="auto"><span aria-hidden="true">🌗</span>Automatico</button>
     </div>
     <p id="modeP"></p></div>
+  <div class="card"><h2>🕶️ Privacy</h2>
+    <label class="tog">Modalità riservata<input type="checkbox" id="rsT"></label>
+    <p id="rsP" style="margin-top:6px"></p>
+    <label class="tog" style="margin-top:10px">Conferme di lettura (✓✓)<input type="checkbox" id="rcT"></label>
+    <p style="margin-top:6px">Se le spegni, gli altri non sanno quando leggi, ma non vedi nemmeno quando leggono loro.</p>
+  </div>
   <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
   <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
   <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
   <div class="card plus"><h2>Gratis per sempre</h2>
     <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Una coppia e un gruppo da 3, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
-    <h2 style="margin-top:14px">In arrivo con Loopix Plus</h2>
+    <h2 style="margin-top:14px">In arrivo con Reelta Plus</h2>
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
-  <div class="card" id="supC" hidden><h2>❤️ Sostieni Loopix</h2><p>Loopix è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
+  <div class="card" id="supC" hidden><h2>❤️ Sostieni Reelta</h2><p>Reelta è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
 </div></section>
 
 <nav class="tabs" id="tabs" hidden aria-label="Sezioni">
@@ -366,16 +377,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="mod" id="im" role="dialog" aria-modal="true" aria-labelledby="imT"><div class="card" style="max-width:340px;width:100%;max-height:85dvh;overflow-y:auto">
   <h2 id="imT">Come funziona</h2>
   <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
-  <p>• <b>Su invito:</b> per ora Loopix è in beta. Si entra con un link d’invito, che vale 10 minuti. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
+  <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 10 minuti. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
   <p>• <b>Cerchi:</b> una coppia (2 persone) o un gruppo da 3, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
-  <p>• <b>Chi crea il cerchio</b> è il centro: deve avere Loopix aperta perché Reel e messaggi arrivino. Può togliere chi vuole.</p>
+  <p>• <b>Chi crea il cerchio</b> è il centro: deve avere Reelta aperta perché Reel e messaggi arrivino. Può togliere chi vuole.</p>
   <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
-  <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Loopix. Quelle piattaforme possono registrare che li guardi.</p>
+  <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Reelta. Quelle piattaforme possono registrare che li guardi.</p>
   <p>• <b>Copia di sicurezza:</b> in Cerchio puoi salvare tutto in un file protetto da password. Senza copia, cancellando l’app i dati di questo telefono si perdono.</p>
-  <p>• <b>Su iPhone</b> Loopix non compare in “Condividi”: copia il link del Reel e tocca “Incolla”. Apri Loopix sempre dall’icona sulla schermata Home.</p>
-  <p>• <b>Piani:</b> i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Loopix riceve una piccola commissione: per te il prezzo non cambia.</p>
+  <p>• <b>Su iPhone</b> Reelta non compare in “Condividi”: copia il link del Reel e tocca “Incolla”. Apri Reelta sempre dall’icona sulla schermata Home.</p>
+  <p>• <b>Piani:</b> i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Reelta riceve una piccola commissione: per te il prezzo non cambia.</p>
   <p>• <b>PIN:</b> chiede il PIN all’apertura e cifra i dati salvati sul telefono: senza PIN non si leggono. Se lo dimentichi, i dati si possono solo cancellare (o ripristinare da una copia di sicurezza).</p>
-  <p id="statP" hidden>• Contiamo in modo anonimo quante volte si usa Loopix (aperture, Reel condivisi, cerchi creati), senza cookie, senza nomi e senza vedere i contenuti.</p>
+  <p id="statP" hidden>• Contiamo in modo anonimo quante volte si usa Reelta (aperture, Reel condivisi, cerchi creati), senza cookie, senza nomi e senza vedere i contenuti.</p>
   <p>• <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">Leggi la privacy policy completa</a></p>
   <button class="btn" id="imc">Ho capito</button>
 </div></div>
@@ -385,7 +396,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <ol class="steps" style="margin:6px 0 12px">
     <li><span class="n">1</span><span>Manda l’invito a chi vuoi (basta un tocco qui sotto).</span></li>
     <li><span class="n">2</span><span>Lei/lui apre il link e scrive il suo nome.</span></li>
-    <li><span class="n">3</span><span>Entra da solo nel cerchio. Tieni Loopix aperta mentre lo fa.</span></li>
+    <li><span class="n">3</span><span>Entra da solo nel cerchio. Tieni Reelta aperta mentre lo fa.</span></li>
   </ol>
   <button class="btn" id="invWA">💬 Invia su WhatsApp</button>
   <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
@@ -419,6 +430,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="bugX" style="margin-top:8px">Chiudi</button>
 </div></div>
 
+<div id="veil" role="button" aria-label="Tocca per tornare a Reelta"><img src="icon-180.png" alt=""><span>Tocca per tornare</span></div>
+
 <div class="mod" id="ask" role="alertdialog" aria-modal="true" aria-labelledby="askT" aria-describedby="askP"><div class="card" style="max-width:340px;width:100%">
   <h2 id="askT"></h2><p id="askP"></p>
   <button class="btn" id="askOk"></button>
@@ -426,7 +439,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></div>
 
 <div class="mod" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdT"><div class="card" style="max-width:350px;width:100%;max-height:88dvh;overflow-y:auto">
-  <h2 id="gdT">Benvenuto in Loopix 👋</h2>
+  <h2 id="gdT">Benvenuto in Reelta 👋</h2>
   <p>Quattro passi e ci sei:</p>
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
@@ -452,7 +465,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></div>
 
 <div class="mod lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lkT"><div class="card" style="max-width:320px;width:100%;text-align:center">
-  <div class="logo" style="font-size:28px;margin-bottom:8px">Loopix</div>
+  <div class="logo" style="font-size:28px;margin-bottom:8px;justify-content:center"><img class="mark" src="icon-180.png" alt="">Reelta</div>
   <h2 id="lkT">🔒 Inserisci il PIN</h2>
   <input type="password" inputmode="numeric" id="lockIn" autocomplete="off" aria-label="PIN" style="text-align:center;font-size:20px;letter-spacing:6px">
   <button class="btn" id="lockBio" hidden>🙂 Sblocca con Face ID / impronta</button>
@@ -471,7 +484,7 @@ var REG = regGet();
 if (!REG) { REG = { active: 'c1', list: [{ id: 'c1', label: '' }] }; regSet(REG); }
 function lsOf(id) { return id === 'c1' ? LSG : LSG + id + ':'; }
 var LS = lsOf(REG.active);
-var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1 };
+var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1 };
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
 function regLabel() {
@@ -514,7 +527,7 @@ function applyDev() {
   if ($('setup').classList.contains('show')) syncKind();
 }
 /* ---- copia di sicurezza (cifrata con password) ---- */
-var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed'];
+var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps', 'ttl'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed', 'riserv', 'rcpt'];
 function askPw(t, p) {
   return new Promise(function (res) {
     $('pwT').textContent = t; $('pwP').textContent = p; $('pwI').value = ''; $('pwH').textContent = '';
@@ -548,17 +561,17 @@ async function bkSave() {
   var key = await pwKey(pw, salt);
   var enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(data)));
   var body = JSON.stringify({ app: 'loopix-backup', v: 1, salt: b64e(salt), iv: b64e(iv), data: b64e(enc) });
-  var name = 'Loopix-copia-' + new Date().toISOString().slice(0, 10) + '.loopix';
+  var name = 'Reelta-copia-' + new Date().toISOString().slice(0, 10) + '.loopix';
   var file = new File([body], name, { type: 'application/json' });
   try {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Copia di Loopix' }); $('bkH').textContent = 'Fatto ✓ Tienila in File o iCloud. Contiene ' + data.circles.length + (data.circles.length === 1 ? ' cerchio.' : ' cerchi.'); return; }
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Copia di Reelta' }); put('bkAt', Date.now()); $('bkH').textContent = 'Fatto ✓ Tienila in File o iCloud. Contiene ' + data.circles.length + (data.circles.length === 1 ? ' cerchio.' : ' cerchi.'); return; }
   } catch (e) { if (e && e.name === 'AbortError') return; }
   var a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
-  $('bkH').textContent = 'Copia scaricata ✓ (' + name + ')';
+  put('bkAt', Date.now()); $('bkH').textContent = 'Copia scaricata ✓ (' + name + ')';
 }
 async function bkRestore(text) {
   var box; try { box = JSON.parse(text); } catch (e) { box = null; }
-  if (!box || box.app !== 'loopix-backup') { ask('File non valido', 'Questo non è una copia di Loopix.', 'Ho capito'); return; }
+  if (!box || box.app !== 'loopix-backup') { ask('File non valido', 'Questo non è una copia di Reelta.', 'Ho capito'); return; }
   var data = null;
   while (!data) {
     var pw = await askPw('Password della copia', 'Scrivi la password che hai scelto quando hai salvato la copia.');
@@ -580,11 +593,11 @@ async function bkRestore(text) {
   });
   Object.keys(data.global || {}).forEach(function (k) { if (BK_GLOBAL.indexOf(k) >= 0 && localStorage.getItem(LSG + k) == null) try { localStorage.setItem(LSG + k, data.global[k]); } catch (e) {} });
   delete REG.prev; delete REG.after; regSet(REG);
-  await ask('Copia ripristinata ✓', added ? 'Ho ripristinato ' + added + (added === 1 ? ' cerchio' : ' cerchi') + (skipped ? ' (' + skipped + ' c’erano già)' : '') + '. Loopix si riapre adesso.' : 'Tutti i cerchi della copia sono già su questo telefono.', 'Ok');
+  await ask('Copia ripristinata ✓', added ? 'Ho ripristinato ' + added + (added === 1 ? ' cerchio' : ' cerchi') + (skipped ? ' (' + skipped + ' c’erano già)' : '') + '. Reelta si riapre adesso.' : 'Tutti i cerchi della copia sono già su questo telefono.', 'Ok');
   history.replaceState(null, '', location.pathname); location.reload();
 }
 function goGroupInvite() {
-  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })) { ask('Per ora non puoi creare gruppi', 'Loopix è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
+  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
   var g = REG.list.filter(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })[0];
   REG.after = 'invite'; REG.nm = me ? me.name : '';
   if (g && !(me && me.kind === 'group')) { REG.active = g.id; regSet(REG); location.reload(); }
@@ -689,7 +702,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v40', errLog = [];
+var APP_VER = 'v43', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -697,7 +710,7 @@ function bugText() {
   var sa = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
   var live = me ? (me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open)) : false;
   var lines = [
-    '🛠️ Problema su Loopix', '', 'Cosa è successo: ' + (clean($('bugI').value, 500) || '(non descritto)'), '',
+    '🛠️ Problema su Reelta', '', 'Cosa è successo: ' + (clean($('bugI').value, 500) || '(non descritto)'), '',
     '— Dettagli tecnici —',
     'Versione: ' + APP_VER + ' · ' + new Date().toLocaleString('it-IT'),
     'Telefono: ' + dev + (sa ? ' · app dalla Home' : ' · nel browser'),
@@ -780,6 +793,18 @@ function delReel(id) {
 }
 function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
 function media(r, pl) {
+  var s0 = embedFor(r.u);
+  if (get('riserv', 0) && !pl && s0 && s0.indexOf('video:') !== 0) {
+    var host = (function () { try { return new URL(r.u).hostname.replace(/^(www|m|vm|vt)\./, ''); } catch (e) { return ''; } })();
+    var nm = { 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'facebook.com': 'Facebook' }[host] || host;
+    var box = el('div', 'tap-load'); box.appendChild(el('b', null, '🕶️ Video da ' + nm));
+    box.appendChild(el('span', null, 'Modalità riservata: ' + nm + ' non sa che lo guardi finché non lo apri.'));
+    var go = el('button', 'btn', '▶ Guarda'); go.onclick = function () { box.replaceWith(mediaRaw(r, true)); }; box.appendChild(go);
+    return box;
+  }
+  return mediaRaw(r, pl);
+}
+function mediaRaw(r, pl) {
   var src = embedFor(r.u);
   if (src && src.indexOf('video:') === 0) {
     var vd = el('video'); vd.src = src.slice(6); vd.controls = true; vd.playsInline = true; vd.preload = 'metadata'; if (pl) vd.autoplay = true;
@@ -1044,9 +1069,9 @@ function postAll(t, c) {
     var jm = /#j=([\w-]{8,100})/.exec(String(t || ''));
     if (jm) { var jh = jm[1].split('_')[0];
       if (me && jh === me.hostId) { $('mh').textContent = 'Questo è il tuo invito: mandalo alla persona che vuoi invitare.'; return 0; }
-      ask('Hai copiato un invito di Loopix', circleOfHost(jh) ? 'Sei già in quel cerchio: te lo apro.' : 'Vuoi entrare in questo nuovo cerchio? I tuoi cerchi di adesso restano come sono.', circleOfHost(jh) ? 'Apri' : 'Entra').then(function (y) { if (y) { location.hash = '#j=' + jm[1]; location.reload(); } });
+      ask('Hai copiato un invito di Reelta', circleOfHost(jh) ? 'Sei già in quel cerchio: te lo apro.' : 'Vuoi entrare in questo nuovo cerchio? I tuoi cerchi di adesso restano come sono.', circleOfHost(jh) ? 'Apri' : 'Entra').then(function (y) { if (y) { location.hash = '#j=' + jm[1]; location.reload(); } });
       return 0; }
-    $('mh').textContent = 'Questo è un invito di Loopix, non un Reel: non lo metto tra i Reel.'; return 0;
+    $('mh').textContent = 'Questo è un invito di Reelta, non un Reel: non lo metto tra i Reel.'; return 0;
   }
   if (!L.length) { $('mh').textContent = 'Non trovo nessun link. In Instagram o TikTok tocca Condividi e poi “Copia link”.'; return 0; }
   (async function () {
@@ -1131,6 +1156,7 @@ function startHost() {
       } else if (d.t === 'idea' && c.ok) {
         var im = applyIdea(d, c.name);
         if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
+      } else if (d.t === 'seen' && c.ok) { applySeen(c.name, d.ts); conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'seen', n: c.name, ts: d.ts }); });
       } else if (d.t === 'rep' && c.ok) { addReport(d, c.name);
       } else if (d.t === 'mdel' && c.ok && typeof d.id === 'string') {
         var om = msgs.filter(function (m) { return m.id === d.id; })[0];
@@ -1165,7 +1191,7 @@ function hostHi(c, d) {
         function accept() {
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
           c.ok = true; c.name = nm; c.k = k; conns.push(c);
-          c.send({ t: 'hello', max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
+          c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people() }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
@@ -1179,7 +1205,7 @@ function hostHi(c, d) {
           return;
         }
         if (code && validCode(code)) { accept(); return; }
-        try { c.send({ t: 'wait', why: (code ? 'Il tuo invito è scaduto (vale 10 minuti). ' : '') + 'Aspetta un attimo: ' + me.name + ' deve accettarti.' }); } catch (e) {}
+        try { c.send({ t: 'wait', why: code ? '⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ' + me.name + ' di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.' : 'Aspetta un attimo: ' + me.name + ' deve farti entrare.' }); } catch (e) {}
         try { navigator.vibrate && navigator.vibrate(200); } catch (e) {}
         ask(nm + ' vuole entrare', 'Vuoi accettare ' + nm + ' nel tuo cerchio?', 'Accetta').then(function (y) {
           if (!c.open) return;
@@ -1191,7 +1217,7 @@ function hostHi(c, d) {
 function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return 'Ciao! ' + me.name + ' ti invita su Loopix 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Loopix sulla Home? Copia questo messaggio, apri Loopix e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
+  return 'Ciao! ' + me.name + ' ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n' + link() + '\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ' + sc;
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -1206,8 +1232,18 @@ function invite() {
   $('invH').textContent = ''; $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
-$('invWA').onclick = function () { window.open('https://wa.me/?text=' + encodeURIComponent(invText()), '_blank'); invDone('Si è aperto WhatsApp: scegli la persona e premi invia.'); };
-$('invSh').onclick = function () { if (navigator.share) navigator.share({ title: 'Loopix', text: invText() }).then(function () { invDone('Invito inviato.'); }).catch(function () {}); else $('invCp').click(); };
+// Apre direttamente l'app WhatsApp (dall'app sulla Home l'indirizzo wa.me resta bloccato su una pagina bianca)
+function openWA(text, done, fail) {
+  try { if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {}
+  if (/iphone|ipad|ipod|android/i.test(navigator.userAgent)) {
+    var left = false, onHide = function () { if (document.hidden) left = true; };
+    document.addEventListener('visibilitychange', onHide);
+    location.href = 'whatsapp://send?text=' + encodeURIComponent(text);
+    setTimeout(function () { document.removeEventListener('visibilitychange', onHide); if (left) done(); else fail(); }, 1600);
+  } else { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener'); done(); }
+}
+$('invWA').onclick = function () { openWA(invText(), function () { invDone('Si è aperto WhatsApp: scegli la persona e premi invia.'); }, function () { invDone('WhatsApp non si è aperto, ma l’invito è già copiato: incollalo in una chat, oppure usa “Altre app…”.'); }); };
+$('invSh').onclick = function () { if (navigator.share) navigator.share({ title: 'Reelta', text: invText() }).then(function () { invDone('Invito inviato.'); }).catch(function () {}); else $('invCp').click(); };
 $('invCp').onclick = function () { var t = invText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { invDone('Copiato ✓ Ora incollalo in un messaggio a chi vuoi invitare.'); }, function () { $('invH').textContent = t; }); else $('invH').textContent = t; };
 $('invX').onclick = function () { $('invM').classList.remove('open'); };
 
@@ -1216,7 +1252,7 @@ function startGuest() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
   peer = new Peer();
   peer.on('disconnected', function () { again(); });
-  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Chi ti ha invitato non ha Loopix aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.' : 'Problema di rete (' + e.type + ').'; again(); });
+  peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.' : 'Problema di rete (' + e.type + ').'; again(); });
   peer.on('open', function () {
     hostConn = peer.connect(me.hostId, { reliable: true }); var hc = hostConn; hc.auth = !me.joined; hc.ng = uid(16);
     hostConn.on('open', function () {
@@ -1234,12 +1270,14 @@ function startGuest() {
         return;
       }
       if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
-      if (d.t === 'hello') { circMax = +d.max || 0; (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
-        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); }
+      if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+        outbox.forEach(function (o) { hostConn.send(o && o.t ? o : { t: 'reel', r: o }); }); outbox = []; put('outbox', []); if (tab === 'chat') renderChat(true); }
       else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'msg') addMsg(d.m);
+      else if (d.t === 'seen') applySeen(d.n, d.ts);
+      else if (d.t === 'cfg') { if (typeof d.ttl === 'number') { put('ttl', d.ttl); renderChat(true); } }
       else if (d.t === 'mdel' && typeof d.id === 'string') delMsg(d.id, false);
       else if (d.t === 'wait') $('mh').textContent = clean(d.why, 180);
       else if (d.t === 'react' || d.t === 'cmt') applyEv(d, null);
@@ -1278,25 +1316,56 @@ function appBadge() {
   try { var n = (typeof newCount === 'function' ? newCount() : 0) + (chatSeen || 0); if (!navigator.setAppBadge) return; if (n > 0) navigator.setAppBadge(n).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); } catch (e) {}
 }
 function chatTab() { appBadge(); $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
+var lastSeenSent = 0;
+function rcptOn() { return get('rcpt', null) === null ? !get('riserv', 0) : !!get('rcpt', 1); }
+function ttlMs() { return +get('ttl', 0) || 0; }
+function pruneMsgs() { var t = ttlMs(); if (!t) return; var lim = Date.now() - t, n = msgs.length; msgs = msgs.filter(function (m) { return m.ts >= lim; }); if (msgs.length !== n) put('msgs', msgs); }
+function ttlNote() { var t = ttlMs(), b = $('ttlNote'); b.hidden = !t; if (t) b.textContent = '⏳ I messaggi si cancellano da soli ' + (t >= 6048e5 ? 'dopo 7 giorni' : 'dopo 24 ore') + ', su tutti i telefoni del cerchio.'; }
+setInterval(function () { if (me && ttlMs()) { var n = msgs.length; pruneMsgs(); if (msgs.length !== n && tab === 'chat') renderChat(true); } }, 60000);
+function members() { return me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }); }
+function readers(m) { var r = m.rd || {}, ms = members(); return ms.filter(function (n) { return r[n]; }); }
+function msgPending(m) { return me.role !== 'host' && outbox.some(function (o) { return o && o.t === 'msg' && o.m && o.m.id === m.id; }); }
+function tickFor(m) {
+  if (msgPending(m)) return el('span', 'tick', '🕓');
+  if (!rcptOn()) return el('span', 'tick', '✓');
+  var rs = readers(m), all = members().length;
+  if (all && rs.length >= all) return el('span', 'tick rd', '✓✓');
+  if (rs.length) return el('span', 'tick', '✓✓');
+  return el('span', 'tick', '✓');
+}
+function markSeen() {
+  if (!rcptOn() || !msgs.length) return;
+  var last = 0; msgs.forEach(function (m) { if (m.n !== me.name && m.ts > last) last = m.ts; });
+  if (!last || last <= lastSeenSent) return; lastSeenSent = last;
+  if (me.role === 'host') { applySeen(me.name, last); cast({ t: 'seen', n: me.name, ts: last }); } else sendEv({ t: 'seen', ts: last });
+}
+function applySeen(who, ts) {
+  who = clean(who, 30); ts = +ts || 0; if (!who || !ts) return;
+  var ch = false; msgs.forEach(function (m) { if (m.n !== who && m.ts <= ts) { m.rd = m.rd || {}; if (!m.rd[who]) { m.rd[who] = 1; ch = true; } } });
+  if (ch) { put('msgs', msgs); if (tab === 'chat' && $('chat').classList.contains('show')) renderChat(true); }
+}
 function msgNode(m) {
   var d = el('div', 'msg' + (m.n === me.name ? ' me' : ''));
-  if (m.n === me.name) { d.style.cursor = 'pointer'; d.onclick = function () { sheet('Il tuo messaggio', '', [{ t: '🗑 Elimina per tutti', red: true, f: function () { delMsg(m.id, true); } }]); }; }
+  if (m.n === me.name) { d.style.cursor = 'pointer'; d.onclick = function () { var rs = readers(m); sheet('Il tuo messaggio', msgPending(m) ? '🕓 In attesa: partirà appena vi collegate.' : !rcptOn() ? 'Conferme di lettura spente.' : rs.length ? '✓✓ Letto da: ' + rs.join(', ') : '✓ Inviato, non ancora letto.', [{ t: '🗑 Elimina per tutti', red: true, f: function () { delMsg(m.id, true); } }]); }; }
   if (m.n !== me.name) { d.appendChild(el('span', 'mn', m.n)); d.style.cursor = 'pointer'; d.title = 'Tocca per segnalare o silenziare'; d.onclick = function () { moreFor('msg', m); }; }
-  d.appendChild(document.createTextNode(m.t)); d.appendChild(el('time', null, ago(m.ts))); return d;
+  d.appendChild(document.createTextNode(m.t)); var tm = el('time', null, ago(m.ts)); if (m.n === me.name) tm.appendChild(tickFor(m)); d.appendChild(tm); return d;
 }
-function renderChat() {
-  var b = $('clog'); b.textContent = '';
+function renderChat(keep) {
+  pruneMsgs(); ttlNote(); var b = $('clog'), st = b.scrollTop, atBottom = b.scrollHeight - b.scrollTop - b.clientHeight < 60; b.textContent = '';
   if (!msgs.length) { b.appendChild(el('div', 'empty', 'Nessun messaggio ancora.\n\nScrivetevi qui: lo legge solo chi è nel cerchio.')); return; }
-  msgs.forEach(function (m) { if (!isMuted(m.n)) b.appendChild(msgNode(m)); }); b.scrollTop = b.scrollHeight;
+  msgs.forEach(function (m) { if (!isMuted(m.n)) b.appendChild(msgNode(m)); }); b.scrollTop = keep && !atBottom ? st : b.scrollHeight;
+  if ($('chat').classList.contains('show')) markSeen();
 }
 function addMsg(m, who) {
   if (!m || typeof m.id !== 'string' || m.id.length > 30) return null;
   var t = clean(m.t, 1000); if (!t) return null;
   if (msgs.some(function (x) { return x.id === m.id; })) return null;
-  var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now() };
+  var rd = {}; if (m.rd && typeof m.rd === 'object') Object.keys(m.rd).slice(0, 12).forEach(function (k) { rd[clean(k, 30)] = 1; });
+  var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now(), rd: rd };
+  if (ttlMs() && Date.now() - n.ts > ttlMs()) return null;
   msgs.push(n); if (msgs.length > 300) msgs.shift(); put('msgs', msgs);
   if (isMuted(n.n)) return n;
-  if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; }
+  if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; if (n.n !== me.name) markSeen(); }
   else if (n.n !== me.name) { chatSeen++; chatTab(); }
   return n;
 }
@@ -1316,12 +1385,13 @@ var SUPPORT_URL = '';
 var STATS_URL = 'https://loopix.goatcounter.com/count';
 function track(ev) {
   try {
-    if (!STATS_URL) return;
+    if (!STATS_URL || get('riserv', 0)) return;
     var send = function () { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'evento/' + ev, title: ev, event: true }); };
     if (window.goatcounter && window.goatcounter.count) send(); else (track.q = track.q || []).push(send);
   } catch (e) {}
 }
 function startStats() {
+  if (get('riserv', 0)) return;
   if (!/^https:\/\/[\w-]+\.goatcounter\.com\/count$/.test(STATS_URL)) { STATS_URL = ''; return; }
   var sc = document.createElement('script'); sc.async = true; sc.src = 'https://gc.zgo.at/count.js'; sc.setAttribute('data-goatcounter', STATS_URL);
   sc.onload = function () { (track.q || []).forEach(function (f) { try { f(); } catch (e) {} }); track.q = []; };
@@ -1397,7 +1467,7 @@ function renderIdeas() {
     if (voters.length) c.appendChild(el('div', 'ptag', 'Votato da: ' + voters.join(', ')));
     box.appendChild(c);
   });
-  if (PARTNER.booking || PARTNER.gyg) box.appendChild(el('p', null, '“partner”: prenotando da quel link Loopix riceve una piccola commissione. Per te il prezzo non cambia.'));
+  if (PARTNER.booking || PARTNER.gyg) box.appendChild(el('p', null, '“partner”: prenotando da quel link Reelta riceve una piccola commissione. Per te il prezzo non cambia.'));
 }
 function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
 function openIdea(rid) {
@@ -1444,6 +1514,7 @@ function renderCircles() {
 }
 function renderCircle() {
   renderCircles(); renderReports(); renderMuted();
+  $('ttlBox').hidden = me.role !== 'host'; $('ttlS').value = String(ttlMs());
   var m = $('mlist'); m.textContent = '';
   function row(t, on, rm) {
     var r = el('div', 'mrow'), s = el('span'); s.appendChild(avatar(t)); s.appendChild(document.createTextNode(t)); s.appendChild(el('i', 'dot' + (on ? ' on' : ''))); r.appendChild(s);
@@ -1498,7 +1569,12 @@ function applyTheme(t) {
   var tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', L ? '#F9F5F0' : '#241A13');
 }
 function applyMode() { applyTheme(get('theme', 'champagne')); if (tab === 'style' && $('style').classList.contains('show')) renderStyle(); }
+function renderPriv() {
+  var on = !!get('riserv', 0); $('rsT').checked = on; $('rcT').checked = rcptOn();
+  $('rsP').textContent = on ? 'Attiva: statistiche spente, i video si caricano solo quando tocchi ▶, lo schermo si copre quando esci dall’app. Per coprirlo al volo: doppio tocco con due dita.' : 'Per chi vuole il massimo della discrezione: niente statistiche, video solo al tocco, schermo coperto quando esci dall’app.';
+}
 function renderStyle() {
+  renderPriv();
   var box = $('themes'), cur = get('theme', 'champagne'); box.textContent = '';
   Object.keys(THEMES).forEach(function (k) {
     var t = THEMES[k], b = el('button', 'sw', isLight() ? t[5] : t[0]);
@@ -1508,7 +1584,7 @@ function renderStyle() {
   var md = get('mode', 'auto');
   document.querySelectorAll('#modeB button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.m === md)); });
   $('modeP').textContent = md === 'auto' ? 'Chiaro di giorno, scuro dalle 19 alle 7. Cambia da solo.' : md === 'light' ? 'Sempre chiaro.' : 'Sempre scuro, riposante per gli occhi la sera.';
-  $('pinS').textContent = pinRec ? 'Attivo: Loopix chiede il PIN quando la apri e quando torni dopo 30 secondi. I dati salvati su questo telefono sono cifrati: senza PIN non si leggono.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
+  $('pinS').textContent = pinRec ? 'Attivo: Reelta chiede il PIN quando la apri e quando torni dopo 30 secondi. I dati salvati su questo telefono sono cifrati: senza PIN non si leggono.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
   $('pinB').textContent = pinRec ? 'Cambia PIN' : 'Imposta un PIN';
   $('pinR').hidden = !pinRec;
   if (window.lxVault) lxVault.bioSupported().then(function (ok) { $('bioBox').hidden = !(ok && pinRec && lxVault.on()); $('bioT').checked = lxVault.bioOn(); });
@@ -1554,11 +1630,11 @@ function guide(force) {
   put('guided', 1);
   var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
   (host ? [
-    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 10 minuti). Tieni Loopix aperta mentre entra.',
+    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 10 minuti). Tieni Reelta aperta mentre entra.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ] : [
-    'Sei dentro! In alto vedi “Collegato” quando chi ti ha invitato ha Loopix aperta.',
+    'Sei dentro! In alto vedi “Collegato” quando chi ti ha invitato ha Reelta aperta.',
     'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
     'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
   ]).concat(['Scrivetevi in “Messaggi”, e in Cerchio salva una copia di sicurezza: se cambi telefono ritrovi tutto.']).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
@@ -1568,14 +1644,27 @@ function guide(force) {
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
 function wipe() {
-  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone', 'msgs', 'codes', 'muted', 'reps'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
+  ['me', 'feed', 'outbox', 'allowed', 'seen', 'ideas', 'guided', 'gone', 'msgs', 'codes', 'muted', 'reps', 'ttl'].forEach(function (k) { try { localStorage.removeItem(LS + k); } catch (e) {} });
   if (REG.list.length > 1) { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.list[0].id; regSet(REG); }
   else { try { localStorage.removeItem(LSG + 'pin'); } catch (e) {} }
   location.reload();
 }
 
 /* ---- avvio ---- */
+// chiede al telefono di non cancellare mai i dati di Reelta per fare spazio
+function keepData() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persisted().then(function (p) { if (!p) navigator.storage.persist(); }); } catch (e) {} }
+// promemoria gentile per la copia di sicurezza (ogni 7 giorni, solo se ci sono cerchi)
+function backupNudge() {
+  try {
+    var last = +get('bkAt', 0), first = +get('bkFirst', 0), now = Date.now();
+    if (!first) { put('bkFirst', now); return; }
+    if (now - Math.max(last, first) < 7 * 864e5 || !feed.length) return;
+    put('bkFirst', now);
+    ask('💾 Salviamo una copia?', 'Se cancelli l’app o cambi telefono, con una copia ritrovi tutti i tuoi cerchi senza nuovi inviti. Ci vogliono 10 secondi.', 'Salva adesso').then(function (y) { if (y) { showPane('circle'); bkSave(); } });
+  } catch (e) {}
+}
 function begin() {
+  keepData(); setTimeout(backupNudge, 4000);
   if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
@@ -1598,17 +1687,12 @@ function syncKind() {
   var j = !!pastedId() || !!joinId, any = canCreateAny();
   $('kindBox').hidden = j || !any;
   if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo da 3' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
-  if (!j && !any) { $('sT').textContent = 'Loopix è su invito'; $('sP').textContent = 'Per ora si entra solo con un invito. Apri il link che ti hanno mandato, oppure incollalo qui sotto.'; $('go').textContent = 'Entra con l’invito'; }
+  $('icHelp').hidden = !!joinId;
+  $('icHelp').textContent = any ? 'Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.' : 'In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi tocca “Incolla l’invito” qui sopra e scrivi il tuo nome.';
+  $('haveInv').className = any ? 'btn-o wide' : 'btn wide'; $('haveInv').style.margin = '0 0 10px';
+  if (!j && !any) { $('sT').textContent = 'Reelta è su invito'; $('sP').textContent = 'Per ora si entra solo con un invito. Apri il link che ti hanno mandato, oppure incollalo qui sotto.'; $('go').textContent = 'Entra con l’invito'; }
 }
-$('icPaste').addEventListener('click', async function () {
-  try {
-    var t = await navigator.clipboard.readText();
-    if (tryDev(t)) return;
-    var m = /#j=([\w-]{8,100})/.exec(t || '');
-    if (!m) { $('sH').textContent = 'Non trovo un invito tra le cose copiate. In WhatsApp tieni premuto il messaggio d’invito, tocca “Copia”, poi riprova.'; return; }
-    location.hash = '#j=' + m[1]; location.reload();
-  } catch (e) { $('ic').focus(); $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; }
-});
+
 $('ic').addEventListener('input', function () { if (tryDev($('ic').value)) { $('ic').value = ''; return; } $('go').textContent = pastedId() ? 'Chiedi di entrare' : 'Inizia'; syncKind(); });
 $('sCancel').onclick = function () { var id = REG.active; REG.list = REG.list.filter(function (x) { return x.id !== id; }); REG.active = REG.prev && REG.list.some(function (x) { return x.id === REG.prev; }) ? REG.prev : REG.list[0].id; delete REG.prev; delete REG.after; delete REG.nm; regSet(REG); history.replaceState(null, '', location.pathname); location.reload(); };
 $('go').addEventListener('click', function () {
@@ -1659,8 +1743,8 @@ var inBrowser = (isIOS || isAndroid) && !isStandalone;
 var seenBanner = false; try { seenBanner = sessionStorage.getItem('lx-banner') === '1'; } catch (e) {}
 if (inBrowser) {
   $('ios').querySelector('span').innerHTML = isIOS
-    ? '⚠️ <b>Stai usando Loopix in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
-    : '⚠️ <b>Stai usando Loopix nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
+    ? '⚠️ <b>Stai usando Reelta in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
+    : '⚠️ <b>Stai usando Reelta nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
 }
 $('ios').hidden = !inBrowser || seenBanner;
 $('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
@@ -1684,13 +1768,14 @@ $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveId
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
 $('bug').addEventListener('click', openBug);
+$('ttlS').addEventListener('change', function () { var v = +$('ttlS').value || 0; put('ttl', v); cast({ t: 'cfg', ttl: v }); pruneMsgs(); renderChat(true); $('ch').textContent = v ? 'Fatto: i messaggi si cancelleranno da soli per tutti.' : 'Fatto: i messaggi restano finché non li cancellate.'; });
 $('bugX').addEventListener('click', function () { $('bugM').classList.remove('open'); });
-$('bugWA').addEventListener('click', function () { window.open('https://wa.me/?text=' + encodeURIComponent(bugText()), '_blank'); $('bugH').textContent = 'Si è aperto WhatsApp: mandalo a chi ti ha invitato (o a chi gestisce Loopix).'; });
+$('bugWA').addEventListener('click', function () { openWA(bugText(), function () {}, function () { $('bugH').textContent = 'WhatsApp non si è aperto, ma il testo è copiato: incollalo in un messaggio.'; }); $('bugH').textContent = 'Si è aperto WhatsApp: mandalo a chi ti ha invitato (o a chi gestisce Reelta).'; });
 $('bugCp').addEventListener('click', function () { var t = bugText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('bugH').textContent = 'Copiato ✓ Incollalo in un messaggio.'; }, function () { $('bugH').textContent = t; }); else $('bugH').textContent = t; });
 $('bkS').addEventListener('click', function () { bkSave().catch(function () { $('bkH').textContent = 'Non sono riuscito a creare la copia.'; }); });
 function pickBackup() { $('bkF').value = ''; $('bkF').click(); }
 $('bkR').addEventListener('click', pickBackup); $('bkR2').addEventListener('click', pickBackup);
-$('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if (!f) return; if (f.size > 20e6) { ask('File troppo grande', 'Questo non sembra una copia di Loopix.', 'Ho capito'); return; } f.text().then(bkRestore); });
+$('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if (!f) return; if (f.size > 20e6) { ask('File troppo grande', 'Questo non sembra una copia di Reelta.', 'Ho capito'); return; } f.text().then(bkRestore); });
 $('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
@@ -1702,7 +1787,7 @@ $('bioT').addEventListener('change', function () {
   var on = $('bioT').checked; $('bioH').textContent = '';
   if (on) lxVault.bioEnable(me && me.name).then(function () { $('bioH').textContent = 'Fatto ✓ Alla prossima apertura basta il tuo volto o la tua impronta. Il PIN resta come riserva.'; })
     .catch(function (e) { $('bioT').checked = false; $('bioH').textContent = e && e.message === 'noprf' ? 'Questo telefono non permette di usare Face ID/impronta per aprire i dati. Serve iOS 18 o più recente (su Android: Chrome aggiornato). Il PIN funziona come sempre.' : 'Non attivato. Puoi riprovare quando vuoi.'; });
-  else lxVault.bioDisable().then(function () { $('bioH').textContent = 'Disattivato: Loopix chiederà solo il PIN.'; });
+  else lxVault.bioDisable().then(function () { $('bioH').textContent = 'Disattivato: Reelta chiederà solo il PIN.'; });
 });
 $('lockBio').addEventListener('click', function () { if (!window.__lxBootUnlocked && !$('lock').classList.contains('open')) return; if (!lxVault.bioOn()) return; lxVault.bioCheck().then(function () { $('lock').classList.remove('open'); $('lockIn').value = ''; }).catch(function () { $('lockH').textContent = 'Non riconosciuto. Riprova o usa il PIN.'; }); });
 $('pinR').addEventListener('click', function () { openPin('remove'); });
@@ -1712,7 +1797,7 @@ $('p1').addEventListener('keydown', function (e) { if (e.key === 'Enter' && pinM
 $('pNo').addEventListener('click', function () { $('pinm').classList.remove('open'); });
 $('lockGo').addEventListener('click', tryUnlock);
 $('lockIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
-$('lockF').addEventListener('click', function () { if (window.__lxBootUnlocked === undefined && !pinRec) return; if (window.confirm('Senza PIN l’unico modo è cancellare Loopix da questo telefono (Reel, piani, messaggi e cerchi). Se hai una copia di sicurezza potrai ripristinarla. Procedere?')) { if (window.lxVault && lxVault.on()) { lxVault.destroy(); location.reload(); } else wipe(); } });
+$('lockF').addEventListener('click', function () { if (window.__lxBootUnlocked === undefined && !pinRec) return; if (window.confirm('Senza PIN l’unico modo è cancellare Reelta da questo telefono (Reel, piani, messaggi e cerchi). Se hai una copia di sicurezza potrai ripristinarla. Procedere?')) { if (window.lxVault && lxVault.on()) { lxVault.destroy(); location.reload(); } else wipe(); } });
 document.addEventListener('visibilitychange', function () {
   if (!pinRec || !me) return;
   if (document.hidden) hidAt = Date.now();
@@ -1722,11 +1807,16 @@ applyTheme(get('theme', 'champagne'));
 document.querySelectorAll('#modeB button').forEach(function (x) { x.addEventListener('click', function () { put('mode', x.dataset.m); applyMode(); }); });
 setInterval(applyMode, 60000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) applyMode(); });
+function veil(on) { $('veil').classList.toggle('on', !!on); }
+document.addEventListener('visibilitychange', function () { if (!get('riserv', 0)) return; if (document.hidden) veil(true); else setTimeout(function () { if (!$('lock').classList.contains('open')) veil(false); }, 350); });
+window.addEventListener('pagehide', function () { if (get('riserv', 0)) veil(true); });
+$('veil').addEventListener('click', function () { veil(false); });
+(function () { var last = 0; document.addEventListener('touchstart', function (e) { if (!get('riserv', 0) || e.touches.length !== 2) return; var now = Date.now(); if (now - last < 450) { veil(true); last = 0; } else last = now; }, { passive: true }); })();
 $('bd').addEventListener('click', function () {
   if (!me) return;
   if ($('app').classList.contains('on')) { $('mh').textContent = 'Siete collegati.'; return; }
   var app = location.origin + location.pathname.replace(/index\.html$/, '');
-  var t = me.name + ' ti aspetta su Loopix 😊 Aprila per guardare i Reel insieme: ' + app;
+  var t = me.name + ' ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ' + app;
   track('avviso-inviato');
   if (navigator.share) navigator.share({ text: t }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('mh').textContent = 'Messaggio copiato: incollalo su WhatsApp.'; });
@@ -1744,6 +1834,12 @@ function hintPaste() {
 document.addEventListener('visibilitychange', function () { if (!document.hidden) hintPaste(); });
 $('pb').addEventListener('click', function (e) { if (e.target.id === 'pbx') { $('pb').hidden = true; return; } if (!$('main').classList.contains('show')) showPane('main'); $('paste').click(); });
 setBig(!!get('big', 0)); $('bigT').checked = !!get('big', 0);
+$('rsT').addEventListener('change', function () {
+  var on = $('rsT').checked; put('riserv', on ? 1 : 0);
+  if (on && get('rcpt', null) === null) put('rcpt', 0);
+  renderPriv(); render(); if (on && !pinRec) ask('Modalità riservata attiva 🕶️', 'Per una protezione completa, imposta anche un PIN (qui sotto): così i dati sul telefono sono cifrati.', 'Ok');
+});
+$('rcT').addEventListener('change', function () { put('rcpt', $('rcT').checked ? 1 : 0); lastSeenSent = 0; if ($('rcT').checked) markSeen(); renderChat(true); });
 $('bigT').addEventListener('change', function () { setBig($('bigT').checked); });
 $('help').addEventListener('click', function () { guide(true); });
 $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); });
@@ -1765,15 +1861,14 @@ if (joinId) {
 if (me && !joinId) begin();
 else {
   if (joinId) {
-    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true; $('icPaste').hidden = true;
+    $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
-      $('ios').hidden = true;
+      $('ios').hidden = true; $('inst').hidden = false;
       $('instC').onclick = function () {
         var t = location.origin + location.pathname + '#j=' + joinId;
-        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('instC').textContent = 'Copiato ✓  Ora aggiungi alla Home'; }, function () { $('sH').textContent = 'Copia questo invito a mano: ' + t; });
+        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('instC').textContent = 'Copiato ✓'; $('instT').hidden = false; }, function () { $('sH').textContent = 'Copia questo invito a mano: ' + t; });
       };
-      $('instX').onclick = function () { $('inst').hidden = true; $('nm').hidden = false; $('go').hidden = false; };
     }
   }
   if (REG.list.length > 1) { $('sCancel').hidden = false; if (!joinId) $('sT').textContent = 'Nuovo cerchio'; }
@@ -1783,7 +1878,7 @@ else {
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
 </script>
 <script>
-/* ---- Cassaforte: con il PIN attivo, i dati di Loopix sono salvati cifrati.
+/* ---- Cassaforte: con il PIN attivo, i dati di Reelta sono salvati cifrati.
    Una chiave dati casuale cifra tutto; la chiave dati è chiusa due volte: con il PIN e (se attivo) con Face ID / impronta. ---- */
 (function () {
   var VK = 'loopixvault', LS = window.localStorage, P = Storage.prototype;
@@ -1864,8 +1959,8 @@ if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) nav
       if (!dkRaw) return Promise.reject(new Error('nopin'));
       var salt = rnd(32);
       return navigator.credentials.create({ publicKey: {
-        rp: { name: 'Loopix' }, challenge: rnd(32), timeout: 60000,
-        user: { id: rnd(16), name: 'loopix-' + (label || 'utente'), displayName: 'Loopix · ' + (label || 'utente') },
+        rp: { name: 'Reelta' }, challenge: rnd(32), timeout: 60000,
+        user: { id: rnd(16), name: 'loopix-' + (label || 'utente'), displayName: 'Reelta · ' + (label || 'utente') },
         pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
         authenticatorSelection: { authenticatorAttachment: 'platform', residentKey: 'preferred', userVerification: 'required' },
         extensions: { prf: { eval: { first: salt } } }
@@ -1922,7 +2017,7 @@ if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) nav
   go.onclick = attempt; inp.onkeydown = function (e) { if (e.key === 'Enter') attempt(); };
   bioB.onclick = bio;
   forgot.onclick = function () {
-    if (!window.confirm('Senza PIN i dati di Loopix su questo telefono non si possono aprire. Vuoi cancellarli e ripartire? (Se hai una copia di sicurezza, potrai ripristinarla.)')) return;
+    if (!window.confirm('Senza PIN i dati di Reelta su questo telefono non si possono aprire. Vuoi cancellarli e ripartire? (Se hai una copia di sicurezza, potrai ripristinarla.)')) return;
     window.lxVault.destroy(); location.reload();
   };
   if (!box) { hint.textContent = 'Dati danneggiati.'; }
