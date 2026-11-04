@@ -450,6 +450,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <input type="file" id="prFile" accept="image/*" hidden>
   </div>
   <div class="card" id="ntC"><h2>🔔 Notifiche</h2>
+    <button class="btn" id="pushB" hidden type="button" style="margin:0 0 6px">🔔 Avvisami anche ad app chiusa</button>
+    <p class="hint" id="pushH" hidden style="margin:0 0 12px"></p>
     <p class="hint" style="margin-top:0">Come ti avviso quando arriva qualcosa mentre Reelta è aperta.</p>
     <div class="hint" style="margin:4px 0 6px">Effetto luce (tocca per provarlo):</div>
     <div class="fxs" id="ntFx"></div>
@@ -506,7 +508,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
   <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 24 ore. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
   <p>• <b>Cerchi:</b> una coppia (2 persone) o un gruppo da 3, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
-  <p>• <b>Chi crea il cerchio</b> è il centro: deve avere Reelta aperta perché Reel e messaggi arrivino. Può togliere chi vuole.</p>
+  <p>• <b>Chi crea il cerchio</b> è il centro e può togliere chi vuole. Se qualcuno non è collegato, Reel e messaggi lo aspettano sul server, cifrati: il server non può leggerli e li cancella appena consegnati.</p>
   <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
   <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Reelta. Quelle piattaforme possono registrare che li guardi.</p>
   <p>• <b>Copia di sicurezza:</b> in Cerchio puoi salvare tutto in un file protetto da password. Senza copia, cancellando l’app i dati di questo telefono si perdono.</p>
@@ -848,6 +850,7 @@ var incoming = null;
 /* ---- link e incorporamento ---- */
 function safeUrl(u) { try { var x = new URL(String(u).trim()); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
 function yt(id) { return 'https://www.youtube.com/embed/' + id + '?playsinline=1'; }
+function isIOSdev() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 function embedFor(u) {
   var x, m; try { x = new URL(u); } catch (e) { return null; }
   var h = x.hostname.replace(/^(www|m|mobile)\./, ''), p = x.pathname, E = encodeURIComponent;
@@ -881,6 +884,9 @@ function embedFor(u) {
   // Reddit
   if (h === 'reddit.com' && /^\/r\/[\w]+\/comments\//.test(p)) return 'https://embed.reddit.com' + p + '?theme=dark';
   // Vimeo
+  // LinkedIn (post e video pubblici)
+  if (h === 'linkedin.com' && (m = /urn:li:(activity|share|ugcPost):(\d{10,})/.exec(decodeURIComponent(p)) || /-(activity|share|ugcPost)-(\d{10,})/.exec(p)))
+    return 'https://www.linkedin.com/embed/feed/update/urn:li:' + m[1] + ':' + m[2];
   if (h === 'vimeo.com' && (m = /\/(\d{5,})(?:\/|$)/.exec(p))) return 'https://player.vimeo.com/video/' + m[1];
   if (h === 'player.vimeo.com' && /^\/video\/\d+/.test(p)) return x.href;
   // Dailymotion
@@ -900,10 +906,13 @@ function embedFor(u) {
   return null;
 }
 // I link brevi di TikTok (vm.tiktok.com, tiktok.com/t/…) vengono trasformati nel link completo, se TikTok lo permette.
-function isShort(u) { try { var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, ''); return h === 'vm.tiktok.com' || h === 'vt.tiktok.com' || (h === 'tiktok.com' && /^\/t\//.test(x.pathname)); } catch (e) { return false; } }
+function isShort(u) { try { var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, ''); return h === 'vm.tiktok.com' || h === 'vt.tiktok.com' || (h === 'tiktok.com' && /^\/t\//.test(x.pathname)) || srvShort(u); } catch (e) { return false; } }
+// link corti di Facebook, Snapchat, LinkedIn e Spotify: li apre il server e mi dà il link vero
+function srvShort(u) { return srvOn() && /^https:\/\/(www\.|m\.)?(facebook\.com\/share\/|fb\.watch\/|t\.snapchat\.com\/|lnkd\.in\/|spotify\.link\/)/.test(u); }
 async function resolveShort(u) {
   try {
     var x = new URL(u), h = x.hostname.replace(/^(www|m)\./, '');
+    if (srvShort(u)) { var rs = await mbCall({ a: 'res', u: u }); return rs && typeof rs.u === 'string' && /^https:\/\//.test(rs.u) ? rs.u : u; }
     if (!(h === 'vm.tiktok.com' || h === 'vt.tiktok.com' || (h === 'tiktok.com' && /^\/t\//.test(x.pathname)))) return u;
     var ctl = new AbortController(), tm = setTimeout(function () { ctl.abort(); }, 5000);
     var res = await fetch('https://www.tiktok.com/oembed?url=' + encodeURIComponent(u), { signal: ctl.signal }); clearTimeout(tm);
@@ -928,7 +937,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v66', errLog = [];
+var APP_VER = 'v67', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1034,12 +1043,17 @@ function media(r, pl) {
 function mediaRaw(r, pl) {
   var src = embedFor(r.u);
   if (src && src.indexOf('video:') === 0) {
-    var vd = el('video'); vd.src = src.slice(6); vd.controls = true; vd.playsInline = true; vd.preload = 'metadata'; if (pl) vd.autoplay = true;
+    var vd = el('video'); vd.src = src.slice(6); vd.controls = true; vd.playsInline = true; vd.preload = 'metadata'; if (pl) { vd.autoplay = true; if (isIOSdev()) vd.muted = true; }
     vd.setAttribute('playsinline', ''); vd.title = 'Video di ' + r.n; return vd;
   }
   if (src) {
     if (pl && /tiktok\.com\/player/.test(src)) src += '&autoplay=1';
-    if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1&enablejsapi=1' + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1&enablejsapi=1' + (isIOSdev() ? '&mute=1' : '') + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    // nel lettore partono da soli dove la piattaforma lo permette (su iPhone senza audio: un tocco per sentirlo)
+    if (pl && /player\.vimeo\.com/.test(src)) src += (src.indexOf('?') < 0 ? '?' : '&') + 'autoplay=1&muted=1';
+    if (pl && /dailymotion\.com\/embed/.test(src)) src += (src.indexOf('?') < 0 ? '?' : '&') + 'autoplay=1&mute=1';
+    if (pl && /player\.twitch\.tv/.test(src)) src = src.replace('autoplay=false', 'autoplay=true&muted=true');
+    if (pl && /facebook\.com\/plugins\/video/.test(src)) src += '&autoplay=true&mute=1';
     var fr = el('iframe'); fr.src = src; if (!pl) fr.loading = 'lazy'; fr.title = 'Reel di ' + r.n;
     fr.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
     fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-presentation');
@@ -1052,7 +1066,7 @@ function mediaRaw(r, pl) {
     ov.appendChild(document.createTextNode('Apri')); wrap.appendChild(ov);
     return wrap;
   }
-  var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'twitch.tv': 'Twitch', 'clips.twitch.tv': 'Twitch', 'open.spotify.com': 'Spotify', 'spotify.link': 'Spotify', 'snapchat.com': 'Snapchat', 't.snapchat.com': 'Snapchat', 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
+  var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'linkedin.com': 'LinkedIn', 'lnkd.in': 'LinkedIn', 'twitch.tv': 'Twitch', 'clips.twitch.tv': 'Twitch', 'open.spotify.com': 'Spotify', 'spotify.link': 'Spotify', 'snapchat.com': 'Snapchat', 't.snapchat.com': 'Snapchat', 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
   var nm = NAMES[host] || host;
   var l = el('div', 'link'); l.appendChild(el('div', null, nm));
   var why = el('small', null, 'Questo sito non lascia vedere il video qui dentro: si apre a parte e poi torni qui.'); l.appendChild(why);
@@ -1148,7 +1162,8 @@ function addReel(r, mine) {
 }
 function sendEv(m) {
   if (me.role === 'host') cast(m);
-  else if (hostConn && hostConn.open) hostConn.send(m);
+  else if (hostConn && hostConn.open) { hostConn.send(m); if (srvOn() && MBT[m.t] !== undefined) mbToHost(m, null, true); }
+  else if (srvOn() && MBT[m.t] !== undefined) mbToHost(m, function () { outbox.push(m); put('outbox', outbox); });
   else { outbox.push(m); put('outbox', outbox); }
 }
 function react(id, e) {
@@ -1361,8 +1376,9 @@ function post(u, c) {
   tcount('r');
   try { track('reel-' + (new URL(url).hostname.replace(/^(www|m|vm|vt)\./, '').split('.')[0] || 'altro')); } catch (e) {}
   addReel(r, true);
-  if (me.role === 'host') conns.forEach(function (c2) { if (c2.ok && c2.open) c2.send({ t: 'reel', r: r }); });
-  else if (hostConn && hostConn.open) hostConn.send({ t: 'reel', r: r });
+  if (me.role === 'host') cast({ t: 'reel', r: r });
+  else if (hostConn && hostConn.open) { hostConn.send({ t: 'reel', r: r }); if (srvOn()) mbToHost({ t: 'reel', r: r }, null, true); }
+  else if (srvOn()) { mbToHost({ t: 'reel', r: r }, function () { outbox.push(r); put('outbox', outbox); }); $('mh').textContent = 'Mandato: arriva appena l’altra persona apre Reelta.'; }
   else { outbox.push(r); put('outbox', outbox); $('mh').textContent = 'In coda: partirà appena sei collegato.'; }
 }
 
@@ -1384,7 +1400,7 @@ function status() {
   if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
 }
 function people() { return [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })); }
-function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }); }
+function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }); mbToGuests(m, null); }
 
 /* ---- io al centro ---- */
 var allowed = get('allowed', {}), hostTries = 0;
@@ -1403,7 +1419,12 @@ function startHost() {
     $('mh').textContent = e.type === 'unavailable-id' ? 'Il cerchio è già aperto su un’altra scheda o un altro dispositivo.' : 'Problema di rete (' + e.type + ').';
   });
   peer.on('connection', function (c) {
-    c.on('data', function (d) {
+    c.on('data', function (d) { hostData(c, d); });
+    c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); cast({ t: 'people', people: people() }); status(); });
+  });
+}
+// tutto ciò che arriva al creatore da un membro: dal collegamento diretto o dalla casella del server
+function hostData(c, d) {
       if (!d || typeof d !== 'object') return;
       if (d.t === 'hi' && !c.ok && !c.asked) {
         c.asked = true;
@@ -1422,45 +1443,140 @@ function startHost() {
         hmac(pk, 'g' + c.nh).then(function (pg) { if (pg === d.pg) hostHi(c, { n: c.nm, k: pk, c: '' }); else { try { c.close(); } catch (e) {} } });
       } else if ((d.t === 'react' || d.t === 'cmt' || d.t === 'sumq' || d.t === 'sum') && c.ok) {
         var m = applyEv(d, c.name);
-        if (m) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); });
+        if (m) relay(c, m);
       } else if (d.t === 'ses' && c.ok) {
         var sm = onSes(d, c.name);
-        if (sm) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(sm); });
+        if (sm) relay(c, sm);
       } else if (d.t === 'live' && c.ok && EMO.indexOf(d.e) >= 0) {
-        floatE(d.e); conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'live', e: d.e, n: c.name }); });
+        floatE(d.e); relay(c, { t: 'live', e: d.e, n: c.name });
       } else if (d.t === 'idea' && c.ok) {
         var im = applyIdea(d, c.name);
-        if (im) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(im); });
-      } else if (d.t === 'seen' && c.ok) { applySeen(c.name, d.ts); conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'seen', n: c.name, ts: d.ts }); });
+        if (im) relay(c, im);
+      } else if (d.t === 'seen' && c.ok) { applySeen(c.name, d.ts); relay(c, { t: 'seen', n: c.name, ts: d.ts });
       } else if (d.t === 'rep' && c.ok) { addReport(d, c.name);
       } else if (d.t === 'mdel' && c.ok && typeof d.id === 'string') {
         var om = msgs.filter(function (m) { return m.id === d.id; })[0];
-        if (om && om.n === c.name && delMsg(d.id, false)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'mdel', id: d.id }); });
+        if (om && om.n === c.name && delMsg(d.id, false)) relay(c, { t: 'mdel', id: d.id });
       } else if (d.t === 'msg' && c.ok) {
         var mm = addMsg(d.m, c.name);
-        if (mm) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'msg', m: mm }); });
+        if (mm) relay(c, { t: 'msg', m: mm });
       } else if (d.t === 'rdel' && c.ok && typeof d.id === 'string') {
         var dr = find(d.id);
-        if (dr && dr.n === c.name && dropReel(d.id)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'rdel', id: d.id }); });
+        if (dr && dr.n === c.name && dropReel(d.id)) relay(c, { t: 'rdel', id: d.id });
       } else if (d.t === 'trill' && c.ok) { trillIn(c.name);
       } else if (d.t === 'pf' && c.ok) {
-        if (setPic(c.name, d.p)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'pf', n: c.name, p: d.p }); });
+        if (setPic(c.name, d.p)) relay(c, { t: 'pf', n: c.name, p: d.p });
       } else if (d.t === 'back' && c.ok && Array.isArray(d.feed)) {
         // un membro rimanda i Reel che a questo telefono mancano (es. dopo una reinstallazione)
         var okN = {}; okN[me.name] = 1; Object.keys(allowed).forEach(function (kk) { okN[allowed[kk]] = 1; });
         var got = d.feed.slice(0, 100).filter(function (r) { return r && okN[clean(r.n, 30)] && addReel(r, true); });
         if (got.length) {
           feed.sort(function (a, b) { return a.ts - b.ts; }); put('feed', feed); render();
-          got.forEach(function (r) { var nr = find(r.id); if (nr) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: nr }); }); });
+          got.forEach(function (r) { var nr = find(r.id); if (nr) relay(c, { t: 'reel', r: nr }); });
           $('mh').textContent = 'Recuperati ' + got.length + (got.length === 1 ? ' Reel' : ' Reel') + ' da ' + c.name + ' ✓';
         }
       } else if (d.t === 'reel' && c.ok) {
         var r = d.r || {}; r.n = c.name;
-        if (addReel(r)) conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send({ t: 'reel', r: feed[feed.length - 1] }); });
+        if (addReel(r)) relay(c, { t: 'reel', r: feed[feed.length - 1] });
       }
+}
+/* ---- server (Supabase): casella cifrata per chi non è collegato + notifiche ad app chiusa ----
+   Ogni membro e il creatore condividono un segreto (il pass del membro). Da quello nascono due caselle
+   (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
+var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
+// tipi che passano dal server; true = manda anche la notifica
+var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false };
+function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
+var te8 = new TextEncoder();
+function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function mbDec(x) { x = String(x).replace(/-/g, '+').replace(/_/g, '/'); while (x.length % 4) x += '='; return Uint8Array.from(atob(x), function (ch) { return ch.charCodeAt(0); }); }
+function mbBox(sec, dir) { return crypto.subtle.digest('SHA-256', te8.encode('reelta-box:' + sec + ':' + dir)).then(mbEnc); }
+var mbKeys = {};
+function mbKey(sec) {
+  return mbKeys[sec] || (mbKeys[sec] = crypto.subtle.importKey('raw', te8.encode(sec), 'HKDF', false, ['deriveKey']).then(function (k) {
+    return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: te8.encode('reelta-relay-v1'), info: te8.encode('msg') }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }));
+}
+function mbSeal(sec, obj) { var iv = crypto.getRandomValues(new Uint8Array(12)); return mbKey(sec).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, te8.encode(JSON.stringify(obj))); }).then(function (ct) { return mbEnc(iv) + '.' + mbEnc(ct); }); }
+function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mbDec(q[0]) }, k, mbDec(q[1])); }).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); }); }
+function mbCall(body) {
+  return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body) })
+    .then(function (r) { if (!r.ok) throw new Error('srv ' + r.status); return r.json(); });
+}
+function mbPut(sec, dir, m, quiet) {
+  if (!srvOn() || MBT[m.t] === undefined) return Promise.resolve(false);
+  return Promise.all([mbBox(sec, dir), mbSeal(sec, m)]).then(function (v) { return mbCall({ a: 'put', box: v[0], sender: v[0].slice(0, 16), payload: v[1], notify: !quiet && !!MBT[m.t] }); }).then(function () { return true; });
+}
+// creatore: a chi del cerchio non è collegato adesso
+function mbToGuests(m, except) {
+  if (!srvOn() || !me || me.role !== 'host' || MBT[m.t] === undefined) return;
+  var live = {}; conns.forEach(function (x) { if (x.ok && x.open && x.k) live[x.k] = 1; });
+  Object.keys(allowed).forEach(function (k) { if (!except || except.k !== k) mbPut(k, 'g', m, !!live[k]).catch(function () {}); });
+}
+// membro: al creatore, se non è collegato
+function mbToHost(m, fail, quiet) { mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
+function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
+var mbBusy = false, mbLast = 0;
+function mbPull(force) {
+  if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
+  mbBusy = true; mbLast = Date.now();
+  var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }) : (me.tok && me.joined ? [{ sec: me.tok, dir: 'g' }] : []);
+  Promise.all(jobs.map(function (j) {
+    return mbBox(j.sec, j.dir).then(function (box) {
+      return mbCall({ a: 'get', box: box }).then(function (res) {
+        var items = (res && res.items) || []; if (!items.length) return;
+        return items.reduce(function (p, it) {
+          return p.then(function () { return mbOpen(j.sec, it.payload).then(function (d) {
+            if (!d || typeof d !== 'object' || MBT[d.t] === undefined) return;
+            if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
+            else guestData(d);
+          }, function () {}); });
+        }, Promise.resolve()).then(function () { return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
+      });
     });
-    c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); cast({ t: 'people', people: people() }); status(); });
+  })).catch(function () {}).then(function () { mbBusy = false; });
+}
+document.addEventListener('visibilitychange', function () { if (!document.hidden) mbPull(true); });
+setInterval(function () { if (!document.hidden) mbPull(false); }, 30000);
+// notifiche ad app chiusa: il telefono si iscrive alle sue caselle (solo un avviso generico, mai il contenuto)
+function pushOK() { return srvOn() && 'serviceWorker' in navigator && 'PushManager' in window && window.Notification; }
+function pushBoxes() {
+  if (me.role === 'host') return Promise.all(Object.keys(allowed).map(function (k) { return mbBox(k, 'h'); }));
+  return me.tok ? mbBox(me.tok, 'g').then(function (b) { return [b]; }) : Promise.resolve([]);
+}
+function pushSync() {
+  if (!pushOK() || Notification.permission !== 'granted' || !me) return Promise.resolve(false);
+  return navigator.serviceWorker.ready.then(function (reg) {
+    return reg.pushManager.getSubscription().then(function (sub) { return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: mbDec(SRV.vapid) }); });
+  }).then(function (sub) {
+    var js = sub.toJSON(), lang = window.LX_LANG || 'it';
+    return pushBoxes().then(function (bs) { return Promise.all(bs.map(function (b) { return mbCall({ a: 'sub', box: b, sub: js, lang: lang }); })); });
+  }).then(function () { return true; }, function () { return false; });
+}
+function pushAsk() {
+  if (!pushOK()) { $('mh').textContent = isIOS && !isStandalone ? 'Per gli avvisi ad app chiusa apri Reelta dall’icona sulla Home.' : 'Questo telefono non supporta gli avvisi ad app chiusa.'; return; }
+  Notification.requestPermission().then(function (p) {
+    if (p !== 'granted') { $('mh').textContent = 'Avvisi non attivati: puoi cambiarlo nelle impostazioni del telefono.'; renderPush(); return; }
+    pushSync().then(function (ok) { $('mh').textContent = ok ? '🔔 Fatto: ti avviso anche ad app chiusa.' : 'Non sono riuscito ad attivare gli avvisi, riprova più tardi.'; renderPush(); });
   });
+}
+function renderPush() {
+  var b = $('pushB'), h = $('pushH'); if (!b) return;
+  var on = pushOK() && Notification.permission === 'granted';
+  b.hidden = !srvOn(); b.textContent = on ? '🔔 Avvisi ad app chiusa: attivi' : '🔔 Avvisami anche ad app chiusa';
+  b.disabled = on; h.hidden = !srvOn();
+  h.textContent = on ? 'Ti arriva solo “Hai qualcosa di nuovo su Reelta”: mai chi, né cosa.' : 'Una notifica discreta quando arriva un Reel o un messaggio, anche con Reelta chiusa.';
+}
+function srvStart() {
+  if (!srvOn() || !me) return;
+  setTimeout(function () { mbPull(true); }, 1500);
+  if (pushOK() && Notification.permission === 'granted') pushSync();
+  else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
+    setTimeout(function () {
+      if (get('pushAsked', 0)) return; put('pushAsked', 1);
+      ask('Avvisi anche ad app chiusa?', 'Quando arriva un Reel o un messaggio, una notifica discreta: “Hai qualcosa di nuovo su Reelta”. Mai chi, né cosa.', 'Sì, avvisami').then(function (y) { if (y) pushAsk(); });
+    }, 4000);
+  }
 }
 /* ---- sicurezza: identità verificata in entrambe le direzioni ---- */
 function hex(b) { return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
@@ -1559,6 +1675,13 @@ function startGuest() {
         } else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 180); status(); }
         return;
       }
+      guestData(d);
+    });
+    hostConn.on('close', function () { status(); again(); });
+  });
+}
+// tutto ciò che arriva a un membro dal creatore: dal collegamento diretto o dalla casella del server
+function guestData(d) {
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
       if (d.t === 'hello' && !me.joined) { me.joined = true; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
@@ -1585,9 +1708,6 @@ function startGuest() {
       else if (d.t === 'live' && EMO.indexOf(d.e) >= 0) floatE(d.e);
       else if (d.t === 'idea') applyIdea(d, null);
       else if (d.t === 'no') { blocked = true; clearTimeout(retry); $('mh').textContent = clean(d.why, 180); status(); }
-    });
-    hostConn.on('close', function () { status(); again(); });
-  });
 }
 function again() { if (blocked) return; clearTimeout(retry); retry = setTimeout(function () { try { peer.destroy(); } catch (e) {} startGuest(); }, 5000); }
 
@@ -2145,6 +2265,7 @@ function showNote(q, c, force) {
 $('isl').addEventListener('click', function () { var k = $('isl').dataset.k; $('isl').classList.remove('on'); showPane(k === 'msg' ? 'chat' : k === 'idea' ? 'ideas' : 'main'); });
 var NT_IDS = { pill: 'ntPill', sound: 'ntSound', vib: 'ntVib', reel: 'ntReel', msg: 'ntMsg', idea: 'ntIdea', quiet: 'ntQuiet' };
 function renderNt() {
+  renderPush();
   var c = ntCfg(); Object.keys(NT_IDS).forEach(function (k) { $(NT_IDS[k]).checked = c[k]; }); $('ntVibL').hidden = !navigator.vibrate;
   var fb = $('ntFx'); fb.textContent = '';
   var locked = PLUS_LOCK && !hasPlus();
@@ -2303,6 +2424,7 @@ function begin() {
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
+  srvStart();
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
@@ -2406,6 +2528,7 @@ $('imc').addEventListener('click', function () { $('im').classList.remove('open'
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
 $('iok').addEventListener('click', saveIdea);
+$('pushB').addEventListener('click', pushAsk);
 $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
 $('svGo').addEventListener('click', function () { svOpen(); });
 function refOpen() { $('refM').classList.add('open'); }
@@ -2468,6 +2591,10 @@ $('bd').addEventListener('click', function () {
   var T = window.LX_T || function (x) { return x; };
   var t = '🔔 ' + me.name + T(' ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ') + app + ')';
   track('avviso-inviato'); put('trillAt', Date.now());
+  if (srvOn()) {
+    if (me.role === 'host') mbToGuests({ t: 'trill', n: me.name }, null); else mbToHost({ t: 'trill', n: me.name });
+    $('mh').textContent = '🔔 Trillo mandato: le arriva un avviso sul telefono.'; return;
+  }
   if (navigator.share) navigator.share({ text: t }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('mh').textContent = 'Messaggio copiato: incollalo su WhatsApp.'; });
 });
