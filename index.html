@@ -852,7 +852,8 @@ function embedFor(u) {
   }
   if (h === 'youtu.be' && (m = /^\/([\w-]{6,})/.exec(p))) return yt(m[1]);
   // Facebook
-  if ((h === 'facebook.com' && /^\/(reel\/\d|watch|share\/(r|v)\/|[^/]+\/videos\/\d|video)/.test(p)) || h === 'fb.watch')
+  // i link di condivisione (facebook.com/share/…, fb.watch) il lettore di Facebook non li apre: scheda con "Guarda il video"
+  if (h === 'facebook.com' && /^\/(reel\/\d|watch|[^/]+\/videos\/\d|video)/.test(p))
     return 'https://www.facebook.com/plugins/video.php?href=' + E(x.href) + '&show_text=false&width=500&height=889';
   // Snapchat (Spotlight, Lenti, Storie e profili pubblici hanno l'incorporamento ufficiale)
   if (h === 'snapchat.com' && (m = /^\/(?:@[\w.-]+\/)?(spotlight|lens)\/([\w-]{8,})/.exec(p)))
@@ -913,7 +914,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v62', errLog = [];
+var APP_VER = 'v63', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
