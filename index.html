@@ -787,7 +787,7 @@ function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c
 function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
 
 var me = get('me', null), feed = get('feed', []), outbox = get('outbox', []), peer = null, conns = [], hostConn = null, names = [], retry = null;
-var joinId = /^#j=([\w-]{8,100})$/.exec(location.hash);
+var joinId = /^#j=([\w-]{8,100})$/.exec(location.hash) || /[?&]j=([\w-]{8,100})(?:&|$)/.exec(location.search);
 joinId = joinId ? joinId[1] : null;
 var incoming = null;
 (function () {
@@ -878,7 +878,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v55', errLog = [];
+var APP_VER = 'v56', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2246,7 +2246,11 @@ var seenBanner = false; try { seenBanner = sessionStorage.getItem('lx-banner') =
 if (inBrowser) {
   $('ios').querySelector('span').innerHTML = isIOS
     ? '⚠️ <b>Stai usando Reelta in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
+    : /SamsungBrowser/i.test(navigator.userAgent)
+    ? '⚠️ <b>Con Samsung Internet l’installazione può essere bloccata per errore.</b> Apri Reelta in <b>Chrome</b> e lì: menu <b>⋮</b> → <b>“Installa app”</b>. <a id="toChrome" style="color:inherit;font-weight:800">Apri in Chrome ›</a>'
     : '⚠️ <b>Stai usando Reelta nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
+  var tc = document.getElementById('toChrome');
+  if (tc) tc.href = 'intent://' + location.host + location.pathname + (joinId ? '?j=' + joinId : '') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=com.android.chrome') + ';end';
 }
 $('ios').hidden = !inBrowser || seenBanner;
 $('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
