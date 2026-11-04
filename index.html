@@ -610,6 +610,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod" id="idm" role="dialog" aria-modal="true" aria-labelledby="idT"><div class="card" style="max-width:340px;width:100%">
   <h2 id="idT">Nuovo piano</h2>
+  <button class="isug" id="iAi" type="button" hidden style="margin:0 0 10px;border-style:solid;font-weight:700">✨ Riconosci dal video</button>
   <p class="iq">Cosa vi ha colpito?</p>
   <div class="kgrid" id="ikg" role="radiogroup" aria-label="Tipo di piano"></div><input type="hidden" id="ik" value="viaggio">
   <input id="ip" placeholder="Dove? (es. Lisbona)" maxlength="60" aria-label="Luogo o cosa">
@@ -937,7 +938,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v67', errLog = [];
+var APP_VER = 'v68', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1939,6 +1940,11 @@ function sumRender() {
   }
   if (!mine) {
     if (r.q && r.q[me.name]) { b.appendChild(el('p', null, 'Hai già chiesto a ' + r.n + '. Appena risponde lo vedi qui, e ti arriva un avviso.')); return; }
+    if (srvOn()) {
+      var ab = el('button', 'btn-o wide', r.ai ? '✨ ' + r.ai : '✨ Riassunto automatico'); ab.type = 'button'; ab.style.whiteSpace = 'normal';
+      ab.onclick = function () { if (r.ai) return; ab.disabled = true; ab.textContent = '✨ Guardo il video…'; aiAsk(r).then(function (x) { r.ai = clean(x.sum, 200) || '—'; ab.textContent = '✨ ' + r.ai; }, function () { ab.disabled = false; ab.textContent = 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; }); };
+      b.appendChild(ab); b.appendChild(el('p', 'refn', 'Lo scrive l’intelligenza artificiale di Google leggendo il titolo pubblico del video: niente dei vostri nomi né messaggi.'));
+    }
     b.appendChild(el('p', null, 'Chiedi a ' + r.n + ' di raccontartelo in una riga. Così decidi tu se guardarlo tutto.'));
     var go = el('button', 'btn', '📝 Chiedi a ' + r.n); go.onclick = function () { sumAsk(r); }; b.appendChild(go); return;
   }
@@ -1956,6 +1962,18 @@ function sumRender() {
 function sumAsk(r) {
   r.q = r.q || {}; r.q[me.name] = 1; put('feed', feed); refresh(r); sendEv({ t: 'sumq', id: r.id, n: me.name });
   sumRender(); $('sumH').textContent = 'Fatto: ' + r.n + ' riceve la richiesta.'; sumRefresh(r);
+}
+/* ---- intelligenza artificiale su richiesta: il server legge titolo e descrizione pubblici del video ---- */
+function aiAsk(r) {
+  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it' }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
+}
+function aiPlan() {
+  var r = ideaRid && find(ideaRid), b = $('iAi'); if (!r) return;
+  b.disabled = true; b.textContent = '✨ Guardo il video…'; $('iH').textContent = '';
+  aiAsk(r).then(function (x) {
+    setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o;
+    $('iH').textContent = x.sum ? '✨ ' + x.sum : ''; b.textContent = '✨ Fatto: controlla e salva'; ideaSug();
+  }, function () { b.disabled = false; b.textContent = '✨ Riconosci dal video'; $('iH').textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; });
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
 // data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
@@ -2101,6 +2119,7 @@ function openIdea(rid) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
   var g = $('ikg'); if (!g.children.length) Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); });
   var r0 = rid && find(rid); setKind(guessKind(r0 && r0.c) || 'viaggio');
+  $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').textContent = '✨ Riconosci dal video';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
   $('idT').textContent = rid ? 'Trasforma in piano' : 'Nuovo piano';
   $('idm').classList.add('open'); setTimeout(function () { $('ip').focus(); }, 50);
@@ -2527,7 +2546,7 @@ $('imc').addEventListener('click', function () { $('im').classList.remove('open'
 ['im', 'invM', 'actM', 'bugM', 'idm', 'svM', 'refM', 'sumM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
-$('iok').addEventListener('click', saveIdea);
+$('iok').addEventListener('click', saveIdea); $('iAi').addEventListener('click', aiPlan);
 $('pushB').addEventListener('click', pushAsk);
 $('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
 $('svGo').addEventListener('click', function () { svOpen(); });
