@@ -212,6 +212,13 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 a.r-btn{text-decoration:none}
 .ptag{font-size:13px;color:var(--m);margin-top:10px}
+.svy{margin:2px 14px 8px;background:var(--s1);border:1px solid #C9A266;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:none}
+.svy b{color:var(--t);font-size:15px}.svy span{color:var(--m);font-size:14px}.svy .r{display:flex;gap:8px}.svy .r .btn,.svy .r .btn-o{flex:1;margin:0;padding:10px;font-size:15px}
+.svq{margin:12px 0 4px;font-weight:700;color:var(--t);font-size:15px}
+.svo{display:flex;gap:6px;flex-wrap:wrap}.svo button{flex:1;min-width:30%;background:var(--s2);border:1.5px solid transparent;color:var(--t);border-radius:14px;padding:10px 6px;font-size:15px;font-weight:700;cursor:pointer}
+.svo button[aria-pressed="true"]{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
+#svQ textarea{width:100%;min-height:64px;margin:6px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
+.svpl{font-weight:700;color:var(--t)}.svpre{white-space:pre-wrap;font-size:13px;background:var(--s2);border-radius:12px;padding:10px 12px;color:var(--t);max-height:220px;overflow:auto;font-family:inherit}
 .iq{font-weight:700;color:var(--t);margin:2px 0 8px}
 .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .kgrid button{background:var(--s2);border:1.5px solid transparent;color:var(--t);border-radius:16px;padding:11px 8px;font-size:15px;font-weight:700;cursor:pointer;min-height:46px}
@@ -380,6 +387,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <section class="pane" id="main">
   <div class="strip" hidden><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
   <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>Insieme</button></div>
+  <div class="svy" id="svy" hidden></div>
   <div class="fw"><div class="feed" id="feed" tabindex="0" aria-label="Feed dei Reel"></div><button class="pill" id="nw" hidden></button></div>
   <div class="comp">
     <button id="manual" hidden></button>
@@ -411,7 +419,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
+  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
   <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
 </div></section>
 
@@ -494,6 +502,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <p>• <b>Su iPhone</b> Reelta non compare in “Condividi”: copia il link del Reel e tocca “Incolla”. Apri Reelta sempre dall’icona sulla schermata Home.</p>
   <p>• <b>Piani:</b> i pulsanti aprono Google Maps, Booking e GetYourGuide. Se un pulsante dice “partner”, prenotando da lì Reelta riceve una piccola commissione: per te il prezzo non cambia.</p>
   <p>• <b>PIN:</b> chiede il PIN all’apertura e cifra i dati salvati sul telefono: senza PIN non si leggono. Se lo dimentichi, i dati si possono solo cancellare (o ripristinare da una copia di sicurezza).</p>
+  <p>• <b>Pareri:</b> ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.</p>
   <p id="statP" hidden>• Contiamo in modo anonimo quante volte si usa Reelta (aperture, Reel condivisi, cerchi creati), senza cookie, senza nomi e senza vedere i contenuti.</p>
   <p>• <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">Leggi la privacy policy completa</a></p>
   <button class="btn" id="imc">Ho capito</button>
@@ -553,6 +562,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
   <button class="btn-o wide" id="gdX">Ho capito</button>
+</div></div>
+
+<div class="mod" id="svM" role="dialog" aria-modal="true" aria-labelledby="svT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
+  <h2 id="svT">Il tuo parere</h2>
+  <p>Bastano 30 secondi. Prima di inviare vedi tutto quello che parte.</p>
+  <div id="svQ"></div>
+  <div id="svP" hidden><p class="svpl">Ecco cosa parte, niente di più:</p><pre class="svpre" id="svTx" data-nt></pre></div>
+  <button class="btn" id="svOk">Avanti</button><button class="btn-o wide" id="svNo">Non ora</button>
+  <div class="hint" id="svH" aria-live="polite"></div>
 </div></div>
 
 <div class="mod" id="idm" role="dialog" aria-modal="true" aria-labelledby="idT"><div class="card" style="max-width:340px;width:100%">
@@ -860,7 +878,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v53', errLog = [];
+var APP_VER = 'v54', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1268,6 +1286,7 @@ function post(u, c) {
   if (!url) { $('mh').textContent = 'Serve un link che inizi con http o https.'; return; }
   $('mh').textContent = '';
   var r = { id: uid(8), u: url, c: clean(c, 300), n: me.name, ts: Date.now() };
+  tcount('r');
   try { track('reel-' + (new URL(url).hostname.replace(/^(www|m|vm|vt)\./, '').split('.')[0] || 'altro')); } catch (e) {}
   addReel(r, true);
   if (me.role === 'host') conns.forEach(function (c2) { if (c2.ok && c2.open) c2.send({ t: 'reel', r: r }); });
@@ -1611,6 +1630,103 @@ function startStats() {
   var inst = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
   track(inst ? 'apertura-app-installata' : 'apertura-nel-browser');
 }
+/* ---- pareri delle prime coppie: i conti restano sul telefono, partono solo se l'utente tocca Invia ---- */
+// Server per le risposte (Supabase, tabella "feedback"). Vuoti = si inviano con WhatsApp o mail.
+var FEEDBACK = { url: '', anon: '', mail: '' };
+function tst() { var t = get('tst', null); if (!t || typeof t !== 'object' || !t.s) { t = { s: Date.now(), w: {}, done: {}, snooze: 0 }; put('tst', t); } return t; }
+function tweek(t) { return Math.max(1, Math.min(12, Math.floor((Date.now() - t.s) / 6048e5) + 1)); }
+function tcount(k) {
+  try { if (!me) return; var t = tst(), w = tweek(t), x = t.w[w] = t.w[w] || { r: 0, p: 0, d: [] }; if (k) x[k] = (x[k] || 0) + 1;
+    var d = new Date().getDay(); if (x.d.indexOf(d) < 0) x.d.push(d); put('tst', t); } catch (e) {}
+}
+var SVQ = {
+  s1: [
+    { id: 'confuso', q: 'Cosa vi ha confuso o fatto fermare?', txt: 1 },
+    { id: 'altrove', q: 'Vi mandate ancora i Reel su altre app?', o: ['Quasi mai', 'A volte', 'Spesso'] },
+    { id: 'manca', q: 'Cosa vi manca di più? (facoltativo)', txt: 1 }
+  ],
+  s4: [
+    { id: 'sparisse', q: 'Se domani Reelta sparisse, quanto vi dispiacerebbe?', o: ['Molto', 'Un po’', 'Per niente'] },
+    { id: 'consiglio', q: 'La consigliereste a qualcuno?', o: ['Sì', 'Forse', 'No'] },
+    { id: 'ogni-giorno', q: 'Cosa dovrebbe fare in più perché la usiate ogni giorno?', txt: 1 }
+  ]
+};
+var svCur = '', svAns = {}, svStep = 0;
+function svDue() {
+  var t = tst(), days = (Date.now() - t.s) / 864e5;
+  if (Date.now() < (t.snooze || 0)) return '';
+  if (days >= 28 && !t.done.s4) return 's4';
+  if (days >= 7 && !t.done.s1 && days < 28) return 's1';
+  return '';
+}
+function svyCheck() {
+  var b = $('svy'); if (!b) return; var due = me && me.joined !== false ? svDue() : '';
+  b.hidden = !due; if (!due) return; b.textContent = '';
+  b.appendChild(el('b', null, due === 's4' ? 'Un mese con Reelta: com’è andata?' : 'Ci aiutate a migliorare Reelta?'));
+  b.appendChild(el('span', null, '3 domande, 30 secondi. Vedete tutto prima di inviare.'));
+  var r = el('div', 'r'), y = el('button', 'btn', 'Rispondi'), n = el('button', 'btn-o', 'Non ora');
+  y.onclick = function () { svOpen(due); }; n.onclick = function () { var t = tst(); t.snooze = Date.now() + 2 * 864e5; put('tst', t); b.hidden = true; };
+  r.appendChild(y); r.appendChild(n); b.appendChild(r);
+}
+function svOpen(which) {
+  var t = tst(); svCur = which || ((Date.now() - t.s) / 864e5 >= 28 ? 's4' : 's1'); svAns = {}; svStep = 0;
+  var box = $('svQ'); box.textContent = ''; $('svP').hidden = true; box.hidden = false; $('svH').textContent = ''; $('svOk').textContent = 'Avanti';
+  $('svT').textContent = svCur === 's4' ? 'Un mese con Reelta' : 'La prima settimana';
+  SVQ[svCur].forEach(function (q) {
+    box.appendChild(el('div', 'svq', q.q));
+    if (q.o) { var o = el('div', 'svo'); q.o.forEach(function (v) { var b = el('button', null, v); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.onclick = function () { svAns[q.id] = v; o.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }; o.appendChild(b); }); box.appendChild(o); }
+    else { var ta = el('textarea'); ta.maxLength = 300; ta.dataset.q = q.id; ta.setAttribute('aria-label', q.q); box.appendChild(ta); }
+  });
+  $('svM').classList.add('open');
+}
+function svCode() {
+  var src = (me && me.hostId) || 'x';
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode('reelta-prova:' + src)).then(function (b) {
+    var A = 'ABCDEFGHJKMNPQRSTVWXYZ23456789', u = new Uint8Array(b), c = 'C-'; for (var i = 0; i < 4; i++) c += A.charAt(u[i] % A.length); return c;
+  }).catch(function () { return 'C-????'; });
+}
+function svData(code) {
+  var t = tst(), weeks = [];
+  for (var w = 1; w <= tweek(t); w++) { var x = t.w[w] || { r: 0, p: 0, d: [] }; weeks.push({ sett: w, reel: x.r || 0, piani: x.p || 0, giorni: (x.d || []).length }); }
+  return { coppia: code, ruolo: me.role === 'host' ? 'creatore' : 'ospite', persone: Math.max(1, (me.role === 'host' ? people() : names).length), giorni: Math.floor((Date.now() - t.s) / 864e5), settimane: weeks, risposte: svAns, questionario: svCur, versione: APP_VER, lingua: (window.LX_LANG || 'it') };
+}
+function svText(d) {
+  var L = ['Reelta · parere ' + (d.questionario === 's4' ? 'dopo un mese' : 'dopo una settimana'), 'Coppia: ' + d.coppia + ' · ' + d.ruolo + ' · ' + d.persone + ' persone · giorno ' + d.giorni];
+  d.settimane.forEach(function (w) { L.push('Sett. ' + w.sett + ': ' + w.reel + ' Reel, ' + w.piani + ' piani, ' + w.giorni + (w.giorni === 1 ? ' giorno' : ' giorni') + ' aperta'); });
+  SVQ[d.questionario].forEach(function (q) { L.push(q.q + ' → ' + (d.risposte[q.id] || '—')); });
+  return L.join('\n');
+}
+var svPayload = null;
+function svNext() {
+  if (svStep === 0) {
+    $('svQ').querySelectorAll('textarea').forEach(function (ta) { var v = clean(ta.value, 300); if (v) svAns[ta.dataset.q] = v; });
+    if (!Object.keys(svAns).length) { $('svH').textContent = 'Rispondi almeno a una domanda.'; return; }
+    svCode().then(function (code) {
+      svPayload = svData(code); $('svTx').textContent = svText(svPayload);
+      $('svQ').hidden = true; $('svP').hidden = false; $('svH').textContent = '';
+      $('svOk').textContent = FEEDBACK.url && FEEDBACK.anon ? 'Invia a Reelta' : 'Invia';
+      svStep = 1;
+    });
+    return;
+  }
+  var done = function (ok) {
+    if (!ok) return;
+    var t = tst(); t.done[svCur] = Date.now(); put('tst', t); $('svM').classList.remove('open'); svyCheck();
+    if (tab === 'main') $('mh').textContent = 'Grazie! Il vostro parere è arrivato.';
+  };
+  if (FEEDBACK.url && FEEDBACK.anon) {
+    $('svOk').disabled = true;
+    fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Authorization: 'Bearer ' + FEEDBACK.anon, Prefer: 'return=minimal' },
+      body: JSON.stringify({ survey: svCur, code: svPayload.coppia, data: svPayload }) })
+      .then(function (r) { if (!r.ok) throw 0; done(true); })
+      .catch(function () { $('svH').textContent = 'Non è partito: controlla la connessione e riprova.'; })
+      .then(function () { $('svOk').disabled = false; });
+    return;
+  }
+  var txt = svText(svPayload);
+  if (navigator.share) navigator.share({ text: txt }).then(function () { done(true); }).catch(function () {});
+  else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); done(true); }
+}
 var KINDS = { viaggio: '✈️ Un posto', compra: '🛍️ Da comprare', cibo: '🍝 Da mangiare', esperienza: '🎟️ Da fare', ricetta: '👨‍🍳 Ricetta', altro: '💡 Idea' };
 var KPH = {
   viaggio: ['Dove? (es. Lisbona)', 'Quando? (es. a maggio)'],
@@ -1747,7 +1863,7 @@ function openIdea(rid) {
 function saveIdea() {
   var p = clean($('ip').value, 60);
   if (!p) { $('iH').textContent = 'Scrivi cosa o dove, anche solo una parola.'; $('ip').focus(); return; }
-  var v = {}; v[me.name] = 1; track('piano-creato');
+  var v = {}; v[me.name] = 1; track('piano-creato'); tcount('p');
   ideaAct({ t: 'idea', a: 'add', i: { id: uid(8), r: ideaRid, k: $('ik').value, p: p, o: clean($('io').value, 200), ts: Date.now(), v: v } });
   $('idm').classList.remove('open');
   if (tab === 'main') $('mh').textContent = 'Piano salvato: lo trovi in Piani.';
@@ -2147,10 +2263,12 @@ $('haveInv').addEventListener('click', async function () {
 });
 ['inf', 'inf2'].forEach(function (i) { $(i).addEventListener('click', function () { $('im').classList.add('open'); }); });
 $('imc').addEventListener('click', function () { $('im').classList.remove('open'); });
-['im', 'invM', 'actM', 'bugM', 'idm'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
+['im', 'invM', 'actM', 'bugM', 'idm', 'svM'].forEach(function (id) { var m = $(id); if (m) m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('open'); }); }); // tocco fuori dalla finestra = chiudi
 document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { b.addEventListener('click', function () { showPane(b.dataset.p); }); });
 $('inew').addEventListener('click', function () { openIdea(''); });
-$('iok').addEventListener('click', saveIdea); $('ip').addEventListener('input', ideaSug);
+$('iok').addEventListener('click', saveIdea);
+$('svOk').addEventListener('click', svNext); $('svNo').addEventListener('click', function () { $('svM').classList.remove('open'); });
+$('svGo').addEventListener('click', function () { svOpen(); }); $('ip').addEventListener('input', ideaSug);
 $('ip').addEventListener('keydown', function (e) { if (e.key === 'Enter') saveIdea(); });
 $('ino').addEventListener('click', function () { $('idm').classList.remove('open'); });
 $('inv2').addEventListener('click', invite);
@@ -2237,7 +2355,7 @@ $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'
 $('ru').addEventListener('input', function () { $('rc').hidden = !$('ru').value.trim(); });
 $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add').click(); });
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
-startStats();
+startStats(); tcount(); svyCheck();
 checkDev(get('dev', '')).then(function (ok) { isDev = ok; applyDev(); });
 function circleOfHost(h) {
   for (var i = 0; i < REG.list.length; i++) { try { var m = JSON.parse(localStorage.getItem(lsOf(REG.list[i].id) + 'me')); if (m && m.hostId === h) return REG.list[i].id; } catch (e) {} }
