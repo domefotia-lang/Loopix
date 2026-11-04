@@ -2533,6 +2533,30 @@
 "Works with links from the most popular apps:",
 "Funciona con los enlaces de las apps más usadas:"
 ],
+"Schermo intero": [
+"Full screen",
+"Pantalla completa"
+],
+"Esci dallo schermo intero": [
+"Exit full screen",
+"Salir de pantalla completa"
+],
+"Prossimo": [
+"Next",
+"Siguiente"
+],
+"🙈 Elimina solo per me": [
+"🙈 Delete just for me",
+"🙈 Eliminar solo para mí"
+],
+"Tocca un messaggio per copiarlo o eliminarlo.": [
+"Tap a message to copy or delete it.",
+"Toca un mensaje para copiarlo o eliminarlo."
+],
+"Non ora": [
+"Not now",
+"Ahora no"
+],
 "adesso": [
 "now",
 "ahora"
@@ -2630,8 +2654,8 @@
 " personas."
 ]
 };
-  var FR = ["\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "Era l’invito del cerchio di coppia, che è già completo.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", " ti sta mandando quello giusto: aprilo appena arriva.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", "⏳ I messaggi si cancellano da soli ", " vuole guardare i Reel insieme a te", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", ", aprila dall’icona e tocca ", "Copia questo invito a mano: ", " Per averla come app: menu ", ". Reelta si riapre adesso.", " (l’invito è già copiato).", " Invita la prima persona!", ", poi aprila dall’icona.", " è entrato nel cerchio ✓", " Il link vale 10 minuti.", " persone, in privato.", " deve farti entrare.", "Modalità riservata: ", "Aspetta un attimo: ", "Copia scaricata ✓ (", "Problema di rete (", "Insieme, Reel di ", " nel tuo cerchio?", "Gruppo grande · ", "Ho ripristinato ", " · non collegato", "Ci sono ancora ", "Vuoi accettare ", " Reel aggiunti.", "Gruppo da 3 · ", " vuole entrare", " ha segnalato ", ", proposto da ", " c’erano già)", " (tu, centro)", "Messaggio di ", " Reel nuovi ↓", " è silenziato", " Reel nuovo ↓", "Nel cerchio: ", "✓✓ Letto da: ", "Tu e fino a ", "🚩 Segnala a ", "🕶️ Video da ", " dal cerchio", "Votato da: ", "🔇 Silenzia ", "Cerchio di ", "Recuperati ", "Messaggi (", " (partner)", "▶  Guarda ", " · aperto", " (centro)", " cerchio.", " Reel da ", "Video di ", " persone.", "Reagisci ", "Togliere ", "Coppia · ", " cerchi.", "Reel di ", "🚫 Togli ", " ora fa", "Piani (", "Colore ", " ore fa", " min fa", "Invita ", " posti.", "Ciao! ", " (tu)", ", da "];
-  var RX = [[/(\d+) nuovi\b/g, '$1 new', '$1 nuevos'], [/(\d+) nuovo\b/g, '$1 new', '$1 nuevo'], [/(\d+) di (\d+) post[oi] usati\./g, '$1 of $2 spots used.', '$1 de $2 plazas usadas.'], [/^da ([A-ZÀ-Ú])/, 'by $1', 'de $1'], [/^ha mandato (\d+) Reel$/, 'sent $1 Reels', 'ha enviado $1 Reels']];
+  var FR = ["\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 10 minuti.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", "⏱️ Il tuo pass è scaduto (valeva 10 minuti). Ho chiesto a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "Era l’invito del cerchio di coppia, che è già completo.", " ti sta mandando quello giusto: aprilo appena arriva.", "Questo invito era per un cerchio già completo. ", "Fatto ✓ Tienila in File o iCloud. Contiene ", " non sa che lo guardi finché non lo apri.", " vuole guardare i Reel insieme a te", "⏳ I messaggi si cancellano da soli ", ", su tutti i telefoni del cerchio.", "❤️  Rivedi il Reel più amato, di ", " ha aperto un invito sbagliato", "Copia questo invito a mano: ", ", aprila dall’icona e tocca ", " Per averla come app: menu ", " (l’invito è già copiato).", ". Reelta si riapre adesso.", " Invita la prima persona!", ", poi aprila dall’icona.", " è entrato nel cerchio ✓", " Il link vale 10 minuti.", " persone, in privato.", " deve farti entrare.", "Modalità riservata: ", "Aspetta un attimo: ", "Copia scaricata ✓ (", "Problema di rete (", " nel tuo cerchio?", "Insieme, Reel di ", "Ho ripristinato ", " · non collegato", "Gruppo grande · ", "Ci sono ancora ", " Reel aggiunti.", "Vuoi accettare ", "Gruppo da 3 · ", ", proposto da ", " ha segnalato ", " vuole entrare", " Reel nuovo ↓", "✓✓ Letto da: ", "Nel cerchio: ", " (tu, centro)", " Reel nuovi ↓", " è silenziato", "Messaggio di ", " c’erano già)", "🕶️ Video da ", "🚩 Segnala a ", " dal cerchio", "Tu e fino a ", "Cerchio di ", "Votato da: ", "🔇 Silenzia ", "Recuperati ", "Messaggi (", "▶  Guarda ", " (partner)", "Togliere ", " · aperto", "Coppia · ", " cerchio.", " (centro)", "Video di ", " persone.", "Reagisci ", " Reel da ", "🚫 Togli ", " cerchi.", "Reel di ", "Colore ", "Piani (", " posti.", " ora fa", "Invita ", " ore fa", " min fa", "Ciao! ", ", da ", " (tu)"];
+  var RX = [[/(\d+) nuovi\b/g, '$1 new', '$1 nuevos'], [/(\d+) nuovo\b/g, '$1 new', '$1 nuevo'], [/(\d+) di (\d+) post[oi] usati\./g, '$1 of $2 spots used.', '$1 de $2 plazas usadas.'], [/^da ([A-ZÀ-Ú])/, 'by $1', 'de $1'], [/^ha mandato (\d+) Reel$/, 'sent $1 Reels', 'ha enviado $1 Reels'], [/^(\d+) di (\d+)/, '$1 of $2', '$1 de $2']];
   var lang = 'it';
   try { var s = localStorage.getItem('lxlang'); if (s === 'it' || s === 'en' || s === 'es') lang = s; else { var n = String(navigator.language || 'it').slice(0, 2).toLowerCase(); lang = n === 'it' ? 'it' : n === 'es' ? 'es' : 'en'; } } catch (e) {}
   var ix = lang === 'en' ? 0 : lang === 'es' ? 1 : -1;
