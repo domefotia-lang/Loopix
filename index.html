@@ -730,7 +730,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod" id="decM" role="dialog" aria-modal="true" aria-labelledby="decT"><div class="card">
   <h2 id="decT">Decidete insieme</h2>
-  <p id="decP">Ti va? Se piace anche all’altra persona, è un match.</p>
+  <p id="decP">Ti va? Se piace anche all’altra persona, lo organizzate insieme.</p>
   <div id="decC"></div>
   <div class="decbtns" id="decB"><button type="button" id="decNo">👋 Passo</button><button type="button" id="decSi">😍 Sì!</button></div>
   <button class="btn-o wide" id="decX" style="margin-top:12px">Chiudi</button>
@@ -1101,7 +1101,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v88', errLog = [];
+var APP_VER = 'v89', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2751,7 +2751,7 @@ function decOpen() { $('decM').classList.add('open'); decShow(); }
 function decShow() {
   var c = $('decC'), q = toDecide(); c.className = ''; c.textContent = ''; decCur = q[0] || null;
   $('decB').hidden = !decCur;
-  if (!decCur) { c.appendChild(el('div', 'e', '🎉')); c.appendChild(el('h3', null, 'Fatto!')); c.appendChild(el('p', null, 'Hai risposto a tutti i piani. I match li trovi in cima ai Piani.')); return; }
+  if (!decCur) { c.appendChild(el('div', 'e', '🎉')); c.appendChild(el('h3', null, 'Fatto!')); c.appendChild(el('p', null, 'Hai risposto a tutti i piani. Quelli che piacciono a tutti e due li trovi in cima ai Piani.')); return; }
   c.appendChild(el('div', 'e', (KINDS[decCur.k] || '💡').split(' ')[0]));
   c.appendChild(el('h3', null, decCur.p));
   if (decCur.o) c.appendChild(el('p', null, decCur.o));
@@ -2770,7 +2770,7 @@ function matchIn(i) {
   var seen = get('imatch', {}); if (seen[i.id]) return; seen[i.id] = 1; put('imatch', seen);
   try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
   var c = $('decC'), m = $('decM'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
-  c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, 'È un match!'));
+  c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, (circleSize() > 2 ? 'Siete tutti d’accordo!' : 'Siete d’accordo!')));
   c.appendChild(el('p', null, (circleSize() > 2 ? 'Lo volete tutti: ' : 'Lo volete entrambi: ') + i.p));
   var go = el('button', 'btn', '📅 Scegliamo quando'); go.style.marginTop = '14px'; go.onclick = function () { m.classList.remove('open'); showPane('ideas'); pickDay(i); };
   c.appendChild(go);
@@ -2812,7 +2812,7 @@ function planNudge() {
   put('inudge', Date.now());
   var t, b;
   if (soon.length) { t = '📅 ' + soon[0].p; b = soon[0].w === today ? 'È oggi! Tutto pronto?' : '📅 ' + fmtDay(soon[0].w) + ' · Tutto pronto?'; }
-  else if (dec.length) { t = '💘 ' + (dec.length === 1 ? '1 piano aspetta' : dec.length + ' piani aspettano') + ' il tuo sì'; b = 'Ci metti 10 secondi: sì o passo, e scoprite i match.'; }
+  else if (dec.length) { t = '💘 ' + (dec.length === 1 ? '1 piano aspetta' : dec.length + ' piani aspettano') + ' il tuo sì'; b = 'Ci metti 10 secondi: sì o passo, e scoprite cosa vi piace a tutti e due.'; }
   else { t = '💡 ' + (old.length === 1 ? '1 piano è fermo' : old.length + ' piani sono fermi') + ' da un po’'; b = '“' + old[0].p + '” e gli altri: scegliete una data, così succede davvero.'; }
   if (document.querySelector('.mod.open')) { put('inudge', 0); return; }
   ask(t, b, dec.length && !soon.length ? 'Decidiamo' : 'Vedi i piani').then(function (y) { if (!y) return; showPane('ideas'); if (dec.length && !soon.length) decOpen(); });
@@ -2820,7 +2820,7 @@ function planNudge() {
 function ideaGuide() {
   var g = el('div', 'iempty');
   g.appendChild(el('h3', null, 'Dai Reel ai piani'));
-  var ol = el('ol'); ['🎬 Vedete un Reel che vi piace', '✨ Toccate Piano sotto il video', '💘 Dite sì o passo: se piace a entrambi è un match', '📅 Scegliete la data e mettetela in calendario'].forEach(function (t) { ol.appendChild(el('li', null, t)); }); g.appendChild(ol);
+  var ol = el('ol'); ['🎬 Vedete un Reel che vi piace', '✨ Toccate Piano sotto il video', '💘 Dite sì o passo: se piace a entrambi, si fa', '📅 Scegliete la data e mettetela in calendario'].forEach(function (t) { ol.appendChild(el('li', null, t)); }); g.appendChild(ol);
   var ex = el('div', 'card idea ex'); ex.appendChild(el('span', 'tag', 'ESEMPIO'));
   ex.appendChild(el('div', 'k', KINDS.viaggio)); ex.appendChild(el('h3', null, 'Weekend a Lisbona'));
   var ac = el('div', 'acts'); ['👍 2', '📍 Mappa', '✈️ Voli', '🏨 Hotel'].forEach(function (t) { ac.appendChild(el('span', 'r-btn', t)); }); ex.appendChild(ac);
