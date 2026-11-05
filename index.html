@@ -214,6 +214,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 /* TikTok: il lettore va nella forma esatta del video (9:16), altrimenti TikTok riempie i lati con una copia sfocata */
 .item .mwrap>iframe.tt,.stage .mwrap>iframe.tt{flex:none;height:100%;width:auto;aspect-ratio:9/16;max-width:100%;margin:0 auto;align-self:center}
 .item .mwrap.ttw,.stage .mwrap.ttw{justify-content:center}
+.mutb{position:absolute;right:12px;bottom:12px;z-index:4;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);cursor:pointer;padding:0}
 .ovl{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;gap:6px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 13px;min-height:36px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .igcrop{flex:1;min-height:74dvh;width:calc(100% + 28px);margin:0 -14px;overflow:hidden;position:relative;background:#fff}
 .igcrop iframe{position:absolute;left:0;top:-60px;width:100%;height:calc(100% + 60px);min-height:0;margin:0;border:0;border-radius:0;background:#fff}
@@ -1013,7 +1014,24 @@ var incoming = null;
 
 /* ---- link e incorporamento ---- */
 function safeUrl(u) { try { var x = new URL(String(u).trim()); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
-function yt(id) { return 'https://www.youtube.com/embed/' + id + '?playsinline=1'; }
+// 🔊/🔇 come su Instagram: vale per tutti i video che lo permettono (YouTube, TikTok, Vimeo) e se lo ricorda
+var vMuted = false; try { vMuted = localStorage.getItem(LSG + 'mute') === '1'; } catch (e) {}
+function muteLabel(b) { b.textContent = vMuted ? '🔇' : '🔊'; b.setAttribute('aria-label', vMuted ? 'Attiva l’audio' : 'Togli l’audio'); }
+function muteFrame(fr) {
+  var s = fr.src || '', w = fr.contentWindow; if (!w) return;
+  try {
+    if (/youtube\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: vMuted ? 'mute' : 'unMute', args: [] }), '*');
+    else if (/tiktok\.com\/player/.test(s)) w.postMessage({ type: vMuted ? 'mute' : 'unMute', value: null, 'x-tiktok-player': true }, '*');
+    else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: 'setVolume', value: vMuted ? 0 : 1 }), '*');
+  } catch (e) {}
+}
+function muteAll(on) {
+  vMuted = !!on; try { localStorage.setItem(LSG + 'mute', vMuted ? '1' : '0'); } catch (e) {}
+  document.querySelectorAll('.mutb').forEach(muteLabel);
+  document.querySelectorAll('.mwrap iframe').forEach(muteFrame);
+  document.querySelectorAll('.item video, .stage video').forEach(function (v) { v.muted = vMuted; });
+}
+function yt(id) { return 'https://www.youtube.com/embed/' + id + '?playsinline=1&enablejsapi=1' + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : ''); }
 function isIOSdev() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 function embedFor(u) {
   var x, m; try { x = new URL(u); } catch (e) { return null; }
@@ -1101,7 +1119,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v89', errLog = [];
+var APP_VER = 'v90', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1262,7 +1280,7 @@ function mediaRaw(r, pl) {
   }
   if (src) {
     if (pl && /tiktok\.com\/player/.test(src)) src += '&autoplay=1';
-    if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1&enablejsapi=1' + (isIOSdev() ? '&mute=1' : '') + (/^http/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    if (pl && /youtube\.com\/embed/.test(src)) src += '&autoplay=1' + (isIOSdev() ? '&mute=1' : '');
     // nel lettore partono da soli dove la piattaforma lo permette (su iPhone senza audio: un tocco per sentirlo)
     if (pl && /player\.vimeo\.com/.test(src)) src += (src.indexOf('?') < 0 ? '?' : '&') + 'autoplay=1&muted=1';
     if (pl && /dailymotion\.com\/embed/.test(src)) src += (src.indexOf('?') < 0 ? '?' : '&') + 'autoplay=1&mute=1';
@@ -1279,6 +1297,10 @@ function mediaRaw(r, pl) {
     var ov = el('a', 'ovl'); ov.href = r.u; ov.target = '_blank'; ov.rel = 'noopener noreferrer'; ov.setAttribute('aria-label', 'Apri il video originale');
     ov.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
     ov.appendChild(document.createTextNode('Apri')); wrap.appendChild(ov);
+    if (/youtube\.com\/embed|tiktok\.com\/player|player\.vimeo\.com/.test(src)) {
+      var mb = el('button', 'mutb'); mb.type = 'button'; muteLabel(mb); mb.onclick = function (e) { e.stopPropagation(); muteAll(!vMuted); }; wrap.appendChild(mb);
+      fr.addEventListener('load', function () { setTimeout(function () { muteFrame(fr); }, 600); setTimeout(function () { muteFrame(fr); }, 1800); });
+    }
     return wrap;
   }
   var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'linkedin.com': 'LinkedIn', 'lnkd.in': 'LinkedIn', 'twitch.tv': 'Twitch', 'clips.twitch.tv': 'Twitch', 'open.spotify.com': 'Spotify', 'spotify.link': 'Spotify', 'snapchat.com': 'Snapchat', 't.snapchat.com': 'Snapchat', 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
