@@ -967,7 +967,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v73', errLog = [];
+var APP_VER = 'v74', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -978,7 +978,7 @@ function bugText() {
     '🛠️ Problema su Reelta', '', 'Cosa è successo: ' + (clean($('bugI').value, 500) || '(non descritto)'), '',
     '— Dettagli tecnici —',
     'Versione: ' + APP_VER + ' · ' + new Date().toLocaleString('it-IT'),
-    'Schermo: ' + innerHeight + '/' + screen.height + ' app ' + getComputedStyle(document.documentElement).getPropertyValue('--apph') + ' sa ' + (navigator.standalone === true) + ' top ' + (($('saProbe') || {}).offsetHeight || 0),
+    'Schermo: ' + (scrSnap || scrNow()),
     'Telefono: ' + dev + (sa ? ' · app dalla Home' : ' · nel browser'),
     'Cerchio: ' + (me ? (me.role === 'host' ? 'creatore · ' + kindName(me.kind) + ' · ospiti ' + Object.keys(allowed).length + '/' + cap() : 'ospite') : 'nessuno') + ' · cerchi: ' + REG.list.length,
     'Collegato: ' + (live ? 'sì' : 'no') + (blocked ? ' (bloccato)' : '') + ' · Reel: ' + feed.length + ' · messaggi: ' + msgs.length,
@@ -988,7 +988,12 @@ function bugText() {
   ];
   return lines.join('\n');
 }
-function openBug() { $('bugI').value = ''; $('bugH').textContent = ''; $('bugM').classList.add('open'); setTimeout(function () { $('bugI').focus(); }, 60); }
+var scrSnap = '';
+function scrNow() {
+  var r = function (q) { var x = document.querySelector(q); if (!x || !x.offsetParent && q !== '.app') return '-'; var b = x.getBoundingClientRect(); return Math.round(b.top) + '-' + Math.round(b.bottom); };
+  return innerHeight + '/' + screen.height + ' vv ' + (window.visualViewport ? Math.round(visualViewport.height) + '@' + Math.round(visualViewport.offsetTop) : '-') + ' apph ' + getComputedStyle(document.documentElement).getPropertyValue('--apph').trim() + ' app ' + r('.app') + ' tabs ' + r('#tabs') + ' html ' + document.documentElement.clientHeight + ' top ' + (($('saProbe') || {}).offsetHeight || 0) + ' sa ' + (navigator.standalone === true);
+}
+function openBug() { scrSnap = scrNow(); $('bugI').value = ''; $('bugH').textContent = ''; $('bugM').classList.add('open'); setTimeout(function () { $('bugI').focus(); }, 60); }
 /* ---- segnala e silenzia ---- */
 var muted = get('muted', []), reps = get('reps', []);
 function isMuted(n) { return muted.indexOf(n) >= 0; }
