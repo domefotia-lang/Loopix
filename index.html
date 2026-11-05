@@ -550,8 +550,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <ol class="steps" style="margin:6px 0 12px">
     <li><span class="n">1</span><span>Manda l’invito a chi vuoi (basta un tocco qui sotto).</span></li>
     <li><span class="n">2</span><span>Lei/lui apre il link e scrive il suo nome.</span></li>
-    <li><span class="n">3</span><span>Entra da solo nel cerchio. Tieni Reelta aperta mentre lo fa.</span></li>
+    <li><span class="n">3</span><span>Entra da solo nel cerchio, anche se tu hai Reelta chiusa.</span></li>
   </ol>
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px"><span style="font-weight:700;margin-right:2px">Lingua dell’invito:</span><span id="invL" data-nt style="display:flex;gap:6px"></span></div>
   <button class="btn" id="invWA">💬 Invia su WhatsApp</button>
   <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
   <button class="btn-o wide" id="invCp" style="margin-top:8px">📋 Copia invito</button>
@@ -870,7 +871,7 @@ function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c
 function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
 
 var me = get('me', null), feed = get('feed', []), outbox = get('outbox', []), peer = null, conns = [], hostConn = null, names = [], retry = null;
-var joinId = /^#j=([\w-]{8,100})$/.exec(location.hash) || /[?&]j=([\w-]{8,100})(?:&|$)/.exec(location.search);
+var joinId = /^#j=([\w-]{8,100})(?:&|$)/.exec(location.hash) || /[?&]j=([\w-]{8,100})(?:&|$)/.exec(location.search);
 joinId = joinId ? joinId[1] : null;
 var incoming = null;
 (function () {
@@ -972,7 +973,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v76', errLog = [];
+var APP_VER = 'v77', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1736,10 +1737,20 @@ function hostHi(c, d) {
           accept();
         });
 }
-function link() { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c; }
+function invLang() { var v = ''; try { v = localStorage.getItem(LSG + 'invLang') || ''; } catch (e) {} return /^(it|en|es)$/.test(v) ? v : (window.LX_LANG || 'it'); }
+function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : ''); }
+function invLangUI() {
+  var box = $('invL'); if (!box) return; box.textContent = '';
+  [['it', '🇮🇹 Italiano'], ['en', '🇬🇧 English'], ['es', '🇪🇸 Español']].forEach(function (x) {
+    var b = el('button', 'chip', x[1]); b.type = 'button'; b.style.padding = '6px 10px'; b.setAttribute('aria-pressed', String(invLang() === x[0]));
+    b.onclick = function () { try { localStorage.setItem(LSG + 'invLang', x[0]); } catch (e) {} invLangUI(); };
+    box.appendChild(b);
+  });
+}
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
-  return (window.LX_T || String)('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link() + '\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ' + sc);
+  var lg = invLang(), T = lg === 'it' ? String : (window.LX_TL ? function (x) { return window.LX_TL(x, lg); } : (window.LX_T || String));
+  return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ' + sc + (lg !== 'it' ? '?l=' + lg : ''));
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -1757,10 +1768,10 @@ function invite() {
     return;
   }
   var left = cap() - Object.keys(allowed).length;
-  if (left <= 0) { $('invT').textContent = 'Rimanda l’invito'; $('invS').textContent = 'Mandalo a chi è già nel cerchio: aprendolo si ricollega. Il link vale 24 ore.'; $('invH').textContent = ''; $('invM').classList.add('open'); return; }
+  if (left <= 0) { $('invT').textContent = 'Rimanda l’invito'; $('invS').textContent = 'Mandalo a chi è già nel cerchio: aprendolo si ricollega. Il link vale 24 ore.'; $('invH').textContent = ''; invLangUI(); $('invM').classList.add('open'); return; }
   $('invT').textContent = 'Invita ' + (me.kind === 'group' || me.kind === 'big' ? 'qualcuno nel gruppo' : 'la tua persona');
   $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 24 ore.';
-  $('invH').textContent = ''; $('invM').classList.add('open');
+  $('invH').textContent = ''; invLangUI(); $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
 // Apre direttamente l'app WhatsApp (dall'app sulla Home l'indirizzo wa.me resta bloccato su una pagina bianca)
