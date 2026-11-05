@@ -1,4 +1,4 @@
-var C='loopix-v85',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.webp', 'lang.js'];
+var C='loopix-v86',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.webp', 'lang.js'];
 // installa la versione nuova scaricando i file freschi (non dalla cache del browser)
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return Promise.all(F.map(function(f){return fetch(f,{cache:'reload'}).then(function(r){if(r.ok)return c.put(f,r)})}))}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});

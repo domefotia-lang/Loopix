@@ -111,6 +111,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .duo{display:flex;gap:8px;padding:2px 14px 8px}
 .duo .btn{flex:1.4;min-height:50px;font-size:16px;padding:12px}
 .duo .btn-o{flex:1}
+.nov{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 14px 8px}.nov .chip{padding:7px 12px;font-size:13px;font-weight:700}.nov .ok{font-size:13px;font-weight:700;color:var(--m);margin-right:4px}
 .fw{flex:1;min-height:0;position:relative;display:flex}
 .feed{flex:1;min-width:0;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain}
 .item{min-height:100%;scroll-snap-align:start;display:flex;flex-direction:column;gap:10px;padding:10px 14px 16px}
@@ -444,6 +445,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <section class="pane" id="main">
   <div class="strip" hidden><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
   <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>Insieme</button></div>
+  <div class="nov" id="nov" hidden></div>
   <div class="svy" id="svy" hidden></div>
   <div class="fw"><div class="feed" id="feed" tabindex="0" aria-label="Feed dei Reel"></div><button class="pill" id="nw" hidden></button></div>
   <div class="comp">
@@ -1013,7 +1015,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v85', errLog = [];
+var APP_VER = 'v86', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1391,7 +1393,7 @@ function addReel(r, mine) {
   if (isMuted(n.n)) { seqLabel(); return true; }
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
-  else { noteIn('reel', n.n, n.c); unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; }
+  else { noteIn('reel', n.n, n.c); if (node.offsetTop > box.scrollTop + box.clientHeight * 0.6) { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; } }
   seqLabel();
   return true;
 }
@@ -1450,7 +1452,27 @@ function newCount() { return feed.filter(function (r) { return !seen[r.id] && !i
 function seqLabel() {
   appBadge();
   var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length;
-  b.textContent = n ? '▶  Guarda ' + n + (n === 1 ? ' nuovo' : ' nuovi') : '▶  Rivedi tutti';
+  var who = []; feed.forEach(function (r) { if (!seen[r.id] && !isMuted(r.n) && r.n !== me.name && who.indexOf(r.n) < 0) who.push(r.n); });
+  b.textContent = n ? '▶  ' + n + (n === 1 ? ' nuovo' : ' nuovi') + (who.length === 1 ? ' da ' + who[0] : '') : '▶  Rivedi tutti';
+  renderNov();
+}
+// striscia "Novità": appena apri, cosa c'è di nuovo per te (un tocco porta al punto giusto)
+function unreadMsgs() { var at = +get('chatAt', 0); return msgs.filter(function (m) { return m.n !== me.name && m.ts > at && !isMuted(m.n); }).length; }
+function renderNov() {
+  var box = $('nov'); if (!box || !me) return; box.textContent = '';
+  var chip = function (t, f) { var c = el('button', 'chip', t); c.onclick = f; box.appendChild(c); };
+  var um = unreadMsgs(), dec = typeof toDecide === 'function' ? toDecide().length : 0, today = new Date(); today.setHours(0, 0, 0, 0);
+  var soon = ideas.filter(function (i) { if (!i.w || i.d) return false; var d = (new Date(i.w + 'T00:00:00') - today) / 864e5; return d >= 0 && d <= 3; }).sort(function (a, b) { return a.w < b.w ? -1 : 1; })[0];
+  if (um) chip('💬 ' + um + (um === 1 ? ' messaggio' : ' messaggi'), function () { showPane('chat'); });
+  if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
+  if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
+  if (!um && !dec && !soon && !newCount()) {
+    if (!feed.length) { box.hidden = true; return; }
+    box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
+    chip('📋 Manda un Reel', function () { $('paste').click(); });
+    if (Object.keys(keeps).length) chip('⭐ Rivedi i tenuti', function () { fview = 'keep'; render(); });
+  }
+  box.hidden = !box.children.length;
 }
 function pbuild(r) {
   var bar = $('pr'); bar.textContent = '';
@@ -2060,15 +2082,16 @@ function showPane(id) {
   tab = id;
   document.querySelectorAll('#tabs button[data-p]').forEach(function (b) { if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
-  if (id === 'chat') { chatSeen = 0; chatTab(); renderChat(); }
+  if (id === 'chat') { chatSeen = 0; put('chatAt', Date.now()); chatTab(); renderChat(); renderNov(); }
   if (id === 'circle') renderCircle();
   if (id === 'style') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;
+if (!get('chatAt', 0)) put('chatAt', Date.now());
 function appBadge() {
   try { var n = (typeof newCount === 'function' ? newCount() : 0) + (chatSeen || 0); if (!navigator.setAppBadge) return; if (n > 0) navigator.setAppBadge(n).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); } catch (e) {}
 }
-function chatTab() { appBadge(); $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
+function chatTab() { appBadge(); if (tab !== 'chat') renderNov(); $('tChat').textContent = chatSeen ? 'Messaggi (' + chatSeen + ')' : 'Messaggi'; }
 var lastSeenSent = 0;
 function rcptOn() { return get('rcpt', null) === null ? !get('riserv', 0) : !!get('rcpt', 1); }
 function ttlMs() { return +get('ttl', 0) || 0; }
@@ -2582,6 +2605,7 @@ function linksFor(i) {
   return L;
 }
 function renderIdeas() {
+  renderNov();
   var ch = $('ichips'); ch.textContent = '';
   [['tutte', 'Tutte'], ['viaggio', '✈️ Posti'], ['compra', '🛍️ Da comprare'], ['cibo', '🍝 Da mangiare'], ['esperienza', '🎟️ Da fare'], ['ricetta', '👨‍🍳 Ricette'], ['fatte', '✓ Fatte']].forEach(function (f) {
     var b = el('button', 'chip', f[1]); b.setAttribute('aria-pressed', String(ifilter === f[0])); b.onclick = function () { ifilter = f[0]; renderIdeas(); }; ch.appendChild(b);
@@ -3121,7 +3145,9 @@ var inBrowser = (isIOS || isAndroid) && !isStandalone;
 var seenBanner = false; try { seenBanner = sessionStorage.getItem('lx-banner') === '1'; } catch (e) {}
 if (inBrowser) {
   $('ios').querySelector('span').innerHTML = isIOS
-    ? '⚠️ <b>Stai usando Reelta in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
+    ? (me && me.role !== 'host'
+      ? '⚠️ <b>Stai usando Reelta in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> (sugli iPhone recenti è nel tasto <b>≡</b> accanto all’indirizzo) → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
+      : '⚠️ <b>Stai usando Reelta in Safari.</b> Mettila prima sulla Home: tocca <b>Condividi ⬆</b> (sugli iPhone recenti è nel tasto <b>≡</b> accanto all’indirizzo) → <b>“Aggiungi alla schermata Home”</b>. Poi aprila dall’icona e crea lì il tuo cerchio: quello creato qui in Safari resta solo qui.')
     : /SamsungBrowser/i.test(navigator.userAgent)
     ? '⚠️ <b>Con Samsung Internet l’installazione può essere bloccata per errore.</b> Apri Reelta in <b>Chrome</b> e lì: menu <b>⋮</b> → <b>“Installa app”</b>. <a id="toChrome" style="color:inherit;font-weight:800">Apri in Chrome ›</a>'
     : '⚠️ <b>Stai usando Reelta nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
