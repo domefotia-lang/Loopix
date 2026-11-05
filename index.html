@@ -576,7 +576,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <h2 id="bugT">Segnala un problema</h2>
   <p style="margin-top:0">Scrivi in due parole cosa è successo. Aggiungo io i dettagli tecnici (niente Reel, messaggi o chiavi).</p>
   <textarea id="bugI" rows="3" maxlength="500" placeholder="Es. tocco Incolla ma non succede niente" style="width:100%;border-radius:16px;padding:10px 12px;font:inherit;border:1px solid var(--line);background:var(--s1);color:var(--t)"></textarea>
-  <button class="btn" id="bugWA" style="margin-top:10px">💬 Manda su WhatsApp</button>
+  <div id="bugFix" hidden style="margin:10px 0 0"><p style="margin:0 0 6px;font-weight:700">Prima prova queste soluzioni rapide:</p><div id="bugFixL" style="display:flex;flex-direction:column;gap:8px"></div></div>
+  <button class="btn" id="bugSend" style="margin-top:10px">📨 Invia a Reelta</button>
+  <button class="btn-o wide" id="bugWA" style="margin-top:8px">💬 Oppure manda su WhatsApp</button>
   <button class="btn-o wide" id="bugCp" style="margin-top:8px">📋 Copia il testo</button>
   <div class="hint" id="bugH" aria-live="polite"></div>
   <button class="btn-o wide" id="bugX" style="margin-top:8px">Chiudi</button>
@@ -967,7 +969,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v74', errLog = [];
+var APP_VER = 'v75', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -993,7 +995,39 @@ function scrNow() {
   var r = function (q) { var x = document.querySelector(q); if (!x || !x.offsetParent && q !== '.app') return '-'; var b = x.getBoundingClientRect(); return Math.round(b.top) + '-' + Math.round(b.bottom); };
   return innerHeight + '/' + screen.height + ' vv ' + (window.visualViewport ? Math.round(visualViewport.height) + '@' + Math.round(visualViewport.offsetTop) : '-') + ' apph ' + getComputedStyle(document.documentElement).getPropertyValue('--apph').trim() + ' app ' + r('.app') + ' tabs ' + r('#tabs') + ' html ' + document.documentElement.clientHeight + ' top ' + (($('saProbe') || {}).offsetHeight || 0) + ' sa ' + (navigator.standalone === true);
 }
-function openBug() { scrSnap = scrNow(); $('bugI').value = ''; $('bugH').textContent = ''; $('bugM').classList.add('open'); setTimeout(function () { $('bugI').focus(); }, 60); }
+// soluzioni rapide: i problemi più comuni si sistemano da soli, senza scrivere a nessuno
+function bugFixes() {
+  var L = $('bugFixL'), add = function (t, f) { var b = el('button', 'btn-o wide', t); b.style.margin = '0'; b.onclick = function () { f(b); }; L.appendChild(b); };
+  L.textContent = ''; $('bugFix').hidden = true;
+  var show = function () { $('bugFix').hidden = !L.children.length; };
+  if (me) {
+    var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
+    var others = me.role === 'host' ? Object.keys(allowed).length : (names.length > 1 || me.joined ? 1 : 0);
+    if (!live && others && me.role === 'host') add('🔗 Non vi collegate? Rimanda l’invito', function () { $('bugM').classList.remove('open'); invite({ again: true }); });
+    if (!live && others && me.role !== 'host') add('🔄 Riprova a collegarti adesso', function (b) { b.disabled = true; b.textContent = '🔄 Ci provo…'; if (srvOn()) { mbPull(true); if (!me.joined || me.rejoin) srvJoin(); } try { again(); } catch (e) {} setTimeout(function () { b.textContent = 'Fatto: se non basta, chiedi un nuovo invito a chi ha creato il cerchio.'; }, 2500); });
+    if (srvOn() && pushOK() && Notification.permission === 'default') add('🔔 Attiva le notifiche', function (b) { pushAsk().then(function () { b.textContent = Notification.permission === 'granted' ? '🔔 Notifiche attive ✓' : '🔔 Non attivate: puoi farlo nelle impostazioni del telefono'; }); });
+  }
+  show();
+  fetch('index.html?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+    var v = (/var APP_VER = '(v\d+)'/.exec(t) || [])[1];
+    if (v && v !== APP_VER) { add('⬆️ C’è una versione nuova (' + v + '): aggiorna', function () { try { navigator.serviceWorker && navigator.serviceWorker.getRegistration().then(function (r) { if (r) r.update(); }); } catch (e) {} setTimeout(function () { location.reload(); }, 600); }); show(); }
+  }).catch(function () {});
+}
+var DEVBOX = 'reeltaDevAlerts_v1_7Hq2xP9mL4nB8sK3';
+function bugSend() {
+  var txt = clean($('bugI').value, 500);
+  if (!txt) { $('bugH').textContent = 'Scrivi prima in due parole cosa è successo.'; $('bugI').focus(); return; }
+  if (!FEEDBACK.url || !FEEDBACK.anon) { $('bugH').textContent = 'Invio non disponibile: usa WhatsApp o copia il testo.'; return; }
+  $('bugSend').disabled = true; $('bugH').textContent = 'Invio…';
+  fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' },
+    body: JSON.stringify({ survey: 'bug', code: me && me.hostId ? me.hostId.slice(-6) : '', data: { testo: txt, dettagli: bugText().split('\n').slice(5), versione: APP_VER, lingua: window.LX_LANG || 'it' } }) })
+    .then(function (r) { if (!r.ok) throw 0;
+      try { mbCall({ a: 'put', box: DEVBOX, sender: 'bug', payload: 'bug', notify: true }).catch(function () {}); } catch (e) {}
+      $('bugH').textContent = '✓ Inviata a Reelta. Grazie! Se serve una risposta, te la diamo nel prossimo aggiornamento.'; $('bugI').value = ''; })
+    .catch(function () { $('bugH').textContent = 'Non è partita: controlla la connessione, oppure mandala su WhatsApp.'; })
+    .then(function () { $('bugSend').disabled = false; });
+}
+function openBug() { scrSnap = scrNow(); bugFixes(); $('bugI').value = ''; $('bugH').textContent = ''; $('bugM').classList.add('open'); setTimeout(function () { $('bugI').focus(); }, 60); }
 /* ---- segnala e silenzia ---- */
 var muted = get('muted', []), reps = get('reps', []);
 function isMuted(n) { return muted.indexOf(n) >= 0; }
@@ -1580,13 +1614,23 @@ function pushBoxes() {
   if (me.role === 'host') return Promise.all(Object.keys(allowed).map(function (k) { return mbBox(k, 'h'); }).concat(codesNow().map(function (x) { return mbBox(me.hostId + '_' + x.c, 'j'); })));
   return me.tok ? mbBox(me.tok, 'g').then(function (b) { return [b]; }) : Promise.resolve([]);
 }
+function pushBoxesAll() { return pushBoxes().then(function (L) { return isDev ? L.concat([DEVBOX]) : L; }); }
+// telefono sviluppatore: avvisa delle nuove segnalazioni (i testi restano sul server, li legge chi gestisce Reelta)
+function devAlerts() {
+  if (!isDev || !srvOn()) return;
+  mbCall({ a: 'get', box: DEVBOX }).then(function (res) {
+    var it = (res && res.items) || []; if (!it.length) return;
+    mbCall({ a: 'ack', box: DEVBOX, upto: it[it.length - 1].id }).catch(function () {});
+    ask('🛠️ ' + (it.length === 1 ? '1 nuova segnalazione' : it.length + ' nuove segnalazioni'), 'Qualcuno ha segnalato un problema dall’app. Chiedi a Claude: «leggi le segnalazioni di Reelta».', 'Ok');
+  }).catch(function () {});
+}
 function pushSync() {
   if (!pushOK() || Notification.permission !== 'granted' || !me) return Promise.resolve(false);
   return navigator.serviceWorker.ready.then(function (reg) {
     return reg.pushManager.getSubscription().then(function (sub) { return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: mbDec(SRV.vapid) }); });
   }).then(function (sub) {
     var js = sub.toJSON(), lang = window.LX_LANG || 'it';
-    return pushBoxes().then(function (bs) { return Promise.all(bs.map(function (b) { return mbCall({ a: 'sub', box: b, sub: js, lang: lang }); })); });
+    return pushBoxesAll().then(function (bs) { return Promise.all(bs.map(function (b) { return mbCall({ a: 'sub', box: b, sub: js, lang: lang }); })); });
   }).then(function () { return true; }, function () { return false; });
 }
 function pushAsk() {
@@ -1637,6 +1681,7 @@ function srvStart() {
   if (!srvOn() || !me) return;
   if (me.rejoin && Date.now() - me.rejoin > 2 * 864e5) { delete me.rejoin; put('me', me); }
   setTimeout(function () { mbPull(true); }, 1500);
+  setTimeout(devAlerts, 5000); document.addEventListener('visibilitychange', function () { if (!document.hidden) devAlerts(); });
   if (me.role !== 'host' && (!me.joined || me.rejoin)) setTimeout(function () { if (!me.joined || me.rejoin) srvJoin(); }, me.rejoin ? 1500 : 7000);
   if (pushOK() && Notification.permission === 'granted') pushSync();
   else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
@@ -2737,6 +2782,7 @@ $('bug').addEventListener('click', openBug);
 $('ttlS').addEventListener('change', function () { var v = +$('ttlS').value || 0; put('ttl', v); cast({ t: 'cfg', ttl: v }); pruneMsgs(); renderChat(true); $('ch').textContent = v ? 'Fatto: i messaggi si cancelleranno da soli per tutti.' : 'Fatto: i messaggi restano finché non li cancellate.'; });
 $('bugX').addEventListener('click', function () { $('bugM').classList.remove('open'); });
 $('bugWA').addEventListener('click', function () { openWA(bugText(), function () {}, function () { $('bugH').textContent = 'WhatsApp non si è aperto, ma il testo è copiato: incollalo in un messaggio.'; }); $('bugH').textContent = 'Si è aperto WhatsApp: mandalo a chi ti ha invitato (o a chi gestisce Reelta).'; });
+$('bugSend').addEventListener('click', bugSend);
 $('bugCp').addEventListener('click', function () { var t = bugText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('bugH').textContent = 'Copiato ✓ Incollalo in un messaggio.'; }, function () { $('bugH').textContent = t; }); else $('bugH').textContent = t; });
 $('bkS').addEventListener('click', function () { bkSave().catch(function () { $('bkH').textContent = 'Non sono riuscito a creare la copia.'; }); });
 function pickBackup() { $('bkF').value = ''; $('bkF').click(); }
