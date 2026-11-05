@@ -325,6 +325,7 @@ html.light body{background:radial-gradient(110% 50% at 50% -8%,#F1E2D4 0%,var(--
 .light .mod.lock{background:var(--bg)}
 .light .cd{background:rgba(249,245,240,.8)}
 .light .link,.light .cpanel,.light .cm{background:var(--s1)}
+.light .stage .link{background:#1c1612;color:#d9cdbf}.light .stage .link>div:first-child{color:#f6ecdf}
 .light .danger{color:#B23B2B;background:rgba(178,59,43,.07);border-color:rgba(178,59,43,.2)}
 .light .star,.light .steps .n{color:#fff}
 .light .on .badge{color:var(--cy)}
@@ -392,9 +393,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <p id="sP">Tu e una persona, in privato.</p>
     <div id="kindBox" role="group" aria-label="Tipo di cerchio"><p style="margin:0 0 6px"><b>Che cerchio vuoi creare?</b></p>
       <div class="chips" style="padding:0 0 10px;flex-wrap:wrap">
-        <button type="button" class="chip" id="kC" aria-pressed="true">💑 Coppia (2 persone)</button>
-        <button type="button" class="chip" id="kG" aria-pressed="false">👥 Gruppo da 3</button>
-        <button type="button" class="chip" id="kB" aria-pressed="false" hidden>🌟 Gruppo grande (fino a 10)</button>
+        <button type="button" class="chip" id="kC" aria-pressed="true">•• Duo (2 persone)</button>
+        <button type="button" class="chip" id="kG" aria-pressed="false">∴ Trio (3 persone)</button>
+        <button type="button" class="chip" id="kB" aria-pressed="false" hidden>∷ Gruppo (fino a 10)</button>
       </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
     <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Incolla l’invito che hai ricevuto</button>
@@ -449,9 +450,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
-  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
+  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (Duo o Trio)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" style="margin-top:0" id="refGo">💌 Consiglia Reelta a un’altra coppia</button></div>
+  <div class="card"><button class="btn-o wide" style="margin-top:0" id="refGo">💌 Consiglia Reelta ad altre persone</button></div>
 
 </div></section>
 
@@ -509,7 +510,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
   <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
   <div class="card plus"><h2>Gratis per sempre</h2>
-    <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Una coppia e un gruppo da 3, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
+    <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Un Duo e un Trio, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
     <h2 style="margin-top:14px">In arrivo con Reelta Plus</h2>
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
@@ -531,7 +532,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <h2 id="imT">Come funziona</h2>
   <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
   <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 24 ore. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
-  <p>• <b>Cerchi:</b> una coppia (2 persone) o un gruppo da 3, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
+  <p>• <b>Cerchi:</b> un Duo (2 persone) o un Trio (3 persone), separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
   <p>• <b>Chi crea il cerchio</b> è il centro e può togliere chi vuole. Se qualcuno non è collegato, Reel e messaggi lo aspettano sul server, cifrati: il server non può leggerli e li cancella appena consegnati.</p>
   <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
   <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Reelta. Quelle piattaforme possono registrare che li guardi.</p>
@@ -557,7 +558,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="invSh" style="margin-top:8px">📤 Altre app…</button>
   <button class="btn-o wide" id="invCp" style="margin-top:8px">📋 Copia invito</button>
   <div class="hint" id="invH" aria-live="polite" style="white-space:pre-wrap;word-break:break-all"></div>
-  <button class="btn-o wide" id="refGo2" style="margin-top:10px;font-size:14px">💌 Vuoi solo consigliare Reelta? Manda l’app a un’altra coppia</button>
+  <button class="btn-o wide" id="refGo2" style="margin-top:10px;font-size:14px">💌 Vuoi solo consigliare Reelta? Manda l’app ad altre persone</button>
   <button class="btn-o wide" id="invX" style="margin-top:8px">Chiudi</button>
 </div></div>
 
@@ -621,15 +622,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></div>
 <div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
   <h2 id="refT">Consiglia Reelta</h2>
-  <p>Manda l’app a un’altra coppia: crea la sua coppia, separata dalla vostra. Conta quando la usano davvero (almeno 3 Reel).</p>
+  <p>Manda l’app ad altre persone: creano il loro Duo, separato dal vostro. Conta quando la usano davvero (almeno 3 Reel).</p>
   <ol class="refl">
-    <li><b>1 coppia</b><span>1 mese di Stile: temi, effetti luce e suoni</span></li>
-    <li><b>3 coppie</b><span>Stile per sempre</span></li>
-    <li><b>5 coppie</b><span>3 mesi di “Riconosci dal video”</span></li>
-    <li><b>10 coppie</b><span>6 mesi di Reelta Plus completo</span></li>
+    <li><b>1 Duo</b><span>1 mese di Stile: temi, effetti luce e suoni</span></li>
+    <li><b>3 Duo</b><span>Stile per sempre</span></li>
+    <li><b>5 Duo</b><span>3 mesi di “Riconosci dal video”</span></li>
+    <li><b>10 Duo</b><span>6 mesi di Reelta Plus completo</span></li>
   </ol>
-  <p class="refn"><b>🏅 Traguardi da pioniere:</b> chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.</p>
-  <p class="refn">Anche la coppia che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: le coppie che consigli da oggi contano già.</p>
+  <p class="refn"><b>🏅 Traguardi da pioniere:</b> chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più Duo. Ogni anno i traguardi ripartono e potete vincerli di nuovo.</p>
+  <p class="refn">Anche il Duo che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: i Duo che consigli da oggi contano già.</p>
   <button class="btn" id="refSend">💌 Manda l’app</button><button class="btn-o wide" id="refNo">Chiudi</button>
 </div></div>
 
@@ -738,7 +739,7 @@ function canCreate(kind) {
   return hosted()[kind] < 1;
 }
 function canCreateAny() { return canCreate('couple') || canCreate('group') || canCreate('big'); }
-function kindName(k) { return k === 'big' ? 'Gruppo grande' : k === 'group' ? 'Gruppo da 3' : 'Coppia'; }
+function kindName(k) { return k === 'big' ? '∷ Gruppo' : k === 'group' ? '∴ Trio' : '•• Duo'; }
 function applyDev() {
   if ($('kB')) $('kB').hidden = !isDev;
   if ($('devC')) $('devC').hidden = !isDev;
@@ -826,8 +827,8 @@ function applyBackup(data) {
   return { added: added, skipped: skipped };
 }
 function goGroupInvite() {
-  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
-  var g = REG.list.filter(function (x) { return x.id !== REG.active && x.label === 'Gruppo da 3'; })[0];
+  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && (x.label === 'Gruppo da 3' || x.label === '∴ Trio'); })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
+  var g = REG.list.filter(function (x) { return x.id !== REG.active && (x.label === 'Gruppo da 3' || x.label === '∴ Trio'); })[0];
   REG.after = 'invite'; REG.nm = me ? me.name : '';
   if (g && !(me && me.kind === 'group')) { REG.active = g.id; regSet(REG); safeReload(); }
   else newCircle();
@@ -973,7 +974,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v77', errLog = [];
+var APP_VER = 'v79', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1458,7 +1459,7 @@ function post(u, c) {
 
 /* ---- stato ---- */
 function status() {
-  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo gruppo grande' : me.kind === 'group' ? 'Il tuo gruppo da 3' : 'Il tuo cerchio di coppia') : 'Cerchio di ' + (names[0] || 'gruppo');
+  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il tuo Trio' : 'Il tuo Duo') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
@@ -1724,7 +1725,7 @@ function hostHi(c, d) {
         if (known) { accept(); return; }
         if (Object.keys(allowed).length >= cap()) {
           refuse('Questo invito era per un cerchio già completo. ' + me.name + ' ti sta mandando quello giusto: aprilo appena arriva.');
-          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del cerchio di coppia, che è già completo.') + ' Ti preparo il gruppo da 3 e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
+          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del Duo, che è già completo.') + ' Ti preparo un Trio e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
           return;
         }
         if (code && validCode(code)) { accept(); return; }
@@ -1756,15 +1757,15 @@ function invite() {
   if (me.role !== 'host') return;
   if (Object.keys(allowed).length >= cap() && !(arguments[0] && arguments[0].again)) {
     var grp = me.kind === 'group' || me.kind === 'big', mem = Object.keys(allowed).map(function (k) { return allowed[k]; });
-    sheet(grp ? 'Il gruppo è al completo' : 'Il cerchio di coppia è completo', 'Se con ' + mem.join(', ') + ' non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.', [
+    sheet(grp ? 'Il gruppo è al completo' : 'Il Duo è completo', 'Se con ' + mem.join(', ') + ' non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.', [
       { t: '🔗 Rimanda l’invito a ' + (mem.length === 1 ? mem[0] : 'chi è nel cerchio'), f: function () { invite({ again: true }); } },
-      { t: grp ? '👥 Crea un nuovo gruppo da 3 e invita' : '👥 Invita altre persone in un gruppo da 3', f: goGroupInvite }
+      { t: grp ? '∴ Crea un nuovo Trio e invita' : '∴ Invita altre persone in un Trio', f: goGroupInvite }
     ]);
     return;
   }
   if (Object.keys(allowed).length >= cap()) {
     var grp = me.kind === 'group' || me.kind === 'big';
-    ask(grp ? 'Questo gruppo è al completo' : 'Il cerchio di coppia è già completo', grp ? 'Ti preparo un nuovo gruppo da 3 e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un gruppo da 3, separato dalla coppia, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
+    ask(grp ? 'Questo gruppo è al completo' : 'Il Duo è già completo', grp ? 'Ti preparo un nuovo Trio e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un Trio, separato dal Duo, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
     return;
   }
   var left = cap() - Object.keys(allowed).length;
@@ -2130,7 +2131,7 @@ function refCode() {
 }
 function recommend() {
   var c = refCode(), url = location.origin + location.pathname + (c ? '?r=' + c : '');
-  var txt = 'Ti consiglio Reelta: per mandarvi i Reel in coppia in un posto solo, privato e senza account. Create la vostra coppia da qui: ' + url;
+  var txt = (window.LX_T || String)('Ti consiglio Reelta: per mandarvi i Reel in due in un posto solo, privato e senza account. Create il vostro Duo da qui: ') + url;
   track('consiglia');
   if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); return; }
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
@@ -2680,7 +2681,7 @@ function begin() {
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
 function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,100})/.exec(v) || /^([\w-]{8,100})$/.exec(v); return m ? m[1] : null; }
-var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia'; }) ? 'group' : 'couple';
+var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia' || /Duo/.test(x.label || ''); }) ? 'group' : 'couple';
 function paintKind() {
   ['couple', 'group', 'big'].forEach(function (k) { var b = $(k === 'couple' ? 'kC' : k === 'group' ? 'kG' : 'kB'); b.setAttribute('aria-pressed', kindSel === k); b.hidden = !canCreate(k) || (k === 'big' && !isDev); });
   if (!canCreate(kindSel)) kindSel = ['couple', 'group', 'big'].filter(canCreate)[0] || kindSel;
@@ -2693,7 +2694,7 @@ $('kB').onclick = function () { kindSel = 'big'; paintKind(); };
 function syncKind() {
   var j = !!pastedId() || !!joinId, any = canCreateAny();
   $('kindBox').hidden = j || !any;
-  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo da 3' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
+  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo Trio' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
   $('icHelp').hidden = !!joinId;
   $('icHelp').textContent = any ? 'Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.' : 'In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi tocca “Incolla l’invito” qui sopra e scrivi il tuo nome.';
   var fresh = REG.list.length <= 1 && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
@@ -2922,7 +2923,7 @@ else {
     }
   }
   if (REG.list.length > 1) { $('sCancel').hidden = false; if (!joinId) $('sT').textContent = 'Nuovo cerchio'; }
-  if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo gruppo da 3'; }
+  if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo Trio'; }
   syncKind(); showPane('setup');
 }
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
