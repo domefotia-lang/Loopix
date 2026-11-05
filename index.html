@@ -991,7 +991,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v81', errLog = [];
+var APP_VER = 'v82', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1627,7 +1627,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false };
+var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false, knock: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -1662,7 +1662,7 @@ var mbBusy = false, mbLast = 0, srvSeen = 0;
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
-  var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }).concat(codesNow().map(function (x) { return { sec: me.hostId + '_' + x.c, dir: 'j' }; })) : (me.tok ? [{ sec: me.tok, dir: 'g' }] : []);
+  var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }).concat(codesNow().map(function (x) { return { sec: me.hostId + '_' + x.c, dir: 'j' }; })).concat([{ sec: 'door_' + me.hostId, dir: 'd' }]) : (me.tok ? [{ sec: me.tok, dir: 'g' }] : []);
   Promise.all(jobs.map(function (j) {
     return mbBox(j.sec, j.dir).then(function (box) {
       return mbCall({ a: 'get', box: box }).then(function (res) {
@@ -1671,6 +1671,7 @@ function mbPull(force) {
           return p.then(function () { return mbOpen(j.sec, it.payload).then(function (d) {
             if (!d || typeof d !== 'object' || MBT[d.t] === undefined) return;
             if (j.dir === 'j') { if (d.t === 'jhi') hostJoinVirt(d); }
+            else if (j.dir === 'd') { if (d.t === 'knock') hostKnock(d); }
             else if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
             else guestData(d);
           }, function () {}); });
@@ -1737,6 +1738,29 @@ function hostJoinVirt(d) {
   var c = { virt: true, open: true, ok: false, k: k, send: function (m) { if (m && m.t === 'hello') m = slimHello(m); mbPut(k, 'g', m, false).catch(function () {}); }, close: function () { c.open = false; } };
   hostHi(c, { n: d.n, k: k, c: d.c });
 }
+/* ricollegamento automatico: una volta al giorno chi è stato invitato "bussa" alla porta del cerchio.
+   Se il creatore non riconosce più quel telefono (es. app reinstallata) ma conosce il nome, gli chiede
+   con un tocco se ricollegarlo: niente più inviti da rimandare. */
+function knock(force) {
+  if (!srvOn() || !me || me.role === 'host' || !me.joined || !me.tok || !me.hostId || blocked) return;
+  if (!force && Date.now() - (+get('knockAt', 0)) < 20 * 36e5) return;
+  put('knockAt', Date.now());
+  mbPut('door_' + me.hostId, 'd', { t: 'knock', n: me.name, k: me.tok }, true).catch(function () {});
+}
+var knockAsked = {};
+function hostKnock(d) {
+  var k = typeof d.k === 'string' ? d.k.slice(0, 40) : '', n = clean(d.n, 30);
+  if (!k || !n || allowed[k] || knockAsked[n]) return;
+  var mine = Object.keys(allowed).some(function (x) { return allowed[x] === n; });
+  if (!mine) return; // nome sconosciuto: un vecchio link, lo ignoro senza disturbare
+  knockAsked[n] = 1;
+  ask('🔄 ' + n + ' si è scollegato', 'Il telefono di ' + n + ' non viene più riconosciuto (succede se ha reinstallato Reelta o riaperto un vecchio invito). Vuoi ricollegarlo? Non perde niente.', 'Ricollega').then(function (y) {
+    if (!y) return;
+    var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10));
+    hostJoinVirt({ n: n, k: k, c: c });
+    setTimeout(function () { mbPull(true); }, 1500);
+  });
+}
 var joinTries = 0, joinT = null;
 function srvJoin() {
   clearTimeout(joinT);
@@ -1756,6 +1780,7 @@ function srvStart() {
   setTimeout(function () { mbPull(true); }, 1500);
   setTimeout(devAlerts, 5000); document.addEventListener('visibilitychange', function () { if (!document.hidden) devAlerts(); });
   if (me.role !== 'host' && (!me.joined || me.rejoin)) setTimeout(function () { if (!me.joined || me.rejoin) srvJoin(); }, me.rejoin ? 1500 : 7000);
+  setTimeout(function () { knock(false); }, 12000);
   if (pushOK() && Notification.permission === 'granted') pushSync();
   else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
     setTimeout(function () {
