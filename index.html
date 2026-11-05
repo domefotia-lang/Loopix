@@ -223,6 +223,8 @@ a.r-btn{text-decoration:none}
 .svo button[aria-pressed="true"]{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
 #svQ textarea{width:100%;min-height:64px;margin:6px 0 0;font:inherit;font-size:15px;border-radius:14px;padding:10px 12px;border:1px solid var(--line);background:var(--s1);color:var(--t);resize:vertical}
 .svpl{font-weight:700;color:var(--t)}.svpre{white-space:pre-wrap;font-size:13px;background:var(--s2);border-radius:12px;padding:10px 12px;color:var(--t);max-height:220px;overflow:auto;font-family:inherit}
+.keepb{margin-left:6px;background:none;border:0;font-size:22px;line-height:1;padding:4px 6px;cursor:pointer;color:var(--m)}.keepb.on{color:inherit}
+.fview{display:flex;gap:6px;margin:0 0 8px}.fview .chip{padding:6px 12px;font-size:13px}
 .sumb{margin-left:8px;background:var(--s2);border:1px solid transparent;color:var(--t);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
 .sumb.ask{border-color:#C9A266;background:linear-gradient(120deg,rgba(185,139,78,.22),rgba(246,226,180,.30))}
 .sumtag{display:inline-block;font-weight:800;color:var(--t);background:var(--s2);border-radius:999px;padding:6px 12px;margin:4px 0 8px}
@@ -325,6 +327,7 @@ html.light body{background:radial-gradient(110% 50% at 50% -8%,#F1E2D4 0%,var(--
 .light .mod.lock{background:var(--bg)}
 .light .cd{background:rgba(249,245,240,.8)}
 .light .link,.light .cpanel,.light .cm{background:var(--s1)}
+.retq{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px;font-weight:800;color:#f3e7d6}.retr{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.retr .btn{width:auto;padding:10px 18px}
 .light .stage .link{background:#1c1612;color:#d9cdbf}.light .stage .link>div:first-child{color:#f6ecdf}
 .light .danger{color:#B23B2B;background:rgba(178,59,43,.07);border-color:rgba(178,59,43,.2)}
 .light .star,.light .steps .n{color:#fff}
@@ -359,6 +362,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 #clog{display:flex;flex-direction:column;gap:6px;padding:10px 14px}
 .msg{max-width:82%;align-self:flex-start;padding:8px 12px;border-radius:18px 18px 18px 6px;background:var(--s1);border:1px solid var(--line);font-size:16px;line-height:1.35;overflow-wrap:anywhere}
 .msg.me{align-self:flex-end;border-radius:18px 18px 6px 18px;background:var(--gold);color:#fff;border:0}
+.msg .pinf{display:block;font-size:11px;font-weight:700;color:var(--g);margin-bottom:2px}.msg.hit{outline:2px solid var(--g);outline-offset:2px}
+.pinr{text-align:left;padding:10px 12px;border-radius:14px;background:var(--s1);border:1px solid var(--line);color:var(--t);font:inherit;cursor:pointer}.pinr b{display:block;font-size:12px;color:var(--g)}.pinr mark{background:rgba(185,139,78,.35);color:inherit;border-radius:3px}
 .msg .mn{display:block;font-size:12px;font-weight:700;color:var(--g);margin-bottom:2px}
 .msg time{display:block;font-size:11px;opacity:.7;margin-top:3px;text-align:right}
 .cbar{padding:8px 14px 22px;flex:none}
@@ -456,7 +461,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 </div></section>
 
-<section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div><p class="hint chint">Tocca un messaggio per copiarlo o eliminarlo.</p><div id="ttlNote" hidden></div>
+<section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2><button class="btn-o" id="fixB" aria-label="Messaggi fissati e ricerca">📌 Fissati · 🔍</button></div><p class="hint chint">Tocca un messaggio per copiarlo, fissarlo 📌 o eliminarlo.</p><div id="ttlNote" hidden></div>
   <div class="list" id="clog" aria-live="polite"></div>
   <div class="cbar"><div class="lbar"><input id="cin" placeholder="Scrivi un messaggio…" aria-label="Messaggio" maxlength="1000" autocomplete="off"><button class="btn" id="csend">Invia</button></div></div>
 </section>
@@ -472,6 +477,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <input type="file" id="prFile" accept="image/*" hidden>
   </div>
   <div class="card" id="hlpC"><h2>❓ Aiuto</h2><button class="btn-o wide" style="margin-top:0" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button></div>
+  <div class="card" id="kpC"><h2>⭐ Reel da tenere</h2><p style="margin-top:0">Su ogni Reel tocca ☆ accanto al nome per tenerlo. Si conserva il link: se l’autore cancella il video, sparisce anche qui.</p>
+    <label class="tog">Reel non tenuti<select id="rkS" aria-label="Reel non tenuti"><option value="0">Tienili tutti</option><option value="7">Puliscili dopo 7 giorni</option><option value="30">Puliscili dopo 30 giorni</option></select></label>
+    <div class="hint" id="rkH">La pulizia vale solo per questo telefono. Il giorno prima ti avviso.</div></div>
   <div class="card" id="ntC"><h2>🔔 Notifiche</h2>
     <button class="btn" id="pushB" hidden type="button" style="margin:0 0 6px">🔔 Avvisami anche ad app chiusa</button>
     <p class="hint" id="pushH" hidden style="margin:0 0 12px"></p>
@@ -620,6 +628,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="decbtns" id="decB"><button type="button" id="decNo">👋 Passo</button><button type="button" id="decSi">😍 Sì!</button></div>
   <button class="btn-o wide" id="decX" style="margin-top:12px">Chiudi</button>
 </div></div>
+<div class="mod" id="pinM" role="dialog" aria-modal="true" aria-labelledby="pinT"><div class="card" style="max-width:380px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);display:flex;flex-direction:column">
+  <h2 id="pinT">📌 Fissati</h2>
+  <div style="position:relative;margin:0 0 10px"><span aria-hidden="true" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.7">🔍</span><input id="pinQ" placeholder="Cerca una parola…" aria-label="Cerca nei messaggi" autocomplete="off" style="width:100%;padding:11px 12px 11px 36px;border-radius:999px;border:1px solid var(--line);background:var(--s1);color:var(--t);font:inherit"></div>
+  <div id="pinL" style="overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:8px"></div>
+  <button class="btn-o wide" id="pinX" style="margin-top:10px">Chiudi</button>
+</div></div>
 <div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
   <h2 id="refT">Consiglia Reelta</h2>
   <p>Manda l’app ad altre persone: creano il loro Duo, separato dal vostro. Conta quando la usano davvero (almeno 3 Reel).</p>
@@ -747,7 +761,7 @@ function applyDev() {
   if ($('setup').classList.contains('show')) syncKind();
 }
 /* ---- copia di sicurezza (cifrata con password) ---- */
-var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps', 'ttl', 'pics', 'aka', 'mhid'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed', 'riserv', 'nt', 'rcpt'];
+var BK_KEYS = ['me', 'feed', 'allowed', 'ideas', 'msgs', 'gone', 'seen', 'codes', 'outbox', 'guided', 'muted', 'reps', 'ttl', 'pics', 'aka', 'mhid', 'keep', 'rhid', 'rkeep'], BK_GLOBAL = ['theme', 'big', 'mode', 'speed', 'riserv', 'nt', 'rcpt'];
 if (window.__lxPend) {
   // il ripristino appena fatto non risulta salvato: lo riapplico (succede di rado, se il telefono ricarica troppo in fretta)
   try { if (!REG.list.some(function (x) { return localStorage.getItem(lsOf(x.id) + 'me'); })) { applyBackup(window.__lxPend); LS = lsOf(REG.active); } } catch (e) {}
@@ -974,7 +988,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v79', errLog = [];
+var APP_VER = 'v80', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1048,7 +1062,7 @@ function moreFor(kind, item) {
   if (who === me.name) return;
   if (me.role !== 'host') opts.push({ t: '🚩 Segnala a ' + (names[0] || 'chi ha creato il cerchio'), f: function () { report(kind, item); } });
   if (me.role === 'host') opts.push({ t: kind === 'reel' ? '🗑 Elimina questo Reel' : '🗑 Elimina questo messaggio', red: true, f: function () { if (kind === 'reel') delReel(item.id); else ask('Eliminare il messaggio?', 'Sparisce per tutto il cerchio.', 'Elimina', true).then(function (y) { if (y) delMsg(item.id, true); }); } });
-  if (kind === 'msg') { opts.unshift({ t: '🙈 Elimina solo per me', f: function () { hideMsg(item.id); } }); opts.unshift({ t: '📋 Copia il testo', f: function () { copyMsg(item); } }); }
+  if (kind === 'msg') { opts.unshift({ t: '🙈 Elimina solo per me', f: function () { hideMsg(item.id); } }); opts.unshift(pinOpt(item)); opts.unshift({ t: '📋 Copia il testo', f: function () { copyMsg(item); } }); }
   opts.push({ t: '🔇 Silenzia ' + who, f: function () { mute(who); } });
   if (me.role === 'host' && memberKey(who)) opts.push({ t: '🚫 Togli ' + who + ' dal cerchio', red: true, f: function () { ask('Togliere ' + who + '?', who + ' non vedrà più i nuovi Reel, piani e messaggi del cerchio.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(memberKey(who)); }); } });
   sheet(kind === 'reel' ? 'Reel di ' + who : 'Messaggio di ' + who, '', opts);
@@ -1144,8 +1158,10 @@ function mediaRaw(r, pl) {
   var host = new URL(r.u).hostname.replace(/^(www|m|vm)\./, ''), NAMES = { 'linkedin.com': 'LinkedIn', 'lnkd.in': 'LinkedIn', 'twitch.tv': 'Twitch', 'clips.twitch.tv': 'Twitch', 'open.spotify.com': 'Spotify', 'spotify.link': 'Spotify', 'snapchat.com': 'Snapchat', 't.snapchat.com': 'Snapchat', 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'tiktok.com': 'TikTok', 'instagram.com': 'Instagram', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'x.com': 'X', 'twitter.com': 'X', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest' };
   var nm = NAMES[host] || host;
   var l = el('div', 'link'); l.appendChild(el('div', null, nm));
-  var why = el('small', null, 'Questo sito non lascia vedere il video qui dentro: si apre a parte e poi torni qui.'); l.appendChild(why);
+  var isFb = /facebook\.com|fb\.watch/.test(host);
+  var why = el('small', null, isFb ? 'Facebook non lascia vedere questo video qui dentro. Si apre in una finestra sopra Reelta: per i video pubblici non serve l’account. Se compare “Accedi”, chiudilo con la ✕. Poi torna qui.' : 'Questo sito non lascia vedere il video qui dentro: si apre a parte e poi torni qui.'); l.appendChild(why);
   var a = el('a', null, '▶  Guarda il video');
+  if (pl) a.addEventListener('click', function () { retPend = { id: r.id, at: Date.now() }; });
   if (isShort(r.u)) {
     a.hidden = true; why.hidden = true; var wait = el('div', null, 'Carico il video…'); l.appendChild(wait);
     resolveShort(r.u).then(function (u2) {
@@ -1156,10 +1172,23 @@ function mediaRaw(r, pl) {
     });
   } a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.appendChild(a); return l;
 }
+// tornando da un video aperto a parte (es. Facebook): reazione e prossimo in un tocco
+var retPend = null;
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden || !retPend) return;
+  var rp = retPend; retPend = null; if (Date.now() - rp.at < 1500) return;
+  var r = find(rp.id); if (!r || !$('pl').classList.contains('show')) return;
+  var lk = $('st').querySelector('.link'); if (!lk || lk.querySelector('.retq')) return;
+  var q = el('div', 'retq'); q.appendChild(el('div', null, 'Ti è piaciuto?'));
+  var row = el('div', 'retr'); EMO.forEach(function (e) { var b = el('button', 'r-btn', e); b.onclick = function () { react(r.id, e); setTimeout(function () { if (!$('pn').hidden) $('pn').click(); }, 350); }; row.appendChild(b); });
+  var nx = el('button', 'btn go', 'Prossimo ⏭'); nx.onclick = function () { $('pn').click(); }; row.appendChild(nx);
+  q.appendChild(row); lk.appendChild(q);
+});
 function orig(r) { var a = el('a', 'orig', 'Non si vede? Apri l’originale'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; }
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false };
-  var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); nd.sb = el('button', 'sumb'); nd.sb.hidden = true; nd.sb.onclick = function () { sumOpen(r); }; f.appendChild(nd.sb); d.appendChild(f);
+  var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); nd.sb = el('button', 'sumb'); nd.sb.hidden = true; nd.sb.onclick = function () { sumOpen(r); }; f.appendChild(nd.sb);
+  nd.kb = el('button', 'keepb'); nd.kb.onclick = function () { keepToggle(r.id); }; f.appendChild(nd.kb); d.appendChild(f);
   if (r.c) d.appendChild(el('div', 'cm', r.c));
   d.appendChild(media(r, false));
   nd.bar = el('div', 'bar'); d.appendChild(nd.bar);
@@ -1179,6 +1208,7 @@ function sumLabel(r) {
 function refresh(r) {
   var nd = nodes[r.id]; if (!nd) return;
   if (nd.sb) { var sl = sumLabel(r); nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
+  if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.textContent = kp ? '⭐' : '☆'; nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
   nd.bar.textContent = '';
   EMO.forEach(function (e) {
     var n = Object.keys(r.x || {}).filter(function (k) { return r.x[k] === e; }).length;
@@ -1199,11 +1229,39 @@ function refresh(r) {
 }
 var compOpen = false;
 function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
+// ⭐ tenuti: scelta personale, solo su questo telefono. Si conserva il link del Reel, non il video.
+var keeps = get('keep', {}), rhid = get('rhid', []), fview = 'all';
+function keepToggle(id) {
+  if (keeps[id]) delete keeps[id]; else { keeps[id] = Date.now(); $('mh').textContent = '⭐ Tenuto: lo ritrovi in “⭐ Tenuti”.'; }
+  put('keep', keeps); var r = find(id); if (r) refresh(r); if (fview === 'keep' || Object.keys(keeps).length <= 1) render();
+}
+function rkeepDays() { return +get('rkeep', 0) || 0; }
+// pulizia scelta dall'utente: i Reel non tenuti più vecchi di N giorni spariscono da questo telefono
+function cleanReels() {
+  var d = rkeepDays(); if (!d || !feed.length) return;
+  var lim = Date.now() - d * 864e5, out = feed.filter(function (r) { return !keeps[r.id] && r.ts < lim && (!seq || seq.cur !== r.id); });
+  if (!out.length) return;
+  out.forEach(function (r) { rhid.push(r.id); }); if (rhid.length > 2000) rhid = rhid.slice(-2000); put('rhid', rhid);
+  var ids = {}; out.forEach(function (r) { ids[r.id] = 1; }); feed = feed.filter(function (r) { return !ids[r.id]; }); put('feed', feed); render();
+}
+function cleanWarn() {
+  var d = rkeepDays(); if (!d || Date.now() - (+get('cwarn', 0)) < 20 * 36e5) return;
+  var lo = Date.now() - d * 864e5, hi = lo + 864e5, n = feed.filter(function (r) { return !keeps[r.id] && r.ts >= lo && r.ts < hi; }).length;
+  if (!n || document.querySelector('.mod.open')) return; put('cwarn', Date.now());
+  ask('🧹 Domani si puliscono ' + (n === 1 ? '1 Reel' : n + ' Reel'), 'Sono quelli senza ⭐. Se ne vuoi conservare qualcuno, tocca ☆ accanto al nome.', 'Vedi i Reel').then(function (y) { if (y) { fview = 'all'; showPane('main'); render(); } });
+}
 function render() {
   var bad = feed.filter(function (r) { return isInvite(r.u); });
   if (bad.length) { bad.forEach(function (r) { if (gone.indexOf(r.id) < 0) gone.push(r.id); }); feed = feed.filter(function (r) { return !isInvite(r.u); }); put('feed', feed); put('gone', gone); }
   syncComp();
   var box = $('feed'); box.textContent = ''; nodes = {};
+  var nk = feed.filter(function (r) { return keeps[r.id]; }).length;
+  if (feed.length && (nk || fview === 'keep')) {
+    var fv = el('div', 'fview');
+    [['all', 'Tutti'], ['keep', '⭐ Tenuti (' + nk + ')']].forEach(function (x) { var b = el('button', 'chip', x[1]); b.setAttribute('aria-pressed', String(fview === x[0])); b.onclick = function () { fview = x[0]; render(); }; fv.appendChild(b); });
+    box.appendChild(fv);
+  }
+  if (fview === 'keep') { var kl = feed.filter(function (r) { return keeps[r.id] && !isMuted(r.n); }); if (!kl.length) box.appendChild(el('div', 'empty', 'Nessun Reel tenuto.\n\nTocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.')); kl.forEach(function (r) { box.appendChild(build(r)); }); return; }
   if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\nCopia il link di un Reel da Instagram, TikTok o YouTube, poi tocca il pulsante dorato “Incolla” qui sotto.')); return; }
   feed.forEach(function (r) { if (!isMuted(r.n)) box.appendChild(build(r)); });
   box.scrollTop = box.scrollHeight;
@@ -1212,6 +1270,7 @@ function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.cl
 function addReel(r, mine) {
   if (!r || typeof r.id !== 'string' || r.id.length > 40) return false;
   if (gone.indexOf(r.id) >= 0) return false;
+  if (rhid.indexOf(r.id) >= 0 && !keeps[r.id]) return false;
   if (isInvite(r.u)) return false;
   var u = safeUrl(r.u); if (!u) return false;
   var old = find(r.id);
@@ -1455,6 +1514,9 @@ function post(u, c) {
   else if (hostConn && hostConn.open) { hostConn.send({ t: 'reel', r: r }); if (srvOn()) mbToHost({ t: 'reel', r: r }, null, true); }
   else if (srvOn()) { mbToHost({ t: 'reel', r: r }, function () { outbox.push(r); put('outbox', outbox); }); $('mh').textContent = 'Mandato: arriva appena l’altra persona apre Reelta.'; }
   else { outbox.push(r); put('outbox', outbox); $('mh').textContent = 'In coda: partirà appena sei collegato.'; }
+  if (/(^|\.)(facebook\.com|fb\.watch)$/.test((function () { try { return new URL(url).hostname.replace(/^(www|m)\./, ''); } catch (e) { return ''; } })()) && !get('fbtip', 0)) {
+    put('fbtip', 1); setTimeout(function () { ask('Un consiglio sui video di Facebook', 'Facebook spesso non lascia vedere i suoi video dentro altre app: si aprono a parte. Se lo stesso video c’è su Instagram o TikTok, mandalo da lì: si vede direttamente qui.', 'Ok'); }, 600);
+  }
 }
 
 /* ---- stato ---- */
@@ -1528,6 +1590,8 @@ function hostData(c, d) {
         if (im) relay(c, im);
       } else if (d.t === 'seen' && c.ok) { applySeen(c.name, d.ts); relay(c, { t: 'seen', n: c.name, ts: d.ts });
       } else if (d.t === 'rep' && c.ok) { addReport(d, c.name);
+      } else if (d.t === 'mpin' && c.ok && typeof d.id === 'string') {
+        if (pinMsg(d.id, !!d.on, false, c.name)) relay(c, { t: 'mpin', id: d.id, on: !!d.on, n: c.name });
       } else if (d.t === 'mdel' && c.ok && typeof d.id === 'string') {
         var om = msgs.filter(function (m) { return m.id === d.id; })[0];
         if (om && om.n === c.name && delMsg(d.id, false)) relay(c, { t: 'mdel', id: d.id });
@@ -1559,7 +1623,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false };
+var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -1842,6 +1906,7 @@ function guestData(d) {
       else if (d.t === 'seen') applySeen(d.n, d.ts);
       else if (d.t === 'cfg') { if (typeof d.ttl === 'number') { put('ttl', d.ttl); renderChat(true); } }
       else if (d.t === 'mdel' && typeof d.id === 'string') delMsg(d.id, false);
+      else if (d.t === 'mpin' && typeof d.id === 'string') pinMsg(d.id, !!d.on, false, clean(d.n, 30) || '?');
       else if (d.t === 'wait') $('mh').textContent = clean(d.why, 180);
       else if (d.t === 'react' || d.t === 'cmt' || d.t === 'sumq' || d.t === 'sum') applyEv(d, null);
       else if (d.t === 'ses') onSes(d, clean(d.n, 30) || 'Qualcuno');
@@ -1879,7 +1944,38 @@ function chatTab() { appBadge(); $('tChat').textContent = chatSeen ? 'Messaggi (
 var lastSeenSent = 0;
 function rcptOn() { return get('rcpt', null) === null ? !get('riserv', 0) : !!get('rcpt', 1); }
 function ttlMs() { return +get('ttl', 0) || 0; }
-function pruneMsgs() { var t = ttlMs(); if (!t) return; var lim = Date.now() - t, n = msgs.length; msgs = msgs.filter(function (m) { return m.ts >= lim; }); if (msgs.length !== n) put('msgs', msgs); }
+function pruneMsgs() { var t = ttlMs(); if (!t) return; var lim = Date.now() - t, n = msgs.length; msgs = msgs.filter(function (m) { return m.pin || m.ts >= lim; }); if (msgs.length !== n) put('msgs', msgs); }
+// tiene al massimo 300 messaggi, ma i fissati non si buttano mai
+function trimMsgs() { while (msgs.length > 300) { var i = -1; for (var j = 0; j < msgs.length; j++) if (!msgs[j].pin) { i = j; break; } if (i < 0) break; msgs.splice(i, 1); } }
+function pinOpt(m) { return { t: m.pin ? '📌 Togli dai fissati' : '📌 Fissa (resta sempre)', f: function () { pinMsg(m.id, !m.pin, true); } }; }
+function pinMsg(id, on, spread, who) {
+  var m = msgs.filter(function (x) { return x.id === id; })[0]; if (!m) return false;
+  var nv = on ? clean(who || me.name, 30) : ''; if ((m.pin || '') === nv) return false;
+  m.pin = nv; put('msgs', msgs); renderChat(true); if ($('pinM').classList.contains('open')) pinRender();
+  if (spread) { var ev = { t: 'mpin', id: id, on: !!on, n: me.name }; if (me.role === 'host') cast(ev); else sendEv(ev); if (on) $('mh').textContent = '📌 Fissato: lo trovi in Messaggi → Fissati.'; }
+  return true;
+}
+function pinRender() {
+  var q = clean($('pinQ').value, 60).toLowerCase(), L = $('pinL'); L.textContent = '';
+  var vis = msgs.filter(function (m) { return !isMuted(m.n); });
+  var pins = vis.filter(function (m) { return m.pin && (!q || m.t.toLowerCase().indexOf(q) >= 0); }).reverse();
+  var rest = q ? vis.filter(function (m) { return !m.pin && m.t.toLowerCase().indexOf(q) >= 0; }).reverse().slice(0, 40) : [];
+  var row = function (m) {
+    var b = el('button', 'pinr'); b.appendChild(el('b', null, (m.pin ? '📌 ' : '') + m.n + ' · ' + ago(m.ts)));
+    var t = m.t, i = q ? t.toLowerCase().indexOf(q) : -1;
+    if (i >= 0) { b.appendChild(document.createTextNode(t.slice(0, i))); b.appendChild(el('mark', null, t.slice(i, i + q.length))); b.appendChild(document.createTextNode(t.slice(i + q.length))); } else b.appendChild(document.createTextNode(t));
+    b.onclick = function () { $('pinM').classList.remove('open'); goMsg(m.id); }; L.appendChild(b);
+  };
+  if (pins.length) pins.forEach(row);
+  else L.appendChild(el('p', 'hint', q ? 'Nessun messaggio fissato con questa parola.' : 'Nessun messaggio fissato. Tocca un messaggio importante e scegli “📌 Fissa”: lo ritrovi qui e non sparisce.'));
+  if (rest.length) { L.appendChild(el('p', 'hint', 'Negli altri messaggi:')); rest.forEach(row); }
+}
+function pinOpen() { $('pinQ').value = ''; pinRender(); $('pinM').classList.add('open'); }
+function goMsg(id) {
+  showPane('chat'); renderChat(true);
+  var n = document.querySelector('#clog .msg[data-id="' + id + '"]'); if (!n) return;
+  n.scrollIntoView({ block: 'center' }); n.classList.add('hit'); setTimeout(function () { n.classList.remove('hit'); }, 2200);
+}
 function ttlNote() { var t = ttlMs(), b = $('ttlNote'); b.hidden = !t; if (t) b.textContent = '⏳ I messaggi si cancellano da soli ' + (t >= 6048e5 ? 'dopo 7 giorni' : 'dopo 24 ore') + ', su tutti i telefoni del cerchio.'; }
 setInterval(function () { if (me && ttlMs()) { var n = msgs.length; pruneMsgs(); if (msgs.length !== n && tab === 'chat') renderChat(true); } }, 60000);
 function members() { return me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }); }
@@ -1906,11 +2002,15 @@ function applySeen(who, ts) {
 }
 function msgNode(m) {
   var d = el('div', 'msg' + (m.n === me.name ? ' me' : ''));
-  if (m.n === me.name) { d.style.cursor = 'pointer'; d.onclick = function () { var rs = readers(m); sheet('Il tuo messaggio', msgPending(m) ? '🕓 In attesa: partirà appena vi collegate.' : !rcptOn() ? 'Conferme di lettura spente.' : rs.length ? '✓✓ Letto da: ' + rs.join(', ') : '✓ Inviato, non ancora letto.', [{ t: '📋 Copia il testo', f: function () { copyMsg(m); } }, { t: '🗑 Elimina per tutti', red: true, f: function () { delMsg(m.id, true); } }]); }; }
+  if (m.n === me.name) { d.style.cursor = 'pointer'; d.onclick = function () { var rs = readers(m); sheet('Il tuo messaggio', msgPending(m) ? '🕓 In attesa: partirà appena vi collegate.' : !rcptOn() ? 'Conferme di lettura spente.' : rs.length ? '✓✓ Letto da: ' + rs.join(', ') : '✓ Inviato, non ancora letto.', [{ t: '📋 Copia il testo', f: function () { copyMsg(m); } }, pinOpt(m), { t: '🗑 Elimina per tutti', red: true, f: function () { delMsg(m.id, true); } }]); }; }
   if (m.n !== me.name) { d.appendChild(el('span', 'mn', m.n)); d.style.cursor = 'pointer'; d.title = 'Tocca per segnalare o silenziare'; d.onclick = function () { moreFor('msg', m); }; }
+  d.dataset.id = m.id; if (m.pin) d.insertBefore(el('span', 'pinf', '📌 fissato da ' + m.pin), d.firstChild);
   d.appendChild(document.createTextNode(m.t)); var tm = el('time', null, ago(m.ts)); if (m.n === me.name) tm.appendChild(tickFor(m)); d.appendChild(tm); return d;
 }
 var mhid = get('mhid', []);
+$('rkS').value = String(rkeepDays()); $('rkS').addEventListener('change', function () { var v = +$('rkS').value || 0; if (v && !rkeepDays()) { ask('Pulire i Reel non tenuti?', 'I Reel senza ⭐ più vecchi di ' + v + ' giorni spariranno da questo telefono. Quelli con ⭐ restano sempre.', 'Sì, attiva').then(function (y) { if (y) { put('rkeep', v); cleanReels(); } else $('rkS').value = '0'; }); } else { put('rkeep', v); cleanReels(); } });
+setInterval(function () { if (me) cleanReels(); }, 36e5);
+$('fixB').addEventListener('click', pinOpen); $('pinX').addEventListener('click', function () { $('pinM').classList.remove('open'); }); $('pinQ').addEventListener('input', pinRender);
 function hideMsg(id) { if (mhid.indexOf(id) < 0) { mhid.push(id); if (mhid.length > 500) mhid.shift(); put('mhid', mhid); } delMsg(id, false); renderChat(true); }
 function copyMsg(m) { try { navigator.clipboard.writeText(m.t).then(function () { $('mh').textContent = 'Copiato ✓'; }, function () {}); } catch (e) {} }
 function renderChat(keep) {
@@ -1925,9 +2025,9 @@ function addMsg(m, who) {
   if (msgs.some(function (x) { return x.id === m.id; })) return null;
   if (typeof mhid !== 'undefined' && mhid.indexOf(m.id) >= 0) return null;
   var rd = {}; if (m.rd && typeof m.rd === 'object') Object.keys(m.rd).slice(0, 12).forEach(function (k) { rd[clean(k, 30)] = 1; });
-  var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now(), rd: rd };
-  if (ttlMs() && Date.now() - n.ts > ttlMs()) return null;
-  msgs.push(n); if (msgs.length > 300) msgs.shift(); put('msgs', msgs);
+  var n = { id: m.id, n: who || clean(m.n, 30) || 'Ospite', t: t, ts: +m.ts || Date.now(), rd: rd, pin: clean(m.pin || '', 30) };
+  if (ttlMs() && !n.pin && Date.now() - n.ts > ttlMs()) return null;
+  msgs.push(n); trimMsgs(); put('msgs', msgs);
   if (isMuted(n.n)) return n;
   if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; if (n.n !== me.name) markSeen(); }
   else if (n.n !== me.name) { chatSeen++; chatTab(); noteIn('msg', n.n, n.t); }
@@ -2676,7 +2776,7 @@ function begin() {
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
-  srvStart(); setTimeout(planNudge, 15000);
+  srvStart(); setTimeout(planNudge, 15000); setTimeout(function () { cleanReels(); cleanWarn(); }, 9000);
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
