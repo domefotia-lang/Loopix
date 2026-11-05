@@ -111,6 +111,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .duo{display:flex;gap:8px;padding:2px 14px 8px}
 .duo .btn{flex:1.4;min-height:50px;font-size:16px;padding:12px}
 .duo .btn-o{flex:1}
+#askP{white-space:pre-line}
 .nov{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 14px 8px}.nov .chip{padding:7px 12px;font-size:13px;font-weight:700}.nov .ok{font-size:13px;font-weight:700;color:var(--m);margin-right:4px}
 .fw{flex:1;min-height:0;position:relative;display:flex}
 .feed{flex:1;min-width:0;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain}
@@ -1015,7 +1016,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v86', errLog = [];
+var APP_VER = 'v87', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1058,6 +1059,18 @@ function bugFixes() {
     var v = (/var APP_VER = '(v\d+)'/.exec(t) || [])[1];
     if (v && v !== APP_VER) { add('⬆️ C’è una versione nuova (' + v + '): aggiorna', function () { try { navigator.serviceWorker && navigator.serviceWorker.getRegistration().then(function (r) { if (r) r.update(); }); } catch (e) {} setTimeout(function () { location.reload(); }, 600); }); show(); }
   }).catch(function () {});
+}
+/* conteggio anonimo: una volta al giorno il telefono dice solo "sono attivo", con un codice casuale.
+   Niente nomi, messaggi o Reel. I cerchi sono contati con un'impronta irreversibile, per sapere quanti sono, non quali. */
+function pingDay() {
+  if (!FEEDBACK.url || !FEEDBACK.anon || !window.crypto || !crypto.subtle) return;
+  var today = new Date().toISOString().slice(0, 10), last = ''; try { last = localStorage.getItem(LSG + 'pingDay') || ''; } catch (e) {} if (last === today) return;
+  var iid = ''; try { iid = localStorage.getItem(LSG + 'iid') || ''; if (!/^[a-z0-9]{16}$/.test(iid)) { iid = Array.from(crypto.getRandomValues(new Uint8Array(16)), function (b) { return 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]; }).join(''); localStorage.setItem(LSG + 'iid', iid); } } catch (e) { return; }
+  var hosts = []; (REG.list || []).forEach(function (x) { try { var m = JSON.parse(localStorage.getItem(lsOf(x.id) + 'me') || 'null'); if (m && m.hostId && (m.role === 'host' || m.joined)) hosts.push(m.hostId); } catch (e) {} });
+  Promise.all(hosts.slice(0, 12).map(function (h) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode('reelta-c:' + h)).then(function (d) { return Array.from(new Uint8Array(d).slice(0, 6), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }); })).then(function (circ) {
+    return fetch(FEEDBACK.url + '/rest/v1/pings', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' },
+      body: JSON.stringify({ iid: iid, plat: isIOS ? 'ios' : isAndroid ? 'android' : 'other', ver: APP_VER, circ: circ }) });
+  }).then(function (r) { if (r && (r.ok || r.status === 409)) try { localStorage.setItem(LSG + 'pingDay', today); } catch (e) {} }).catch(function () {});
 }
 var DEVBOX = 'reeltaDevAlerts_v1_7Hq2xP9mL4nB8sK3';
 function bugSend() {
@@ -3063,7 +3076,7 @@ function begin() {
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
-  srvStart(); setTimeout(planNudge, 15000);
+  srvStart(); setTimeout(planNudge, 15000); setTimeout(pingDay, 8000);
   if (!get('gtip', 0) && 'ontouchstart' in window && !navigator.webdriver) setTimeout(function () { if (document.querySelector('.mod.open') || get('gtip', 0)) return; put('gtip', 1); ask('👆 Gesti più veloci', 'Scorri a destra o a sinistra per cambiare pagina. Doppio tocco su un Reel per il ❤️. Tieni premuto un Reel per il menu. Tira giù il feed per aggiornare. Nel lettore scorri per il Reel dopo.', 'Ok'); }, 6000); setTimeout(function () { cleanReels(); cleanWarn(); }, 9000);
   if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
