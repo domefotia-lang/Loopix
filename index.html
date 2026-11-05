@@ -124,6 +124,9 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .stage .mwrap{flex:1;position:relative;display:flex;min-height:0;width:100%;margin:0}
 .item .mwrap>iframe,.stage .mwrap>iframe{flex:1;width:100%;min-height:0;margin:0}
 .item .mwrap>.igcrop,.stage .mwrap>.igcrop{flex:1;width:100%;min-height:0;margin:0}
+/* TikTok: il lettore va nella forma esatta del video (9:16), altrimenti TikTok riempie i lati con una copia sfocata */
+.item .mwrap>iframe.tt,.stage .mwrap>iframe.tt{flex:none;height:100%;width:auto;aspect-ratio:9/16;max-width:100%;margin:0 auto;align-self:center}
+.item .mwrap.ttw,.stage .mwrap.ttw{justify-content:center}
 .ovl{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;gap:6px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 13px;min-height:36px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .igcrop{flex:1;min-height:74dvh;width:calc(100% + 28px);margin:0 -14px;overflow:hidden;position:relative;background:#fff}
 .igcrop iframe{position:absolute;left:0;top:-60px;width:100%;height:calc(100% + 60px);min-height:0;margin:0;border:0;border-radius:0;background:#fff}
@@ -988,7 +991,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v80', errLog = [];
+var APP_VER = 'v81', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1149,7 +1152,8 @@ function mediaRaw(r, pl) {
     fr.referrerPolicy = 'strict-origin-when-cross-origin';
     var inner = fr;
     if (/instagram\.com\/p\//.test(src)) { inner = el('div', 'igcrop'); inner.appendChild(fr); }
-    var wrap = el('div', 'mwrap'); wrap.appendChild(inner);
+    if (/tiktok\.com\/player/.test(src)) fr.className = 'tt';
+    var wrap = el('div', 'mwrap' + (fr.className === 'tt' ? ' ttw' : '')); wrap.appendChild(inner);
     var ov = el('a', 'ovl'); ov.href = r.u; ov.target = '_blank'; ov.rel = 'noopener noreferrer'; ov.setAttribute('aria-label', 'Apri il video originale');
     ov.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
     ov.appendChild(document.createTextNode('Apri')); wrap.appendChild(ov);
