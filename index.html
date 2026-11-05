@@ -348,6 +348,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .item iframe,.item video,.item .mwrap,.item>.igcrop{min-height:0}
 .item .cm{flex:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:8px 12px;font-size:15px}
 .item .from{flex:none}
+.item>.mph{flex:1;min-height:0;display:flex;flex-direction:column;background:#000;margin:0 -14px;width:calc(100% + 28px)}.item>.mph>*{flex:1;min-height:0}.item>.mph>.mwrap,.item>.mph>iframe{margin:0;width:100%}
 .item .bar,#pr{flex:none;flex-wrap:nowrap;gap:5px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .item .bar::-webkit-scrollbar,#pr::-webkit-scrollbar{display:none}
 .item .bar .r-btn,#pr .r-btn{flex:none;padding:6px 8px;min-width:40px;min-height:42px;font-size:15px;justify-content:center}
@@ -404,7 +405,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="inv2" id="pb" hidden style="cursor:pointer"><span>Hai copiato un Reel? <b>Tocca qui</b> per aggiungerlo.</span><button class="btn-o" id="pbx" aria-label="Chiudi">✕</button></div>
 
 <section class="pane" id="setup">
-  <div class="hero"><img class="big-mark" src="logo-reelta.png" alt="Reelta"><h1>Il vostro posto privato per i Reel</h1><p>Mandateveli, guardateli insieme anche da lontano, trasformateli in piani.</p></div>
+  <div class="hero"><img class="big-mark" src="logo-reelta.webp" width="170" height="170" alt="Reelta"><h1>Il vostro posto privato per i Reel</h1><p>Mandateveli, guardateli insieme anche da lontano, trasformateli in piani.</p></div>
   <div class="card">
     <h2 id="sT">Crea il tuo cerchio</h2>
     <p id="sP">Tu e una persona, in privato.</p>
@@ -1006,7 +1007,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v83', errLog = [];
+var APP_VER = 'v84', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1204,12 +1205,24 @@ document.addEventListener('visibilitychange', function () {
   q.appendChild(row); lk.appendChild(q);
 });
 function orig(r) { var a = el('a', 'orig', 'Non si vede? Apri l’originale'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; }
+// il feed carica i video solo vicino a dove stai guardando e libera quelli lontani: meno memoria, batteria e dati
+var feedNear = null, feedFar = null;
+function lazyMedia(r) {
+  var ph = el('div', 'mph'); ph._r = r;
+  if (!('IntersectionObserver' in window)) { ph.appendChild(media(r, false)); ph._on = true; return ph; }
+  if (!feedNear) {
+    feedNear = new IntersectionObserver(function (es) { es.forEach(function (e) { var p = e.target; if (e.isIntersecting && !p._on) { p._on = true; p.textContent = ''; p.appendChild(media(p._r, false)); } }); }, { root: $('feed'), rootMargin: '150% 0px' });
+    feedFar = new IntersectionObserver(function (es) { es.forEach(function (e) { var p = e.target; if (!e.isIntersecting && p._on && p.isConnected) { p._on = false; p.textContent = ''; } }); }, { root: $('feed'), rootMargin: '500% 0px' });
+  }
+  setTimeout(function () { feedNear.observe(ph); feedFar.observe(ph); }, 0);
+  return ph;
+}
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false };
   var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); nd.sb = el('button', 'sumb'); nd.sb.hidden = true; nd.sb.onclick = function () { sumOpen(r); }; f.appendChild(nd.sb);
   nd.kb = el('button', 'keepb'); nd.kb.onclick = function () { keepToggle(r.id); }; f.appendChild(nd.kb); d.appendChild(f);
   if (r.c) d.appendChild(el('div', 'cm', r.c));
-  d.appendChild(media(r, false));
+  d.appendChild(lazyMedia(r));
   nd.bar = el('div', 'bar'); d.appendChild(nd.bar);
   nd.cp = el('div', 'cpanel'); nd.cp.hidden = true; nd.list = el('div'); nd.cp.appendChild(nd.list);
   var row = el('div', 'r'), inp = el('input'), go = el('button', 'btn-o', 'Invia');
@@ -1696,7 +1709,9 @@ function mbPull(force) {
   })).catch(function () {}).then(function () { mbBusy = false; });
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) mbPull(true); });
-setInterval(function () { if (document.hidden || !me) return; var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open); if (!live || Date.now() - mbLast > 30000) mbPull(true); }, 10000);
+// controllo del server con meno batteria e dati: spesso mentre usi l'app, più di rado se è ferma o collegata direttamente
+var lastAct = Date.now(); ['touchstart', 'keydown', 'click'].forEach(function (ev) { document.addEventListener(ev, function () { lastAct = Date.now(); }, { passive: true, capture: true }); });
+setInterval(function () { if (document.hidden || !me) return; var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open); var gap = live ? 60000 : (Date.now() - lastAct < 120000 ? 10000 : 30000); if (Date.now() - mbLast >= gap - 500) mbPull(true); }, 5000);
 // notifiche ad app chiusa: il telefono si iscrive alle sue caselle (solo un avviso generico, mai il contenuto)
 function pushOK() { return srvOn() && 'serviceWorker' in navigator && 'PushManager' in window && window.Notification; }
 function pushBoxes() {
@@ -3205,7 +3220,19 @@ else {
   if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo Trio'; }
   syncKind(); showPane('setup');
 }
-if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  // l'app si apre subito dalla memoria del telefono; quando c'è una versione nuova si aggiorna da sola
+  var swHad = !!navigator.serviceWorker.controller, swT0 = Date.now(), swDone = false;
+  navigator.serviceWorker.register('sw.js').then(function (reg) {
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update().catch(function () {}); });
+  }).catch(function () {});
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (!swHad || swDone) return; swDone = true;
+    var busy = document.querySelector('.mod.open') || /^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '') || $('pl').classList.contains('show');
+    if (Date.now() - swT0 < 12000 && !busy) { location.reload(); return; }
+    var n = $('mh'); if (n) { n.textContent = '⬆️ C’è una versione nuova di Reelta: tocca qui per aggiornare.'; n.style.cursor = 'pointer'; n.onclick = function () { location.reload(); }; }
+  });
+}
 </script>
 <script>
 /* ---- Cassaforte: con il PIN attivo, i dati di Reelta sono salvati cifrati.
