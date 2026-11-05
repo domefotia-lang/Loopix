@@ -6,6 +6,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="lang.js"></script>
 <script>
+/* ---- trasloco a un nuovo indirizzo (senza perdere niente) ----
+   Il vecchio indirizzo impacchetta tutti i dati del telefono, li cifra con una chiave nuova e li lascia
+   sul server per pochi minuti; il nuovo indirizzo li scarica, li decifra e il server li cancella.
+   La chiave viaggia solo nel link (dopo il #), mai al server. */
+(function () {
+  var NEW_HOME = ''; // es. 'https://reelta.github.io/' — vuoto finché il nuovo indirizzo non è pronto
+  var SB = 'https://rvtxhsasngpqtojntpcn.supabase.co', SK = 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2';
+  window.MIG_HOME = NEW_HOME;
+  var T = function (x) { return (window.LX_T || String)(x); };
+  function call(b) { return fetch(SB + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SK }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+  function e64(u) { var s = ''; for (var i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function d64(t) { t = t.replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; var b = atob(t), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  function card(html) {
+    var go = function () { var d = document.getElementById('migC'); if (!d) { d = document.createElement('div'); d.id = 'migC'; d.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,14,10,.92);font-family:system-ui,-apple-system,sans-serif'; document.body.appendChild(d); }
+      d.innerHTML = '<div style="max-width:380px;width:100%;background:#2a201a;color:#f3e7d6;border-radius:22px;padding:22px;line-height:1.5;font-size:15px">' + html + '</div>'; return d; };
+    return document.body ? go() : (document.addEventListener('DOMContentLoaded', go), null);
+  }
+  var B = 'display:block;width:100%;margin-top:10px;padding:14px;border-radius:999px;font:inherit;font-weight:800;font-size:16px;border:0;cursor:pointer;';
+  var BTN = B + 'background:linear-gradient(120deg,#d08a5c,#b3683f);color:#fff', BTN2 = B + 'background:transparent;color:#f3e7d6;border:1px solid rgba(243,231,214,.3)';
+
+  // NUOVO indirizzo: arriva un trasloco
+  var mm = /#mig=([a-f0-9]{32})\.([\w-]{20,64})\.([\w-]{10,24})/.exec(location.hash);
+  if (mm) {
+    history.replaceState(null, '', location.pathname);
+    card('<h2 style="margin:0 0 8px">📦 ' + T('Trasloco in corso…') + '</h2><p style="margin:0">' + T('Sto portando qui i tuoi cerchi, i Reel e i messaggi.') + '</p>');
+    call({ a: 'dl', id: mm[1] }).then(function (r) {
+      if (!r || !r.url) throw new Error('gone');
+      return fetch(r.url).then(function (x) { if (!x.ok) throw new Error('gone'); return x.arrayBuffer(); });
+    }).then(function (ct) {
+      return crypto.subtle.importKey('raw', d64(mm[2]), 'AES-GCM', false, ['decrypt']).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: d64(mm[3]) }, k, ct); });
+    }).then(function (pt) {
+      var pack = JSON.parse(new TextDecoder().decode(pt)); if (!pack || pack.v !== 1 || !pack.ls) throw new Error('bad');
+      var hasMe = false; for (var i = 0; i < localStorage.length; i++) { var kk = localStorage.key(i) || ''; if (/^loopix3:(.*:)?me$/.test(kk) && localStorage.getItem(kk) && localStorage.getItem(kk) !== 'null') hasMe = true; }
+      if (hasMe && !confirm(T('Su questo telefono Reelta ha già dei cerchi. Vuoi sostituirli con quelli del trasloco?'))) return;
+      Object.keys(pack.ls).forEach(function (k) { try { localStorage.setItem(k, pack.ls[k]); } catch (e) {} });
+      try { localStorage.setItem('reelta-mig-ok', String(Date.now())); } catch (e) {}
+      call({ a: 'got', id: mm[1] }).catch(function () {});
+      location.replace(location.pathname);
+    }).catch(function () {
+      card('<h2 style="margin:0 0 8px">' + T('Trasloco non riuscito') + '</h2><p style="margin:0 0 6px">' + T('Il pacchetto non è più disponibile o la connessione è caduta. Torna al vecchio indirizzo e tocca di nuovo “Trasloca adesso”.') + '</p><button style="' + BTN2 + '" onclick="this.closest(\'#migC\').remove()">' + T('Chiudi') + '</button>');
+    });
+    return;
+  }
+  try { if (localStorage.getItem('reelta-mig-ok') && !sessionStorage.getItem('reelta-mig-shown')) { sessionStorage.setItem('reelta-mig-shown', '1'); var ok = +localStorage.getItem('reelta-mig-ok'); if (Date.now() - ok < 6e5) setTimeout(function () { card('<h2 style="margin:0 0 8px">✓ ' + T('Trasloco completato') + '</h2><p style="margin:0">' + T('Ci sono tutti i tuoi cerchi. Se usi Reelta dalla Home, aggiungi questa nuova versione alla Home e cancella la vecchia icona.') + '</p><button style="' + BTN + '" onclick="this.closest(\'#migC\').remove()">' + T('Perfetto') + '</button>'); }, 600); } } catch (e) {}
+
+  function pack(home0) {
+    var ls = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); ls[k] = localStorage.getItem(k); }
+    var data = new TextEncoder().encode(JSON.stringify({ v: 1, ts: Date.now(), ls: ls })), iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']).then(function (key) {
+      return Promise.all([crypto.subtle.exportKey('raw', key), crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, data)]);
+    }).then(function (r) {
+      var ct = new Blob([r[1]]);
+      return call({ a: 'up', sz: ct.size, n: 3 }).then(function (up) {
+        if (!up || !up.id || !up.url) throw new Error('up');
+        return fetch(up.url, { method: 'PUT', body: ct, headers: { 'Content-Type': 'application/octet-stream' } }).then(function (x) { if (!x.ok) throw new Error('put'); return (home0 || NEW_HOME) + '#mig=' + up.id + '.' + e64(new Uint8Array(r[0])) + '.' + e64(iv); });
+      });
+    });
+  }
+  window.__migPack = pack;
+  // VECCHIO indirizzo: porta le persone nella nuova casa
+  if (!NEW_HOME || (location.origin + location.pathname).indexOf(NEW_HOME) === 0 || location.protocol.indexOf('http') !== 0 || /^(localhost|127\.)/.test(location.hostname)) return;
+  var hasData = !!localStorage.getItem('loopixreg');
+  if (!hasData) { location.replace(NEW_HOME + location.search + location.hash); return; }
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent), home = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+  function ask() {
+    if (sessionStorage.getItem('reelta-mig-later')) return;
+    card('<h2 style="margin:0 0 8px">🏡 ' + T('Reelta ha una nuova casa') + '</h2><p style="margin:0 0 4px">' + T('Nuovo indirizzo, più semplice e senza nomi personali. Porto tutto io: cerchi, Reel, piani e messaggi. Ci vogliono 10 secondi.') + '</p><p style="margin:0;opacity:.75;font-size:13px">' + T('Le foto e i video fissati 📌 restano qui: salvali nel telefono se ti servono.') + '</p>' +
+      '<button id="migGo" style="' + BTN + '">📦 ' + T('Trasloca adesso') + '</button><button id="migL" style="' + BTN2 + '">' + T('Più tardi') + '</button><p id="migH" style="margin:10px 0 0;font-size:13px;opacity:.85"></p>');
+    var c = document.getElementById('migC'); if (!c) return setTimeout(ask, 300);
+    document.getElementById('migL').onclick = function () { sessionStorage.setItem('reelta-mig-later', '1'); c.remove(); };
+    document.getElementById('migGo').onclick = function () {
+      var b = this; b.disabled = true; b.textContent = '📦 ' + T('Impacchetto…');
+      pack().then(function (link) {
+        try { navigator.clipboard && navigator.clipboard.writeText(link); } catch (e) {}
+        try { localStorage.setItem('reelta-mig-link', link); } catch (e) {}
+        if (ios && home) {
+          card('<h2 style="margin:0 0 8px">📦 ' + T('Pacchetto pronto') + '</h2><ol style="margin:0;padding-left:20px"><li>' + T('Tocca “Apri la nuova casa”: si apre in Safari e porta tutto.') + '</li><li>' + T('In Safari: Condividi → “Aggiungi alla schermata Home”.') + '</li><li>' + T('Apri la nuova icona: ritrovi tutto. Poi cancella questa vecchia.') + '</li></ol><a href="' + link + '" target="_blank" rel="noopener" style="' + BTN + ';text-align:center;text-decoration:none;box-sizing:border-box">🏡 ' + T('Apri la nuova casa') + '</a><p style="margin:10px 0 0;font-size:13px;opacity:.8">' + T('Il link è già copiato: se serve, nella nuova app tocca “Ho già un invito”.') + '</p>');
+        } else location.href = link;
+      }).catch(function () { b.disabled = false; b.textContent = '📦 ' + T('Riprova'); document.getElementById('migH').textContent = T('Non è partito: controlla la connessione e riprova.'); });
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(ask, 400); }); else setTimeout(ask, 400);
+})();
+</script>
+<script>
 /* iPhone (app sulla Home): con la barra di stato trasparente iOS calcola l'altezza
    senza la barra in alto e lascia un vuoto in fondo. Usiamo l'altezza vera dello schermo. */
 (function () {
@@ -1016,7 +1101,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v87', errLog = [];
+var APP_VER = 'v88', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -3173,6 +3258,7 @@ $('haveInv').addEventListener('click', async function () {
   var t = '';
   try { t = await navigator.clipboard.readText(); } catch (e) { $('ic').focus(); $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; return; }
   if (tryDev(t)) return;
+  var mg = /#mig=[a-f0-9]{32}\.[\w.-]+/.exec(t || ''); if (mg) { location.replace(location.pathname + mg[0]); location.reload(); return; }
   var m = /#j=([\w-]{8,100})/.exec(t || '');
   if (!m) { $('sH').textContent = 'Non trovo un invito copiato. In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi torna qui e riprova.'; return; }
   $('ic').value = location.origin + location.pathname + '#j=' + m[1];
