@@ -41,10 +41,10 @@
 --gold:linear-gradient(180deg,var(--gl),var(--g) 62%,#B98B4E);--spec:linear-gradient(120deg,#B98B4E,#F6E2B4 52%,#DDB574);--spec-ink:#2B1B0D;
 --dis:"Fraunces",Georgia,"Times New Roman",serif;--txt:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--t);font-family:var(--txt);-webkit-font-smoothing:antialiased}
+html,body{height:var(--apph,100%);overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--t);font-family:var(--txt);-webkit-font-smoothing:antialiased}
 body{display:flex;justify-content:center;background:radial-gradient(110% 55% at 50% -8%,#4A3624 0%,var(--bg) 62%) var(--bg)}
 button,input,select{font-family:inherit;color:inherit}
-.app{position:fixed;top:0;left:0;right:0;height:var(--apph,100dvh);margin:0 auto;width:100%;max-width:440px;display:flex;flex-direction:column;padding-bottom:0}
+.app{position:absolute;top:0;left:0;right:0;height:var(--apph,100dvh);margin:0 auto;width:100%;max-width:440px;display:flex;flex-direction:column;padding-bottom:0}
 #pl,#setup{padding-bottom:env(safe-area-inset-bottom,0px)}
 #pl>.grab,#pl>.strip,#pl>.pbar,#pl>.live{flex:none}
 
@@ -161,7 +161,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .strip{display:flex;gap:8px;align-items:center;padding:6px 14px 10px}
 .who{font-size:15px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gl)}
 select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;background:var(--s2);border:1px solid var(--line)}
-.stage{flex:1;min-height:0;display:flex;padding:0;position:relative;background:#000}
+.stage{flex:1;min-height:0;display:flex;padding:0;position:relative;background:#000;overflow:hidden}
 .stage iframe{flex:1;width:100%;border:0;border-radius:0;background:#000}
 .on #pl .stage{box-shadow:inset 0 2px 0 var(--g),inset 0 -2px 0 var(--g)}
 #pl{transition:transform .2s ease,opacity .2s ease}#pl.drag{transition:none}
@@ -451,8 +451,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (coppia o gruppo da 3)</button></div>
   <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
-  <div class="card"><button class="btn-o wide" id="goStyle" style="margin-top:0">⚙️ Profilo, notifiche e stile</button><button class="btn-o wide" id="help">❓ Come si usa</button><button class="btn-o wide" id="refGo">💌 Consiglia Reelta a un’altra coppia</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button><button class="btn-o wide danger" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
-  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card"><button class="btn-o wide" style="margin-top:0" id="refGo">💌 Consiglia Reelta a un’altra coppia</button></div>
+
 </div></section>
 
 <section class="pane" id="chat" aria-label="Messaggi"><div class="head"><h2>Messaggi</h2></div><p class="hint chint">Tocca un messaggio per copiarlo o eliminarlo.</p><div id="ttlNote" hidden></div>
@@ -470,6 +470,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn wide" id="prS">Salva il profilo</button><div class="hint" id="prH" aria-live="polite"></div>
     <input type="file" id="prFile" accept="image/*" hidden>
   </div>
+  <div class="card" id="hlpC"><h2>❓ Aiuto</h2><button class="btn-o wide" style="margin-top:0" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button></div>
   <div class="card" id="ntC"><h2>🔔 Notifiche</h2>
     <button class="btn" id="pushB" hidden type="button" style="margin:0 0 6px">🔔 Avvisami anche ad app chiusa</button>
     <p class="hint" id="pushH" hidden style="margin:0 0 12px"></p>
@@ -513,6 +514,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
   <div class="card" id="supC" hidden><h2>❤️ Sostieni Reelta</h2><p>Reelta è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
+  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card"><button class="btn-o wide danger" style="margin-top:0" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
 </div></section>
 
 <nav class="tabs" id="tabs" hidden aria-label="Sezioni">
@@ -969,7 +972,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v75', errLog = [];
+var APP_VER = 'v76', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2791,7 +2794,6 @@ $('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if 
 $('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
-$('goStyle').addEventListener('click', function () { showPane('style'); });
 $('hdSet').addEventListener('click', function () { showPane('style'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { try { localStorage.removeItem(LSG + 'dev'); } catch (e) {} isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
