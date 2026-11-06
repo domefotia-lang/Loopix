@@ -5,6 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://rvtxhsasngpqtojntpcn.supabase.co https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="lang.js"></script>
+<script>window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});window.addEventListener("appinstalled",function(){window.__bip=null;window.__inst=1;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});</script>
 <script>
 /* ---- trasloco a un nuovo indirizzo (senza perdere niente) ----
    Il vecchio indirizzo impacchetta tutti i dati del telefono, li cifra con una chiave nuova e li lascia
@@ -300,6 +301,11 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--dis);font-size:88px;font-weight:700;color:var(--gl);background:rgba(36,26,19,.72);z-index:30;text-align:center}
 
 /* avvisi */
+.instb span{display:flex;flex-direction:column;gap:1px;flex:1}.instb small{font-size:12.5px;color:var(--m)}.instb .btn{margin:0;padding:10px 16px;width:auto;flex:none}.instb #ix{padding:8px 11px;flex:none}
+.isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
+.isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
+.iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
+@keyframes iarr{50%{transform:translateY(10px)}}@keyframes iarru{0%,100%{transform:rotate(180deg)}50%{transform:rotate(180deg) translateY(10px)}}
 .inv2{margin:4px 14px 8px;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:12px 14px;font-size:15px;line-height:1.4}
 .inv2 b{color:var(--g)}
 #ib{position:relative;z-index:3;border:1.5px solid var(--g);box-shadow:0 0 24px rgba(221,181,116,.22)}
@@ -516,7 +522,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <div class="app" id="app">
 <header><button class="hset" id="hdSet" aria-label="Menu" aria-expanded="false" aria-controls="dw"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i id="hdDot" hidden></i></button><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
 
-<div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
+<div class="inv2 instb" id="ios" hidden style="margin:10px 14px 0"><span id="iosT"><b>📲 Mettila sulla Home</b><small>Si apre come un’app, con le notifiche.</small></span><button class="btn go" id="instGo">Installa</button><button class="btn-o" id="ix" aria-label="Non ora">✕</button></div>
 
   <div class="inv2" id="ib" hidden><span id="it"></span><button class="btn-o" id="ij">Unisciti</button><button class="btn-o" id="ibx" aria-label="Non ora">✕</button></div>
 
@@ -757,6 +763,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="sumX">Chiudi</button>
 </div></div>
 
+<div class="mod" id="instM" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="card"><h2 id="instT">📲 Reelta sulla Home</h2><ol class="isteps" id="instL"></ol><div class="duo"><button class="btn-o" id="instX">Più tardi</button><button class="btn go" id="instA" hidden></button></div></div></div>
+<div class="iarr" id="iarr" hidden aria-hidden="true">⬇</div>
 <div id="dw" aria-hidden="true"><nav class="dwp" role="dialog" aria-modal="true" aria-label="Menu" id="dwP"></nav><div class="dws" id="dwS"></div></div>
 <div class="mod" id="decM" role="dialog" aria-modal="true" aria-labelledby="decT"><div class="card">
   <h2 id="decT">Decidete insieme</h2>
@@ -1148,7 +1156,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v93', errLog = [];
+var APP_VER = 'v94', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1405,6 +1413,7 @@ function dwOpen() {
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
     P.appendChild(s);
   }
+  if (typeof inBrowser !== 'undefined' && inBrowser && !window.__inst) { var ib2 = el('button', 'it'); ib2.type = 'button'; ib2.appendChild(el('span', null, '📲')); ib2.appendChild(document.createTextNode('Installa Reelta sulla Home')); ib2.onclick = function () { dwClose(); instGo(); }; var sx = el('div', 'sec'); sx.appendChild(ib2); P.appendChild(sx); }
   sec('I tuoi contenuti', [
     ['⭐', 'Reel tenuti', function () { dwGo('main', null, function () { fview = 'keep'; render(); }); }, n.keep],
     ['📌', 'Messaggi fissati', function () { dwGo('chat', null, pinOpen); }, n.pin],
@@ -3446,18 +3455,48 @@ var isStandalone = (window.matchMedia && matchMedia('(display-mode: standalone)'
 var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent), isAndroid = /android/i.test(navigator.userAgent);
 var inBrowser = (isIOS || isAndroid) && !isStandalone;
 var seenBanner = false; try { seenBanner = sessionStorage.getItem('lx-banner') === '1'; } catch (e) {}
+var inApp = /Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Bytedance|Snapchat|Line\/|LinkedInApp|GSA\//i.test(navigator.userAgent);
+var iosChrome = isIOS && /CriOS|FxiOS|EdgiOS/i.test(navigator.userAgent);
+var isSamsung = /SamsungBrowser/i.test(navigator.userAgent);
+function hereUrl() { return location.origin + location.pathname + (typeof joinId !== 'undefined' && joinId ? '?j=' + joinId : ''); }
+function chromeIntent() { return 'intent://' + location.host + location.pathname + (typeof joinId !== 'undefined' && joinId ? '?j=' + joinId : '') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=com.android.chrome') + ';end'; }
+function instArrow(pos) { var a = $('iarr'); a.className = 'iarr ' + (pos || ''); a.hidden = !pos; }
+function instClose() { $('instM').classList.remove('open'); instArrow(null); }
+function instGuide(steps, act, arrow) {
+  var L = $('instL'); L.textContent = '';
+  steps.forEach(function (h) { var li = document.createElement('li'); li.innerHTML = '<span>' + (window.LX_T ? LX_T(h) : h) + '</span>'; L.appendChild(li); });
+  var A = $('instA'); A.hidden = !act; if (act) { A.textContent = act[0]; A.onclick = act[1]; }
+  $('instM').classList.add('open'); instArrow(arrow);
+}
+function instCopyInvite() {
+  try { if (me && me.role !== 'host' && me.hostId && me.code && me.tok && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {}); } catch (e) {}
+}
+// un tocco: dove il telefono lo permette installa subito, altrimenti guida passo passo con la freccia che indica dove toccare
+function instS3() { return me && me.role !== 'host' ? 'Tocca <b>“Aggiungi”</b>. Poi apri Reelta dall’icona e tocca <b>“Ho già un invito”</b> (è già copiato).' : 'Tocca <b>“Aggiungi”</b>. Poi apri Reelta dall’icona.'; }
+function instGo() {
+  track('installa-tocco');
+  if (window.__bip) {
+    var ev = window.__bip; window.__bip = null;
+    ev.prompt(); (ev.userChoice || Promise.resolve({})).then(function (c) {
+      if (c && c.outcome === 'accepted') { $('ios').hidden = true; track('installata'); ask('✅ Fatto!', 'Trovi Reelta tra le app del telefono: d’ora in poi aprila da lì.', 'Ok'); }
+    });
+    return;
+  }
+  instCopyInvite();
+  if (inApp && isIOS) return instGuide(['Qui dentro non si può installare. Apri Reelta in <b>Safari</b>:', 'Poi tocca di nuovo <span class="k">Installa</span>.'], ['🧭 Apri in Safari', function () { location.href = 'x-safari-' + hereUrl(); setTimeout(function () { instGuide(['Se non si è aperto Safari: tocca <span class="k">⋯</span> in alto a destra → <b>“Apri nel browser”</b>.', 'Poi tocca di nuovo <span class="k">Installa</span>.'], null, 'tr'); }, 1500); }]);
+  if (inApp || isSamsung) return instGuide([isSamsung ? 'Samsung Internet a volte blocca l’installazione. Si fa in un attimo con <b>Chrome</b>.' : 'Qui dentro non si può installare. Apri Reelta in <b>Chrome</b>.', 'Lì tocca di nuovo <span class="k">Installa</span>: basta un tocco.'], ['Apri in Chrome', function () { location.href = chromeIntent(); }]);
+  if (iosChrome) return instGuide(['Tocca <span class="k">⬆ Condividi</span> in alto a destra, accanto all’indirizzo (la freccia te lo indica).', 'Scorri e tocca <b>“Aggiungi alla schermata Home”</b>.', instS3()], null, 'tr');
+  if (isIOS) return instGuide(['Tocca <span class="k">⋯</span> in basso a destra (oppure <span class="k">⬆</span> se lo vedi in basso). La freccia te lo indica.', 'Tocca <b>“Condividi”</b>, poi scorri e tocca <b>“Aggiungi alla schermata Home”</b>.', instS3()], null, 'br');
+  instGuide(['Tocca <span class="k">⋮</span> in alto a destra (la freccia te lo indica).', 'Tocca <b>“Installa app”</b> o <b>“Aggiungi a schermata Home”</b>.', 'Conferma. Poi apri Reelta dall’icona.'], null, 'tr');
+}
 if (inBrowser) {
-  $('ios').querySelector('span').innerHTML = isIOS
-    ? (me && me.role !== 'host'
-      ? '⚠️ <b>Stai usando Reelta in Safari.</b> Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca <b>Condividi ⬆</b> (sugli iPhone recenti è nel tasto <b>≡</b> accanto all’indirizzo) → <b>“Aggiungi alla schermata Home”</b>, aprila dall’icona e tocca <b>“Ho già un invito”</b> (l’invito è già copiato).'
-      : '⚠️ <b>Stai usando Reelta in Safari.</b> Mettila prima sulla Home: tocca <b>Condividi ⬆</b> (sugli iPhone recenti è nel tasto <b>≡</b> accanto all’indirizzo) → <b>“Aggiungi alla schermata Home”</b>. Poi aprila dall’icona e crea lì il tuo cerchio: quello creato qui in Safari resta solo qui.')
-    : /SamsungBrowser/i.test(navigator.userAgent)
-    ? '⚠️ <b>Con Samsung Internet l’installazione può essere bloccata per errore.</b> Apri Reelta in <b>Chrome</b> e lì: menu <b>⋮</b> → <b>“Installa app”</b>. <a id="toChrome" style="color:inherit;font-weight:800">Apri in Chrome ›</a>'
-    : '⚠️ <b>Stai usando Reelta nel browser.</b> Per averla come app: menu <b>⋮</b> → <b>“Installa app”</b>, poi aprila dall’icona.';
-  var tc = document.getElementById('toChrome');
-  if (tc) tc.href = 'intent://' + location.host + location.pathname + (joinId ? '?j=' + joinId : '') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=com.android.chrome') + ';end';
+  $('iosT').querySelector('small').textContent = me && me.role !== 'host' ? 'Così ritrovi il cerchio e ricevi le notifiche.' : 'Si apre come un’app, con le notifiche.';
 }
 $('ios').hidden = !inBrowser || seenBanner;
+$('instGo').addEventListener('click', instGo);
+$('instX').addEventListener('click', instClose);
+$('instM').addEventListener('click', function (e) { if (e.target === $('instM')) instClose(); });
+document.addEventListener('lx-bip', function () { if (window.__inst) $('ios').hidden = true; });
 $('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
 $('haveInv').addEventListener('click', async function () {
   var t = '';
