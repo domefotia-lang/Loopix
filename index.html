@@ -196,6 +196,7 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .duo{display:flex;gap:8px;padding:2px 14px 8px}
 .duo .btn{flex:1.4;min-height:50px;font-size:16px;padding:12px}
 .duo .btn-o{flex:1}
+.prow2{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--t);cursor:pointer;padding:14px 16px}.prow2>span:nth-child(2){flex:1;display:flex;flex-direction:column}.prow2 small{color:var(--m);font-size:13px}.prow2>span:last-child{font-size:24px;color:var(--m)}#gpA .av{width:44px;height:44px}
 #askP{white-space:pre-line}
 .nov{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 14px 8px}.nov .chip{padding:7px 12px;font-size:13px;font-weight:700}.nov .ok{font-size:13px;font-weight:700;color:var(--m);margin-right:4px}
 .fw{flex:1;min-height:0;position:relative;display:flex}
@@ -490,7 +491,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
 <div class="app" id="app">
-<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button><button class="hset" id="hdSet" aria-label="Profilo e impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
+<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button><button class="hset" id="hdSet" aria-label="Impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
 
 <div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
 
@@ -574,8 +575,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="cbar"><input type="file" id="mFile" accept="image/*,video/*" hidden><input type="file" id="mCamP" accept="image/*" capture="environment" hidden><input type="file" id="mCamV" accept="video/*" capture="environment" hidden><div class="lbar"><button type="button" id="mAdd" class="madd" aria-label="Manda foto o video">📷</button><input id="cin" placeholder="Scrivi un messaggio…" aria-label="Messaggio" maxlength="1000" autocomplete="off"><button class="btn" id="csend">Invia</button></div></div>
 </section>
 
-<section class="pane" id="style" aria-label="Impostazioni"><div class="head"><h2>Impostazioni</h2></div><div class="list">
-  <div class="card" id="prC"><h2>Il tuo profilo</h2>
+<section class="pane" id="prof" aria-label="Il tuo profilo"><div class="head"><h2>Il tuo profilo</h2></div><div class="list">
+  <div class="card" id="prC">
     <div class="prof"><span id="prA"></span><div><b id="prN"></b><div class="hint" style="margin:2px 0 0">Lo vedono le persone di questo cerchio.</div></div></div>
     <input id="prI" maxlength="30" autocomplete="off" aria-label="Il tuo nome" placeholder="Il tuo nome">
     <div class="prow"><button class="btn-o" id="prF">📷 Scegli una foto</button><button class="btn-o" id="prX">Nessuna immagine</button></div>
@@ -584,6 +585,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn wide" id="prS">Salva il profilo</button><div class="hint" id="prH" aria-live="polite"></div>
     <input type="file" id="prFile" accept="image/*" hidden>
   </div>
+  <div class="card"><h2>Lingua</h2><select id="langSel" aria-label="Lingua"><option value="">Automatica (lingua del telefono)</option><option value="it">Italiano</option><option value="en">English</option><option value="es">Español</option></select><p class="hint">La lingua cambia subito. Messaggi e Reel restano come sono stati scritti.</p></div>
+</div></section>
+<section class="pane" id="style" aria-label="Impostazioni"><div class="head"><h2>Impostazioni</h2></div><div class="list">
+  <button class="card prow2" id="goProf" type="button"><span id="gpA"></span><span><b id="gpN"></b><small>Profilo, foto e lingua</small></span><span aria-hidden="true">›</span></button>
   <div class="card" id="hlpC"><h2>❓ Aiuto</h2><button class="btn-o wide" style="margin-top:0" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button></div>
   <div class="card" id="kpC"><h2>⭐ Reel da tenere</h2><p style="margin-top:0">Su ogni Reel tocca ☆ accanto al nome per tenerlo. Si conserva il link: se l’autore cancella il video, sparisce anche qui.</p>
     <label class="tog">Reel non tenuti<select id="rkS" aria-label="Reel non tenuti"><option value="0">Tienili tutti</option><option value="7">Puliscili dopo 7 giorni</option><option value="30">Puliscili dopo 30 giorni</option></select></label>
@@ -608,7 +613,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn-o wide" id="ntTry" style="margin-top:14px">✨ Prova l’effetto</button>
     <p class="hint">Ad app chiusa gli avvisi arriveranno con le notifiche del telefono, appena attiviamo il server. Lì la luce dei bordi (Samsung: Illuminazione bordi) e il flash della fotocamera (iPhone: Impostazioni → Accessibilità → Audio e immagini → Flash LED per avvisi) si accendono da soli.</p>
   </div>
-  <div class="card"><h2>Lingua</h2><select id="langSel" aria-label="Lingua"><option value="">Automatica (lingua del telefono)</option><option value="it">Italiano</option><option value="en">English</option><option value="es">Español</option></select><p class="hint">La lingua cambia subito. Messaggi e Reel restano come sono stati scritti.</p></div>
   <div class="card"><h2>Aspetto</h2>
     <div class="mode" id="modeB" role="group" aria-label="Aspetto">
       <button data-m="light"><span aria-hidden="true">☀️</span>Chiaro</button>
@@ -1119,7 +1123,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v90', errLog = [];
+var APP_VER = 'v91', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2194,7 +2198,7 @@ function stopFeed() {
 }
 function showPane(id) {
   if (id !== 'main') stopFeed();
-  ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
+  ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'prof', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
   var on = id !== 'setup' && id !== 'pl';
   document.querySelector('header').hidden = id === 'pl';
   $('tabs').hidden = !on;
@@ -2204,7 +2208,7 @@ function showPane(id) {
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
   if (id === 'chat') { chatSeen = 0; put('chatAt', Date.now()); chatTab(); renderChat(); renderNov(); }
   if (id === 'circle') renderCircle();
-  if (id === 'style') renderStyle();
+  if (id === 'style' || id === 'prof') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;
 if (!get('chatAt', 0)) put('chatAt', Date.now());
@@ -3042,6 +3046,7 @@ function renderProfile() {
   if (!me || !$('prA')) return;
   var keep = me.pic; if (prPic !== undefined) me.pic = prPic;
   var a = $('prA'); a.textContent = ''; a.appendChild(avatar(me.name)); me.pic = keep;
+  if ($('gpA')) { $('gpA').textContent = ''; $('gpA').appendChild(avatar(me.name)); $('gpN').textContent = me.name; }
   $('prN').textContent = me.name; if (document.activeElement !== $('prI') && !$('prI').dataset.edit) $('prI').value = me.name;
   var cur = prPic !== undefined ? prPic : (me.pic || ''), box = $('prE'); box.textContent = '';
   EMOJI_AV.forEach(function (e) { var b = el('button', e === cur ? 'on' : null, e); b.type = 'button'; b.setAttribute('aria-label', 'Avatar ' + e); b.addEventListener('click', function () { prPic = e; renderProfile(); }); box.appendChild(b); });
@@ -3318,6 +3323,8 @@ $('invKill').addEventListener('click', function () { ask('Annullare gli inviti g
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
 $('hdSet').addEventListener('click', function () { showPane('style'); });
+$('av').addEventListener('click', function () { showPane('prof'); }); $('av').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPane('prof'); } });
+$('goProf').addEventListener('click', function () { showPane('prof'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { try { localStorage.removeItem(LSG + 'dev'); } catch (e) {} isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
