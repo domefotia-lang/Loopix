@@ -134,6 +134,17 @@ button,input,select{font-family:inherit;color:inherit}
 #pl>.grab,#pl>.strip,#pl>.pbar,#pl>.live{flex:none}
 
 /* testata */
+#hdSet{position:relative;margin-right:2px}#hdSet svg{stroke-width:2}#hdDot{position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#E2735A;border:2px solid var(--bg)}
+#dw{position:fixed;inset:0;z-index:95;visibility:hidden;pointer-events:none}#dw.open{visibility:visible;pointer-events:auto}
+#dw .dws{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .22s}#dw.open .dws{opacity:1}
+#dw .dwp{position:absolute;z-index:1;top:0;left:0;bottom:0;width:82%;max-width:340px;background:var(--bg);border-right:1px solid var(--line);box-shadow:8px 0 40px rgba(0,0,0,.35);transform:translateX(-102%);transition:transform .24s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;padding:calc(18px + env(safe-area-inset-top,0px)) 0 calc(18px + env(safe-area-inset-bottom,0px));color:var(--t)}#dw.open .dwp{transform:none}
+#dw .me{display:flex;align-items:center;gap:14px;padding:6px 20px 18px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;text-align:left;font:inherit;cursor:pointer;width:100%}#dw .me .av{width:52px!important;height:52px!important;font-size:22px!important;flex:none}#dw .me b{font-size:19px;display:block}#dw .me small{color:var(--m);font-size:13px}
+#dw .sec{padding:12px 10px 0}#dw h4{margin:0 12px 4px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--m);font-weight:700}
+#dw .it{display:flex;align-items:center;gap:14px;width:100%;padding:11px 12px;border:0;border-radius:14px;background:none;color:inherit;font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer}#dw .it:active,#dw .it:focus-visible{background:var(--s2)}#dw .it>span{width:26px;text-align:center;font-size:19px;flex:none}#dw .it em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;background:var(--s2);border-radius:999px;padding:2px 9px;color:var(--g)}#dw .it em.hot{background:#E2735A;color:#fff}
+#dw .dwref{display:block;margin:14px 16px 2px;padding:12px 16px;border:0;border-radius:16px;background:var(--spec,linear-gradient(135deg,#F6E2B4,#C99A5B));color:var(--spec-ink,#2B1B0D);text-align:left;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18)}#dw .dwref b{display:block;font-size:16px}#dw .dwref small{display:block;font-size:12.5px;opacity:.8;margin-top:2px}
+#dw .ft{margin-top:auto;padding:16px 22px 0;color:var(--m);font-size:12px;opacity:.8}
+.card.flash{animation:cflash 1.2s ease}@keyframes cflash{0%,60%{box-shadow:0 0 0 2px var(--g)}100%{box-shadow:none}}
+@media (prefers-reduced-motion:reduce){#dw .dwp,#dw .dws{transition:none}}
 .hset{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g)}.hset svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;align-items:center;gap:10px}
 .logo{display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;padding:4px 0;font-family:var(--dis);font-weight:600;font-size:27px;letter-spacing:-.01em;color:var(--gl)}
@@ -282,6 +293,10 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 #immR .sep{width:18px;height:1px;background:rgba(255,255,255,.22);margin:2px 0}
 .fl{position:absolute;bottom:14px;font-size:38px;animation:up 2s ease-out forwards;pointer-events:none;z-index:6}
 @keyframes up{to{transform:translateY(-320px) scale(1.2);opacity:0}}
+.pz{position:absolute;left:14px;right:14px;bottom:calc(118px + env(safe-area-inset-bottom,0px));z-index:31;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--t)}
+.pz b{display:block;font-size:17px}.pz .why{margin:6px 0 2px;font-size:16px;font-weight:700;color:var(--g)}.pz .hint{margin:4px 0 0}
+.pz .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 4px}.pz .chips button{padding:8px 13px;font-size:14px}
+.pz .r{display:flex;gap:8px;margin-top:10px}.pz .r input{flex:1;min-width:0}.pz .btn{margin-top:12px;width:100%}
 .cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--dis);font-size:88px;font-weight:700;color:var(--gl);background:rgba(36,26,19,.72);z-index:30;text-align:center}
 
 /* avvisi */
@@ -499,7 +514,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
 <div class="app" id="app">
-<header><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button><button class="hset" id="hdSet" aria-label="Impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
+<header><button class="hset" id="hdSet" aria-label="Menu" aria-expanded="false" aria-controls="dw"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i id="hdDot" hidden></i></button><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
 
 <div class="inv2" id="ios" hidden style="margin:10px 14px 0"><span>📲 Per averla come app: tocca <b>Condividi ⬆</b> in Safari, poi <b>“Aggiungi alla schermata Home”</b>. Aprila e incolla l’invito nel campo (è già copiato): ritrovi il cerchio.</span><button class="btn-o" id="ix">OK</button></div>
 
@@ -559,7 +574,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="stage" id="st"></div>
   <div class="live" id="lv" hidden><div id="ll"></div><div class="r"><input id="li" placeholder="Scrivi in diretta…" aria-label="Commento in diretta" maxlength="300"><button class="btn-o" id="lsend">Invia</button></div></div>
   <div class="cd" id="cd" hidden></div>
-  <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
+  <div class="pz" id="pz" hidden role="status" aria-live="polite"></div>
+  <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn-o" id="pzB" hidden aria-label="Metti in pausa per tutti">⏸</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
 </section>
 
 <section class="pane" id="ideas" aria-label="Idee">
@@ -593,7 +609,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn wide" id="prS">Salva il profilo</button><div class="hint" id="prH" aria-live="polite"></div>
     <input type="file" id="prFile" accept="image/*" hidden>
   </div>
-  <div class="card"><h2>Lingua</h2><select id="langSel" aria-label="Lingua"><option value="">Automatica (lingua del telefono)</option><option value="it">Italiano</option><option value="en">English</option><option value="es">Español</option></select><p class="hint">La lingua cambia subito. Messaggi e Reel restano come sono stati scritti.</p></div>
+  <div class="card" id="lgC"><h2>Lingua</h2><select id="langSel" aria-label="Lingua"><option value="">Automatica (lingua del telefono)</option><option value="it">Italiano</option><option value="en">English</option><option value="es">Español</option></select><p class="hint">La lingua cambia subito. Messaggi e Reel restano come sono stati scritti.</p></div>
 </div></section>
 <section class="pane" id="style" aria-label="Impostazioni"><div class="head"><h2>Impostazioni</h2></div><div class="list">
   <button class="card prow2" id="goProf" type="button"><span id="gpA"></span><span><b id="gpN"></b><small>Profilo, foto e lingua</small></span><span aria-hidden="true">›</span></button>
@@ -621,14 +637,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn-o wide" id="ntTry" style="margin-top:14px">✨ Prova l’effetto</button>
     <p class="hint">Ad app chiusa gli avvisi arriveranno con le notifiche del telefono, appena attiviamo il server. Lì la luce dei bordi (Samsung: Illuminazione bordi) e il flash della fotocamera (iPhone: Impostazioni → Accessibilità → Audio e immagini → Flash LED per avvisi) si accendono da soli.</p>
   </div>
-  <div class="card"><h2>Aspetto</h2>
+  <div class="card" id="apC"><h2>Aspetto</h2>
     <div class="mode" id="modeB" role="group" aria-label="Aspetto">
       <button data-m="light"><span aria-hidden="true">☀️</span>Chiaro</button>
       <button data-m="dark"><span aria-hidden="true">🌙</span>Scuro</button>
       <button data-m="auto"><span aria-hidden="true">🌗</span>Automatico</button>
     </div>
     <p id="modeP"></p></div>
-  <div class="card"><h2>🕶️ Privacy</h2>
+  <div class="card" id="rsC"><h2>🕶️ Privacy</h2>
     <label class="tog">Modalità riservata<input type="checkbox" id="rsT"></label>
     <p id="rsP" style="margin-top:6px"></p>
     <label class="tog" style="margin-top:10px">Conferme di lettura (✓✓)<input type="checkbox" id="rcT"></label>
@@ -636,14 +652,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   </div>
   <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
   <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
-  <div class="card"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
+  <div class="card" id="pnC"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
   <div class="card plus"><h2>Gratis per sempre</h2>
     <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Un Duo e un Trio, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
     <h2 style="margin-top:14px">In arrivo con Reelta Plus</h2>
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
   <div class="card" id="supC" hidden><h2>❤️ Sostieni Reelta</h2><p>Reelta è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
-  <div class="card"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card" id="bkC"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
   <div class="card"><button class="btn-o wide danger" style="margin-top:0" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
 </div></section>
 
@@ -741,6 +757,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="sumX">Chiudi</button>
 </div></div>
 
+<div id="dw" aria-hidden="true"><nav class="dwp" role="dialog" aria-modal="true" aria-label="Menu" id="dwP"></nav><div class="dws" id="dwS"></div></div>
 <div class="mod" id="decM" role="dialog" aria-modal="true" aria-labelledby="decT"><div class="card">
   <h2 id="decT">Decidete insieme</h2>
   <p id="decP">Ti va? Se piace anche all’altra persona, lo organizzate insieme.</p>
@@ -1131,7 +1148,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v92', errLog = [];
+var APP_VER = 'v93', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1362,7 +1379,57 @@ function lazyMedia(r) {
    nel lettore: ← → Reel dopo / prima, ↓ chiude. (Sopra il video i tocchi vanno al video stesso.) */
 var TABS = ['main', 'ideas', 'circle', 'chat'];
 function curPane() { var p = document.querySelector('.pane.show'); return p ? p.id : ''; }
-function gestOk(t) { return !document.querySelector('.mod.open') && !(t && t.closest && t.closest('input,textarea,select,.fview,.retr,#decC')); }
+function gestOk(t) { return !document.querySelector('.mod.open,#dw.open') && !(t && t.closest && t.closest('input,textarea,select,.fview,.retr,#decC')); }
+// ☰ menu laterale: le cose che si usano ogni tanto. Quelle di tutti i giorni restano nelle schede in basso.
+function dwNews() {
+  var n = { keep: 0, pin: 0, dec: 0 };
+  try { n.keep = Object.keys(keeps).length; } catch (e) {}
+  try { n.pin = msgs.filter(function (m) { return m.pin; }).length; } catch (e) {}
+  try { n.dec = toDecide().length; } catch (e) {}
+  return n;
+}
+function dwDot() { var d = $('hdDot'); if (d) d.hidden = !dwNews().dec; }
+function dwGo(pane, card, f) {
+  dwClose(); showPane(pane);
+  if (card) setTimeout(function () { var c = $(card); if (!c) return; c.scrollIntoView({ block: 'start', behavior: 'smooth' }); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); }, 80);
+  if (f) setTimeout(f, 120);
+}
+function dwOpen() {
+  var P = $('dwP'); P.textContent = ''; var n = dwNews();
+  var mb = el('button', 'me'); mb.type = 'button'; mb.appendChild(avatar(me.name)); var tx = el('div'); tx.appendChild(el('b', null, me.name)); tx.appendChild(el('small', null, 'Il tuo profilo ›')); mb.appendChild(tx);
+  mb.onclick = function () { dwGo('prof'); }; P.appendChild(mb);
+  var rf = el('button', 'dwref'); rf.type = 'button'; rf.appendChild(el('b', null, '💌 Consiglia Reelta')); rf.appendChild(el('small', null, 'Mandala a chi vuoi: arriva con il link giusto'));
+  rf.onclick = function () { dwClose(); $('refGo').click(); }; P.appendChild(rf);
+  function sec(t, rows) {
+    var s = el('div', 'sec'); s.appendChild(el('h4', null, t));
+    rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
+    P.appendChild(s);
+  }
+  sec('I tuoi contenuti', [
+    ['⭐', 'Reel tenuti', function () { dwGo('main', null, function () { fview = 'keep'; render(); }); }, n.keep],
+    ['📌', 'Messaggi fissati', function () { dwGo('chat', null, pinOpen); }, n.pin],
+    ['💘', 'Piani da decidere', function () { dwGo('ideas', null, n.dec ? decOpen : null); }, n.dec, 1]
+  ]);
+  sec('Impostazioni', [
+    ['🔔', 'Notifiche', function () { dwGo('style', 'ntC'); }],
+    ['🎨', 'Aspetto e colori', function () { dwGo('style', 'apC'); }],
+    ['🌍', 'Lingua', function () { dwGo('prof', 'lgC'); }],
+    ['🔒', 'Privacy e PIN', function () { dwGo('style', 'rsC'); }],
+    ['💾', 'Copia di sicurezza', function () { dwGo('style', 'bkC'); }],
+    ['⚙️', 'Tutte le impostazioni', function () { dwGo('style'); }]
+  ]);
+  sec('Reelta', [
+    ['❓', 'Come si usa', function () { dwClose(); $('help').click(); }],
+    ['🛠️', 'Segnala un problema', function () { dwClose(); $('bug').click(); }]
+  ]);
+  P.appendChild(el('div', 'ft', 'Reelta ' + APP_VER + ' · privata e cifrata'));
+  var D = $('dw'); D.classList.add('open'); D.setAttribute('aria-hidden', 'false'); $('hdSet').setAttribute('aria-expanded', 'true');
+  setTimeout(function () { var f = P.querySelector('button'); if (f) f.focus({ preventScroll: true }); }, 60);
+}
+function dwClose() {
+  var D = $('dw'); if (!D.classList.contains('open')) return;
+  D.classList.remove('open'); D.setAttribute('aria-hidden', 'true'); $('hdSet').setAttribute('aria-expanded', 'false'); try { if (D.contains(document.activeElement)) $('hdSet').focus({ preventScroll: true }); } catch (e) {}
+}
 function heartAt(item) { var h = el('div', 'bigheart', '❤️'); item.appendChild(h); setTimeout(function () { h.remove(); }, 900); try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
 function reelMenu(r) {
   var opts = [
@@ -1401,13 +1468,16 @@ function reelMenu(r) {
     if (pull) { var go = pull > 90; pull = 0; if (go) { ptr.textContent = '↻ Aggiorno…'; if (srvOn()) mbPull(true); try { if (me && me.role !== 'host' && !(hostConn && hostConn.open)) again(); } catch (x) {} render(); setTimeout(function () { ptr.style.transform = ''; ptr.textContent = '✓ Aggiornato'; setTimeout(function () { ptr.remove(); }, 400); }, 900); } else { ptr.style.transform = ''; setTimeout(function () { ptr.remove(); }, 200); } return; }
     var bm = t.closest && t.closest('#clog .msg');
     if (bm) { bm.classList.remove('swp'); bm.style.transform = ''; if (Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 20) { if (dx > 55) startReply(bm.dataset.id); return; } }
+    var horiz = Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 700;
+    if ($('dw').classList.contains('open')) { if (horiz && dx < 0) dwClose(); return; }
+    if (horiz && dx > 0 && x0 < 28 && curPane() !== 'pl' && curPane() !== 'setup' && !document.querySelector('.mod.open')) { dwOpen(); return; }
     if (!gestOk(t)) return;
     var pane = curPane();
     // scorrimento orizzontale
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 700) {
       if (pane === 'pl') { var b = dx < 0 ? $('pn') : $('pp'); if (b && !b.hidden && !b.disabled) b.click(); return; }
       var i = TABS.indexOf(pane); if (i < 0) return;
-      var j = i + (dx < 0 ? 1 : -1); if (j < 0 || j >= TABS.length) return;
+      var j = i + (dx < 0 ? 1 : -1); if (j < 0) { dwOpen(); return; } if ( j >= TABS.length) return;
       var tb = document.querySelector('.tabs button[data-p="' + TABS[j] + '"]'); if (!tb) return; tb.click();
       var np = $(TABS[j]); np.classList.remove('swl', 'swr'); void np.offsetWidth; np.classList.add(dx < 0 ? 'swl' : 'swr'); setTimeout(function () { np.classList.remove('swl', 'swr'); }, 250);
       return;
@@ -1687,7 +1757,7 @@ function openSeq() {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pl.classList.contains('show')) closeSeq(); });
 })();
 function closeSeq() {
-  $('pl').style.transform = ''; $('pl').style.opacity = ''; clearTimeout(timer); seq = null; party = null; $('ps').hidden = false; $('lv').hidden = true; $('p3').hidden = true; $('cd').hidden = true; $('st').textContent = ''; showPane(tab); seqLabel(); }
+  $('pl').style.transform = ''; $('pl').style.opacity = ''; clearTimeout(timer); seq = null; party = null; pzHide(); $('pzB').hidden = true; $('ps').hidden = false; $('lv').hidden = true; $('p3').hidden = true; $('cd').hidden = true; $('st').textContent = ''; showPane(tab); seqLabel(); }
 window.addEventListener('message', function (e) {
   if (!seq || !seq.cur || !+$('ps').value) return;
   var fr = $('st').querySelector('iframe'); if (!fr || e.source !== fr.contentWindow) return;
@@ -1716,6 +1786,8 @@ function showParty(id) {
   var st = $('st'); st.textContent = ''; st.appendChild(media(r, true));
   seen[id] = 1; put('seen', seen);
   $('pc').textContent = 'Insieme, Reel di ' + r.n; $('ps').hidden = true; $('lv').hidden = false; $('p3').hidden = false;
+  pzHide(); $('pzB').hidden = false;
+  var m0 = st.querySelector('iframe'); if (m0 && /youtube\.com\/embed/.test(m0.src)) m0.addEventListener('load', function () { try { m0.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
   pbuild(r); lines(r); seqLabel();
 }
 function goParty(id) { if (!party) track('guardiamo-insieme'); showParty(id); sendNow({ t: 'ses', a: 'go', id: id, n: me.name }); }
@@ -1729,11 +1801,71 @@ function startParty() {
   var s = sorted(), u = s.filter(function (r) { return !seen[r.id]; })[0] || s[s.length - 1];
   if (u) goParty(u.id);
 }
-function countdown() {
+function countdown(resume) {
   if (!party) return;
   var c = $('cd'), n = 3; clearTimeout(cdT); c.hidden = false; c.textContent = n;
-  (function tick() { n--; if (n > 0) { c.textContent = n; cdT = setTimeout(tick, 1000); } else { c.textContent = '▶ Premi play'; cdT = setTimeout(function () { c.hidden = true; }, 1300); } })();
+  (function tick() { n--; if (n > 0) { c.textContent = n; cdT = setTimeout(tick, 1000); } else if (resume && canCtl()) { pzQuiet = Date.now(); frameCmd(true); c.textContent = '▶'; cdT = setTimeout(function () { c.hidden = true; }, 600); } else { c.textContent = '▶ Premi play'; cdT = setTimeout(function () { c.hidden = true; }, 1300); } })();
 }
+/* ---- ⏸ pausa insieme: se uno si ferma, si ferma per tutti, e gli altri sanno perché ---- */
+var PZ_WHY = ['⏳ Torno subito', '💬 Parliamone', '🔁 Rivediamo un pezzo'], pzQuiet = 0, pzOn = false;
+function playerEl() { var st = $('st'); return st && (st.querySelector('video') || st.querySelector('iframe')); }
+function canCtl() { var m = playerEl(); return !!m && (m.tagName === 'VIDEO' || /youtube\.com\/embed|tiktok\.com\/player|player\.vimeo\.com/.test(m.src || '')); }
+function frameCmd(play) {
+  var m = playerEl(); if (!m) return;
+  if (m.tagName === 'VIDEO') { try { if (play) m.play().catch(function () {}); else m.pause(); } catch (e) {} return; }
+  var s = m.src || '', w = m.contentWindow; if (!w) return;
+  try {
+    if (/youtube\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: play ? 'playVideo' : 'pauseVideo', args: [] }), '*');
+    else if (/tiktok\.com\/player/.test(s)) w.postMessage({ type: play ? 'play' : 'pause', value: null, 'x-tiktok-player': true }, '*');
+    else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: play ? 'play' : 'pause' }), '*');
+  } catch (e) {}
+}
+function pzStart() {
+  if (!party || pzOn) return;
+  pzQuiet = Date.now(); frameCmd(false); track('pausa-insieme');
+  sendNow({ t: 'ses', a: 'pause', id: party.id, n: me.name, w: '' });
+  pzShow(me.name, '', true);
+}
+function pzWhy(w) {
+  w = clean(w, 60); if (!party || !w) return;
+  sendNow({ t: 'ses', a: 'pause', id: party.id, n: me.name, w: w });
+  pzShow(me.name, w, true);
+}
+function pzGo() { if (!party) return; sendNow({ t: 'ses', a: 'play', id: party.id, n: me.name }); pzHide(); countdown(true); }
+function pzShow(who, w, mine) {
+  var c = $('pz'); c.textContent = ''; c.hidden = false; pzOn = true;
+  if (mine) {
+    c.appendChild(el('b', null, w ? '⏸ In pausa per tutti' : '⏸ Come mai ti fermi?'));
+    if (w) { c.appendChild(el('div', 'why', w)); c.appendChild(el('div', 'hint', 'Gli altri lo vedono sul loro schermo.')); }
+    else {
+      c.appendChild(el('div', 'hint', 'Il video si ferma anche per gli altri. Diglielo con un tocco:'));
+      var ch = el('div', 'chips');
+      PZ_WHY.forEach(function (x) { var b = el('button', 'chip', x); b.type = 'button'; b.onclick = function () { pzWhy(x); }; ch.appendChild(b); });
+      var ob = el('button', 'chip', '✏️ Altro'); ob.type = 'button'; ch.appendChild(ob); c.appendChild(ch);
+      var r = el('div', 'r'), inp = el('input'), go = el('button', 'btn-o', 'Invia'); r.hidden = true;
+      inp.maxLength = 60; inp.placeholder = 'Scrivi il motivo…'; inp.setAttribute('aria-label', 'Il motivo della pausa');
+      go.type = 'button'; go.onclick = function () { if (clean(inp.value, 60)) pzWhy(inp.value); };
+      inp.onkeydown = function (e) { if (e.key === 'Enter') go.click(); };
+      ob.onclick = function () { r.hidden = false; inp.focus(); };
+      r.appendChild(inp); r.appendChild(go); c.appendChild(r);
+    }
+  } else {
+    c.appendChild(el('b', null, '⏸ ' + who + ' ha messo in pausa'));
+    c.appendChild(el('div', w ? 'why' : 'hint', w || 'Sta scegliendo il perché…'));
+    if (!canCtl()) c.appendChild(el('div', 'hint', 'Questo video non si ferma da solo: mettilo in pausa anche tu.'));
+  }
+  var b2 = el('button', 'btn go', '▶ Riprendi insieme'); b2.type = 'button'; b2.onclick = pzGo; c.appendChild(b2);
+}
+function pzHide() { var c = $('pz'); if (c) { c.hidden = true; c.textContent = ''; } pzOn = false; }
+// se qualcuno mette in pausa direttamente dal video (YouTube, TikTok), vale come ⏸
+window.addEventListener('message', function (e) {
+  if (!party || pzOn || Date.now() - pzQuiet < 1800) return;
+  var m = playerEl(); if (!m || m.tagName !== 'IFRAME' || e.source !== m.contentWindow) return;
+  var d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; } if (!d) return;
+  var yt2 = (d.event === 'onStateChange' && d.info === 2) || (d.event === 'infoDelivery' && d.info && d.info.playerState === 2);
+  var tk2 = d['x-tiktok-player'] && d.type === 'onStateChange' && d.value === 2;
+  if (yt2 || tk2) pzStart();
+});
 function onSes(d, who) {
   if (d.a === 'go' && typeof d.id === 'string' && find(d.id)) {
     if (party) showParty(d.id);
@@ -1741,6 +1873,15 @@ function onSes(d, who) {
     return { t: 'ses', a: 'go', id: d.id, n: who };
   }
   if (d.a === 'ready') { countdown(); return { t: 'ses', a: 'ready', n: who }; }
+  if (d.a === 'pause' && typeof d.id === 'string') {
+    var w = PZ_WHY.indexOf(d.w) >= 0 ? d.w : clean(d.w, 60);
+    if (party && party.id === d.id) { pzQuiet = Date.now(); frameCmd(false); pzShow(who, w, false); }
+    return { t: 'ses', a: 'pause', id: d.id, n: who, w: w };
+  }
+  if (d.a === 'play' && typeof d.id === 'string') {
+    if (party && party.id === d.id) { pzHide(); countdown(true); }
+    return { t: 'ses', a: 'play', id: d.id, n: who };
+  }
   return null;
 }
 function isInvite(u) { u = String(u || ''); return /#j=/.test(u) || u.indexOf(location.origin + location.pathname.replace(/index\.html$/, '')) === 0 || /github\.io\/Loopix/i.test(u); }
@@ -2483,7 +2624,7 @@ function sendMsg() {
   var m = addMsg({ id: uid(8), n: me.name, t: t, ts: Date.now(), re: replyTo }); $('cin').value = ''; stopReply();
   if (m) sendEv({ t: 'msg', m: m });
 }
-function ideaTab() { $('tIdea').textContent = ideaSeen ? 'Piani (' + ideaSeen + ')' : 'Piani'; }
+function ideaTab() { $('tIdea').textContent = ideaSeen ? 'Piani (' + ideaSeen + ')' : 'Piani'; try { dwDot(); } catch (e) {} }
 
 /* ---- idee: dal Reel alla realtà ---- */
 // Codici affiliato: lasciali vuoti finché Booking (via CJ) e GetYourGuide non ti approvano.
@@ -2764,6 +2905,7 @@ function linksFor(i) {
   return L;
 }
 function renderIdeas() {
+  try { dwDot(); } catch (e) {}
   renderNov();
   var ch = $('ichips'); ch.textContent = '';
   [['tutte', 'Tutte'], ['viaggio', '✈️ Posti'], ['compra', '🛍️ Da comprare'], ['cibo', '🍝 Da mangiare'], ['esperienza', '🎟️ Da fare'], ['ricetta', '👨‍🍳 Ricette'], ['fatte', '✓ Fatte']].forEach(function (f) {
@@ -3296,6 +3438,7 @@ $('pp').addEventListener('click', function () {
 $('sp').addEventListener('click', startParty);
 $('ibx').addEventListener('click', function () { $('ib').hidden = true; pending = null; });
 $('ij').addEventListener('click', function () { if (pending) { var id = pending.id; pending = null; $('ib').hidden = true; showParty(id); } });
+$('pzB').addEventListener('click', function () { if (pzOn) pzGo(); else pzStart(); });
 $('p3').addEventListener('click', function () { sendNow({ t: 'ses', a: 'ready', n: me.name }); countdown(); });
 $('lsend').addEventListener('click', function () { var v = clean($('li').value, 300); if (v && party) { comment(party.id, v); $('li').value = ''; } });
 $('li').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('lsend').click(); });
@@ -3357,7 +3500,10 @@ $('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if 
 $('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
 $('cin').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMsg(); });
-$('hdSet').addEventListener('click', function () { showPane('style'); });
+$('hdSet').addEventListener('click', dwOpen);
+$('dwS').addEventListener('click', dwClose);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('dw').classList.contains('open')) dwClose(); });
+
 $('av').addEventListener('click', function () { showPane('prof'); }); $('av').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPane('prof'); } });
 $('goProf').addEventListener('click', function () { showPane('prof'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { try { localStorage.removeItem(LSG + 'dev'); } catch (e) {} isDev = false; applyDev(); } }); });
