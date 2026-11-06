@@ -230,11 +230,14 @@ body.kb .tabs,body.kb #pb,body.kb .chint{display:none!important}body.kb .cbar{pa
 .item .mwrap>.igcrop,.stage .mwrap>.igcrop{flex:1;width:100%;min-height:0;margin:0}
 /* TikTok: il lettore va nella forma esatta del video (9:16), altrimenti TikTok riempie i lati con una copia sfocata */
 .item .mwrap>iframe.tt,.stage .mwrap>iframe.tt{flex:none;height:100%;width:auto;aspect-ratio:9/16;max-width:100%;margin:0 auto;align-self:center}
+.item .mwrap>.ttbox,.stage .mwrap>.ttbox{flex:none;position:relative;height:100%;width:auto;aspect-ratio:9/16;max-width:100%;margin:0 auto;align-self:center}.ttbox iframe.tt{position:absolute;inset:0;width:100%!important;height:100%!important;aspect-ratio:auto!important;margin:0!important}
+.ttsh{position:absolute;right:0;width:21%;top:38%;bottom:13%;z-index:3;background:transparent;-webkit-tap-highlight-color:transparent}
 .item .mwrap.ttw,.stage .mwrap.ttw{justify-content:center}
 .mutb{position:absolute;right:12px;bottom:12px;z-index:4;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);cursor:pointer;padding:0}
 .ovl{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;gap:6px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 13px;min-height:36px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .igcrop{flex:1;min-height:74dvh;width:calc(100% + 28px);margin:0 -14px;overflow:hidden;position:relative;background:#fff}
 .igcrop iframe{position:absolute;left:0;top:-60px;width:100%;height:calc(100% + 60px);min-height:0;margin:0;border:0;border-radius:0;background:#fff}
+.stage .igfit{display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}.igbox{position:relative;overflow:hidden;flex:none;background:#000}.igbox iframe{position:absolute;transform-origin:0 0;min-height:0;margin:0;border:0;border-radius:0;background:#000}
 .stage .igcrop{min-height:0;width:100%;margin:0}
 .link{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--line);border-radius:26px;padding:24px;text-align:center;overflow-wrap:anywhere;color:var(--m);font-size:15px}
 .stage .link{background:#14100d;border:0;border-radius:0;color:#cbbfb2}.stage .link>div:first-child{color:#f3e7d6;font-size:20px;font-weight:800}
@@ -283,15 +286,16 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .live .r{display:flex;gap:8px}.live input{margin:0;padding:11px 14px}
  #pl.imm{position:fixed;left:0;right:0;top:0;height:var(--apph,100dvh);z-index:350;background:#000;max-width:none}
 #pl.imm .strip,#pl.imm .pbar,#pl.imm .grab,#pl.imm .live{display:none!important}
-#pl.imm .stage{flex:1;height:100%;box-shadow:none}
+#pl.imm .stage{box-shadow:none}
 .immc{position:absolute;z-index:8}
 #immX{top:calc(env(safe-area-inset-top,0px) + 10px);left:12px}
-#immR{left:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:10px}
+#immR{left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px);display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;background:rgba(16,11,8,.55);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);border-top:1px solid rgba(255,255,255,.08)}
+#pl.imm .stage{flex:none;height:calc(100% - 64px - env(safe-area-inset-bottom,0px))}#pl.imm .pz{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 .immc button{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(10,8,6,.32);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;font-size:19px;line-height:1;opacity:.62;transition:opacity .25s,transform .15s;cursor:pointer}
 .immc button:active{transform:scale(.88);opacity:1}.immc button:hover{opacity:1}
 #immR button.mine{opacity:1;border-color:rgba(255,215,140,.85);box-shadow:0 0 12px rgba(255,215,140,.35)}
 #immX button{width:36px;height:36px;font-size:15px}
-#immR .sep{width:18px;height:1px;background:rgba(255,255,255,.22);margin:2px 0}
+#immR button{opacity:.92;background:rgba(255,255,255,.07)}#immR .sep{width:1px;height:22px;background:rgba(255,255,255,.22);margin:2px 0}
 .fl{position:absolute;bottom:14px;font-size:38px;animation:up 2s ease-out forwards;pointer-events:none;z-index:6}
 @keyframes up{to{transform:translateY(-320px) scale(1.2);opacity:0}}
 .pz{position:absolute;left:14px;right:14px;bottom:calc(118px + env(safe-area-inset-bottom,0px));z-index:31;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--t)}
@@ -1156,7 +1160,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v94', errLog = [];
+var APP_VER = 'v95', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1297,6 +1301,18 @@ function delReel(id) {
   ask('Eliminare questo Reel?', 'Sparisce per tutto il cerchio, con reazioni e commenti. Non si può annullare.', 'Elimina', true).then(function (y) { if (y && dropReel(id)) sendEv({ t: 'rdel', id: id }); });
 }
 function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
+function igFit() {
+  document.querySelectorAll('.stage .igfit').forEach(function (c) {
+    var bx = c.firstChild, fr = bx && bx.firstChild; if (!fr) return;
+    var W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
+    var HD = 60, HM = W * 1.24, sc = Math.max(1, Math.min(H / HM, 1.4));
+    bx.style.width = W + 'px'; bx.style.height = Math.round(HM * sc) + 'px';
+    fr.style.width = W + 'px'; fr.style.height = Math.round(HD + HM + 420) + 'px';
+    fr.style.left = Math.round((W - W * sc) / 2) + 'px'; fr.style.top = Math.round(-HD * sc) + 'px';
+    fr.style.transform = 'scale(' + sc.toFixed(4) + ')';
+  });
+}
+window.addEventListener('resize', function () { setTimeout(igFit, 60); });
 function media(r, pl) {
   var s0 = embedFor(r.u);
   if (get('riserv', 0) && !pl && s0 && s0.indexOf('video:') !== 0) {
@@ -1325,11 +1341,22 @@ function mediaRaw(r, pl) {
     if (pl && /facebook\.com\/plugins\/video/.test(src)) src += '&autoplay=true&mute=1';
     var fr = el('iframe'); fr.src = src; if (!pl) fr.loading = 'lazy'; fr.title = 'Reel di ' + r.n;
     fr.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
-    fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-presentation');
+    fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation'); // senza allow-popups: un tocco dentro il video non apre Instagram/TikTok e non fa uscire dall'app (per uscire apposta c'è «Apri»)
     fr.referrerPolicy = 'strict-origin-when-cross-origin';
     var inner = fr;
-    if (/instagram\.com\/p\//.test(src)) { inner = el('div', 'igcrop'); inner.appendChild(fr); }
-    if (/tiktok\.com\/player/.test(src)) fr.className = 'tt';
+    if (/instagram\.com\/p\//.test(src)) {
+      inner = el('div', 'igcrop');
+      // nel lettore i Reel di Instagram riempiono lo schermo: niente parte bianca con likes e commenti sotto il video
+      if (pl && /instagram\.com\/(reels?|tv)\//.test(r.u)) { inner.className = 'igcrop igfit'; var bx = el('div', 'igbox'); bx.appendChild(fr); inner.appendChild(bx); setTimeout(igFit, 0); }
+      else inner.appendChild(fr);
+    }
+    if (/tiktok\.com\/player/.test(src)) {
+      fr.className = 'tt';
+      // cuori e commenti di TikTok non si possono togliere: uno strato invisibile li copre, così un tocco lì non porta su TikTok ma mette in pausa / fa ripartire
+      inner = el('div', 'ttbox'); inner.appendChild(fr); var sh = el('div', 'ttsh'); sh.setAttribute('aria-hidden', 'true');
+      sh.onclick = function (e) { e.preventDefault(); e.stopPropagation(); fr.__pz = !fr.__pz; try { fr.contentWindow.postMessage({ type: fr.__pz ? 'pause' : 'play', value: null, 'x-tiktok-player': true }, '*'); } catch (x) {} };
+      inner.appendChild(sh);
+    }
     var wrap = el('div', 'mwrap' + (fr.className === 'tt' ? ' ttw' : '')); wrap.appendChild(inner);
     var ov = el('a', 'ovl'); ov.href = r.u; ov.target = '_blank'; ov.rel = 'noopener noreferrer'; ov.setAttribute('aria-label', 'Apri il video originale');
     ov.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
@@ -1720,7 +1747,7 @@ function immBuild(r) {
   var nb = el('button', null, '⏭'); nb.setAttribute('aria-label', 'Prossimo'); nb.onclick = function () { $('pn').click(); }; box.appendChild(nb);
 }
 function immFloat(e) { var st = $('st'); if (!st) return; var f = el('span', 'fl', e); f.style.left = (18 + Math.random() * 55) + '%'; st.appendChild(f); setTimeout(function () { f.remove(); }, 2100); }
-function immSet(on) { $('pl').classList.toggle('imm', on); $('immR').hidden = !on; $('immX').hidden = !on; }
+function immSet(on) { $('pl').classList.toggle('imm', on); $('immR').hidden = !on; $('immX').hidden = !on; setTimeout(igFit, 30); setTimeout(igFit, 350); }
 // la prima volta nel lettore: indica dov'è lo schermo intero
 function fsTip() {
   if (get('fstip', 0) || navigator.webdriver) return; put('fstip', 1);
@@ -1825,7 +1852,7 @@ function frameCmd(play) {
   var s = m.src || '', w = m.contentWindow; if (!w) return;
   try {
     if (/youtube\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: play ? 'playVideo' : 'pauseVideo', args: [] }), '*');
-    else if (/tiktok\.com\/player/.test(s)) w.postMessage({ type: play ? 'play' : 'pause', value: null, 'x-tiktok-player': true }, '*');
+    else if (/tiktok\.com\/player/.test(s)) (m.__pz = !play), w.postMessage({ type: play ? 'play' : 'pause', value: null, 'x-tiktok-player': true }, '*');
     else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: play ? 'play' : 'pause' }), '*');
   } catch (e) {}
 }
@@ -3376,8 +3403,25 @@ function begin() {
   if (me.role === 'host') startHost(); else startGuest();
   srvStart(); setTimeout(planNudge, 15000); setTimeout(pingDay, 8000);
   if (!get('gtip', 0) && 'ontouchstart' in window && !navigator.webdriver) setTimeout(function () { if (document.querySelector('.mod.open') || get('gtip', 0)) return; put('gtip', 1); ask('👆 Gesti più veloci', 'Scorri a destra o a sinistra per cambiare pagina. Doppio tocco su un Reel per il ❤️. Tieni premuto un Reel per il menu. Tira giù il feed per aggiornare. Nel lettore scorri per il Reel dopo.', 'Ok'); }, 6000); setTimeout(function () { cleanReels(); cleanWarn(); }, 9000);
-  if (incoming) { var u = incoming; incoming = null; postAll(u, ''); }
+  shareIn();
+  if (/android/i.test(navigator.userAgent) && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches)) && !navigator.webdriver) setTimeout(shareTip, 20000);
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
+}
+// 📤 Condividi da Instagram/TikTok → Reelta (Android con l'app installata). Con più cerchi chiede dove mandarlo.
+function shareIn() {
+  var later = null; try { later = sessionStorage.getItem('lx-share'); sessionStorage.removeItem('lx-share'); } catch (e) {}
+  var u = incoming || later; incoming = null; if (!u) return;
+  if (later) { postAll(u, ''); return; }
+  var ok = REG.list.filter(function (x) { try { return !!localStorage.getItem(lsOf(x.id) + 'me'); } catch (e) { return false; } });
+  if (ok.length < 2) { postAll(u, ''); return; }
+  var short = u.replace(/^https?:\/\/(www\.)?/, '').slice(0, 48);
+  sheet('📤 Dove lo mando?', short, ok.map(function (x) {
+    return { t: (x.id === REG.active ? '✓ ' : '') + (x.label || 'Cerchio'), f: function () { if (x.id === REG.active) postAll(u, ''); else { try { sessionStorage.setItem('lx-share', u); } catch (e) {} switchCircle(x.id); } } };
+  }));
+}
+function shareTip() {
+  try { if (localStorage.getItem(LSG + 'shtip') || document.querySelector('.mod.open')) return; localStorage.setItem(LSG + 'shtip', '1'); } catch (e) { return; }
+  ask('📤 Più veloce: condividi da Instagram', 'In Instagram o TikTok tocca Condividi, poi scegli Reelta: il Reel arriva qui da solo, senza copiare il link. (Se non vedi Reelta, tocca “Altro” e aggiungila.)', 'Ok');
 }
 function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,100})/.exec(v) || /^([\w-]{8,100})$/.exec(v); return m ? m[1] : null; }
 var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia' || /Duo/.test(x.label || ''); }) ? 'group' : 'couple';
@@ -3478,7 +3522,7 @@ function instGo() {
   if (window.__bip) {
     var ev = window.__bip; window.__bip = null;
     ev.prompt(); (ev.userChoice || Promise.resolve({})).then(function (c) {
-      if (c && c.outcome === 'accepted') { $('ios').hidden = true; track('installata'); ask('✅ Fatto!', 'Trovi Reelta tra le app del telefono: d’ora in poi aprila da lì.', 'Ok'); }
+      if (c && c.outcome === 'accepted') { $('ios').hidden = true; track('installata'); ask('✅ Fatto!', 'Trovi Reelta tra le app del telefono: d’ora in poi aprila da lì. E da Instagram o TikTok puoi toccare Condividi → Reelta.', 'Ok'); }
     });
     return;
   }
