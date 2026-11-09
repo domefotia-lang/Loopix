@@ -323,6 +323,10 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
 .demob{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0 8px;padding:14px 16px;border:1px dashed var(--line);border-radius:18px;background:transparent;color:var(--t);font:inherit;text-align:left;cursor:pointer}.demob>span{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.demob b{display:block;font-size:15.5px}.demob small{color:var(--m);font-size:13px}
 .backc{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}.backc button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-weight:600;font-size:15.5px}#backI{width:100%;margin-top:8px}
+.rxpick{position:fixed;z-index:120;display:flex;gap:4px;padding:6px;background:var(--s1);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:rxin .16s ease-out}.rxpick button{width:46px;height:46px;border-radius:50%;border:0;background:transparent;font-size:26px;cursor:pointer}.rxpick button.mine{background:var(--s2)}@keyframes rxin{from{transform:scale(.8);opacity:0}}
+.r-btn.rx{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+details.more{margin-top:12px}details.more>summary{cursor:pointer;color:var(--m);font-weight:700;font-size:14.5px;padding:8px 2px;list-style:none}details.more>summary::-webkit-details-marker{display:none}details.more>summary::after{content:'›';margin-left:6px;display:inline-block;transition:transform .2s}details.more[open]>summary::after{transform:rotate(90deg)}
+.card.acc>h2{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;-webkit-user-select:none;user-select:none}.card.acc>h2[data-e]::before{content:attr(data-e);margin-right:-2px}.card.acc>h2{justify-content:flex-start}.card.acc>h2::after{margin-left:auto;content:'›';font-size:26px;line-height:1;color:var(--m);transition:transform .2s}.card.acc.open>h2::after{transform:rotate(90deg)}.card.acc:not(.open)>:not(h2){display:none!important}.card.acc.open>h2{margin-bottom:10px}#style .card.acc{padding-top:16px;padding-bottom:16px}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -582,7 +586,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <section class="pane" id="main">
   <div class="strip" hidden><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
-  <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>Insieme</button></div>
+  <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>👀 Guardate insieme</button></div>
   <div class="nov" id="nov" hidden></div>
   <div class="svy" id="svy" hidden></div>
   <div class="fw"><div class="feed" id="feed" tabindex="0" aria-label="Feed dei Reel"></div><button class="pill" id="nw" hidden></button></div>
@@ -612,7 +616,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </section>
 
 <section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
-  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label><div class="hint" id="ch" aria-live="polite"></div></div>
+  <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
   <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (Duo o Trio)</button></div>
@@ -665,7 +669,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button class="btn-o wide" id="ntTry" style="margin-top:14px">✨ Prova l’effetto</button>
     <p class="hint">Ad app chiusa gli avvisi arriveranno con le notifiche del telefono, appena attiviamo il server. Lì la luce dei bordi (Samsung: Illuminazione bordi) e il flash della fotocamera (iPhone: Impostazioni → Accessibilità → Audio e immagini → Flash LED per avvisi) si accendono da soli.</p>
   </div>
-  <div class="card" id="apC"><h2>Aspetto</h2>
+  <div class="card" id="apC"><h2 data-e="🎨">Aspetto</h2>
     <div class="mode" id="modeB" role="group" aria-label="Aspetto">
       <button data-m="light"><span aria-hidden="true">☀️</span>Chiaro</button>
       <button data-m="dark"><span aria-hidden="true">🌙</span>Scuro</button>
@@ -678,23 +682,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <label class="tog" style="margin-top:10px">Conferme di lettura (✓✓)<input type="checkbox" id="rcT"></label>
     <p style="margin-top:6px">Se le spegni, gli altri non sanno quando leggi, ma non vedi nemmeno quando leggono loro.</p>
   </div>
-  <div class="card"><h2>Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
-  <div class="card"><h2>Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
-  <div class="card" id="pnC"><h2>Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
+  <div class="card"><h2 data-e="🔍">Lettura facile</h2><label class="tog">Testo e pulsanti più grandi<input type="checkbox" id="bigT"></label></div>
+  <div class="card"><h2 data-e="🌈">Colori</h2><div class="themes" id="themes"></div><p>Questi 5 temi restano gratis.</p></div>
+  <div class="card" id="pnC"><h2 data-e="🔒">Blocco con PIN</h2><p id="pinS"></p><button class="btn" id="pinB"></button><button class="btn-o wide" id="pinR" hidden>Togli il PIN</button><div id="bioBox" hidden style="margin-top:12px"><label class="tog">Sblocco con Face ID / impronta<input type="checkbox" id="bioT"></label><div class="hint" id="bioH" aria-live="polite"></div></div></div>
   <div class="card plus"><h2>Gratis per sempre</h2>
     <ul><li>Feed dei Reel, sequenza e “Guardiamo insieme”</li><li>Piani con voti, mappe e ricerche</li><li>Un Duo e un Trio, con la vostra chat</li><li>5 temi, PIN e copia di sicurezza</li></ul>
     <h2 style="margin-top:14px">In arrivo con Reelta Plus</h2>
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
   <div class="card" id="supC" hidden><h2>❤️ Sostieni Reelta</h2><p>Reelta è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
-  <div class="card" id="bkC"><h2>Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card" id="bkC"><h2 data-e="💾">Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
   <div class="card"><button class="btn-o wide danger" style="margin-top:0" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
 </div></section>
 
 <nav class="tabs" id="tabs" hidden aria-label="Sezioni">
   <button data-p="main"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg>Reel</button>
   <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
-  <button class="fab" id="paste" aria-label="Incolla il Reel che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Incolla</button>
+  <button class="fab" id="paste" aria-label="Manda un Reel: incolla il link che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Manda</button>
   <button data-p="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>Cerchio</button>
   <button data-p="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg><span id="tChat">Messaggi</span></button>
 </nav>
@@ -1181,7 +1185,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v102', errLog = [];
+var APP_VER = 'v103', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1447,7 +1451,7 @@ function dwNews() {
 function dwDot() { var d = $('hdDot'); if (d) d.hidden = !dwNews().dec; }
 function dwGo(pane, card, f) {
   dwClose(); showPane(pane);
-  if (card) setTimeout(function () { var c = $(card); if (!c) return; c.scrollIntoView({ block: 'start', behavior: 'smooth' }); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); }, 80);
+  if (card) setTimeout(function () { var c = $(card); if (!c) return; accOpen(c, true); c.scrollIntoView({ block: 'start', behavior: 'smooth' }); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); }, 80);
   if (f) setTimeout(f, 120);
 }
 function dwOpen() {
@@ -1490,6 +1494,24 @@ function dwClose() {
   D.classList.remove('open'); D.setAttribute('aria-hidden', 'true'); $('hdSet').setAttribute('aria-expanded', 'false'); try { if (D.contains(document.activeElement)) $('hdSet').focus({ preventScroll: true }); } catch (e) {}
 }
 function heartAt(item) { var h = el('div', 'bigheart', '❤️'); item.appendChild(h); setTimeout(function () { h.remove(); }, 900); try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
+function rxPress(b, r) {
+  var t = null, long = false;
+  function start() { long = false; clearTimeout(t); t = setTimeout(function () { long = true; try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} rxPick(b, r); }, 420); }
+  function stop() { clearTimeout(t); }
+  b.addEventListener('touchstart', start, { passive: true }); b.addEventListener('mousedown', start);
+  ['touchend', 'touchmove', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (ev) { b.addEventListener(ev, stop, { passive: true }); });
+  b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  b.onclick = function (e) { if (long) { long = false; e.preventDefault(); return; } var m = (r.x || {})[me.name]; react(r.id, m || '❤️'); if (!m) { var it = b.closest('.item'); if (it) heartAt(it); } rxHint(); };
+}
+function rxPick(b, r) {
+  var old = document.querySelector('.rxpick'); if (old) old.remove();
+  var p = el('div', 'rxpick'); p.setAttribute('role', 'menu');
+  EMO.forEach(function (e) { var x = el('button', ((r.x || {})[me.name] === e ? 'mine' : ''), e); x.type = 'button'; x.setAttribute('aria-label', 'Reagisci ' + e); x.onclick = function (ev) { ev.stopPropagation(); react(r.id, e); p.remove(); }; p.appendChild(x); });
+  document.body.appendChild(p);
+  var q = b.getBoundingClientRect(); p.style.left = Math.max(8, Math.min(innerWidth - p.offsetWidth - 8, q.left)) + 'px'; p.style.top = Math.max(8, q.top - p.offsetHeight - 10) + 'px';
+  setTimeout(function () { document.addEventListener('click', function off(e) { if (!p.contains(e.target)) { p.remove(); document.removeEventListener('click', off, true); } }, true); }, 50);
+}
+function rxHint() { if (get('rxtip', 0)) return; put('rxtip', 1); $('mh').textContent = 'Tieni premuto il cuore per 😂 😮 🔥'; }
 function reelMenu(r) {
   var opts = [
     { t: keeps[r.id] ? '⭐ Non tenere più' : '⭐ Tieni questo Reel', f: function () { keepToggle(r.id); } },
@@ -1498,6 +1520,7 @@ function reelMenu(r) {
     { t: '🔗 Apri l’originale', f: function () { window.open(r.u, '_blank', 'noopener'); } }
   ];
   if (r.n !== me.name) opts.push({ t: '⋯ Altre azioni', f: function () { moreFor('reel', r); } });
+  if (r.n === me.name) opts.push({ t: '🗑 Elimina', f: function () { delReel(r.id); } });
   sheet(r.c ? '“' + r.c.slice(0, 40) + '”' : 'Reel di ' + r.n, '', opts);
 }
 (function () {
@@ -1575,18 +1598,18 @@ function sumLabel(r) {
 }
 function refresh(r) {
   var nd = nodes[r.id]; if (!nd) return;
-  if (nd.sb) { var sl = sumLabel(r); nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
-  if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.textContent = kp ? '⭐' : '☆'; nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
+  if (nd.sb) { var sl = sumLabel(r); if (sl && sl[1] !== 'ask') sl = null; nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
+  if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.hidden = !kp; nd.kb.textContent = kp ? '⭐' : '☆'; nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
   nd.bar.textContent = '';
-  EMO.forEach(function (e) {
-    var n = Object.keys(r.x || {}).filter(function (k) { return r.x[k] === e; }).length;
-    var b = el('button', 'r-btn' + (r.x && r.x[me.name] === e ? ' mine' : ''), e + (n ? ' ' + n : ''));
-    b.setAttribute('aria-label', 'Reagisci ' + e); b.onclick = function () { react(r.id, e); }; nd.bar.appendChild(b);
-  });
+  // reazioni in un solo tasto: un tocco = ❤️, tenuto premuto = 😂 😮 🔥
+  var xs = r.x || {}, tot = Object.keys(xs).length, mineE = xs[me.name];
+  var kinds = EMO.filter(function (e) { return Object.keys(xs).some(function (k) { return xs[k] === e; }); });
+  var hb = el('button', 'r-btn rx' + (mineE ? ' mine' : ''), (kinds.length ? kinds.slice(0, 3).join('') : '🤍') + (tot ? ' ' + tot : ''));
+  hb.setAttribute('aria-label', (mineE ? 'Hai reagito ' + mineE : 'Metti ❤️') + '. Tieni premuto per altre reazioni');
+  rxPress(hb, r); nd.bar.appendChild(hb);
   var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; }; nd.bar.appendChild(cb);
-  if (r.n !== me.name) { var mb = el('button', 'r-btn', '⋯'); mb.setAttribute('aria-label', 'Altre azioni'); mb.onclick = function () { moreFor('reel', r); }; nd.bar.appendChild(mb); }
-  if (r.n === me.name) { var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina Reel'); xb.onclick = function () { delReel(r.id); }; nd.bar.appendChild(xb); }
+  var mb = el('button', 'r-btn', '⋯'); mb.setAttribute('aria-label', 'Altro: di cosa parla, tieni, elimina…'); mb.onclick = function () { reelMenu(r); }; nd.bar.appendChild(mb);
   var has = ideas.some(function (i) { return i.r === r.id; });
   var tip = !has && !get('ptip', 0) && !document.querySelector('.r-btn.plan.tip');
   var ib = el('button', 'r-btn plan' + (tip ? ' tip' : ''), has ? '✓ Piano' : '✨ Piano'); if (tip) setTimeout(function () { put('ptip', 1); }, 6000); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
@@ -2004,9 +2027,8 @@ function status() {
   $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/' + (me.role === 'host' ? cap() + 1 : (circMax || 4)) + ')';
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
   av.setAttribute('aria-label', 'Nel cerchio: ' + (list.length ? list.join(', ') : me.name));
-  if (me.role === 'host' && Object.keys(allowed).length < cap()) { var pl = el('button', 'av add', '+'); pl.setAttribute('aria-label', 'Invita una persona'); pl.onclick = invite; av.appendChild(pl); }
   var others = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; });
-  $('bd').textContent = live ? 'Collegato' : !others.length ? 'Solo tu, per ora' : others.length === 1 ? others[0].slice(0, 12) + ' offline 🔔' : 'Gli altri sono offline 🔔';
+  $('bd').textContent = live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita qualcuno' : 'Solo tu, per ora') : others.length === 1 ? others[0].slice(0, 12) + ' offline 🔔' : 'Gli altri sono offline 🔔';
   $('bd').setAttribute('aria-label', live ? 'Collegato' : 'Non collegato: tocca per avvisare con un messaggio');
   $('inv').hidden = me.role !== 'host';
   if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
@@ -3231,7 +3253,7 @@ function renderCircles() {
 }
 function renderCircle() {
   renderCircles(); renderReports(); renderMuted();
-  $('ttlBox').hidden = me.role !== 'host'; $('ttlS').value = String(ttlMs());
+  $('ttlBox').hidden = me.role !== 'host'; $('cMore').hidden = me.role !== 'host'; $('ttlS').value = String(ttlMs());
   var m = $('mlist'); m.textContent = '';
   function row(t, on, rm) {
     var r = el('div', 'mrow'), s = el('span'); s.appendChild(avatar(t)); s.appendChild(document.createTextNode(t)); s.appendChild(el('i', 'dot' + (on ? ' on' : ''))); r.appendChild(s);
@@ -3239,7 +3261,7 @@ function renderCircle() {
     m.appendChild(r);
   }
   if (me.role === 'host') {
-    row(me.name + ' (tu, centro)', true, null);
+    row(me.name + ' (tu)', true, null);
     var ks = Object.keys(allowed);
     ks.forEach(function (k) {
       var on = conns.some(function (c) { return c.k === k && c.ok && c.open; });
@@ -3730,6 +3752,7 @@ $('veil').addEventListener('click', function () { veil(false); });
 (function () { var last = 0; document.addEventListener('touchstart', function (e) { if (!get('riserv', 0) || e.touches.length !== 2) return; var now = Date.now(); if (now - last < 450) { veil(true); last = 0; } else last = now; }, { passive: true }); })();
 $('bd').addEventListener('click', function () {
   if (!me) return;
+  if (me.role === 'host' && !Object.keys(allowed).length) { invite(); return; }
   if ($('app').classList.contains('on')) { $('mh').textContent = 'Siete collegati.'; return; }
   var app = location.origin + location.pathname.replace(/index\.html$/, '');
   var T = window.LX_T || function (x) { return x; };
@@ -3862,6 +3885,14 @@ var backGap = 0;
   document.addEventListener('visibilitychange', function () { if (!document.hidden) mark(); });
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.q === 'back') backOpen('notifica'); });
 })();
+// Impostazioni come un elenco: ogni voce si apre al tocco (niente pagina lunghissima)
+function accOpen(id, on) { var c = typeof id === 'string' ? $(id) : id; if (!c || !c.classList.contains('acc')) return; var o = on === undefined ? !c.classList.contains('open') : on; c.classList.toggle('open', o); var h = c.querySelector('h2'); if (h) h.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
+  var h = c.querySelector(':scope > h2'); if (!h || c.classList.contains('acc')) return;
+  c.classList.add('acc'); h.setAttribute('role', 'button'); h.setAttribute('tabindex', '0'); h.setAttribute('aria-expanded', 'false');
+  h.addEventListener('click', function () { accOpen(c); });
+  h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); accOpen(c); } });
+});
 $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
 // ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
 var demoI = 0, demoT = null;
