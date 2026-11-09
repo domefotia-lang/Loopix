@@ -328,6 +328,9 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 details.more{margin-top:12px}details.more>summary{cursor:pointer;color:var(--m);font-weight:700;font-size:14.5px;padding:8px 2px;list-style:none}details.more>summary::-webkit-details-marker{display:none}details.more>summary::after{content:'›';margin-left:6px;display:inline-block;transition:transform .2s}details.more[open]>summary::after{transform:rotate(90deg)}
 .card.acc>h2{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;-webkit-user-select:none;user-select:none}.card.acc>h2[data-e]::before{content:attr(data-e);margin-right:-2px}.card.acc>h2{justify-content:flex-start}.card.acc>h2::after{margin-left:auto;content:'›';font-size:26px;line-height:1;color:var(--m);transition:transform .2s}.card.acc.open>h2::after{transform:rotate(90deg)}.card.acc:not(.open)>:not(h2){display:none!important}.card.acc.open>h2{margin-bottom:10px}#style .card.acc{padding-top:16px;padding-bottom:16px}
 #feed .item.flash{animation:cflash 1.4s ease}
+.steps{flex:none;margin:6px 14px 2px;padding:8px 44px 8px 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line);position:relative}.steps .sh{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:var(--t);font:inherit;padding:4px 0;cursor:pointer;text-align:left}.steps .sh b{font-size:15px;white-space:nowrap}.steps .sh small{color:var(--m);font-weight:700}.steps .pg{flex:1;height:6px;border-radius:6px;background:var(--s3);overflow:hidden}.steps .nx{display:block;width:100%;border:0;background:none;color:var(--g);font:inherit;font-weight:700;font-size:14.5px;text-align:left;padding:4px 0 2px;cursor:pointer}.steps .pg i{display:block;height:100%;background:var(--gold);transition:width .4s}
+.steps ul{list-style:none;margin:0;padding:0}.steps li button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 2px;border:0;background:none;color:var(--t);font:inherit;font-size:15px;text-align:left;cursor:pointer}.steps li button i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:13px}.steps li.ok button{color:var(--m);text-decoration:line-through}.steps li.ok button i{background:var(--gold);border-color:transparent;color:var(--ink)}.steps li:not(.ok) button::after{content:'›';margin-left:auto;color:var(--m);font-size:20px}
+.steps .x{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:0;background:none;color:var(--m);font-size:16px;cursor:pointer}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -588,6 +591,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 <section class="pane" id="main">
   <div class="strip" hidden><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
   <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>👀 Guardate insieme</button></div>
+  <div class="steps" id="stp" hidden></div>
   <div class="nov" id="nov" hidden></div>
   <div class="svy" id="svy" hidden></div>
   <div class="fw"><div class="feed" id="feed" tabindex="0" aria-label="Feed dei Reel"></div><button class="pill" id="nw" hidden></button></div>
@@ -1186,7 +1190,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v105', errLog = [];
+var APP_VER = 'v106', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1698,7 +1702,7 @@ function react(id, e) {
   var r = find(id); if (!r) return; r.x = r.x || {};
   var cur = r.x[me.name] === e ? '' : e;
   if (cur) r.x[me.name] = cur; else delete r.x[me.name];
-  put('feed', feed); refresh(r); sendEv({ t: 'react', id: id, e: cur, n: me.name });
+  put('feed', feed); refresh(r); sendEv({ t: 'react', id: id, e: cur, n: me.name }); try { renderSteps(); } catch (x) {}
 }
 function comment(id, text) {
   var r = find(id); if (!r) return;
@@ -1757,6 +1761,33 @@ function seqLabel() {
 }
 // striscia "Novità": appena apri, cosa c'è di nuovo per te (un tocco porta al punto giusto)
 function unreadMsgs() { var at = +get('chatAt', 0); return msgs.filter(function (m) { return m.n !== me.name && m.ts > at && !isMuted(m.n); }).length; }
+// 🚀 primi passi: una lista breve per chi è nuovo, sparisce quando è completa
+function stepsList() {
+  var host = me && me.role === 'host';
+  return [
+    { t: host ? 'Invita il tuo partner' : 'Entra in un cerchio', ok: host ? Object.keys(allowed).length > 0 : true, f: function () { invite(); } },
+    { t: 'Manda il primo Reel', ok: feed.some(function (r) { return r.n === me.name; }), f: function () { $('paste').click(); } },
+    { t: 'Reagisci a un Reel (tocca il cuore)', ok: feed.some(function (r) { return r.x && r.x[me.name]; }), f: function () { var r = feed.filter(function (x) { return x.n !== me.name; }).pop() || feed[feed.length - 1]; if (r) goReel(r.id); else $('mh').textContent = 'Appena arriva un Reel, tocca il cuore 🤍 sotto il video.'; } },
+    { t: 'Trasforma un Reel in piano (✨)', ok: ideas.length > 0, f: function () { var r = feed[feed.length - 1]; if (r) openIdea(r.id); else showPane('ideas'); } },
+    { t: 'Attiva le notifiche', ok: !(pushOK() && srvOn()) || Notification.permission === 'granted', f: function () { pushAsk().then(function () { renderSteps(); }); } }
+  ];
+}
+function renderSteps() {
+  var B = $('stp'); if (!B || !me) return;
+  var L = stepsList(), done = L.filter(function (x) { return x.ok; }).length, all = done === L.length;
+  if (!get('stepsSeen', 0) && feed.length >= 10) put('steps', 1); // chi usa già Reelta da un po' non la vede
+  var st = get('steps', 0); // 0 = in corso, 1 = chiusa, 2 = completata e festeggiata
+  if (st || (all && !get('stepsSeen', 0))) { if (all && !st) { put('steps', 2); $('mh').textContent = '🎉 Primi passi fatti: ora Reelta è tutta vostra!'; } B.hidden = true; return; }
+  put('stepsSeen', 1); B.textContent = ''; B.hidden = false;
+  var nx = L.filter(function (x) { return !x.ok; })[0], open = B.dataset.open === '1';
+  var hd = el('button', 'sh'); hd.type = 'button'; hd.setAttribute('aria-expanded', open ? 'true' : 'false');
+  hd.appendChild(el('b', null, '🚀 Primi passi')); hd.appendChild(el('small', null, done + '/' + L.length));
+  var pg = el('span', 'pg'), bar = el('i'); bar.style.width = Math.round(done / L.length * 100) + '%'; pg.appendChild(bar); hd.appendChild(pg);
+  hd.onclick = function () { B.dataset.open = open ? '' : '1'; renderSteps(); }; B.appendChild(hd);
+  if (!open && nx) { var nb = el('button', 'nx', 'Ora: ' + nx.t + ' ›'); nb.type = 'button'; nb.onclick = function () { track('step'); nx.f(); }; B.appendChild(nb); }
+  if (open) { var ul = el('ul'); L.forEach(function (x) { var li = el('li', x.ok ? 'ok' : null), b = el('button'); b.type = 'button'; b.appendChild(el('i', null, x.ok ? '✓' : '')); b.appendChild(document.createTextNode(x.t)); if (!x.ok) b.onclick = function () { track('step'); x.f(); }; li.appendChild(b); ul.appendChild(li); }); B.appendChild(ul); }
+  var xb = el('button', 'x', '✕'); xb.type = 'button'; xb.setAttribute('aria-label', 'Chiudi i primi passi'); xb.onclick = function () { put('steps', 1); B.hidden = true; }; B.appendChild(xb);
+}
 // un Reel di qualche giorno fa che vi era piaciuto (tenuto o con reazioni): cambia ogni giorno
 function memPick() {
   var old = feed.filter(function (r) { return Date.now() - r.ts > 4 * 864e5 && (keeps[r.id] || Object.keys(r.x || {}).length); });
@@ -1764,6 +1795,7 @@ function memPick() {
   return old[Math.floor(Date.now() / 864e5) % old.length];
 }
 function renderNov() {
+  try { renderSteps(); } catch (e) {}
   var box = $('nov'); if (!box || !me) return; box.textContent = '';
   var chip = function (t, f) { var c = el('button', 'chip', t); c.onclick = f; box.appendChild(c); };
   var um = unreadMsgs(), dec = typeof toDecide === 'function' ? toDecide().length : 0, today = new Date(); today.setHours(0, 0, 0, 0);
