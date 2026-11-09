@@ -1,10 +1,16 @@
-var C='loopix-v115',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.webp', 'lang.js'];
+var C='loopix-v116',X='reelta-ext-1',F=['./','index.html','privacy.html','scopri.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png', 'logo-reelta.webp', 'lang.js'];
 // installa la versione nuova scaricando i file freschi (non dalla cache del browser)
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return Promise.all(F.map(function(f){return fetch(f,{cache:'reload'}).then(function(r){if(r.ok)return c.put(f,r)})}))}).then(function(){return self.skipWaiting()}))});
-self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
+self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C&&x!==X}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
 // apertura istantanea: i file dell'app arrivano subito dalla cache e si aggiornano in sottofondo
 self.addEventListener('fetch',function(e){
-  var q=e.request;if(q.method!=='GET')return;var u=new URL(q.url);if(u.origin!==location.origin)return;
+  var q=e.request;if(q.method!=='GET')return;var u=new URL(q.url);
+  // font e PeerJS (siti esterni): dalla cache se ci sono già, così l'app si apre subito e anche senza rete; si rinfrescano in sottofondo
+  if(/^(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net)$/.test(u.hostname)){e.respondWith(caches.open(X).then(function(c){return c.match(q.url).then(function(hit){
+    var net=fetch(q).then(function(r){if(r.ok)c.put(q.url,r.clone());return r});
+    if(hit){if(u.hostname==='fonts.googleapis.com')e.waitUntil(net.catch(function(){}));return hit}
+    return net})}));return}
+  if(u.origin!==location.origin)return;
   var key=u.origin+u.pathname;
   if(q.cache==='no-store'){e.respondWith(fetch(q).catch(function(){return caches.match(key)}));return}
   e.respondWith(caches.open(C).then(function(c){return c.match(key).then(function(hit){

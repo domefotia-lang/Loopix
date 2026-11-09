@@ -132,7 +132,7 @@
 <meta name="apple-mobile-web-app-title" content="Reelta">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" media="print" onload="this.media='all'">
 <style>
 :root{color-scheme:dark;--bg:#241A13;--s1:#31251B;--s2:#3E2F23;--s3:#55412F;--line:rgba(226,190,128,.26);--g:#DDB574;--gl:#F6E2B4;--ink:#2B1B0D;--t:#FBF2E4;--m:#CDB89D;--cy:#8FD6A0;
 --gold:linear-gradient(180deg,var(--gl),var(--g) 62%,#B98B4E);--spec:linear-gradient(120deg,#B98B4E,#F6E2B4 52%,#DDB574);--spec-ink:#2B1B0D;
@@ -338,6 +338,7 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 @media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
 .trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
 .demob{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0 8px;padding:14px 16px;border:1px dashed var(--line);border-radius:18px;background:transparent;color:var(--t);font:inherit;text-align:left;cursor:pointer}.demob>span{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.demob b{display:block;font-size:15.5px}.demob small{color:var(--m);font-size:13px}
+.wks{display:flex;gap:8px;margin:4px 0 12px}.wks div{flex:1;text-align:center;padding:12px 4px;border-radius:16px;background:var(--s2);border:1px solid var(--line)}.wks b{display:block;font-family:var(--dis);font-size:28px;color:var(--gl);line-height:1.1}.wks small{font-size:12.5px;color:var(--m)}.wkl{margin:0 0 10px;font-size:15.5px;line-height:1.45}.wkl b{color:var(--gl)}.wkbar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:14.5px}.wkbar span{width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wkbar i{height:10px;border-radius:6px;background:var(--gold);min-width:6px}.wkbar em{font-style:normal;color:var(--m)}
 .backc{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}.backc button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-weight:600;font-size:15.5px}#backI{width:100%;margin-top:8px}
 .rxpick{position:fixed;z-index:120;display:flex;gap:4px;padding:6px;background:var(--s1);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:rxin .16s ease-out}.rxpick button{width:46px;height:46px;border-radius:50%;border:0;background:transparent;font-size:26px;cursor:pointer}.rxpick button.mine{background:var(--s2)}@keyframes rxin{from{transform:scale(.8);opacity:0}}
 .r-btn.rx{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -822,7 +823,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></div>
 
 <div class="mod demo" id="demoM" role="dialog" aria-modal="true" aria-label="Come funziona Reelta"><div class="dmw"><div class="dmtop"><span>▶ Demo · situazione di prova</span><button id="demoX" type="button">Salta</button></div><div class="dmph" id="demoS"></div><div class="dmcap"><b id="demoT"></b><span id="demoP"></span></div><div class="dmdots" id="demoD"></div><button class="btn go wide" id="demoN" type="button">Avanti</button></div></div>
-<div class="mod" id="backM" role="dialog" aria-modal="true" aria-labelledby="backT"><div class="card"><h2 id="backT">Era un po’ che non ci vedevamo 🙂</h2><p style="margin-top:0">Cosa ti aveva fatto allontanare? Basta un tocco. È anonimo e ci aiuta a migliorare Reelta.</p><div class="backc" id="backC"></div><textarea id="backI" rows="3" maxlength="400" placeholder="Raccontaci in due parole…" aria-label="Il motivo, con parole tue" hidden></textarea><p class="hint" id="backH"></p><div class="duo"><button class="btn-o" id="backX">Non ora</button><button class="btn go" id="backOk" hidden>Invia</button></div></div></div><div class="mod" id="fbM" role="dialog" aria-modal="true" aria-labelledby="fbT"><div class="card"><h2 id="fbT">💭 Com’è andata?</h2><p style="margin-top:0" id="fbP"></p><div class="backc" id="fbC"></div><div class="duo"><button class="btn-o" id="fbX">Più tardi</button></div></div></div>
+<div class="mod" id="backM" role="dialog" aria-modal="true" aria-labelledby="backT"><div class="card"><h2 id="backT">Era un po’ che non ci vedevamo 🙂</h2><p style="margin-top:0">Cosa ti aveva fatto allontanare? Basta un tocco. È anonimo e ci aiuta a migliorare Reelta.</p><div class="backc" id="backC"></div><textarea id="backI" rows="3" maxlength="400" placeholder="Raccontaci in due parole…" aria-label="Il motivo, con parole tue" hidden></textarea><p class="hint" id="backH"></p><div class="duo"><button class="btn-o" id="backX">Non ora</button><button class="btn go" id="backOk" hidden>Invia</button></div></div></div><div class="mod" id="fbM" role="dialog" aria-modal="true" aria-labelledby="fbT"><div class="card"><h2 id="fbT">💭 Com’è andata?</h2><p style="margin-top:0" id="fbP"></p><div class="backc" id="fbC"></div><div class="duo"><button class="btn-o" id="fbX">Più tardi</button></div></div></div><div class="mod" id="wkM" role="dialog" aria-modal="true" aria-labelledby="wkT"><div class="card"><h2 id="wkT">📊 La vostra settimana</h2><div id="wkB"></div><p class="hint">Calcolato sul tuo telefono: non lo vede nessun altro.</p><div class="duo"><button class="btn go" id="wkX">Chiudi</button></div></div></div>
 <div class="mod" id="drM" role="dialog" aria-modal="true" aria-labelledby="drT"><div class="card"><h2 id="drT">📲 Reelta nel menu Condividi</h2><p style="margin-top:0">Così il Reel arriva qui senza copiare il link. Si fa una volta sola:</p><ol class="isteps"><li><div style="flex:1;min-width:0">Tocca <b>Copia il codice e continua</b>: si apre l’app Comandi.<div class="shil" aria-hidden="true"><span class="sb">Copia il codice e continua</span><i class="tp" style="left:50%;top:50%"></i></div></div></li><li><div style="flex:1;min-width:0">Tocca <b>Configura comando rapido</b>, poi <b>Incolla</b> e <b>Aggiungi comando rapido</b>. Fatto!<div class="shil" aria-hidden="true"><div class="fld">XbHE·····Ptdnc<span class="bub">Incolla</span></div><span class="ib">Aggiungi comando rapido</span><i class="tp" style="left:50%;top:78%"></i></div></div></li></ol><p style="margin:10px 0 4px">Da ora, su Instagram o TikTok tocchi <b>Condividi in…</b> → <b>Reelta</b>.</p><p class="hint">La prima volta l’iPhone chiede il permesso: tocca <b>Consenti sempre</b>. Consiglio: in Modifica azioni metti Reelta nei <b>Preferiti</b>, così lo trovi in cima.</p><p class="hint">Al nostro server arriva solo il link pubblico del video, sotto un codice casuale del tuo telefono, e viene cancellato appena lo ritiri.</p><div class="duo"><button class="btn-o" id="drX">Più tardi</button><button class="btn go" id="drGo">Copia il codice e continua</button></div></div></div>
 <div class="mod" id="instM" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="card"><h2 id="instT">📲 Reelta sulla Home</h2><ol class="isteps" id="instL"></ol><div class="duo"><button class="btn-o" id="instX">Più tardi</button><button class="btn go" id="instA" hidden></button></div></div></div>
 <div class="iarr" id="iarr" hidden aria-hidden="true">⬇</div>
@@ -900,7 +901,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="lockF">Ho dimenticato il PIN</button>
 </div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" crossorigin="anonymous"></script>
 <script type="text/plain" id="mainjs">
 // ricarica la pagina solo dopo che i dati sono stati scritti davvero (evita di perdere modifiche appena salvate)
 function safeReload() { setTimeout(function () { location.reload(); }, 600); }
@@ -1229,7 +1230,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v115', errLog = [];
+var APP_VER = 'v116', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1881,9 +1882,10 @@ function renderNov() {
   var rxn = (get('rxNew', []) || []).filter(function (x) { return Date.now() - x.ts < 3 * 864e5 && find(x.id); });
   if (rxn.length) { var lx = rxn[rxn.length - 1]; chip(lx.e + ' ' + (rxn.length === 1 ? lx.n + ' ' + (RXV[lx.e] || 'ha reagito al tuo Reel').replace(/ al tuo Reel| col tuo Reel/, '') : rxn.length + ' reazioni ai tuoi Reel'), function () { put('rxNew', []); goReel(lx.id); renderNov(); }); }
   if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
+  var wk = wkDue(); if (wk) chip('📊 La vostra settimana', function () { wkOpen(wk); });
   var fbI = fbDue()[0]; if (fbI) chip('💭 Com’è andata: ' + fbI.p.slice(0, 22) + '?', function () { fbOpen(fbI); });
   if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
-  if (!um && !dec && !soon && !rxn.length && !newCount()) {
+  if (!um && !dec && !soon && !rxn.length && !newCount() && !wk) {
     if (!feed.length) { box.hidden = true; return; }
     box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
     var lov = ideas.filter(function (i) { return i.d && i.w && Object.keys(i.f || {}).some(function (n) { return i.f[n] === '❤️'; }) && Date.now() - new Date(i.w + 'T12:00:00') > 7 * 864e5; });
@@ -3797,7 +3799,8 @@ function instGo() {
   if (inApp && isIOS) return instGuide(['Qui dentro non si può installare. Apri Reelta in <b>Safari</b>:', 'Poi tocca di nuovo <span class="k">Installa</span>.'], ['🧭 Apri in Safari', function () { location.href = 'x-safari-' + hereUrl(); setTimeout(function () { instGuide(['Se non si è aperto Safari: tocca <span class="k">⋯</span> in alto a destra → <b>“Apri nel browser”</b>.', 'Poi tocca di nuovo <span class="k">Installa</span>.'], null, 'tr'); }, 1500); }]);
   if (inApp || isSamsung) return instGuide([isSamsung ? 'Samsung Internet a volte blocca l’installazione. Si fa in un attimo con <b>Chrome</b>.' : 'Qui dentro non si può installare. Apri Reelta in <b>Chrome</b>.', 'Lì tocca di nuovo <span class="k">Installa</span>: basta un tocco.'], ['Apri in Chrome', function () { location.href = chromeIntent(); }]);
   if (iosChrome) return instGuide(['Tocca <span class="k">⬆ Condividi</span> in alto a destra, accanto all’indirizzo (la freccia te lo indica).', 'Scorri e tocca <b>“Aggiungi alla schermata Home”</b>.', instS3()], null, 'tr');
-  if (isIOS) return instGuide(['Tocca <span class="k">⋯</span> in basso a destra (oppure <span class="k">⬆</span> se lo vedi in basso). La freccia te lo indica.', 'Tocca <b>“Condividi”</b>, poi scorri e tocca <b>“Aggiungi alla schermata Home”</b>.', instS3()], null, 'br');
+  // Safari cambia posto ai tasti a seconda della versione e delle impostazioni: niente freccia (indicherebbe il punto sbagliato), si mostrano i tasti da cercare
+  if (isIOS) return instGuide(['Nella barra di Safari, in basso, tocca il tasto che vedi tra questi: <span class="k">⋯</span> <span class="k">≡</span> <span class="k">⬆</span>', 'Tocca <b>“Condividi”</b>, poi scorri e tocca <b>“Aggiungi alla schermata Home”</b>.', instS3()], null, '');
   instGuide(['Tocca <span class="k">⋮</span> in alto a destra (la freccia te lo indica).', 'Tocca <b>“Installa app”</b> o <b>“Aggiungi a schermata Home”</b>.', 'Conferma. Poi apri Reelta dall’icona.'], null, 'tr');
 }
 if (inBrowser) {
@@ -4033,6 +4036,32 @@ document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
 });
 // un tocco dentro un video di Instagram: il tasto «Apri» si illumina un attimo (se Instagram non lo fa partire qui, è lì la strada)
 window.addEventListener('blur', function () { setTimeout(function () { var f = document.activeElement; if (!f || f.tagName !== 'IFRAME') return; var w = f.closest('.igw'); var o = w && w.querySelector('.ovl'); if (!o) return; o.classList.remove('glow'); void o.offsetWidth; o.classList.add('glow'); setTimeout(function () { o.classList.remove('glow'); }, 3500); }, 0); });
+/* ---- 📊 la vostra settimana: domenica e lunedì, un riepilogo degli ultimi 7 giorni (tutto calcolato sul telefono) ---- */
+function wkData() {
+  var t0 = Date.now() - 7 * 864e5, R = feed.filter(function (r) { return r.ts > t0; }), by = {}, rx = 0, top = null, tn = 0;
+  R.forEach(function (r) { by[r.n] = (by[r.n] || 0) + 1; var n = Object.keys(r.x || {}).length; rx += n; if (n && n >= tn) { tn = n; top = r; } });
+  var pl = ideas.filter(function (i) { return i.ts > t0; }).length;
+  var done = ideas.filter(function (i) { return i.d && i.w && new Date(i.w + 'T12:00:00').getTime() > t0 && Object.keys(i.f || {}).some(function (n) { return i.f[n] !== 'no'; }); });
+  return { n: R.length, by: by, rx: rx, top: top, pl: pl, done: done };
+}
+function wkDue() {
+  try {
+    if (!me) return null; var d = new Date(), wd = d.getDay(); if (wd > 1) return null;
+    var sun = new Date(d.getTime() - wd * 864e5), key = sun.getFullYear() + '-' + (sun.getMonth() + 1) + '-' + sun.getDate();
+    if (get('wkSeen', '') === key) return null; var w = wkData(); if (w.n < 3 && !w.done.length) return null; w.key = key; return w;
+  } catch (e) { return null; }
+}
+function wkOpen(w) {
+  var B = $('wkB'); B.textContent = '';
+  var st = el('div', 'wks'); [[w.n, 'Reel'], [w.rx, 'reazioni'], [w.pl, w.pl === 1 ? 'piano' : 'piani']].forEach(function (x) { var c = el('div'); c.appendChild(el('b', null, String(x[0]))); c.appendChild(el('small', null, x[1])); st.appendChild(c); }); B.appendChild(st);
+  var who = Object.keys(w.by).sort(function (a, b) { return w.by[b] - w.by[a]; }), mx = who.length ? w.by[who[0]] : 1;
+  if (who.length > 1) who.slice(0, 6).forEach(function (n) { var r = el('div', 'wkbar'); r.appendChild(el('span', null, n)); var i = el('i'); i.style.width = Math.max(6, Math.round(w.by[n] / mx * 130)) + 'px'; r.appendChild(i); r.appendChild(el('em', null, String(w.by[n]))); B.appendChild(r); });
+  if (w.top) { var p = el('p', 'wkl'); p.style.marginTop = '12px'; p.appendChild(el('b', null, '🏆 Il più amato: ')); p.appendChild(document.createTextNode((w.top.c ? '“' + w.top.c.slice(0, 60) + '”, ' : '') + (window.LX_T || String)('mandato da ') + w.top.n + ' ' + Object.keys(w.top.x).map(function (n) { return w.top.x[n]; }).join(''))); B.appendChild(p);
+    var tb = el('button', 'btn-o wide', '▶ Rivedilo'); tb.type = 'button'; tb.style.margin = '0 0 10px'; tb.onclick = function () { $('wkM').classList.remove('open'); goReel(w.top.id); var nd = nodes[w.top.id]; if (nd) { nd.el.classList.remove('flash'); void nd.el.offsetWidth; nd.el.classList.add('flash'); } }; B.appendChild(tb); }
+  if (w.done.length) { var q = el('p', 'wkl'); q.appendChild(el('b', null, '💞 Fatto insieme: ')); q.appendChild(document.createTextNode(w.done.slice(0, 3).map(function (i) { return i.p + ' ' + Object.keys(i.f).map(function (n) { return i.f[n] === 'no' ? '' : i.f[n]; }).join(''); }).join(' · '))); B.appendChild(q); }
+  put('wkSeen', w.key); track('settimana'); $('wkM').classList.add('open');
+}
+$('wkX').addEventListener('click', function () { $('wkM').classList.remove('open'); renderNov(); });
 /* ---- 💭 com'è andata? il giorno dopo la data di un piano, un tocco a testa: chiude il giro Reel → piano → ricordo ---- */
 function fbDue() {
   if (!me) return []; var sk = get('fbSkip', {}), now = Date.now();
