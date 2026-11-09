@@ -905,7 +905,19 @@ try {
 var LS = lsOf(REG.active);
 var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1 };
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
-function put(k, v) { try { localStorage.setItem((GLOBALK[k] ? LSG : LS) + k, JSON.stringify(v)); } catch (e) {} }
+function put(k, v) {
+  var key = (GLOBALK[k] ? LSG : LS) + k, txt; try { txt = JSON.stringify(v); } catch (e) { return; }
+  try { localStorage.setItem(key, txt); } catch (e) {
+    // memoria del telefono piena: libero spazio togliendo le cose più vecchie (mai i messaggi fissati), poi riprovo una volta
+    try {
+      errLog.push('memoria piena: ' + k); if (errLog.length > 8) errLog.shift();
+      if (typeof feed !== 'undefined' && Array.isArray(feed) && feed.length > 80) { feed.splice(0, feed.length - 80); localStorage.setItem(LS + 'feed', JSON.stringify(feed)); }
+      if (typeof msgs !== 'undefined' && Array.isArray(msgs) && msgs.length > 150) { msgs = msgs.filter(function (m, i) { return m.pin || i >= msgs.length - 150; }); localStorage.setItem(LS + 'msgs', JSON.stringify(msgs)); }
+      ['rhid', 'gone', 'rxNew'].forEach(function (x) { localStorage.removeItem(LS + x); });
+      if (k === 'feed' || k === 'msgs') return; localStorage.setItem(key, txt);
+    } catch (e2) {}
+  }
+}
 // nome leggibile di un cerchio: con chi è, non solo "Coppia"
 function circName(id) {
   try {
@@ -1203,7 +1215,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v112', errLog = [];
+var APP_VER = 'v113', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
