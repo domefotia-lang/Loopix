@@ -1185,7 +1185,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v103', errLog = [];
+var APP_VER = 'v104', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1703,12 +1703,20 @@ function comment(id, text) {
   r.k = r.k || []; r.k.push(c); if (r.k.length > 50) r.k.shift();
   put('feed', feed); refresh(r); sendEv({ t: 'cmt', id: id, c: c });
 }
+// chi manda un Reel sa che è piaciuto: un avviso discreto e una voce nelle novità
+var RXV = { '❤️': 'ha messo ❤️ al tuo Reel', '😂': 'ha riso 😂 al tuo Reel', '😮': 'è rimasto a bocca aperta 😮 col tuo Reel', '🔥': 'ha messo 🔥 al tuo Reel' };
+function rxGot(n, e, r) {
+  var L = get('rxNew', []); L = L.filter(function (x) { return !(x.id === r.id && x.n === n); }); L.push({ id: r.id, n: n, e: e, ts: Date.now() }); put('rxNew', L.slice(-20));
+  showNote({ kind: 'rx', who: n, text: r.c ? '“' + r.c.slice(0, 40) + '”' : '', e: e, rid: r.id }, Object.assign({}, ntCfg(), { pill: true, sound: false }), false);
+  try { renderNov(); } catch (x) {}
+}
 function applyEv(d, who) {
   var r = find(d.id); if (!r) return null;
   if (d.t === 'react') {
     var n = who || clean(d.n, 30); if (!n) return null; r.x = r.x || {};
     if (d.e === '') delete r.x[n]; else if (EMO.indexOf(d.e) >= 0) r.x[n] = d.e; else return null;
     if (party && party.id === r.id && d.e) floatE(d.e);
+    if (d.e && r.n === me.name && n !== me.name) rxGot(n, d.e, r);
     put('feed', feed); refresh(r); return { t: 'react', id: r.id, e: d.e, n: n };
   }
   if (d.t === 'sumq') {
@@ -1752,9 +1760,11 @@ function renderNov() {
   var um = unreadMsgs(), dec = typeof toDecide === 'function' ? toDecide().length : 0, today = new Date(); today.setHours(0, 0, 0, 0);
   var soon = ideas.filter(function (i) { if (!i.w || i.d) return false; var d = (new Date(i.w + 'T00:00:00') - today) / 864e5; return d >= 0 && d <= 3; }).sort(function (a, b) { return a.w < b.w ? -1 : 1; })[0];
   if (um) chip('💬 ' + um + (um === 1 ? ' messaggio' : ' messaggi'), function () { showPane('chat'); });
+  var rxn = (get('rxNew', []) || []).filter(function (x) { return Date.now() - x.ts < 3 * 864e5 && find(x.id); });
+  if (rxn.length) { var lx = rxn[rxn.length - 1]; chip(lx.e + ' ' + (rxn.length === 1 ? lx.n + ' ' + (RXV[lx.e] || 'ha reagito al tuo Reel').replace(/ al tuo Reel| col tuo Reel/, '') : rxn.length + ' reazioni ai tuoi Reel'), function () { put('rxNew', []); goReel(lx.id); renderNov(); }); }
   if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
   if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
-  if (!um && !dec && !soon && !newCount()) {
+  if (!um && !dec && !soon && !rxn.length && !newCount()) {
     if (!feed.length) { box.hidden = true; return; }
     box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
     chip('📋 Manda un Reel', function () { $('paste').click(); });
@@ -2123,7 +2133,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { tr: true, reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false, knock: false };
+var MBT = { tr: true, reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: true, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false, knock: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -2143,16 +2153,17 @@ function mbCall(body) {
 }
 function mbPut(sec, dir, m, quiet) {
   if (!srvOn() || MBT[m.t] === undefined) return Promise.resolve(false);
-  return Promise.all([mbBox(sec, dir), mbSeal(sec, m)]).then(function (v) { return mbCall({ a: 'put', box: v[0], sender: v[0].slice(0, 16), payload: v[1], notify: !quiet && !!MBT[m.t] }); }).then(function () { return true; });
+  return Promise.all([mbBox(sec, dir), mbSeal(sec, m)]).then(function (v) { return mbCall({ a: 'put', box: v[0], sender: v[0].slice(0, 16), payload: v[1], notify: !quiet && !!MBT[m.t], k: m.t === 'react' ? 'rx' : undefined }); }).then(function () { return true; });
 }
 // creatore: a chi del cerchio non è collegato adesso
+function rxQuiet(m, to) { if (m.t !== 'react') return false; var r = find(m.id); return !(m.e && r && r.n === to && m.n !== to); }
 function mbToGuests(m, except) {
   if (!srvOn() || !me || me.role !== 'host' || MBT[m.t] === undefined) return;
   var live = {}; conns.forEach(function (x) { if (x.ok && x.open && x.k) live[x.k] = 1; });
-  Object.keys(allowed).forEach(function (k) { if (!except || except.k !== k) mbPut(k, 'g', m, !!live[k]).catch(function () {}); });
+  Object.keys(allowed).forEach(function (k) { if (!except || except.k !== k) mbPut(k, 'g', m, !!live[k] || rxQuiet(m, allowed[k])).catch(function () {}); });
 }
 // membro: al creatore, se non è collegato
-function mbToHost(m, fail, quiet) { if (!quiet) cbPut(m); mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
+function mbToHost(m, fail, quiet) { if (!quiet && m.t === 'react') quiet = rxQuiet(m, get('hn', '') || (names[0] || '')); if (!quiet) cbPut(m); mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
 function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
 var mbBusy = false, mbLast = 0, srvSeen = 0;
 function mbPull(force) {
@@ -3363,11 +3374,11 @@ function showNote(q, c, force) {
   if (!c.pill) return;
   var a = $('islA'); a.textContent = ''; a.appendChild(avatar(q.who));
   $('islN').textContent = q.who;
-  $('islW').textContent = q.kind === 'sumq' ? 'chiede di cosa parla il tuo Reel' : q.kind === 'sum' ? 'ti spiega il Reel' : q.kind === 'trill' ? 'ti stava aspettando 🔔' : q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
+  $('islW').textContent = q.kind === 'rx' ? (RXV[q.e] || 'ha reagito al tuo Reel') : q.kind === 'sumq' ? 'chiede di cosa parla il tuo Reel' : q.kind === 'sum' ? 'ti spiega il Reel' : q.kind === 'trill' ? 'ti stava aspettando 🔔' : q.kind === 'reel' ? (q.n > 1 ? 'ha mandato ' + q.n + ' Reel' : 'ha mandato un Reel') : q.kind === 'msg' ? 'ti ha scritto' : 'ha proposto un piano';
   $('islT').textContent = q.text || '';
-  var isl = $('isl'); isl.dataset.k = q.kind; isl.classList.add('on'); clearTimeout(islT); islT = setTimeout(function () { isl.classList.remove('on'); }, 3000);
+  var isl = $('isl'); isl.dataset.k = q.kind; isl.dataset.rid = q.rid || ''; isl.classList.add('on'); clearTimeout(islT); islT = setTimeout(function () { isl.classList.remove('on'); }, 3000);
 }
-$('isl').addEventListener('click', function () { var k = $('isl').dataset.k; $('isl').classList.remove('on'); showPane(k === 'msg' ? 'chat' : k === 'idea' ? 'ideas' : 'main'); });
+$('isl').addEventListener('click', function () { var k = $('isl').dataset.k, rid = $('isl').dataset.rid; $('isl').classList.remove('on'); if (k === 'rx' && rid) { put('rxNew', []); goReel(rid); return; } showPane(k === 'msg' ? 'chat' : k === 'idea' ? 'ideas' : 'main'); });
 var NT_IDS = { pill: 'ntPill', sound: 'ntSound', vib: 'ntVib', reel: 'ntReel', msg: 'ntMsg', idea: 'ntIdea', quiet: 'ntQuiet' };
 function renderNt() {
   renderPush();
