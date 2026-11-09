@@ -113,6 +113,16 @@
 })();
 </script>
 <title>Reelta</title>
+<meta name="description" content="Il vostro posto privato per i Reel: guardateli insieme, anche da lontano, e trasformateli in piani. Senza account.">
+<!-- anteprima quando si manda il link o l'invito (WhatsApp, iMessage…). Al cambio di indirizzo vanno aggiornati questi due URL. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Reelta">
+<meta property="og:title" content="Reelta 🔒 Il vostro posto privato per i Reel">
+<meta property="og:description" content="Tocca per entrare: scrivi il tuo nome e sei dentro. Solo voi, senza account.">
+<meta property="og:image" content="https://domefotia-lang.github.io/Loopix/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://domefotia-lang.github.io/Loopix/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#241A13">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -186,6 +196,8 @@ header{padding:calc(12px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;
 /* sezioni */
 .pane{display:none;flex:1;min-height:0;flex-direction:column}.pane.show{display:flex}
 #setup{padding:8px 20px 24px;gap:16px;overflow-y:auto}
+/* chi arriva da un invito: tutto in una schermata (nome di chi invita, il tuo nome, il bottone) */
+#setup.inv .hero{padding:10px 4px 0}#setup.inv .hero .big-mark{width:76px;height:76px;border-radius:18px;margin-bottom:12px}#setup.inv .hero h1{font-size:27px}#setup.inv .hero p{font-size:15.5px;margin-top:8px;max-width:34ch}#setup.inv #sT{display:none}#setup.inv #bkR2,#setup.inv #inf2{font-size:14px;padding:10px}
 .hero{padding:22px 4px 4px;text-align:center}
 .hero .big-mark{width:150px;height:150px;margin:0 auto 18px;display:block;border-radius:34px;filter:drop-shadow(0 0 18px rgba(255,140,60,.35))}
 .hero .big-mark path{fill:none;stroke:url(#lg2);stroke-width:5;stroke-linecap:round}
@@ -253,6 +265,7 @@ body.kb .tabs,body.kb #pb,body.kb .chint{display:none!important}body.kb .cbar{pa
 .cpanel{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:12px;max-height:38%;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .cmt{font-size:15px;line-height:1.4;overflow-wrap:anywhere}.cmt b{color:var(--g);margin-right:4px}
 .cpanel .r{display:flex;gap:8px}.cpanel input{margin:0;padding:11px 14px}
+.empty.e2{white-space:normal;max-width:34ch;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 22px}.empty.e2 .ei{font-size:34px;line-height:1}@media (max-height:700px){.empty.e2 .ei{display:none}}@media (max-height:600px){.empty.e2 p,.empty.e2 .lnk{display:none}.empty.e2 b{font-size:20px}}.empty.e2 b{font-family:var(--dis);font-size:23px;color:var(--gl);font-weight:600}.empty.e2 p{margin:0 0 4px;font-size:15.5px;line-height:1.5}.empty.e2 .btn,.empty.e2 .btn-o{margin:0}.empty.e2 .lnk{background:none;border:0;color:var(--m);font:inherit;font-size:14.5px;text-decoration:underline;padding:4px}
 .empty{margin:auto;padding:30px 26px;text-align:center;color:var(--m);font-size:16px;line-height:1.6;white-space:pre-line;max-width:32ch}
 .pill{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:5}
 .comp{padding:6px 14px 4px;display:flex;flex-direction:column;gap:8px}
@@ -584,14 +597,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
     <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Incolla l’invito che hai ricevuto</button>
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
     <p id="icHelp">Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
-    <div id="inst" hidden class="inv2" style="margin:0 0 12px;flex-direction:column;align-items:stretch">
+    <button class="btn" id="go">Inizia</button>
+    <button type="button" class="btn-o wide" id="instQ" hidden style="margin-top:10px;font-size:14.5px">📲 Ho già Reelta sulla Home</button>
+    <div id="inst" hidden class="inv2" style="margin:10px 0 0;flex-direction:column;align-items:stretch">
       <span id="instA"><b>📲 Hai già Reelta sulla schermata Home?</b> Su iPhone i link si aprono in Safari, che è una copia separata. Entra dall’app:</span>
       <button class="btn" id="instC" style="margin-top:8px">Sì: copia l’invito per l’app</button>
       <span id="instT" hidden style="margin-top:8px">Copiato ✓ Ora chiudi Safari, apri <b>Reelta dall’icona</b> e tocca <b>“Incolla l’invito che hai ricevuto”</b>.</span>
       <span id="instTA" hidden style="margin-top:8px">Copiato ✓ Ora apri <b>Reelta dall’icona</b> e tocca <b>“Incolla”</b> (il pulsante dorato in basso, oppure “Incolla l’invito che hai ricevuto”). Poi tocca <b>Entra</b>.</span>
-      <span style="margin-top:10px;font-size:14px">Non ce l’hai? Entra qui sotto con il tuo nome: dopo ti spiego come metterla sulla Home.</span>
+      <span style="margin-top:10px;font-size:14px">Non ce l’hai? Entra qui sopra con il tuo nome: dopo ti spiego come metterla sulla Home.</span>
     </div>
-    <button class="btn" id="go">Inizia</button>
     <button class="btn-o wide" id="sCancel" hidden style="margin-top:8px">Annulla</button>
     <div class="hint" id="sH" aria-live="polite"></div>
     <button class="btn-o wide" id="bkR2" style="margin-top:10px">📂 Hai una copia di sicurezza? Ripristinala</button>
@@ -1215,9 +1229,27 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v114', errLog = [];
-window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
-window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
+var APP_VER = 'v115', errLog = [];
+// errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
+function errAuto(msg, where, prova) {
+  try {
+    msg = String(msg || '').replace(/https?:\/\/\S+/g, '[link]').slice(0, 160); where = String(where || '').replace(/^.*\//, '').slice(0, 60);
+    if (!msg || /^Script error\.?$/i.test(msg) || /ResizeObserver loop|Load failed|NetworkError|Failed to fetch|AbortError|The operation was aborted|QuotaExceeded|\|/i.test(msg) || /^promessa: (.{0,3}|\[object .*)$/.test(msg)) return;
+    if (!prova && (location.protocol !== 'https:' || /^(localhost|127\.)/.test(location.hostname))) return; // solo dall'app vera (le prove automatiche passano «prova»)
+    if (typeof FEEDBACK === 'undefined' || !FEEDBACK.url || !FEEDBACK.anon) return;
+    var G = function (k, d) { try { var v = JSON.parse(localStorage.getItem(LSG + k)); return v == null ? d : v; } catch (e) { return d; } };
+    if (G('riserv', 0)) return;
+    var day = new Date().toISOString().slice(0, 10), st = G('errDay', { d: '', n: 0, k: [] }); if (st.d !== day) st = { d: day, n: 0, k: [] };
+    var key = (APP_VER + msg + where).slice(0, 90); if (st.n >= 3 || st.k.indexOf(key) >= 0) return;
+    st.n++; st.k.push(key); localStorage.setItem(LSG + 'errDay', JSON.stringify(st));
+    var ua = navigator.userAgent, dev = /iPhone|iPad/.test(ua) ? 'iOS ' + ((/OS (\d+)/.exec(ua) || [])[1] || '?') : /Android/.test(ua) ? 'Android ' + ((/Android (\d+)/.exec(ua) || [])[1] || '?') : 'computer';
+    var sa = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+    fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' }, keepalive: true,
+      body: JSON.stringify({ survey: 'err', code: '', data: { errore: msg, dove: where, versione: APP_VER, telefono: dev + (sa ? ' · app' : ' · browser'), lingua: window.LX_LANG || 'it', schermo: (document.querySelector('.pane.show') || {}).id || '' } }) }).catch(function () {});
+  } catch (e) {}
+}
+window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); if (e.message) errAuto(e.message, (e.filename || '') + ':' + (e.lineno || 0) + ':' + (e.colno || 0)); });
+window.addEventListener('unhandledrejection', function (e) { var m = String((e.reason && e.reason.message) || e.reason || 'promessa'); errLog.push(new Date().toISOString().slice(11, 19) + ' ' + m.slice(0, 120)); if (errLog.length > 8) errLog.shift(); errAuto('promessa: ' + m, ((e.reason && e.reason.stack) || '').split('\n')[1] || ''); });
 function bugText() {
   var ua = navigator.userAgent, dev = /iPhone|iPad/.test(ua) ? 'iPhone/iPad iOS ' + ((/OS (\d+[_\d]*)/.exec(ua) || [])[1] || '?').replace(/_/g, '.') : /Android/.test(ua) ? 'Android ' + ((/Android ([\d.]+)/.exec(ua) || [])[1] || '?') : 'Computer';
   var sa = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
@@ -1692,9 +1724,21 @@ function render() {
     box.appendChild(fv);
   }
   if (fview === 'keep') { var kl = feed.filter(function (r) { return keeps[r.id] && !isMuted(r.n); }); if (!kl.length) box.appendChild(el('div', 'empty', 'Nessun Reel tenuto.\n\nTocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.')); kl.forEach(function (r) { box.appendChild(build(r)); }); return; }
-  if (!feed.length) { box.appendChild(el('div', 'empty', 'Nessun Reel ancora.\n\nCopia il link di un Reel da Instagram, TikTok o YouTube, poi tocca il pulsante dorato “Incolla” qui sotto.')); return; }
+  if (!feed.length) { box.appendChild(emptyFeed()); return; }
   feed.forEach(function (r) { if (!isMuted(r.n)) box.appendChild(build(r)); });
   box.scrollTop = box.scrollHeight;
+}
+// feed vuoto: non un muro di testo ma il prossimo passo, con i bottoni. Da soli si può già cominciare: chi entra dopo trova tutto.
+function emptyFeed() {
+  var solo = me && me.role === 'host' && !Object.keys(allowed).length, who = '';
+  try { who = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; })[0] || '' : (names || []).filter(function (n) { return n !== me.name; })[0] || ''; } catch (e) {}
+  var d = el('div', 'empty e2');
+  d.appendChild(el('div', 'ei', solo ? '🎬' : '💌'));
+  d.appendChild(el('b', null, solo ? 'Comincia anche da solo' : 'Manda il primo Reel'));
+  d.appendChild(el('p', null, solo ? 'Metti qui i Reel che vuoi far vedere: chi inviti li trova appena entra.' : who ? 'Copia il link di un Reel da Instagram, TikTok o YouTube: ' + who + ' lo vede qui.' : 'Copia il link di un Reel da Instagram, TikTok o YouTube e incollalo qui.'));
+  var b1 = el('button', 'btn go', '📋 Incolla un Reel'); b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
+  var b3 = el('button', 'lnk', '▶ Guarda come funziona · 30 secondi'); b3.type = 'button'; b3.onclick = function () { demoOpen(); }; d.appendChild(b3);
+  return d;
 }
 function atEnd() { var b = $('feed'); return b.scrollHeight - b.scrollTop - b.clientHeight < 80; }
 function addReel(r, mine) {
@@ -2434,7 +2478,7 @@ function hostHi(c, d) {
         });
 }
 function invLang() { var v = ''; try { v = localStorage.getItem(LSG + 'invLang') || ''; } catch (e) {} return /^(it|en|es)$/.test(v) ? v : (window.LX_LANG || 'it'); }
-function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : ''); }
+function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
 function invLangUI() {
   var box = $('invL'); if (!box) return; box.textContent = '';
   [['it', '🇮🇹 Italiano'], ['en', '🇬🇧 English'], ['es', '🇪🇸 Español']].forEach(function (x) {
@@ -2446,7 +2490,7 @@ function invLangUI() {
 function invText() {
   var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
   var lg = invLang(), T = lg === 'it' ? String : (window.LX_TL ? function (x) { return window.LX_TL(x, lg); } : (window.LX_T || String));
-  return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ' + sc + (lg !== 'it' ? '?l=' + lg : ''));
+  return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore.');
 }
 function invite() {
   if (me.role !== 'host') return;
@@ -4105,11 +4149,16 @@ if (joinId) {
 if (me && !joinId) begin();
 else {
   if (joinId) {
+    var invBy = ''; try { invBy = clean(decodeURIComponent((/[#&]n=([^&]{1,120})/.exec(location.hash) || [])[1] || ''), 30); } catch (e) {}
+    $('setup').classList.add('inv');
+    var hh = document.querySelector('#setup .hero h1'), hp = document.querySelector('#setup .hero p');
+    if (hh) hh.textContent = invBy ? '💌 ' + invBy + (window.LX_T || String)(' ti ha invitato') : (window.LX_T || String)('💌 Ti hanno invitato su Reelta');
+    if (hp) hp.textContent = 'Un posto privato solo per voi: Reel, piani e messaggi.';
     $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     var andr = /android/i.test(navigator.userAgent);
     if ((/iphone|ipad|ipod/i.test(navigator.userAgent) || andr) && !standalone) {
-      $('ios').hidden = true; $('inst').hidden = false;
+      $('ios').hidden = true; $('instQ').hidden = false; $('instQ').onclick = function () { $('inst').hidden = false; $('instQ').hidden = true; };
       if (andr) $('instA').innerHTML = '<b>📲 Hai già Reelta tra le app o sulla Home?</b> I link si aprono nel browser, che è una copia separata: se entri da qui, nell’app non ti ritrovi. Entra dall’app:';
       $('instC').onclick = function () {
         var t = location.origin + location.pathname + '#j=' + joinId;
@@ -4236,7 +4285,7 @@ if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
       return prfGet(wraps.b.id, wraps.b.s).then(function (k) { return unwrapWith(k, wraps.b); }).then(function () { return true; });
     }
   };
-  function runMain() { var sc = document.createElement('script'); sc.textContent = document.getElementById('mainjs').textContent; document.body.appendChild(sc); }
+  function runMain() { var sc = document.createElement('script'); sc.textContent = document.getElementById('mainjs').textContent + '\n//# sourceURL=reelta-main.js'; document.body.appendChild(sc); }
   var raw = oGet.call(LS, VK);
   if (!raw) { runMain(); return; }
   var box; try { box = JSON.parse(raw); } catch (e) { box = null; }
