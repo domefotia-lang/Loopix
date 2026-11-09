@@ -797,6 +797,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <div class="mod demo" id="demoM" role="dialog" aria-modal="true" aria-label="Come funziona Reelta"><div class="dmw"><div class="dmtop"><span>▶ Demo · situazione di prova</span><button id="demoX" type="button">Salta</button></div><div class="dmph" id="demoS"></div><div class="dmcap"><b id="demoT"></b><span id="demoP"></span></div><div class="dmdots" id="demoD"></div><button class="btn go wide" id="demoN" type="button">Avanti</button></div></div>
 <div class="mod" id="backM" role="dialog" aria-modal="true" aria-labelledby="backT"><div class="card"><h2 id="backT">Era un po’ che non ci vedevamo 🙂</h2><p style="margin-top:0">Cosa ti aveva fatto allontanare? Basta un tocco. È anonimo e ci aiuta a migliorare Reelta.</p><div class="backc" id="backC"></div><textarea id="backI" rows="3" maxlength="400" placeholder="Raccontaci in due parole…" aria-label="Il motivo, con parole tue" hidden></textarea><p class="hint" id="backH"></p><div class="duo"><button class="btn-o" id="backX">Non ora</button><button class="btn go" id="backOk" hidden>Invia</button></div></div></div>
+<div class="mod" id="drM" role="dialog" aria-modal="true" aria-labelledby="drT"><div class="card"><h2 id="drT">📲 Reelta nel menu Condividi</h2><p style="margin-top:0">Così da Instagram o TikTok tocchi <b>Condividi → Reelta</b> e il Reel arriva qui, senza copiare il link. Si fa una volta sola, in 20 secondi:</p><ol class="isteps"><li><span>Tocca <b>Copia il codice e continua</b> qui sotto.</span></li><li><span>Si apre l’app Comandi: tocca <b>Aggiungi comando</b>.</span></li><li><span>Quando chiede il codice, tieni premuto, scegli <b>Incolla</b> e tocca <b>Fine</b>.</span></li></ol><p class="hint">La prima volta che lo usi, l’iPhone chiede se Reelta può connettersi: tocca <b>Consenti</b>. Al nostro server arriva solo il link pubblico del video, sotto un codice casuale del tuo telefono, e viene cancellato appena lo ritiri.</p><div class="duo"><button class="btn-o" id="drX">Più tardi</button><button class="btn go" id="drGo">Copia il codice e continua</button></div></div></div>
 <div class="mod" id="instM" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="card"><h2 id="instT">📲 Reelta sulla Home</h2><ol class="isteps" id="instL"></ol><div class="duo"><button class="btn-o" id="instX">Più tardi</button><button class="btn go" id="instA" hidden></button></div></div></div>
 <div class="iarr" id="iarr" hidden aria-hidden="true">⬇</div>
 <div id="dw" aria-hidden="true"><nav class="dwp" role="dialog" aria-modal="true" aria-label="Menu" id="dwP"></nav><div class="dws" id="dwS"></div></div>
@@ -1190,7 +1191,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v106', errLog = [];
+var APP_VER = 'v107', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1470,6 +1471,7 @@ function dwOpen() {
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
     P.appendChild(s);
   }
+  if (typeof dropOk === 'function' && dropOk()) { var db2 = el('button', 'it'); db2.type = 'button'; db2.appendChild(el('span', null, '📲')); db2.appendChild(document.createTextNode('Condividi da Instagram → Reelta')); db2.onclick = function () { dwClose(); dropOpen(); }; var sd = el('div', 'sec'); sd.appendChild(db2); P.appendChild(sd); }
   if (typeof inBrowser !== 'undefined' && inBrowser && !window.__inst) { var ib2 = el('button', 'it'); ib2.type = 'button'; ib2.appendChild(el('span', null, '📲')); ib2.appendChild(document.createTextNode('Installa Reelta sulla Home')); ib2.onclick = function () { dwClose(); instGo(); }; var sx = el('div', 'sec'); sx.appendChild(ib2); P.appendChild(sx); }
   sec('I tuoi contenuti', [
     ['⭐', 'Reel tenuti', function () { dwGo('main', null, function () { fview = 'keep'; render(); }); }, n.keep],
@@ -1766,7 +1768,7 @@ function stepsList() {
   var host = me && me.role === 'host';
   return [
     { t: host ? 'Invita il tuo partner' : 'Entra in un cerchio', ok: host ? Object.keys(allowed).length > 0 : true, f: function () { invite(); } },
-    { t: 'Manda il primo Reel', ok: feed.some(function (r) { return r.n === me.name; }), f: function () { $('paste').click(); } },
+    { t: 'Manda il primo Reel', ok: feed.some(function (r) { return r.n === me.name; }), f: function () { if (typeof dropOk === 'function' && dropOk()) dropOpen(); else $('paste').click(); } },
     { t: 'Reagisci a un Reel (tocca il cuore)', ok: feed.some(function (r) { return r.x && r.x[me.name]; }), f: function () { var r = feed.filter(function (x) { return x.n !== me.name; }).pop() || feed[feed.length - 1]; if (r) goReel(r.id); else $('mh').textContent = 'Appena arriva un Reel, tocca il cuore 🤍 sotto il video.'; } },
     { t: 'Trasforma un Reel in piano (✨)', ok: ideas.length > 0, f: function () { var r = feed[feed.length - 1]; if (r) openIdea(r.id); else showPane('ideas'); } },
     { t: 'Attiva le notifiche', ok: !(pushOK() && srvOn()) || Notification.permission === 'granted', f: function () { pushAsk().then(function () { renderSteps(); }); } }
@@ -3945,6 +3947,30 @@ document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
   h.addEventListener('click', function () { accOpen(c); });
   h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); accOpen(c); } });
 });
+/* ---- 📲 «Condividi → Reelta» su iPhone, con un Comando Rapido di Apple ----
+   Il comando lascia al server solo il link pubblico del video, sotto un codice casuale di questo telefono; l'app lo ritira e il server lo cancella. */
+var SHORTCUT_URL = ''; // link iCloud del Comando Rapido «Reelta» (si attiva appena c'è)
+function dropCode() { var c = ''; try { c = localStorage.getItem(LSG + 'dropc') || ''; } catch (e) {} if (!/^[A-Za-z0-9]{24}$/.test(c)) { var A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'; c = Array.from(crypto.getRandomValues(new Uint8Array(24)), function (b) { return A[b % A.length]; }).join(''); try { localStorage.setItem(LSG + 'dropc', c); } catch (e) {} } return c; }
+function dropOk() { return isIOS && !!SHORTCUT_URL && srvOn(); }
+function dropOpen() { $('drM').classList.add('open'); track('drop-open'); }
+$('drX').addEventListener('click', function () { $('drM').classList.remove('open'); });
+$('drGo').addEventListener('click', function () {
+  var c = dropCode(); try { localStorage.setItem(LSG + 'dropOn', '1'); } catch (e) {}
+  var go = function () { $('drM').classList.remove('open'); track('drop-go'); location.href = SHORTCUT_URL; };
+  if (navigator.clipboard) navigator.clipboard.writeText(c).then(go, go); else go();
+});
+var dropBusy = false;
+function dropPull() {
+  var on = false; try { on = !!localStorage.getItem(LSG + 'dropOn'); } catch (e) {}
+  if (!on || !srvOn() || !me || dropBusy) return; dropBusy = true;
+  mbCall({ a: 'pick', c: dropCode() }).then(function (res) {
+    var L = (res && res.items) || []; if (!L.length) return;
+    track('drop-in');
+    if (L.length === 1) { incoming = L[0]; shareIn(); } else L.forEach(function (u) { postAll(u, ''); });
+  }).catch(function () {}).then(function () { dropBusy = false; });
+}
+document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(dropPull, 300); });
+setTimeout(dropPull, 2500);
 $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
 // ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
 var demoI = 0, demoT = null;
