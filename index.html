@@ -1178,7 +1178,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v99', errLog = [];
+var APP_VER = 'v100', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -2414,7 +2414,26 @@ function stopFeed() {
   document.querySelectorAll('#feed iframe').forEach(function (f) { var u = f.src; f.src = 'about:blank'; f.dataset.u = u; setTimeout(function () { f.src = f.dataset.u; }, 50); });
   document.querySelectorAll('#feed video').forEach(function (v) { try { v.pause(); } catch (e) {} });
 }
+// nessun video resta acceso dietro le quinte: cambiando schermata o uscendo dall'app si fermano tutti
+function pauseIn(root) {
+  if (!root) return;
+  root.querySelectorAll('video,audio').forEach(function (v) { try { v.pause(); } catch (e) {} });
+  root.querySelectorAll('iframe').forEach(function (f) {
+    var s = f.src || '', w = f.contentWindow; if (!w) return;
+    try {
+      if (/youtube(-nocookie)?\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*');
+      else if (/tiktok\.com\/player/.test(s)) { f.__pz = true; w.postMessage({ type: 'pause', value: null, 'x-tiktok-player': true }, '*'); }
+      else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: 'pause' }), '*');
+      else if (/instagram\.com|facebook\.com|dailymotion|twitch|spotify/.test(s)) { f.dataset.u = s; f.src = 'about:blank'; setTimeout(function () { if (f.isConnected && f.dataset.u) f.src = f.dataset.u; }, 60); }
+    } catch (e) {}
+  });
+}
+function pauseAll() { try { pzQuiet = Date.now(); } catch (e) {} pauseIn(document); }
+document.addEventListener('visibilitychange', function () { if (document.hidden) pauseAll(); });
+window.addEventListener('pagehide', pauseAll);
 function showPane(id) {
+  if (id !== 'pl' && $('pl').classList.contains('show')) { try { pzQuiet = Date.now(); } catch (e) {} pauseIn($('st')); }
+  if (id !== 'chat') pauseIn($('chat'));
   if (id === 'style') try { trUI(); } catch (e) {}
   if (id !== 'main') stopFeed();
   ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'prof', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
