@@ -298,10 +298,11 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 #immR button{opacity:.92;background:rgba(255,255,255,.07)}#immR .sep{width:1px;height:22px;background:rgba(255,255,255,.22);margin:2px 0}
 .fl{position:absolute;bottom:14px;font-size:38px;animation:up 2s ease-out forwards;pointer-events:none;z-index:6}
 @keyframes up{to{transform:translateY(-320px) scale(1.2);opacity:0}}
-.pz{position:absolute;left:14px;right:14px;bottom:calc(118px + env(safe-area-inset-bottom,0px));z-index:31;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--t)}
+.pz{position:absolute;left:14px;right:14px;bottom:calc(118px + env(safe-area-inset-bottom,0px));max-height:calc(100% - 170px);overflow-y:auto;z-index:31;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--t)}
 .pz b{display:block;font-size:17px}.pz .why{margin:6px 0 2px;font-size:16px;font-weight:700;color:var(--g)}.pz .hint{margin:4px 0 0}
 .pz .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 4px}.pz .chips button{padding:8px 13px;font-size:14px}
 .pz .r{display:flex;gap:8px;margin-top:10px}.pz .r input{flex:1;min-width:0}.pz .btn{margin-top:12px;width:100%}
+.pz .pzl{margin:10px 0 0;text-align:left;font-size:14.5px;max-height:84px;overflow-y:auto;overflow-wrap:anywhere}.pz .pzl b{color:var(--g)}.pz .pzw{display:flex;gap:8px;margin-top:10px}.pz .pzw input{flex:1;min-width:0;margin:0;padding:10px 13px}.pz .pzw button{flex:none;margin:0}
 .cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--dis);font-size:88px;font-weight:700;color:var(--gl);background:rgba(36,26,19,.72);z-index:30;text-align:center}
 
 /* avvisi */
@@ -1178,7 +1179,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v100', errLog = [];
+var APP_VER = 'v101', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1889,7 +1890,8 @@ function pzWhy(w) {
 }
 function pzGo() { if (!party) return; sendNow({ t: 'ses', a: 'play', id: party.id, n: me.name }); pzHide(); countdown(true); }
 function pzShow(who, w, mine) {
-  var c = $('pz'); c.textContent = ''; c.hidden = false; pzOn = true;
+  var c = $('pz'), k0 = c.querySelector('.pzw input'), kv = k0 ? k0.value : '', kf = !!k0 && k0 === document.activeElement;
+  c.textContent = ''; c.hidden = false; pzOn = true;
   if (mine) {
     c.appendChild(el('b', null, w ? '⏸ In pausa per tutti' : '⏸ Come mai ti fermi?'));
     if (w) { c.appendChild(el('div', 'why', w)); c.appendChild(el('div', 'hint', 'Gli altri lo vedono sul loro schermo.')); }
@@ -1910,8 +1912,17 @@ function pzShow(who, w, mine) {
     c.appendChild(el('div', w ? 'why' : 'hint', w || 'Sta scegliendo il perché…'));
     if (!canCtl()) c.appendChild(el('div', 'hint', 'Questo video non si ferma da solo: mettilo in pausa anche tu.'));
   }
+  // in pausa si parla: gli ultimi commenti e un campo per scrivere, senza dover riprendere il video
+  var pl = el('div', 'pzl'); pl.id = 'pzl'; c.appendChild(pl); pzLines();
+  var rw = el('div', 'r pzw'), pi = el('input'), ps = el('button', 'btn-o', 'Invia');
+  pi.maxLength = 300; pi.placeholder = 'Scrivi qualcosa…'; pi.setAttribute('aria-label', 'Scrivi durante la pausa'); ps.type = 'button';
+  ps.onclick = function () { var v = clean(pi.value, 300); if (v && party) { comment(party.id, v); pi.value = ''; } };
+  pi.onkeydown = function (e) { if (e.key === 'Enter') ps.click(); };
+  rw.appendChild(pi); rw.appendChild(ps); c.appendChild(rw); if (kv) pi.value = kv; if (kf) pi.focus({ preventScroll: true });
   var b2 = el('button', 'btn go', '▶ Riprendi insieme'); b2.type = 'button'; b2.onclick = pzGo; c.appendChild(b2);
 }
+function pzLines() { var L = $('pzl'); if (!L) return; L.textContent = ''; var src = $('ll').children; [].slice.call(src, -3).forEach(function (x) { L.appendChild(x.cloneNode(true)); }); L.hidden = !L.children.length; }
+new MutationObserver(function () { if (pzOn) pzLines(); }).observe($('ll'), { childList: true });
 function pzHide() { var c = $('pz'); if (c) { c.hidden = true; c.textContent = ''; } pzOn = false; }
 // se qualcuno mette in pausa direttamente dal video (YouTube, TikTok), vale come ⏸
 window.addEventListener('message', function (e) {
@@ -1998,8 +2009,9 @@ function status() {
   $('inv').hidden = me.role !== 'host';
   if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
 }
+function roster() { return [me.name].concat(Object.keys(allowed).map(function (k) { return allowed[k]; })).filter(Boolean).slice(0, 50); }
 function people() { return [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })); }
-function cast(m) { conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }); mbToGuests(m, null); }
+function cast(m) { if (m && m.t === 'people') { m.ck = circleKey(); m.all = roster(); } conns.forEach(function (c) { if (c.ok && c.open) c.send(m); }); mbToGuests(m, null); }
 
 /* ---- io al centro ---- */
 var allowed = get('allowed', {}), hostTries = 0;
@@ -2116,26 +2128,28 @@ function mbToGuests(m, except) {
   Object.keys(allowed).forEach(function (k) { if (!except || except.k !== k) mbPut(k, 'g', m, !!live[k]).catch(function () {}); });
 }
 // membro: al creatore, se non è collegato
-function mbToHost(m, fail, quiet) { mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
+function mbToHost(m, fail, quiet) { if (!quiet) cbPut(m); mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
 function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
 var mbBusy = false, mbLast = 0, srvSeen = 0;
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
   var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }).concat(codesNow().map(function (x) { return { sec: me.hostId + '_' + x.c, dir: 'j' }; })).concat([{ sec: 'door_' + me.hostId, dir: 'd' }]) : (me.tok ? [{ sec: me.tok, dir: 'g' }] : []);
+  var ckP = cbOn(); if (ckP) jobs.push({ sec: ckP, dir: 'c' });
   Promise.all(jobs.map(function (j) {
     return mbBox(j.sec, j.dir).then(function (box) {
-      return mbCall({ a: 'get', box: box }).then(function (res) {
+      return mbCall(j.dir === 'c' ? { a: 'get', box: box, after: +get('cbAt', 0) || 0 } : { a: 'get', box: box }).then(function (res) {
         var items = (res && res.items) || []; if (!items.length) return;
         return items.reduce(function (p, it) {
           return p.then(function () { return mbOpen(j.sec, it.payload).then(function (d) {
             if (!d || typeof d !== 'object' || MBT[d.t] === undefined) return;
             if (j.dir === 'j') { if (d.t === 'jhi') hostJoinVirt(d); }
             else if (j.dir === 'd') { if (d.t === 'knock') hostKnock(d); }
+            else if (j.dir === 'c') { if ((d.t === 'reel' || d.t === 'msg') && typeof d.cb === 'string' && d.cb !== me.name && (get('all', []) || []).indexOf(d.cb) >= 0) guestData(d); }
             else if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
             else guestData(d);
           }, function () {}); });
-        }, Promise.resolve()).then(function () { return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
+        }, Promise.resolve()).then(function () { if (j.dir === 'c') { put('cbAt', items[items.length - 1].id); return; } return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
       }).then(function () { var was = srvSeen; srvSeen = Date.now(); if (me && Date.now() - was > 60000) status(); });
     });
   })).catch(function () {}).then(function () { mbBusy = false; });
@@ -2166,7 +2180,10 @@ function pushSync() {
     return reg.pushManager.getSubscription().then(function (sub) { return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: mbDec(SRV.vapid) }); });
   }).then(function (sub) {
     var js = sub.toJSON(), lang = window.LX_LANG || 'it';
-    return pushBoxesAll().then(function (bs) { return Promise.all(bs.map(function (b) { return mbCall({ a: 'sub', box: b, sub: js, lang: lang }); })); });
+    return crypto.subtle.digest('SHA-256', te8.encode('reelta-ep:' + js.endpoint)).then(function (h) { var ep = mbEnc(h).slice(0, 24); put('ep', ep); return ep; }).then(function (ep) {
+      var ckS = cbOn();
+      return pushBoxesAll().then(function (bs) { return Promise.all(bs.map(function (b) { return mbCall({ a: 'sub', box: b, sub: js, lang: lang }); }).concat(ckS ? [mbBox(ckS, 'c').then(function (cb) { return mbCall({ a: 'sub', box: cb, sub: js, lang: lang, fan: 1, ep: ep }); })] : [])); });
+    });
   }).then(function () { return true; }, function () { return false; });
 }
 function pushAsk() {
@@ -2234,7 +2251,18 @@ function srvJoin() {
 }
 function gSend(m) {
   if (hostConn && hostConn.open) { hostConn.send(m); return; }
-  if (srvOn() && MBT[m.t] !== undefined) mbToHost(m, function () { if (m.t === 'reel' || m.t === 'msg') { outbox.push(m); put('outbox', outbox); } });
+  if (srvOn() && MBT[m.t] !== undefined) { mbToHost(m, function () { if (m.t === 'reel' || m.t === 'msg') { outbox.push(m); put('outbox', outbox); } }); }
+}
+/* ---- casella del cerchio: nei Trio e nei Gruppi, se chi ha creato il cerchio è offline, Reel e messaggi arrivano lo stesso agli altri.
+   È cifrata con una chiave che conoscono solo i membri; il server vede solo byte illeggibili. ---- */
+function circleKey() { var k = get('ck', ''); if (!/^[a-f0-9]{32}$/.test(k)) { k = Array.from(crypto.getRandomValues(new Uint8Array(16)), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); put('ck', k); } return k; }
+function cbOn() { var ck = get('ck', ''); return srvOn() && me && me.role !== 'host' && /^[a-f0-9]{32}$/.test(ck) && (get('all', []) || []).length >= 3 ? ck : ''; }
+function myEp() { return get('ep', ''); }
+function cbPut(m) {
+  var ck = cbOn(); if (!ck || (m.t !== 'reel' && m.t !== 'msg')) return;
+  var x = { t: m.t, cb: me.name };
+  if (m.t === 'reel') x.r = Object.assign({}, m.r, { n: me.name }); else x.m = Object.assign({}, m.m, { n: me.name });
+  Promise.all([mbBox(ck, 'c'), mbSeal(ck, x)]).then(function (v) { return mbCall({ a: 'put', box: v[0], sender: v[0].slice(0, 16), payload: v[1], notify: true, fan: 1, ep: myEp() }); }).catch(function () {});
 }
 function srvStart() {
   if (!srvOn() || !me) return;
@@ -2270,7 +2298,7 @@ function hostHi(c, d) {
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
-          c.send({ t: 'hello', ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
+          c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
@@ -2374,6 +2402,8 @@ function startGuest() {
 }
 // tutto ciò che arriva a un membro dal creatore: dal collegamento diretto o dalla casella del server
 function guestData(d) {
+      if ((d.t === 'hello' || d.t === 'people') && Array.isArray(d.all)) put('all', d.all.slice(0, 50).map(function (x) { return clean(x, 30); }).filter(Boolean));
+      if ((d.t === 'hello' || d.t === 'people') && typeof d.ck === 'string' && /^[a-f0-9]{32}$/.test(d.ck) && d.ck !== get('ck', '')) { put('ck', d.ck); put('cbAt', 0); setTimeout(pushSync, 1500); }
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
       if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
@@ -2390,7 +2420,7 @@ function guestData(d) {
       else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
       else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
       else if (d.t === 'trill' && typeof d.n === 'string') trillIn(clean(d.n, 30));
-      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); put('ppl', names); status(); trillOut(hostConn); trUI(); }
+      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); put('ppl', get('all', null) || names); status(); trillOut(hostConn); trUI(); }
       else if (d.t === 'tr' && typeof d.n === 'string') { if (d.n !== me.name) trIn(clean(d.n, 30), d); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
@@ -3743,8 +3773,8 @@ $('rcT').addEventListener('change', function () { put('rcpt', $('rcT').checked ?
 $('bigT').addEventListener('change', function () { setBig($('bigT').checked); });
 $('help').addEventListener('click', function () { guide(true); });
 /* ---- 🤝 trasparenza di coppia: solo nei Duo, solo se la accendono tutti e due, sempre visibile quando uno la spegne ---- */
-function isDuo() { return !!me && (me.role === 'host' ? me.kind !== 'group' && me.kind !== 'big' : names.length <= 2 && (!me.kind || me.kind === 'couple')); }
-function trPartner() { if (!me) return ''; if (me.role === 'host') { var k = Object.keys(allowed)[0]; return k ? allowed[k] : ''; } return names.filter(function (n) { return n !== me.name; })[0] || get('hn', '') || ''; }
+function isDuo() { return !!me && (me.role === 'host' ? me.kind !== 'group' && me.kind !== 'big' : (get('all', null) || names).length <= 2 && (!me.kind || me.kind === 'couple')); }
+function trPartner() { if (!me) return ''; if (me.role === 'host') { var k = Object.keys(allowed)[0]; return k ? allowed[k] : ''; } return (get('all', null) || names).filter(function (n) { return n !== me.name; })[0] || get('hn', '') || ''; }
 function trSum(x) {
   try {
     var P = lsOf(x.id), m = JSON.parse(localStorage.getItem(P + 'me') || 'null'); if (!m || !m.role) return null;
