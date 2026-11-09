@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © 2026 Reelta. Tutti i diritti riservati. Vietati copia, modifica e distribuzione senza permesso. -->
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -1200,7 +1201,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v110', errLog = [];
+var APP_VER = 'v111', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1502,6 +1503,7 @@ function dwOpen() {
     ['🛠️', 'Segnala un problema', function () { dwClose(); $('bug').click(); }]
   ]);
   P.appendChild(el('div', 'ft', 'Reelta ' + APP_VER + ' · privata e cifrata'));
+  P.appendChild(el('div', 'ft', '© 2026 Reelta. Tutti i diritti riservati.'));
   var D = $('dw'); D.classList.add('open'); D.setAttribute('aria-hidden', 'false'); $('hdSet').setAttribute('aria-expanded', 'true');
   setTimeout(function () { var f = P.querySelector('button'); if (f) f.focus({ preventScroll: true }); }, 60);
 }
