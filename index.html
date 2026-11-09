@@ -319,6 +319,7 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .dmdots{display:flex;gap:6px;justify-content:center}.dmdots i{width:26px;height:4px;border-radius:4px;background:var(--s3);overflow:hidden}.dmdots i.on::after{content:"";display:block;height:100%;background:var(--g);animation:dbar 6.5s linear forwards}.dmdots i.done{background:var(--g)}
 @keyframes dbar{from{width:0}to{width:100%}}
 @media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
+.trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -640,6 +641,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <div class="card" id="kpC"><h2>⭐ Reel da tenere</h2><p style="margin-top:0">Su ogni Reel tocca ☆ accanto al nome per tenerlo. Si conserva il link: se l’autore cancella il video, sparisce anche qui.</p>
     <label class="tog">Reel non tenuti<select id="rkS" aria-label="Reel non tenuti"><option value="0">Tienili tutti</option><option value="7">Puliscili dopo 7 giorni</option><option value="30">Puliscili dopo 30 giorni</option></select></label>
     <div class="hint" id="rkH">La pulizia vale solo per questo telefono. Il giorno prima ti avviso.</div></div>
+  <div class="card" id="trC" hidden><h2>🤝 Trasparenza di coppia</h2><p style="margin-top:0">Se la accendete tutti e due, ognuno vede in quali altri gruppi è l’altro: quanti, di che tipo e, per i Duo, con chi. Dei gruppi non si vedono i nomi delle persone, solo quante sono. Si spegne quando si vuole, e l’altro lo vede.</p><label class="tog">Mostra i miei altri gruppi<input type="checkbox" id="trB"></label><p class="hint" id="trS" aria-live="polite"></p><div id="trL"></div></div>
   <div class="card" id="ntC"><h2>🔔 Notifiche</h2>
     <button class="btn" id="pushB" hidden type="button" style="margin:0 0 6px">🔔 Avvisami anche ad app chiusa</button>
     <p class="hint" id="pushH" hidden style="margin:0 0 12px"></p>
@@ -1175,7 +1177,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v96', errLog = [];
+var APP_VER = 'v97', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1466,9 +1468,10 @@ function dwOpen() {
     ['🎨', 'Aspetto e colori', function () { dwGo('style', 'apC'); }],
     ['🌍', 'Lingua', function () { dwGo('prof', 'lgC'); }],
     ['🔒', 'Privacy e PIN', function () { dwGo('style', 'rsC'); }],
+  ].concat(isDuo() && trPartner() ? [['🤝', 'Trasparenza di coppia', function () { dwGo('style', 'trC'); }]] : []).concat([
     ['💾', 'Copia di sicurezza', function () { dwGo('style', 'bkC'); }],
     ['⚙️', 'Tutte le impostazioni', function () { dwGo('style'); }]
-  ]);
+  ]));
   sec('Reelta', [
     ['▶', 'Guarda come funziona', function () { dwClose(); demoOpen(); }],
     ['❓', 'Come si usa', function () { dwClose(); $('help').click(); }],
@@ -2061,6 +2064,7 @@ function hostData(c, d) {
         var dr = find(d.id);
         if (dr && dr.n === c.name && dropReel(d.id)) relay(c, { t: 'rdel', id: d.id });
       } else if (d.t === 'trill' && c.ok) { trillIn(c.name);
+      } else if (d.t === 'tr' && c.ok) { trIn(c.name, d);
       } else if (d.t === 'pf' && c.ok) {
         if (setPic(c.name, d.p)) relay(c, { t: 'pf', n: c.name, p: d.p });
       } else if (d.t === 'back' && c.ok && Array.isArray(d.feed)) {
@@ -2082,7 +2086,7 @@ function hostData(c, d) {
    (una per direzione) e la chiave AES che cifra tutto: il server vede solo nomi casuali e testo illeggibile. */
 var SRV = { url: 'https://rvtxhsasngpqtojntpcn.supabase.co', key: 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2', vapid: 'BFnNUqNYQJWQShW4P20aO2uSczOSfZxhg20evZQOYzFzJQDtUCgmjvtxoa6BuCzF0NXGM41zSTMPbTLVGQM-rto' };
 // tipi che passano dal server; true = manda anche la notifica
-var MBT = { reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false, knock: false };
+var MBT = { tr: true, reel: true, msg: true, idea: true, sumq: true, sum: true, trill: true, react: false, cmt: true, rdel: false, mdel: false, pf: false, ren: false, jhi: true, hello: true, no: false, wait: false, people: false, mpin: false, knock: false };
 function srvOn() { return !!(SRV.url && SRV.key && window.crypto && crypto.subtle && /^https?:/.test(location.protocol)); }
 var te8 = new TextEncoder();
 function mbEnc(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -2385,7 +2389,8 @@ function guestData(d) {
       else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
       else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
       else if (d.t === 'trill' && typeof d.n === 'string') trillIn(clean(d.n, 30));
-      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); trillOut(hostConn); }
+      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); put('ppl', names); status(); trillOut(hostConn); trUI(); }
+      else if (d.t === 'tr' && typeof d.n === 'string') { if (d.n !== me.name) trIn(clean(d.n, 30), d); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
       else if (d.t === 'msg') addMsg(d.m);
@@ -2409,6 +2414,7 @@ function stopFeed() {
   document.querySelectorAll('#feed video').forEach(function (v) { try { v.pause(); } catch (e) {} });
 }
 function showPane(id) {
+  if (id === 'style') try { trUI(); } catch (e) {}
   if (id !== 'main') stopFeed();
   ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'prof', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
   var on = id !== 'setup' && id !== 'pl';
@@ -3715,6 +3721,65 @@ $('rsT').addEventListener('change', function () {
 $('rcT').addEventListener('change', function () { put('rcpt', $('rcT').checked ? 1 : 0); lastSeenSent = 0; if ($('rcT').checked) markSeen(); renderChat(true); });
 $('bigT').addEventListener('change', function () { setBig($('bigT').checked); });
 $('help').addEventListener('click', function () { guide(true); });
+/* ---- 🤝 trasparenza di coppia: solo nei Duo, solo se la accendono tutti e due, sempre visibile quando uno la spegne ---- */
+function isDuo() { return !!me && (me.role === 'host' ? me.kind !== 'group' && me.kind !== 'big' : names.length <= 2 && (!me.kind || me.kind === 'couple')); }
+function trPartner() { if (!me) return ''; if (me.role === 'host') { var k = Object.keys(allowed)[0]; return k ? allowed[k] : ''; } return names.filter(function (n) { return n !== me.name; })[0] || get('hn', '') || ''; }
+function trSum(x) {
+  try {
+    var P = lsOf(x.id), m = JSON.parse(localStorage.getItem(P + 'me') || 'null'); if (!m || !m.role) return null;
+    var kind, n, w = '';
+    if (m.role === 'host') {
+      var al = JSON.parse(localStorage.getItem(P + 'allowed') || '{}'), who = Object.keys(al).map(function (k) { return al[k]; }).filter(Boolean);
+      kind = m.kind === 'big' ? 'big' : m.kind === 'group' ? 'group' : 'couple'; n = who.length + 1; if (kind === 'couple') w = who[0] || '';
+    } else {
+      var pp = JSON.parse(localStorage.getItem(P + 'ppl') || '[]'), hn = JSON.parse(localStorage.getItem(P + 'hn') || '""');
+      n = Math.max(pp.length, 2); kind = n <= 2 ? 'couple' : n === 3 ? 'group' : 'big'; if (kind === 'couple') w = hn || pp.filter(function (q) { return q !== m.name; })[0] || '';
+    }
+    return { k: kind, n: n, w: clean(w, 30), l: clean(x.label || '', 30) };
+  } catch (e) { return null; }
+}
+function trMine() { return REG.list.filter(function (x) { return x.id !== REG.active; }).map(trSum).filter(Boolean).slice(0, 20); }
+function trSend() {
+  if (!me || !isDuo() || !trPartner()) return;
+  var on = !!get('trasp', false), P = get('trP', null), both = on && P && P.on;
+  var m = { t: 'tr', n: me.name, on: on, list: both ? trMine() : [], at: Date.now() };
+  put('trAt', Date.now());
+  if (me.role === 'host') cast(m); else gSend(m);
+}
+function trIn(who, d) {
+  var old = get('trP', null), on = !!d.on;
+  var list = Array.isArray(d.list) ? d.list.slice(0, 20).map(function (x) { return { k: ['couple', 'group', 'big'].indexOf(x && x.k) >= 0 ? x.k : 'couple', n: Math.max(2, Math.min(99, +x.n || 2)), w: clean(x.w || '', 30), l: clean(x.l || '', 30) }; }) : [];
+  put('trP', { on: on, list: on ? list : [], at: Date.now(), was: !!(old && old.on) });
+  if (old && old.on && !on) ask('🤝 ' + who + ' ha spento la trasparenza di coppia', 'Da adesso non vedete più i gruppi l’uno dell’altro. Ne potete parlare quando volete.', 'Ok');
+  // se l'ho accesa anch'io, rispondo con i miei gruppi (solo ora che lo sappiamo entrambi)
+  if (get('trasp', false) && on && (!old || !old.on || !list.length && !d.r)) { var m = { t: 'tr', n: me.name, on: true, list: trMine(), at: Date.now(), r: 1 }; if (me.role === 'host') cast(m); else gSend(m); }
+  trUI();
+}
+function trUI() {
+  var C = $('trC'); if (!C) return;
+  var duo = isDuo(), pn = trPartner(); C.hidden = !duo || !pn; if (C.hidden) return;
+  var on = !!get('trasp', false), P = get('trP', null), S = $('trS'), L = $('trL'); $('trB').checked = on; L.textContent = '';
+  if (on && P && P.on) {
+    S.textContent = '✓ Attiva per tutti e due.';
+    if (!P.list.length) { L.appendChild(el('p', null, pn + ' non è in altri gruppi.')); return; }
+    L.appendChild(el('p', null, pn + ' è anche in:')); var ul = el('ul', 'trl');
+    P.list.forEach(function (x) { var li = el('li', null, kindName(x.k) + (x.k === 'couple' ? (x.w ? ' con ' + x.w : '') : ' · ' + x.n + ' persone')); if (x.l && x.l !== x.w) li.appendChild(el('small', null, '«' + x.l + '»')); ul.appendChild(li); });
+    L.appendChild(ul); return;
+  }
+  if (on) S.textContent = P && P.was && !P.on ? pn + ' l’ha spenta. Si riattiva quando la riaccende.' : 'Accesa da te. Si attiva quando la accende anche ' + pn + '.';
+  else S.textContent = P && P.on ? pn + ' l’ha accesa: accendila anche tu per vedervi a vicenda.' : 'Spenta.';
+}
+function trAskOnce() {
+  if (!isDuo() || !trPartner() || get('trAsk', 0) || document.querySelector('.mod.open') || navigator.webdriver) return;
+  put('trAsk', 1);
+  sheet('🤝 Trasparenza di coppia', 'Volete vedere l’uno in quali altri gruppi è l’altro? Si attiva solo se lo scegliete entrambi, e si può spegnere quando si vuole.', [
+    { t: 'Sì, accendila', f: function () { put('trasp', true); trSend(); trUI(); } },
+    { t: 'No, grazie', f: function () {} }
+  ]);
+}
+$('trB').addEventListener('change', function () { put('trasp', this.checked); if (!this.checked) { var P = get('trP', null); if (P) { P.list = []; put('trP', P); } } trSend(); trUI(); track(this.checked ? 'trasp-on' : 'trasp-off'); });
+setTimeout(function () { trUI(); if (get('trasp', false) || get('trAt', 0)) trSend(); }, 9000);
+setTimeout(trAskOnce, 25000);
 $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
 // ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
 var demoI = 0, demoT = null;
