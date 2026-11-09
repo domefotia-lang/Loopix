@@ -235,6 +235,8 @@ body.kb .tabs,body.kb #pb,body.kb .chint{display:none!important}body.kb .cbar{pa
 .ttsh{position:absolute;right:0;width:21%;top:38%;bottom:13%;z-index:3;background:transparent;-webkit-tap-highlight-color:transparent}
 .item .mwrap.ttw,.stage .mwrap.ttw{justify-content:center}
 .mutb{position:absolute;right:12px;bottom:12px;z-index:4;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);cursor:pointer;padding:0}
+.ighint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;white-space:nowrap;background:rgba(20,14,10,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;text-decoration:none}
+.ovl.glow{animation:ovglow 1.1s ease-in-out 3;border-color:var(--gold)}@keyframes ovglow{50%{box-shadow:0 0 0 6px rgba(246,226,180,.45);background:var(--gold);color:var(--ink)}}
 .ovl{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;gap:6px;background:rgba(20,14,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 13px;min-height:36px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .igcrop{flex:1;min-height:74dvh;width:calc(100% + 28px);margin:0 -14px;overflow:hidden;position:relative;background:#fff}
 .igcrop iframe{position:absolute;left:0;top:-60px;width:100%;height:calc(100% + 60px);min-height:0;margin:0;border:0;border-radius:0;background:#fff}
@@ -1201,7 +1203,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v111', errLog = [];
+var APP_VER = 'v112', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1402,6 +1404,11 @@ function mediaRaw(r, pl) {
     var ov = el('a', 'ovl'); ov.href = r.u; ov.target = '_blank'; ov.rel = 'noopener noreferrer'; ov.setAttribute('aria-label', 'Apri il video originale');
     ov.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
     ov.appendChild(document.createTextNode('Apri')); wrap.appendChild(ov);
+    // Instagram a volte non lascia guardare il Reel fuori da Instagram («Watch on Instagram»): lo diciamo chiaro e diamo la strada
+    if (/instagram\.com\/p\//.test(src)) {
+      wrap.classList.add('igw');
+      if (!pl) { var ih = el('a', 'ighint'); ih.href = r.u; ih.target = '_blank'; ih.rel = 'noopener noreferrer'; ih.textContent = 'Non parte? Aprilo su Instagram ↗'; wrap.appendChild(ih); }
+    }
     if (/youtube\.com\/embed|tiktok\.com\/player|player\.vimeo\.com/.test(src)) {
       var mb = el('button', 'mutb'); mb.type = 'button'; muteLabel(mb); mb.onclick = function (e) { e.stopPropagation(); muteAll(!vMuted); }; wrap.appendChild(mb);
       fr.addEventListener('load', function () { setTimeout(function () { muteFrame(fr); }, 600); setTimeout(function () { muteFrame(fr); }, 1800); });
@@ -3958,6 +3965,8 @@ document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
   h.addEventListener('click', function () { accOpen(c); });
   h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); accOpen(c); } });
 });
+// un tocco dentro un video di Instagram: il tasto «Apri» si illumina un attimo (se Instagram non lo fa partire qui, è lì la strada)
+window.addEventListener('blur', function () { setTimeout(function () { var f = document.activeElement; if (!f || f.tagName !== 'IFRAME') return; var w = f.closest('.igw'); var o = w && w.querySelector('.ovl'); if (!o) return; o.classList.remove('glow'); void o.offsetWidth; o.classList.add('glow'); setTimeout(function () { o.classList.remove('glow'); }, 3500); }, 0); });
 /* ---- 📲 «Condividi → Reelta» su iPhone, con un Comando Rapido di Apple ----
    Il comando lascia al server solo il link pubblico del video, sotto un codice casuale di questo telefono; l'app lo ritira e il server lo cancella. */
 var SHORTCUT_URL = 'https://www.icloud.com/shortcuts/5d7eb738b2aa4db59e8c56b692fd4a8f'; // link iCloud del Comando Rapido «Reelta» (si attiva appena c'è)
