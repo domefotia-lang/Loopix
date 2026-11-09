@@ -208,8 +208,8 @@ input:focus,select:focus{border-color:var(--g);outline:none}
 .duo{display:flex;gap:8px;padding:2px 14px 8px}
 .duo .btn{flex:1.4;min-height:50px;font-size:16px;padding:12px}
 .duo .btn-o{flex:1}
-@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(246,226,180,.6)}50%{box-shadow:0 0 0 10px rgba(246,226,180,0)}}#pfs.pulse{animation:pls 1.2s ease-in-out 3}
-.fstip{position:absolute;top:86px;right:14px;z-index:20;background:var(--s1);color:var(--t);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(246,226,180,.6)}50%{box-shadow:0 0 0 10px rgba(246,226,180,0)}}#pl .nav{gap:8px}#pl .nav button{white-space:nowrap}#pl .nav .pfsb,#pl .nav #pzB,#pl .nav #p3{flex:none;width:50px;padding:0;display:flex;align-items:center;justify-content:center}#pl .nav #p3{font-size:12.5px;letter-spacing:-.02em}#pl .nav #pp{flex:none;padding-left:14px;padding-right:14px}#pl .nav #pn{min-width:0}#pfs.pulse{animation:pls 1.2s ease-in-out 3}
+.fstip{position:absolute;bottom:calc(84px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);white-space:nowrap;z-index:20;background:var(--s1);color:var(--t);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 /* mentre scrivi: niente barra in basso né avvisi, tutto lo spazio ai messaggi */
 body.kb .tabs,body.kb #pb,body.kb .chint{display:none!important}body.kb .cbar{padding-bottom:8px}
 .prow2{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--t);cursor:pointer;padding:14px 16px}.prow2>span:nth-child(2){flex:1;display:flex;flex-direction:column}.prow2 small{color:var(--m);font-size:13px}.prow2>span:last-child{font-size:24px;color:var(--m)}#gpA .av{width:44px;height:44px}
@@ -594,13 +594,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 
 <section class="pane" id="pl">
   <div class="grab" aria-hidden="true"></div>
-  <div class="strip"><div class="who" id="pc"></div><select id="ps" aria-label="Come passare al Reel successivo"><option value="0">Avanzi tu</option><option value="20">Da solo ogni 20 s</option><option value="40">Da solo ogni 40 s</option><option value="60">Da solo ogni 60 s</option></select><button class="btn-o" id="psum" aria-label="Di cosa parla?">📝</button><button class="btn-o" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="px">Chiudi</button></div>
+  <div class="strip"><div class="who" id="pc"></div><select id="ps" aria-label="Come passare al Reel successivo"><option value="0">Avanzi tu</option><option value="20">Da solo ogni 20 s</option><option value="40">Da solo ogni 40 s</option><option value="60">Da solo ogni 60 s</option></select><button class="btn-o" id="psum" aria-label="Di cosa parla?">📝</button><button class="btn-o" id="px">Chiudi</button></div>
   <div class="immc" id="immX" hidden><button id="immOut" aria-label="Esci dallo schermo intero">✕</button></div><div class="immc" id="immR" hidden></div>
   <div class="stage" id="st"></div>
   <div class="live" id="lv" hidden><div id="ll"></div><div class="r"><input id="li" placeholder="Scrivi in diretta…" aria-label="Commento in diretta" maxlength="300"><button class="btn-o" id="lsend">Invia</button></div></div>
   <div class="cd" id="cd" hidden></div>
   <div class="pz" id="pz" hidden role="status" aria-live="polite"></div>
-  <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn-o" id="pzB" hidden aria-label="Metti in pausa per tutti">⏸</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
+  <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o pfsb" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn-o" id="pzB" hidden aria-label="Metti in pausa per tutti">⏸</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
 </section>
 
 <section class="pane" id="ideas" aria-label="Idee">
@@ -1178,7 +1178,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v98', errLog = [];
+var APP_VER = 'v99', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1770,8 +1770,8 @@ function immFloat(e) { var st = $('st'); if (!st) return; var f = el('span', 'fl
 function immSet(on) { $('pl').classList.toggle('imm', on); $('immR').hidden = !on; $('immX').hidden = !on; setTimeout(igFit, 30); setTimeout(igFit, 350); }
 // la prima volta nel lettore: indica dov'è lo schermo intero
 function fsTip() {
-  if (get('fstip', 0) || navigator.webdriver) return; put('fstip', 1);
-  var b = $('pfs'); b.classList.add('pulse'); var t = el('div', 'fstip', '⛶ Tocca qui per lo schermo intero'); $('pl').appendChild(t);
+  if (get('fstip2', 0) || navigator.webdriver) return; put('fstip2', 1);
+  var b = $('pfs'); b.classList.add('pulse'); var t = el('div', 'fstip', '⛶ Schermo intero: ora è qui sotto'); $('pl').appendChild(t);
   setTimeout(function () { b.classList.remove('pulse'); t.remove(); }, 4500);
 }
 function arm() { clearTimeout(timer); var sec = +$('ps').value; if (sec && seq && seq.cur) timer = setTimeout(function () { showAt(seq.i + 1); }, sec * 1000); }
