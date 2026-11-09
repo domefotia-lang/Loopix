@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https:; connect-src 'self' https://rvtxhsasngpqtojntpcn.supabase.co https://*.peerjs.com wss://*.peerjs.com https://www.tiktok.com https://*.goatcounter.com https://gc.zgo.at; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="lang.js"></script>
-<script>window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});window.addEventListener("appinstalled",function(){window.__bip=null;window.__inst=1;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});</script>
+<script>window.__qback=/[?&]q=back\b/.test(location.search);window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});window.addEventListener("appinstalled",function(){window.__bip=null;window.__inst=1;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});</script>
 <script>
 /* ---- trasloco a un nuovo indirizzo (senza perdere niente) ----
    Il vecchio indirizzo impacchetta tutti i dati del telefono, li cifra con una chiave nuova e li lascia
@@ -322,6 +322,7 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 @media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
 .trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
 .demob{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0 8px;padding:14px 16px;border:1px dashed var(--line);border-radius:18px;background:transparent;color:var(--t);font:inherit;text-align:left;cursor:pointer}.demob>span{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.demob b{display:block;font-size:15.5px}.demob small{color:var(--m);font-size:13px}
+.backc{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}.backc button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-weight:600;font-size:15.5px}#backI{width:100%;margin-top:8px}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -786,6 +787,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></div>
 
 <div class="mod demo" id="demoM" role="dialog" aria-modal="true" aria-label="Come funziona Reelta"><div class="dmw"><div class="dmtop"><span>▶ Demo · situazione di prova</span><button id="demoX" type="button">Salta</button></div><div class="dmph" id="demoS"></div><div class="dmcap"><b id="demoT"></b><span id="demoP"></span></div><div class="dmdots" id="demoD"></div><button class="btn go wide" id="demoN" type="button">Avanti</button></div></div>
+<div class="mod" id="backM" role="dialog" aria-modal="true" aria-labelledby="backT"><div class="card"><h2 id="backT">Era un po’ che non ci vedevamo 🙂</h2><p style="margin-top:0">Cosa ti aveva fatto allontanare? Basta un tocco. È anonimo e ci aiuta a migliorare Reelta.</p><div class="backc" id="backC"></div><textarea id="backI" rows="3" maxlength="400" placeholder="Raccontaci in due parole…" aria-label="Il motivo, con parole tue" hidden></textarea><p class="hint" id="backH"></p><div class="duo"><button class="btn-o" id="backX">Non ora</button><button class="btn go" id="backOk" hidden>Invia</button></div></div></div>
 <div class="mod" id="instM" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="card"><h2 id="instT">📲 Reelta sulla Home</h2><ol class="isteps" id="instL"></ol><div class="duo"><button class="btn-o" id="instX">Più tardi</button><button class="btn go" id="instA" hidden></button></div></div></div>
 <div class="iarr" id="iarr" hidden aria-hidden="true">⬇</div>
 <div id="dw" aria-hidden="true"><nav class="dwp" role="dialog" aria-modal="true" aria-label="Menu" id="dwP"></nav><div class="dws" id="dwS"></div></div>
@@ -1179,7 +1181,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v101', errLog = [];
+var APP_VER = 'v102', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -3831,6 +3833,35 @@ function trAskOnce() {
 $('trB').addEventListener('change', function () { put('trasp', this.checked); if (!this.checked) { var P = get('trP', null); if (P) { P.list = []; put('trP', P); } } trSend(); trUI(); track(this.checked ? 'trasp-on' : 'trasp-off'); });
 setTimeout(function () { trUI(); if (get('trasp', false) || get('trAt', 0)) trSend(); }, 9000);
 setTimeout(trAskOnce, 25000);
+/* ---- 🙂 «Bentornato»: chi torna dopo qualche giorno ci dice cosa l'aveva allontanato (una volta sola, anonimo) ---- */
+var BACK_WHY = ['📋 Condividere i Reel è scomodo', '🤷 L’altra persona non la usa', '🎬 I video non partono bene', '❓ Non ho capito bene a cosa serve', '⏳ Non ho avuto tempo'];
+function backOpen(from) {
+  try { if (localStorage.getItem(LSG + 'backAsk')) return; } catch (e) { return; }
+  var C = $('backC'); C.textContent = ''; $('backI').hidden = true; $('backOk').hidden = true; $('backH').textContent = '';
+  BACK_WHY.forEach(function (w) { var b = el('button', null, w); b.type = 'button'; b.onclick = function () { backSend(w, '', from); }; C.appendChild(b); });
+  var o = el('button', null, '✏️ Altro…'); o.type = 'button'; o.onclick = function () { $('backI').hidden = false; $('backOk').hidden = false; $('backI').focus(); }; C.appendChild(o);
+  $('backM').classList.add('open'); track('back-' + from);
+}
+function backSend(w, txt, from) {
+  try { localStorage.setItem(LSG + 'backAsk', String(Date.now())); } catch (e) {}
+  $('backM').classList.remove('open');
+  if (FEEDBACK.url && FEEDBACK.anon) fetch(FEEDBACK.url + '/rest/v1/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' },
+    body: JSON.stringify({ survey: 'back', code: '', data: { motivo: w, testo: clean(txt || '', 400), giorni: backGap, da: from, versione: APP_VER, lingua: window.LX_LANG || 'it', iphone: /iPhone|iPad/.test(navigator.userAgent) } }) }).catch(function () {});
+  ask('Grazie! 🙏', 'Lo leggiamo davvero: ci aiuta a capire cosa cambiare.', 'Ok');
+}
+$('backX').addEventListener('click', function () { $('backM').classList.remove('open'); try { localStorage.setItem(LSG + 'backAsk', 'no'); } catch (e) {} });
+$('backOk').addEventListener('click', function () { var t = clean($('backI').value, 400); if (!t) { $('backH').textContent = 'Scrivi due parole, oppure scegli una risposta sopra.'; return; } backSend('✏️ Altro', t, 'app'); });
+var backGap = 0;
+(function () {
+  var last = 0; try { last = +localStorage.getItem(LSG + 'lastOpen') || 0; } catch (e) {}
+  var now = Date.now(); backGap = last ? Math.round((now - last) / 864e5) : 0;
+  function mark() { try { localStorage.setItem(LSG + 'lastOpen', String(Date.now())); } catch (e) {} }
+  var viaPush = !!window.__qback;
+  if (viaPush && /[?&]q=back/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} }
+  setTimeout(function () { if (navigator.webdriver && !window.__backTest) return; if (viaPush || (last && now - last > 4 * 864e5)) backOpen(viaPush ? 'notifica' : 'app'); mark(); }, viaPush ? 1200 : 3500);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) mark(); });
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.q === 'back') backOpen('notifica'); });
+})();
 $('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
 // ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
 var demoI = 0, demoT = null;
