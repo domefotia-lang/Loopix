@@ -327,6 +327,7 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 .r-btn.rx{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 details.more{margin-top:12px}details.more>summary{cursor:pointer;color:var(--m);font-weight:700;font-size:14.5px;padding:8px 2px;list-style:none}details.more>summary::-webkit-details-marker{display:none}details.more>summary::after{content:'›';margin-left:6px;display:inline-block;transition:transform .2s}details.more[open]>summary::after{transform:rotate(90deg)}
 .card.acc>h2{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;-webkit-user-select:none;user-select:none}.card.acc>h2[data-e]::before{content:attr(data-e);margin-right:-2px}.card.acc>h2{justify-content:flex-start}.card.acc>h2::after{margin-left:auto;content:'›';font-size:26px;line-height:1;color:var(--m);transition:transform .2s}.card.acc.open>h2::after{transform:rotate(90deg)}.card.acc:not(.open)>:not(h2){display:none!important}.card.acc.open>h2{margin-bottom:10px}#style .card.acc{padding-top:16px;padding-bottom:16px}
+#feed .item.flash{animation:cflash 1.4s ease}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -1185,7 +1186,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v104', errLog = [];
+var APP_VER = 'v105', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1620,6 +1621,8 @@ function refresh(r) {
 }
 var compOpen = false;
 function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
+// il campo per il link compare solo quando serve (il telefono non lascia leggere il link) e sparisce appena hai finito
+$('ru').addEventListener('blur', function () { setTimeout(function () { if (!$('ru').value.trim() && document.activeElement !== $('ru')) { compOpen = false; syncComp(); } }, 400); });
 // ⭐ tenuti: scelta personale, solo su questo telefono. Si conserva il link del Reel, non il video.
 var keeps = get('keep', {}), rhid = get('rhid', []), fview = 'all';
 function keepToggle(id) {
@@ -1754,6 +1757,12 @@ function seqLabel() {
 }
 // striscia "Novità": appena apri, cosa c'è di nuovo per te (un tocco porta al punto giusto)
 function unreadMsgs() { var at = +get('chatAt', 0); return msgs.filter(function (m) { return m.n !== me.name && m.ts > at && !isMuted(m.n); }).length; }
+// un Reel di qualche giorno fa che vi era piaciuto (tenuto o con reazioni): cambia ogni giorno
+function memPick() {
+  var old = feed.filter(function (r) { return Date.now() - r.ts > 4 * 864e5 && (keeps[r.id] || Object.keys(r.x || {}).length); });
+  if (!old.length) return null;
+  return old[Math.floor(Date.now() / 864e5) % old.length];
+}
 function renderNov() {
   var box = $('nov'); if (!box || !me) return; box.textContent = '';
   var chip = function (t, f) { var c = el('button', 'chip', t); c.onclick = f; box.appendChild(c); };
@@ -1767,7 +1776,7 @@ function renderNov() {
   if (!um && !dec && !soon && !rxn.length && !newCount()) {
     if (!feed.length) { box.hidden = true; return; }
     box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
-    chip('📋 Manda un Reel', function () { $('paste').click(); });
+    var mem = memPick(); if (mem) chip('🕰 Un ricordo · ' + ago(mem.ts), function () { goReel(mem.id); var nd = nodes[mem.id]; if (nd) { nd.el.classList.remove('flash'); void nd.el.offsetWidth; nd.el.classList.add('flash'); } });
     if (Object.keys(keeps).length) chip('⭐ Rivedi i tenuti', function () { fview = 'keep'; render(); });
   }
   box.hidden = !box.children.length;
