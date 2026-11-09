@@ -1191,7 +1191,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v107', errLog = [];
+var APP_VER = 'v108', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -3949,7 +3949,7 @@ document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
 });
 /* ---- 📲 «Condividi → Reelta» su iPhone, con un Comando Rapido di Apple ----
    Il comando lascia al server solo il link pubblico del video, sotto un codice casuale di questo telefono; l'app lo ritira e il server lo cancella. */
-var SHORTCUT_URL = ''; // link iCloud del Comando Rapido «Reelta» (si attiva appena c'è)
+var SHORTCUT_URL = 'https://www.icloud.com/shortcuts/5d7eb738b2aa4db59e8c56b692fd4a8f'; // link iCloud del Comando Rapido «Reelta» (si attiva appena c'è)
 function dropCode() { var c = ''; try { c = localStorage.getItem(LSG + 'dropc') || ''; } catch (e) {} if (!/^[A-Za-z0-9]{24}$/.test(c)) { var A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'; c = Array.from(crypto.getRandomValues(new Uint8Array(24)), function (b) { return A[b % A.length]; }).join(''); try { localStorage.setItem(LSG + 'dropc', c); } catch (e) {} } return c; }
 function dropOk() { return isIOS && !!SHORTCUT_URL && srvOn(); }
 function dropOpen() { $('drM').classList.add('open'); track('drop-open'); }
