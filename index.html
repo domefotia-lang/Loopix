@@ -306,6 +306,19 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 
 /* avvisi */
 .instb span{display:flex;flex-direction:column;gap:1px;flex:1}.instb small{font-size:12.5px;color:var(--m)}.instb .btn{margin:0;padding:10px 16px;width:auto;flex:none}.instb #ix{padding:8px 11px;flex:none}
+.mod.demo{align-items:center;padding:12px}.dmw{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
+.dmtop{display:flex;justify-content:space-between;align-items:center;color:var(--gl);font-weight:800;font-size:13px;letter-spacing:.02em}.dmtop button{background:none;border:1px solid var(--line);color:var(--t);border-radius:999px;padding:7px 14px;font:inherit;font-weight:700}
+.dmph{position:relative;height:min(52dvh,440px);border-radius:28px;overflow:hidden;background:var(--s1);border:1px solid var(--line)}
+.dsc{position:absolute;inset:0;opacity:0;transition:opacity .35s;pointer-events:none}.dsc.on{opacity:1}
+.dvid{position:absolute;left:0;right:0;top:0;height:62%;background:linear-gradient(170deg,#7fc3e8,#2f7fb0 45%,#e8c28a 72%,#8a5a2b)}.dvid i{position:absolute;left:12px;top:12px;font-style:normal;font-weight:800;font-size:13px;background:rgba(0,0,0,.4);color:#fff;padding:5px 11px;border-radius:999px}
+.dbub{position:absolute;left:12px;right:12px;background:var(--s2);border:1px solid var(--line);border-radius:18px;padding:12px 14px;font-size:14.5px;line-height:1.4;color:var(--t);transform:translateY(14px);opacity:0;transition:transform .45s .25s,opacity .45s .25s}.dsc.on .dbub{transform:none;opacity:1}
+.dbub b{color:var(--g)}.dbub .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.dbub .row span{padding:6px 11px;border-radius:999px;background:var(--s3);font-weight:700;font-size:13px}.dbub .yes{background:var(--gold)!important;color:var(--ink)}
+.dtap{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.25);opacity:0}.dsc.on .dtap{animation:dtap 1.6s 1.1s ease-out infinite}
+@keyframes dtap{0%{opacity:0;transform:scale(1.4)}25%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(.86)}100%{opacity:0;transform:scale(1)}}
+.dmcap{min-height:66px;color:var(--t)}.dmcap b{display:block;font-size:19px;color:var(--gl);font-family:var(--dis)}.dmcap span{display:block;color:var(--m);font-size:14.5px;margin-top:3px}
+.dmdots{display:flex;gap:6px;justify-content:center}.dmdots i{width:26px;height:4px;border-radius:4px;background:var(--s3);overflow:hidden}.dmdots i.on::after{content:"";display:block;height:100%;background:var(--g);animation:dbar 6.5s linear forwards}.dmdots i.done{background:var(--g)}
+@keyframes dbar{from{width:0}to{width:100%}}
+@media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -623,7 +636,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </div></section>
 <section class="pane" id="style" aria-label="Impostazioni"><div class="head"><h2>Impostazioni</h2></div><div class="list">
   <button class="card prow2" id="goProf" type="button"><span id="gpA"></span><span><b id="gpN"></b><small>Profilo, foto e lingua</small></span><span aria-hidden="true">›</span></button>
-  <div class="card" id="hlpC"><h2>❓ Aiuto</h2><button class="btn-o wide" style="margin-top:0" id="help">❓ Come si usa</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button></div>
+  <div class="card" id="hlpC"><h2>❓ Aiuto</h2><button class="btn-o wide" style="margin-top:0" id="help">❓ Come si usa</button><button class="btn-o wide" id="demoGo">▶ Guarda come funziona</button><button class="btn-o wide" id="bug">🛠️ Segnala un problema</button><button class="btn-o wide" id="svGo">💬 Dai un parere su Reelta</button><button class="btn-o wide" id="inf">ℹ️ Privacy e regole</button></div>
   <div class="card" id="kpC"><h2>⭐ Reel da tenere</h2><p style="margin-top:0">Su ogni Reel tocca ☆ accanto al nome per tenerlo. Si conserva il link: se l’autore cancella il video, sparisce anche qui.</p>
     <label class="tog">Reel non tenuti<select id="rkS" aria-label="Reel non tenuti"><option value="0">Tienili tutti</option><option value="7">Puliscili dopo 7 giorni</option><option value="30">Puliscili dopo 30 giorni</option></select></label>
     <div class="hint" id="rkH">La pulizia vale solo per questo telefono. Il giorno prima ti avviso.</div></div>
@@ -757,6 +770,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <p>Quattro passi e ci sei:</p>
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
+  <button class="btn-o wide" id="gdDemo">▶ Guarda come funziona (30 s)</button>
   <button class="btn-o wide" id="gdX">Ho capito</button>
 </div></div>
 
@@ -767,6 +781,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <button class="btn-o wide" id="sumX">Chiudi</button>
 </div></div>
 
+<div class="mod demo" id="demoM" role="dialog" aria-modal="true" aria-label="Come funziona Reelta"><div class="dmw"><div class="dmtop"><span>▶ Demo · situazione di prova</span><button id="demoX" type="button">Salta</button></div><div class="dmph" id="demoS"></div><div class="dmcap"><b id="demoT"></b><span id="demoP"></span></div><div class="dmdots" id="demoD"></div><button class="btn go wide" id="demoN" type="button">Avanti</button></div></div>
 <div class="mod" id="instM" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="card"><h2 id="instT">📲 Reelta sulla Home</h2><ol class="isteps" id="instL"></ol><div class="duo"><button class="btn-o" id="instX">Più tardi</button><button class="btn go" id="instA" hidden></button></div></div></div>
 <div class="iarr" id="iarr" hidden aria-hidden="true">⬇</div>
 <div id="dw" aria-hidden="true"><nav class="dwp" role="dialog" aria-modal="true" aria-label="Menu" id="dwP"></nav><div class="dws" id="dwS"></div></div>
@@ -1160,7 +1175,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v95', errLog = [];
+var APP_VER = 'v96', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -1455,6 +1470,7 @@ function dwOpen() {
     ['⚙️', 'Tutte le impostazioni', function () { dwGo('style'); }]
   ]);
   sec('Reelta', [
+    ['▶', 'Guarda come funziona', function () { dwClose(); demoOpen(); }],
     ['❓', 'Come si usa', function () { dwClose(); $('help').click(); }],
     ['🛠️', 'Segnala un problema', function () { dwClose(); $('bug').click(); }]
   ]);
@@ -2664,7 +2680,7 @@ function ideaTab() { $('tIdea').textContent = ideaSeen ? 'Piani (' + ideaSeen + 
 
 /* ---- idee: dal Reel alla realtà ---- */
 // Codici affiliato: lasciali vuoti finché Booking (via CJ) e GetYourGuide non ti approvano.
-var PARTNER = { booking: '', gyg: '' };
+var PARTNER = { booking: '', gyg: '', amazon: '' }; // codici partner (affiliazione): vuoti finché non ci si iscrive
 // Link per i contributi volontari (es. Stripe Payment Link o Ko-fi). Vuoto = la scheda non compare.
 var SUPPORT_URL = '';
 // Statistiche anonime (GoatCounter). Esempio: 'https://loopix.goatcounter.com/count'. Vuoto = spente.
@@ -2789,6 +2805,38 @@ function svNext() {
 var sumCur = null;
 function sumOpen(r) { sumCur = r; sumRender(); $('sumH').textContent = ''; $('sumM').classList.add('open'); }
 function sumRefresh(r) { if (sumCur && sumCur.id === r.id && $('sumM').classList.contains('open')) sumRender(); if (seq && seq.cur === r.id) { var pl2 = sumLabel(r); $('psum').hidden = !pl2; } }
+// ✨ cosa c'è nel video + dove comprarlo / prenotarlo. Gemini non inventa prodotti né prezzi precisi: i tasti aprono la ricerca vera nei negozi.
+function aiBox(r) {
+  var box = el('div', 'aibox');
+  var ab = el('button', 'aibtn', '✨ Cosa c’è nel video? Dove si trova?'); ab.type = 'button'; ab.style.whiteSpace = 'normal'; ab.style.fontSize = '17px';
+  var out = el('div', 'aiout'); out.hidden = true;
+  function show(x) {
+    r.aiX = x; ab.hidden = true; out.hidden = false; out.textContent = '';
+    out.appendChild(el('p', 'sumtx', clean(x.sum, 200) || '—'));
+    if (x.o) out.appendChild(el('p', 'refn', clean(x.o, 200)));
+    if (x.ask && x.opts && x.opts.length) {
+      out.appendChild(el('p', null, clean(x.ask, 60)));
+      var q = el('div', 'ailinks'); x.opts.forEach(function (o) { var c = el('button', 'chip', clean(o, 30)); c.type = 'button'; c.onclick = function () { run(clean(o, 30)); }; q.appendChild(c); }); out.appendChild(q);
+    }
+    var sure = x.p && x.k && x.k !== 'altro', anyP = false;
+    if (sure) {
+      out.appendChild(el('div', 'sumtag', ({ compra: '🛍️ ', viaggio: '✈️ ', cibo: '🍝 ', esperienza: '🎟️ ', ricetta: '👨‍🍳 ' }[x.k] || '') + clean(x.p, 60)));
+      var lk = el('div', 'ailinks');
+      linksFor({ k: x.k, p: clean(x.p, 60), q: clean(x.shop || '', 60) }).forEach(function (L) { if (L.p) anyP = true; var a = el('a', 'chip', L.t); a.href = L.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (L.p ? ' sponsored' : ''); a.onclick = function () { track('ai-link-' + x.k); }; lk.appendChild(a); });
+      out.appendChild(lk);
+      var pb = el('button', 'btn-o wide', '💘 Fanne un piano: decidete insieme'); pb.type = 'button'; pb.onclick = function () { $('sumM').classList.remove('open'); openIdea(r.id); }; out.appendChild(pb);
+    }
+    out.appendChild(el('p', 'refn', 'Lo scrive l’AI di Google guardando il video pubblico, il titolo e la copertina: niente dei vostri nomi né messaggi.' + (anyP ? ' Alcuni link ci aiutano a tenere Reelta gratis: il prezzo per te non cambia.' : '')));
+  }
+  function run(focus) {
+    ab.hidden = false; out.hidden = true; ab.disabled = true; ab.textContent = focus ? '✨ Cerco ' + focus + '…' : '✨ Guardo il video…'; track('ai-video');
+    aiAsk(r, '', [], focus).then(show, function () { ab.disabled = false; ab.textContent = r.n === me.name ? 'Non ci sono riuscito: riprova tra poco.' : 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; });
+  }
+  ab.onclick = function () { run(''); };
+  box.appendChild(ab); box.appendChild(out);
+  if (r.aiX) show(r.aiX);
+  return box;
+}
 function sumRender() {
   var r = sumCur, b = $('sumB'); b.textContent = ''; if (!r) return;
   var has = !!(r.s || r.g), mine = r.n === me.name, asks = Object.keys(r.q || {});
@@ -2802,13 +2850,12 @@ function sumRender() {
   if (!mine) {
     if (r.q && r.q[me.name]) { b.appendChild(el('p', null, 'Hai già chiesto a ' + r.n + '. Appena risponde lo vedi qui, e ti arriva un avviso.')); return; }
     if (srvOn()) {
-      var ab = el('button', 'aibtn', r.ai ? '✨ ' + r.ai : '✨ Riassunto automatico'); ab.type = 'button'; ab.style.whiteSpace = 'normal'; ab.style.fontSize = '17px';
-      ab.onclick = function () { if (r.ai) return; ab.disabled = true; ab.textContent = '✨ Guardo il video…'; aiAsk(r).then(function (x) { r.ai = clean(x.sum, 200) || '—'; ab.textContent = '✨ ' + r.ai; }, function () { ab.disabled = false; ab.textContent = 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; }); };
-      b.appendChild(ab); b.appendChild(el('p', 'refn', 'Lo scrive l’intelligenza artificiale di Google leggendo il titolo pubblico del video: niente dei vostri nomi né messaggi.'));
+      b.appendChild(aiBox(r));
     }
     b.appendChild(el('p', null, 'Chiedi a ' + r.n + ' di raccontartelo in una riga. Così decidi tu se guardarlo tutto.'));
     var go = el('button', 'btn', '📝 Chiedi a ' + r.n); go.onclick = function () { sumAsk(r); }; b.appendChild(go); return;
   }
+  if (srvOn()) b.appendChild(aiBox(r));
   b.appendChild(el('p', null, asks.length ? asks.join(', ') + (asks.length === 1 ? ' vuole' : ' vogliono') + ' sapere di cosa parla. Basta un tocco, la riga è facoltativa.' : 'Scrivi in breve di cosa parla: chi non ha tempo di guardarlo tutto lo legge qui.'));
   var pick = r.g || '', o = el('div', 'svo');
   SUMTAG.forEach(function (t) { var x = el('button', null, t); x.type = 'button'; x.setAttribute('aria-pressed', String(t === pick)); x.onclick = function () { pick = pick === t ? '' : t; o.querySelectorAll('button').forEach(function (y) { y.setAttribute('aria-pressed', String(y.textContent === pick)); }); }; o.appendChild(x); });
@@ -2826,8 +2873,8 @@ function sumAsk(r) {
 }
 /* ---- intelligenza artificiale su richiesta: il server legge titolo e descrizione pubblici del video ---- */
 var aiLast = null, KAI = { viaggio: 'il viaggio', compra: 'cosa comprare', cibo: 'cosa mangiare', esperienza: 'cosa fare', ricetta: 'la ricetta', altro: 'un’altra idea' };
-function aiAsk(r, want, avoid) {
-  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2), want: want || '', avoid: avoid || [] }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
+function aiAsk(r, want, avoid, focus) {
+  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2), want: want || '', avoid: avoid || [], focus: focus || '' }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
 }
 function aiPlan() {
   var r = ideaRid && find(ideaRid), b = $('iAi'), lb = b.querySelector('b'), out = $('iAiR'); if (!r) return;
@@ -2926,10 +2973,11 @@ function applyIdea(d, who) {
 }
 function ideaAct(m) { var out = applyIdea(m, me.name); if (out) sendEv(out); }
 function enc(t) { return encodeURIComponent(t); }
+function amzDom() { var g = ((navigator.language || '').split('-')[1] || '').toUpperCase(), l = window.LX_LANG || 'it'; return { GB: 'co.uk', IT: 'it', ES: 'es', DE: 'de', FR: 'fr', US: 'com' }[g] || { it: 'it', es: 'es', en: 'co.uk' }[l] || 'co.uk'; }
 function linksFor(i) {
   var G = 'https://www.google.com/search?q=', MAP = 'https://www.google.com/maps/search/?api=1&query=';
   var LW = { it: ['sito ufficiale', 'prezzo'], en: ['official site', 'price'], es: ['sitio oficial', 'precio'] }[window.LX_LANG || 'it'] || ['sito ufficiale', 'prezzo'];
-  if (i.k === 'compra') return [{ t: '🌐 Sito ufficiale', u: G + enc(i.p + ' ' + LW[0]) }, { t: '💶 Prezzo', u: G + enc(i.p + ' ' + LW[1]) }, { t: '🛒 Dove comprarlo', u: 'https://www.google.com/search?tbm=shop&q=' + enc(i.p) }, { t: '📍 Vicino a te', u: MAP + enc(i.q || i.p) }];
+  if (i.k === 'compra') return [{ t: '🌐 Sito ufficiale', u: G + enc(i.p + ' ' + LW[0]) }, { t: '💶 Prezzo', u: G + enc(i.p + ' ' + LW[1]) }, { t: '🛒 Dove comprarlo', u: 'https://www.google.com/search?tbm=shop&q=' + enc(i.p) }, { t: '📦 Amazon', u: 'https://www.amazon.' + amzDom() + '/s?k=' + enc(i.p) + (PARTNER.amazon ? '&tag=' + enc(PARTNER.amazon) : ''), p: !!PARTNER.amazon }, { t: '📍 Vicino a te', u: MAP + enc(i.q || i.p) }];
   if (i.k === 'ricetta') return [{ t: '🔎 La ricetta', u: G + enc('ricetta ' + i.p) }, { t: '▶ Video', u: 'https://www.youtube.com/results?search_query=' + enc('ricetta ' + i.p) }];
   if (i.k === 'cibo' && i.q) return [{ t: '📍 Vicino a te', u: MAP + enc(i.q) }, { t: '📍 Mappa', u: MAP + enc(i.p) }];
   if (i.k === 'altro') return [{ t: '🔎 Cerca', u: G + enc(i.p) }, { t: '📍 Mappa', u: MAP + enc(i.p) }];
@@ -3667,7 +3715,38 @@ $('rsT').addEventListener('change', function () {
 $('rcT').addEventListener('change', function () { put('rcpt', $('rcT').checked ? 1 : 0); lastSeenSent = 0; if ($('rcT').checked) markSeen(); renderChat(true); });
 $('bigT').addEventListener('change', function () { setBig($('bigT').checked); });
 $('help').addEventListener('click', function () { guide(true); });
-$('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); });
+$('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
+// ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
+var demoI = 0, demoT = null;
+function DT(x) { return window.LX_T ? LX_T(x) : x; }
+function demoWho() { var o = (names || []).filter(function (n) { return n && me && n !== me.name; })[0]; return o || 'Giulia'; }
+function demoBuild() {
+  var W = demoWho(), S = $('demoS'); S.textContent = '';
+  var sc = [
+    ['<div class="dvid"><i>' + W + '</i></div><div class="dbub" style="top:66%"><b>' + W + '</b> ' + DT('ti ha mandato un Reel') + '<br>“' + DT('ci andiamo? 🌊') + '”</div><div class="dtap" style="left:80%;top:88%"></div>', DT('1. Arriva un Reel'), DT('Chi è nel tuo cerchio ti manda un posto, una ricetta o una cosa da comprare.')],
+    ['<div class="dvid" style="height:46%"><i>' + W + '</i></div><div class="dbub" style="top:50%"><b>✨ Gemini</b><br>' + DT('Positano, Costiera Amalfitana. Hotel da circa €180 a notte, volo di 2h30.') + '<div class="row"><span>🏨 ' + DT('Hotel') + '</span><span>✈️ ' + DT('Voli') + '</span><span>🎟️ ' + DT('Gita in barca') + '</span></div></div><div class="dtap" style="left:18%;top:75%"></div>', DT('2. Tocchi ✨'), DT('Gemini ti dice cos’è, quanto costa più o meno e dove prenotarlo o comprarlo.')],
+    ['<div class="dbub" style="top:22%;text-align:center"><div style="font-size:40px">💘</div><b style="font-size:18px">' + DT('Positano a giugno?') + '</b><br><span style="color:var(--m)">' + W + ' ' + DT('ha detto sì. E tu?') + '</span><div class="row" style="justify-content:center"><span>' + DT('Passo') + '</span><span class="yes">' + DT('Sì!') + '</span></div></div><div class="dtap" style="left:59%;top:58%"></div>', DT('3. Decidete insieme'), DT('Un tocco a testa, sì o passo: se piace a tutti, si fa.')],
+    ['<div class="dbub" style="top:20%;text-align:center"><div style="font-size:40px">🎉</div><b style="font-size:20px">' + DT('Siete d’accordo!') + '</b><br><span style="color:var(--m)">Positano · 14–17 ' + DT('giugno') + '</span><div class="row" style="justify-content:center;flex-direction:column"><span class="yes">📅 ' + DT('Aggiungi al calendario') + '</span><span>🏨 ' + DT('Prenota l’hotel') + '</span></div></div>', DT('4. È fatta'), DT('La data va nel calendario e prenoti con un tocco. E se guardate un video insieme, ⏸ lo ferma per tutti.')]
+  ];
+  sc.forEach(function (x, i) { var d = el('div', 'dsc'); d.innerHTML = x[0]; d.dataset.t = x[1]; d.dataset.p = x[2]; S.appendChild(d); });
+  var D = $('demoD'); D.textContent = ''; sc.forEach(function () { D.appendChild(el('i')); });
+}
+function demoShow(i) {
+  clearTimeout(demoT); var all = $('demoS').children; if (i >= all.length) { demoClose(true); return; }
+  demoI = i; [].forEach.call(all, function (d, j) { d.classList.toggle('on', j === i); });
+  [].forEach.call($('demoD').children, function (d, j) { d.className = j < i ? 'done' : j === i ? 'on' : ''; });
+  $('demoT').textContent = all[i].dataset.t; $('demoP').textContent = all[i].dataset.p;
+  $('demoN').textContent = i === all.length - 1 ? DT('Ho capito, iniziamo') : DT('Avanti');
+  demoT = setTimeout(function () { demoShow(i + 1); }, 6500);
+}
+function demoOpen() { try { localStorage.setItem(LSG + 'demo', '1'); } catch (e) {} track('demo'); demoBuild(); $('demoM').classList.add('open'); demoShow(0); }
+function demoClose() { clearTimeout(demoT); $('demoM').classList.remove('open'); }
+$('demoN').addEventListener('click', function () { demoShow(demoI + 1); });
+$('demoX').addEventListener('click', demoClose);
+$('demoS').addEventListener('click', function () { demoShow(demoI + 1); });
+$('demoGo').addEventListener('click', demoOpen);
+$('gdDemo').addEventListener('click', function () { $('gd').classList.remove('open'); demoOpen(); });
+
 $('ru').addEventListener('input', function () { $('rc').hidden = !$('ru').value.trim(); });
 $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add').click(); });
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
