@@ -320,6 +320,7 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 @keyframes dbar{from{width:0}to{width:100%}}
 @media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
 .trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
+.demob{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0 8px;padding:14px 16px;border:1px dashed var(--line);border-radius:18px;background:transparent;color:var(--t);font:inherit;text-align:left;cursor:pointer}.demob>span{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.demob b{display:block;font-size:15.5px}.demob small{color:var(--m);font-size:13px}
 .isteps{margin:6px 0 4px;padding:0;list-style:none;counter-reset:st}.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4;border-bottom:1px solid var(--line)}.isteps li:last-child{border:0}
 .isteps li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}.isteps .k{display:inline-block;padding:1px 8px;border-radius:8px;background:var(--s2);border:1px solid var(--line);font-weight:700;white-space:nowrap}
 .iarr{position:fixed;z-index:100;font-size:44px;color:var(--gl);text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none;animation:iarr 1s ease-in-out infinite}.iarr.br{right:18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.bc{left:50%;margin-left:-16px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.iarr.tr{right:14px;top:calc(4px + env(safe-area-inset-top,0px));transform:rotate(180deg);animation-name:iarru}
@@ -1177,7 +1178,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v97', errLog = [];
+var APP_VER = 'v98', errLog = [];
 window.addEventListener('error', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String(e.message || 'errore').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 window.addEventListener('unhandledrejection', function (e) { errLog.push(new Date().toISOString().slice(11, 19) + ' ' + String((e.reason && e.reason.message) || e.reason || 'promessa').slice(0, 120)); if (errLog.length > 8) errLog.shift(); });
 function bugText() {
@@ -3017,7 +3018,7 @@ function renderIdeas() {
     var c = el('div', 'card idea' + (i.d ? ' done' : ''));
     if (isMatch(i) && !i.d) c.appendChild(el('div', 'match', '💞 Lo volete ' + (circleSize() > 2 ? 'tutti' : 'entrambi')));
     else if (i.id === top) c.appendChild(el('div', 'star', '⭐ Il più votato'));
-    c.appendChild(el('div', 'k', KINDS[i.k] + ', proposto da ' + i.n));
+    c.appendChild(el('div', 'k', (window.LX_T ? LX_T(KINDS[i.k]) : KINDS[i.k]) + ', proposto da ' + i.n));
     c.appendChild(el('h3', null, i.p));
     if (i.o) c.appendChild(el('p', null, i.o));
     if (i.w) c.appendChild(el('div', 'when', '📅 ' + fmtDay(i.w)));
@@ -3034,7 +3035,8 @@ function renderIdeas() {
     if (voters.length) c.appendChild(el('div', 'ptag', 'Votato da: ' + voters.join(', ')));
     box.appendChild(c);
   });
-  if (PARTNER.booking || PARTNER.gyg) box.appendChild(el('p', null, '“partner”: prenotando da quel link Reelta riceve una piccola commissione. Per te il prezzo non cambia.'));
+  if (PARTNER.booking || PARTNER.gyg || PARTNER.amazon) box.appendChild(el('p', null, '“partner”: prenotando da quel link Reelta riceve una piccola commissione. Per te il prezzo non cambia.'));
+  var dm = el('button', 'demob'); dm.type = 'button'; dm.appendChild(el('span', null, '▶')); var dt = el('div'); dt.appendChild(el('b', null, 'Come nasce un piano da un Reel?')); dt.appendChild(el('small', null, 'Guarda la demo · 30 secondi')); dm.appendChild(dt); dm.onclick = demoOpen; box.appendChild(dm);
 }
 function circleSize() { return me.role === 'host' ? Object.keys(allowed).length + 1 : Math.max(names.length, circMax ? 2 : 2); }
 function isMatch(i) { var n = circleSize(); return n >= 2 && Object.keys(i.v || {}).length >= n; }
