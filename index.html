@@ -1230,7 +1230,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v116', errLog = [];
+var APP_VER = 'v117', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1882,10 +1882,13 @@ function renderNov() {
   var rxn = (get('rxNew', []) || []).filter(function (x) { return Date.now() - x.ts < 3 * 864e5 && find(x.id); });
   if (rxn.length) { var lx = rxn[rxn.length - 1]; chip(lx.e + ' ' + (rxn.length === 1 ? lx.n + ' ' + (RXV[lx.e] || 'ha reagito al tuo Reel').replace(/ al tuo Reel| col tuo Reel/, '') : rxn.length + ' reazioni ai tuoi Reel'), function () { put('rxNew', []); goReel(lx.id); renderNov(); }); }
   if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
+  // da soli con qualche Reel già pronto: è il momento giusto per invitare
+  var mineN = me.role === 'host' && !Object.keys(allowed).length ? feed.filter(function (r) { return r.n === me.name; }).length : 0;
+  if (mineN >= 2) chip('💌 ' + (window.LX_T || String)('Hai ') + mineN + (window.LX_T || String)(' Reel pronti: invita qualcuno a vederli'), function () { track('invita-pronti'); invite(); });
   var wk = wkDue(); if (wk) chip('📊 La vostra settimana', function () { wkOpen(wk); });
   var fbI = fbDue()[0]; if (fbI) chip('💭 Com’è andata: ' + fbI.p.slice(0, 22) + '?', function () { fbOpen(fbI); });
   if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
-  if (!um && !dec && !soon && !rxn.length && !newCount() && !wk) {
+  if (!um && !dec && !soon && !rxn.length && !newCount() && !wk && mineN < 2) {
     if (!feed.length) { box.hidden = true; return; }
     box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
     var lov = ideas.filter(function (i) { return i.d && i.w && Object.keys(i.f || {}).some(function (n) { return i.f[n] === '❤️'; }) && Date.now() - new Date(i.w + 'T12:00:00') > 7 * 864e5; });
