@@ -385,6 +385,9 @@ details.more{margin-top:12px}details.more>summary{cursor:pointer;color:var(--m);
 .chip[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:transparent}
 .idea .k{font-size:13px;color:var(--m)}.idea h3{font-family:var(--dis);font-weight:600;font-size:26px;margin:4px 0 6px;color:var(--gl);overflow-wrap:anywhere}.idea.done{opacity:.55}
 .idea p{margin-bottom:4px;overflow-wrap:anywhere;color:var(--t)}
+#idm.auto #ikg,#idm.auto #iQ{display:none}.ikS{display:flex;align-items:center;gap:8px;width:100%;margin:10px 0 8px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-size:15.5px;font-weight:700;text-align:left;cursor:pointer}.ikS small{margin-left:auto;font-weight:500;color:var(--m);text-decoration:underline}
+.isec{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:18px 4px 8px}.isec:first-child{margin-top:4px}.isec b{font-family:var(--dis);font-size:21px;color:var(--gl);font-weight:600}.isec i{font-style:normal;font-size:13px;font-weight:800;color:var(--ink);background:var(--gl);border-radius:999px;padding:1px 8px}.isec small{flex-basis:100%;font-size:13.5px;color:var(--m)}
+.inext{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}.inext .btn,.inext .btn-o{margin:0;flex:1;min-width:120px;width:auto}.inext .btn-o{flex:0 1 auto}.iwait{font-size:14.5px;color:var(--m);flex:1;min-width:150px}.idea.passed{opacity:.6}.idea .acts{margin-top:10px}.idea .acts .r-btn{min-height:38px;padding:6px 12px;font-size:14.5px}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 a.r-btn{text-decoration:none}
 .ptag{font-size:13px;color:var(--m);margin-top:10px}
@@ -642,7 +645,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 </section>
 
 <section class="pane" id="ideas" aria-label="Idee">
-  <div class="head"><h2>Piani</h2><button class="btn-o" id="inew">+ Nuova</button></div>
+  <div class="head"><h2>Piani</h2><button class="btn-o" id="inew">+ Nuovo piano</button></div>
   <div class="chips" id="ichips"></div>
   <div class="list" id="ilist"></div>
 </section>
@@ -874,12 +877,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <h2 id="idT">Nuovo piano</h2>
   <button class="aibtn" id="iAi" type="button" hidden><b>✨ Riconosci dal video</b><span>L’AI compila il piano per te</span></button>
   <div class="aires" id="iAiR" hidden></div>
+  <button type="button" class="ikS" id="ikS" hidden></button>
   <p class="iq" id="iQ">Cosa vi ha colpito?</p>
   <div class="kgrid" id="ikg" role="radiogroup" aria-label="Tipo di piano"></div><input type="hidden" id="ik" value="viaggio">
   <input id="ip" placeholder="Dove? (es. Lisbona)" maxlength="60" aria-label="Luogo o cosa">
   <button class="isug" id="iSg" hidden></button>
   <input id="io" placeholder="Nota (facoltativa)" maxlength="200" aria-label="Nota">
-  <button class="btn" id="iok">Salva il piano</button><button class="btn-o wide" id="iok2" hidden>＋ Salva e fanne un altro da questo Reel</button><button class="btn-o wide" id="ino">Annulla</button>
+  <button class="btn" id="iok">Salva il piano</button><button class="btn-o wide" id="iok2" hidden style="border:0;background:none;text-decoration:underline;font-size:14.5px;min-height:0;padding:8px">＋ Salva e fanne un altro da questo Reel</button><button class="btn-o wide" id="ino">Annulla</button>
   <div class="hint" id="iH" aria-live="polite"></div>
 </div></div>
 
@@ -1230,7 +1234,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v118', errLog = [];
+var APP_VER = 'v119', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -3122,12 +3126,13 @@ function aiPlan() {
   aiAsk(r, want, avoid.slice(-5)).then(function (x) {
     b.classList.remove('busy'); b.disabled = false;
     var sure = x.k !== 'altro' || (x.p && !/^(sconosciut|unknown|desconocid)/i.test(x.p));
-    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; aiLast = { k: x.k, p: clean(x.p || '', 60), q: clean(x.shop || '', 60), done: avoid.concat(x.p ? [x.p] : []) }; lb.textContent = '✨ Fatto: controlla e salva'; b.querySelector('span').textContent = 'Tocca di nuovo per un’altra idea, o scegli un tipo qui sotto'; }
-    else { lb.textContent = '✨ Riprova'; }
+    b.hidden = false;
+    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; aiLast = { k: x.k, p: clean(x.p || '', 60), q: clean(x.shop || '', 60), done: avoid.concat(x.p ? [x.p] : []) }; lb.textContent = '✨ Un’altra idea dal video'; b.querySelector('span').textContent = 'Non è questo? L’AI ne propone una diversa'; }
+    else { lb.textContent = '✨ Riprova'; $('idm').classList.remove('auto'); $('ikS').hidden = true; }
     out.textContent = (x.sum ? '✨ ' + x.sum : '') + (sure ? '' : ' Scegli tu qui sotto: ci metti un attimo.'); out.hidden = !out.textContent;
     if (sure && x.p && x.k !== 'altro') { var lk = el('div', 'ailinks'); linksFor({ k: x.k, p: clean(x.p, 60), q: aiLast.q }).forEach(function (L) { var a = el('a', 'chip', L.t); a.href = L.u; a.target = '_blank'; a.rel = 'noopener'; lk.appendChild(a); }); out.appendChild(lk); }
     ideaSug();
-  }, function () { b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
+  }, function () { b.hidden = false; $('idm').classList.remove('auto'); $('ikS').hidden = true; b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
 // data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
@@ -3173,6 +3178,7 @@ function setKind(k) {
   if (aiLast && aiLast.k !== k && !$('iAi').classList.contains('busy')) { $('iAi').querySelector('b').textContent = '✨ Cerca ' + KAI[k] + ' nel video'; $('iAi').querySelector('span').textContent = 'L’AI riparte con questo tipo'; }
   else if (aiLast && aiLast.k === k) { $('iAi').querySelector('b').textContent = '✨ Un’altra idea dal video'; $('iAi').querySelector('span').textContent = 'L’AI ne propone una diversa'; }
   $('ikg').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.k === k)); });
+  var ks = $('ikS'); ks.textContent = ''; ks.appendChild(document.createTextNode(window.LX_T ? LX_T(KINDS[k]) : KINDS[k])); ks.appendChild(el('small', null, 'Cambia'));
   $('ip').placeholder = KPH[k][0]; $('io').placeholder = KPH[k][1];
   ideaSug();
 }
@@ -3181,7 +3187,7 @@ function ideaSug() {
   if (g && g !== $('ik').value && KSUG[g]) { b.textContent = KSUG[g]; b.onclick = function () { setKind(g); $('ip').focus(); }; b.hidden = false; }
   else b.hidden = true;
 }
-var ideas = get('ideas', []), ifilter = 'tutte', ideaRid = '';
+var ideas = get('ideas', []), ifilter = 'tutte', ikind = '', ideaRid = '';
 var FEEL = ['❤️', '😊', '😐', 'no'];
 function cleanF(f) { var o = {}; if (f && typeof f === 'object') Object.keys(f).slice(0, 8).forEach(function (n) { if (FEEL.indexOf(f[n]) >= 0 && clean(n, 30)) o[clean(n, 30)] = f[n]; }); return o; }
 function cleanV(v) { var o = {}; if (v && typeof v === 'object') Object.keys(v).slice(0, 8).forEach(function (n) { if (v[n] && clean(n, 30)) o[clean(n, 30)] = 1; }); return o; }
@@ -3234,46 +3240,83 @@ function linksFor(i) {
 function renderIdeas() {
   try { dwDot(); } catch (e) {}
   renderNov();
-  var ch = $('ichips'); ch.textContent = '';
-  [['tutte', 'Tutte'], ['viaggio', '✈️ Posti'], ['compra', '🛍️ Da comprare'], ['cibo', '🍝 Da mangiare'], ['esperienza', '🎟️ Da fare'], ['ricetta', '👨‍🍳 Ricette'], ['fatte', '✓ Fatte']].forEach(function (f) {
+  // due viste sole: i piani da fare (divisi per «a che punto siamo») e quelli fatti
+  if (ifilter !== 'fatte') ifilter = 'tutte';
+  var nDone = ideas.filter(function (i) { return i.d; }).length, ch = $('ichips'); ch.textContent = '';
+  [['tutte', 'Da fare'], ['fatte', '✓ Fatti' + (nDone ? ' · ' + nDone : '')]].forEach(function (f) {
     var b = el('button', 'chip', f[1]); b.setAttribute('aria-pressed', String(ifilter === f[0])); b.onclick = function () { ifilter = f[0]; renderIdeas(); }; ch.appendChild(b);
   });
+  ch.hidden = !ideas.length;
+  var open0 = ideas.filter(function (i) { return !i.d; }), kc = $('ikf'); if (!kc) { kc = el('div', 'chips'); kc.id = 'ikf'; ch.parentNode.insertBefore(kc, ch.nextSibling); } kc.textContent = '';
+  var kinds = Object.keys(KINDS).filter(function (k) { return open0.some(function (i) { return i.k === k; }); });
+  if (ifilter === 'fatte' || open0.length < 8 || kinds.length < 2) ikind = '';
+  kc.hidden = !(ifilter !== 'fatte' && open0.length >= 8 && kinds.length >= 2);
+  if (!kc.hidden) [''].concat(kinds).forEach(function (k) { var b = el('button', 'chip', k ? (window.LX_T ? LX_T(KINDS[k]) : KINDS[k]) : 'Tutti i tipi'); b.setAttribute('aria-pressed', String(ikind === k)); b.onclick = function () { ikind = k; renderIdeas(); }; kc.appendChild(b); });
   var box = $('ilist'); box.textContent = '';
   var todo = toDecide();
-  if (todo.length && ifilter !== 'fatte') { var db0 = el('button', 'aibtn love'); db0.appendChild(el('b', null, '💘 Decidete insieme')); db0.appendChild(el('span', null, todo.length === 1 ? '1 piano aspetta il tuo sì o no' : todo.length + ' piani aspettano il tuo sì o no')); db0.onclick = decOpen; box.appendChild(db0); }
-  var list = ideas.filter(function (i) { return ifilter === 'fatte' ? i.d : !i.d && (ifilter === 'tutte' || i.k === ifilter); });
-  list.sort(function (a, b) { return (isMatch(b) - isMatch(a)) || Object.keys(b.v).length - Object.keys(a.v).length || b.ts - a.ts; });
+  if (todo.length > 1 && ifilter !== 'fatte') { var db0 = el('button', 'aibtn love'); db0.appendChild(el('b', null, '💘 Decidete insieme')); db0.appendChild(el('span', null, todo.length + ' piani aspettano il tuo sì o no')); db0.onclick = decOpen; box.appendChild(db0); }
+  var list = ideas.filter(function (i) { return ifilter === 'fatte' ? i.d : !i.d && (!ikind || i.k === ikind); });
   if (!list.length) {
     if (ifilter === 'fatte') box.appendChild(el('div', 'empty', 'Nessun piano fatto ancora.\nQuando lo realizzate, toccate ✓ Fatto.'));
-    else if (ideas.some(function (i) { return !i.d; })) box.appendChild(el('div', 'empty', 'Nessun piano qui.'));
     else box.appendChild(ideaGuide());
     return;
   }
-  var top = !list[0].d && Object.keys(list[0].v).length >= 2 ? list[0].id : null;
-  list.forEach(function (i) {
-    var c = el('div', 'card idea' + (i.d ? ' done' : ''));
-    if (isMatch(i) && !i.d) c.appendChild(el('div', 'match', '💞 Lo volete ' + (circleSize() > 2 ? 'tutti' : 'entrambi')));
-    else if (i.id === top) c.appendChild(el('div', 'star', '⭐ Il più votato'));
+  var sk = get('iskip', {}), today = new Date().toISOString().slice(0, 10), all = circleSize() > 2 ? 'tutti' : 'entrambi';
+  // a che punto è un piano: 0 da decidere · 1 da organizzare (lo volete, manca la data) · 2 in programma (c'è la data)
+  var stage = function (i) { return i.w ? 2 : isMatch(i) ? 1 : 0; };
+  var others = function (i) { var ns = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : (names || []).filter(function (n) { return n !== me.name; }); return ns.filter(function (n) { return !i.v[n]; }); };
+  var card = function (i) {
+    var c = el('div', 'card idea' + (i.d ? ' done' : '')), stg = stage(i), mine = !!i.v[me.name], voters = Object.keys(i.v);
+    if (!i.d && stg >= 1 && isMatch(i)) c.appendChild(el('div', 'match', '💞 Lo volete ' + all));
     c.appendChild(el('div', 'k', (window.LX_T ? LX_T(KINDS[i.k]) : KINDS[i.k]) + ', proposto da ' + i.n));
     c.appendChild(el('h3', null, i.p));
     if (i.o) c.appendChild(el('p', null, i.o));
     if (i.w) c.appendChild(el('div', 'when', '📅 ' + fmtDay(i.w)));
     var fk = Object.keys(i.f || {}).filter(function (n) { return i.f[n] !== 'no'; }); if (fk.length) c.appendChild(el('div', 'when', '💭 ' + fk.map(function (n) { return n + ' ' + i.f[n]; }).join(' · ')));
-    var voters = Object.keys(i.v), mine = !!i.v[me.name], acts = el('div', 'acts');
-    if (i.k === 'compra' && !mine) c.appendChild(el('div', 'ask2', 'Ti piace? Tocca 😍 per dirlo.'));
-    var vb = el('button', 'r-btn' + (mine ? ' mine' : ''), (i.k === 'compra' ? '😍 ' : '👍 ') + voters.length); vb.setAttribute('aria-label', mine ? 'Togli il voto' : 'Vota'); vb.onclick = function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: !mine }); }; acts.appendChild(vb);
-    linksFor(i).forEach(function (l) { var a = el('a', 'r-btn', l.t + (l.p ? ' (partner)' : '')); a.href = l.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (l.p ? ' sponsored' : ''); acts.appendChild(a); });
-    if (i.r && find(i.r)) { var rb = el('button', 'r-btn', '▶ Reel'); rb.onclick = function () { goReel(i.r); }; acts.appendChild(rb); }
-    if (!i.d) { var wb = el('button', 'r-btn', i.w ? '📅 Cambia data' : '📅 Quando?'); wb.onclick = function () { pickDay(i); }; acts.appendChild(wb); }
-    if (i.w && !i.d) { var cb = el('button', 'r-btn', '🗓️ Calendario'); cb.onclick = function () { toCal(i); }; acts.appendChild(cb); }
-    var db = el('button', 'r-btn', i.d ? '↺ Da fare' : '✓ Fatto'); db.onclick = function () { ideaAct({ t: 'idea', a: 'done', id: i.id, on: !i.d }); }; acts.appendChild(db);
-    var xb = el('button', 'r-btn', '🗑'); xb.setAttribute('aria-label', 'Elimina idea'); xb.onclick = function () { ask('Eliminare questo piano?', 'Sparisce per tutto il cerchio.', 'Elimina', true).then(function (y) { if (y) ideaAct({ t: 'idea', a: 'del', id: i.id }); }); }; acts.appendChild(xb);
+    // un solo passo avanti, ben visibile: quello che serve adesso
+    var go = el('div', 'inext'), btn = function (cls, t, f) { var b = el('button', cls, t); b.type = 'button'; b.onclick = f; go.appendChild(b); return b; };
+    if (!i.d && stg === 0 && !mine) {
+      if (sk[i.id]) { c.classList.add('passed'); go.appendChild(el('span', 'iwait', 'Hai detto “passo”.')); btn('btn-o', '👍 Ci ripenso', function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: true }); }); }
+      else { btn('btn go', i.k === 'compra' ? '😍 Mi piace' : '👍 Mi va', function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: true }); }); btn('btn-o', 'Passo', function () { var k = get('iskip', {}); k[i.id] = 1; put('iskip', k); renderIdeas(); }); }
+    } else if (!i.d && stg === 0) { var ot = others(i); go.appendChild(el('span', 'iwait', circleSize() < 2 ? '👍 A te va. Invita qualcuno per decidere insieme.' : ot.length ? '👍 A te va. ⏳ Manca la risposta di ' + ot.slice(0, 3).join(', ') : '👍 A te va. ⏳ Aspettiamo gli altri')); }
+    else if (!i.d && stg === 1) btn('btn go', '📅 Scegliete la data', function () { pickDay(i); });
+    else if (!i.d && i.w < today && !(i.f && i.f[me.name])) btn('btn go', '💭 Com’è andata?', function () { fbOpen(i); });
+    else if (!i.d) btn('btn go', '🗓️ Metti in calendario', function () { toCal(i); });
+    if (go.children.length) c.appendChild(go);
+    // sotto: al massimo due link utili (mappa, prezzo…) e ⋯ per tutto il resto
+    var acts = el('div', 'acts'), L = linksFor(i); L = L.filter(function (l) { return l.p; }).concat(L.filter(function (l) { return !l.p; }));
+    var nv = L.some(function (l) { return l.p; }) ? 3 : 2;
+    L.slice(0, nv).forEach(function (l) { var a = el('a', 'r-btn', l.t + (l.p ? ' (partner)' : '')); a.href = l.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (l.p ? ' sponsored' : ''); acts.appendChild(a); });
+    var mb = el('button', 'r-btn', '⋯'); mb.type = 'button'; mb.setAttribute('aria-label', 'Altre azioni per questo piano'); mb.onclick = function () { ideaMenu(i, L.slice(nv)); }; acts.appendChild(mb);
     c.appendChild(acts);
-    if (voters.length) c.appendChild(el('div', 'ptag', 'Votato da: ' + voters.join(', ')));
-    box.appendChild(c);
-  });
+    if (voters.length && !(stg === 0 && voters.length === 1 && mine)) c.appendChild(el('div', 'ptag', (i.k === 'compra' ? '😍 ' : '👍 ') + voters.join(', ')));
+    return c;
+  };
+  if (ifilter === 'fatte') { list.sort(function (a, b) { return (b.w || '') < (a.w || '') ? -1 : (b.w || '') > (a.w || '') ? 1 : b.ts - a.ts; }).forEach(function (i) { box.appendChild(card(i)); }); }
+  else {
+    var S = [[], [], []]; list.forEach(function (i) { S[stage(i)].push(i); });
+    S[0].sort(function (a, b) { return (!!a.v[me.name] || !!sk[a.id]) - (!!b.v[me.name] || !!sk[b.id]) || b.ts - a.ts; }); // prima quelli che aspettano la tua risposta
+    S[1].sort(function (a, b) { return b.ts - a.ts; }); S[2].sort(function (a, b) { return a.w < b.w ? -1 : 1; });
+    [['Da decidere', 'Dite se vi va: quando piace a ' + all + ', si organizza.'], ['Da organizzare', 'Lo volete ' + all + ': manca solo la data.'], ['In programma', '']].forEach(function (h, n) {
+      if (!S[n].length) return;
+      var hd = el('div', 'isec'); hd.appendChild(el('b', null, h[0])); hd.appendChild(el('i', null, String(S[n].length))); if (h[1]) hd.appendChild(el('small', null, h[1])); box.appendChild(hd);
+      S[n].forEach(function (i) { box.appendChild(card(i)); });
+    });
+  }
   if (PARTNER.booking || PARTNER.gyg || PARTNER.amazon) box.appendChild(el('p', null, '“partner”: prenotando da quel link Reelta riceve una piccola commissione. Per te il prezzo non cambia.'));
   var dm = el('button', 'demob'); dm.type = 'button'; dm.appendChild(el('span', null, '▶')); var dt = el('div'); dt.appendChild(el('b', null, 'Come nasce un piano da un Reel?')); dt.appendChild(el('small', null, 'Guarda la demo · 30 secondi')); dm.appendChild(dt); dm.onclick = demoOpen; box.appendChild(dm);
+}
+// ⋯ su un piano: tutto quello che non è il passo successivo
+function ideaMenu(i, links) {
+  var mine = !!i.v[me.name], o = [];
+  (links || []).forEach(function (l) { o.push({ t: l.t + (l.p ? ' (partner)' : ''), f: function () { window.open(l.u, '_blank', 'noopener'); } }); });
+  if (i.r && find(i.r)) o.push({ t: '▶ Rivedi il Reel', f: function () { goReel(i.r); } });
+  if (!i.d) o.push({ t: i.w ? '📅 Cambia data' : '📅 Scegli una data', f: function () { pickDay(i); } });
+  if (!i.d && i.w) o.push({ t: '🗓️ Metti in calendario', f: function () { toCal(i); } });
+  if (!i.d) o.push({ t: mine ? '👎 Non mi va più' : '👍 Mi va', f: function () { ideaAct({ t: 'idea', a: 'vote', id: i.id, on: !mine }); } });
+  o.push({ t: i.d ? '↺ Rimetti tra quelli da fare' : '✓ Segna come fatto', f: function () { ideaAct({ t: 'idea', a: 'done', id: i.id, on: !i.d }); } });
+  o.push({ t: '🗑 Elimina', f: function () { ask('Eliminare questo piano?', 'Sparisce per tutto il cerchio.', 'Elimina', true).then(function (y) { if (y) ideaAct({ t: 'idea', a: 'del', id: i.id }); }); } });
+  sheet(i.p, '', o);
 }
 function circleSize() { return me.role === 'host' ? Object.keys(allowed).length + 1 : Math.max(names.length, circMax ? 2 : 2); }
 function isMatch(i) { var n = circleSize(); return n >= 2 && Object.keys(i.v || {}).length >= n; }
@@ -3371,7 +3414,11 @@ function openIdea(rid, opts) {
   $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = aiLast ? '✨ Un’altra idea dal video' : '✨ Riconosci dal video'; $('iAi').querySelector('span').textContent = aiLast ? 'Oppure scegli prima un tipo: es. ✈️ per il viaggio' : 'L’AI compila il piano per te'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
   $('idT').textContent = rid ? 'Trasforma in piano' : 'Nuovo piano';
-  $('idm').classList.add('open'); setTimeout(function () { $('ip').focus(); }, 50);
+  var auto = !!(r0 && srvOn()) && !(opts && opts.again);
+  $('idm').classList.toggle('auto', auto); $('ikS').hidden = !auto; $('ikS').onclick = function () { $('idm').classList.remove('auto'); $('ikS').hidden = true; };
+  $('idm').classList.add('open');
+  if (auto) { $('iAi').hidden = true; $('iAiR').hidden = false; aiPlan(); if (!r0.aiX) { $('iAiR').textContent = '✨ Guardo il video…'; $('iAiR').hidden = false; } }
+  else setTimeout(function () { $('ip').focus(); }, 50);
 }
 function saveIdea(more) {
   var p = clean($('ip').value, 60);
