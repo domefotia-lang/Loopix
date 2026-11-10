@@ -1230,7 +1230,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v117', errLog = [];
+var APP_VER = 'v118', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2606,19 +2606,40 @@ function stopFeed() {
   document.querySelectorAll('#feed video').forEach(function (v) { try { v.pause(); } catch (e) {} });
 }
 // nessun video resta acceso dietro le quinte: cambiando schermata o uscendo dall'app si fermano tutti
+function pauseFrame(f) {
+  var s = f.src || '', w = f.contentWindow; if (!w) return;
+  try {
+    if (/youtube(-nocookie)?\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*');
+    else if (/tiktok\.com\/player/.test(s)) { f.__pz = true; w.postMessage({ type: 'pause', value: null, 'x-tiktok-player': true }, '*'); }
+    else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: 'pause' }), '*');
+    else if (/instagram\.com|facebook\.com|dailymotion|twitch|spotify/.test(s)) { f.dataset.u = s; f.src = 'about:blank'; setTimeout(function () { if (f.isConnected && f.dataset.u) f.src = f.dataset.u; }, 60); }
+  } catch (e) {}
+}
 function pauseIn(root) {
   if (!root) return;
   root.querySelectorAll('video,audio').forEach(function (v) { try { v.pause(); } catch (e) {} });
-  root.querySelectorAll('iframe').forEach(function (f) {
-    var s = f.src || '', w = f.contentWindow; if (!w) return;
-    try {
-      if (/youtube(-nocookie)?\.com\/embed/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*');
-      else if (/tiktok\.com\/player/.test(s)) { f.__pz = true; w.postMessage({ type: 'pause', value: null, 'x-tiktok-player': true }, '*'); }
-      else if (/player\.vimeo\.com/.test(s)) w.postMessage(JSON.stringify({ method: 'pause' }), '*');
-      else if (/instagram\.com|facebook\.com|dailymotion|twitch|spotify/.test(s)) { f.dataset.u = s; f.src = 'about:blank'; setTimeout(function () { if (f.isConnected && f.dataset.u) f.src = f.dataset.u; }, 60); }
-    } catch (e) {}
-  });
+  root.querySelectorAll('iframe').forEach(pauseFrame);
 }
+// nel feed suona un video solo: se ne tocchi un altro, o se quello acceso esce dallo schermo, si ferma
+var liveF = [], liveT = 0;
+function feedLive(f) { // f = il video appena toccato: gli altri accesi si fermano
+  try { pzQuiet = Date.now(); } catch (e) {}
+  liveF.forEach(function (o) { if (o !== f && o.isConnected) pauseFrame(o); }); liveF = f && f.tagName === 'IFRAME' ? [f] : [];
+  document.querySelectorAll('#feed video,#feed audio').forEach(function (v) { if (v !== f && !v.paused) try { v.pause(); } catch (e) {} });
+  // finché un video del feed è acceso, controllo se il tocco passa a un altro (tra due video incorporati il telefono non avvisa)
+  clearInterval(liveT); if (liveF.length) liveT = setInterval(function () { var a = document.activeElement; if (!liveF.length || !liveF[0].isConnected) { clearInterval(liveT); liveF = []; return; } if (a && a.tagName === 'IFRAME' && a !== liveF[0] && a.closest('#feed')) feedLive(a); }, 500);
+}
+window.addEventListener('blur', function () { setTimeout(function () { var f = document.activeElement; if (f && f.tagName === 'IFRAME' && f.closest('#feed') && liveF[0] !== f) feedLive(f); }, 0); });
+document.addEventListener('play', function (e) { var v = e.target; if (v && v.closest && v.closest('#feed')) feedLive(v); }, true);
+var feedScT = 0;
+function feedScroll() {
+  if (feedScT) return; feedScT = setTimeout(function () { feedScT = 0;
+    var fr = $('feed').getBoundingClientRect(), out = function (n) { var r = n.getBoundingClientRect(); return Math.min(r.bottom, fr.bottom) - Math.max(r.top, fr.top) < r.height * 0.4; }; // meno del 40% ancora visibile nel feed
+    liveF = liveF.filter(function (f) { if (!f.isConnected) return false; if (out(f)) { try { pzQuiet = Date.now(); } catch (e) {} pauseFrame(f); return false; } return true; });
+    document.querySelectorAll('#feed video,#feed audio').forEach(function (v) { if (!v.paused && out(v)) try { v.pause(); } catch (e) {} });
+  }, 250);
+}
+document.addEventListener('scroll', function (e) { if (e.target && e.target.id === 'feed') feedScroll(); }, true);
 function pauseAll() { try { pzQuiet = Date.now(); } catch (e) {} pauseIn(document); }
 document.addEventListener('visibilitychange', function () { if (document.hidden) pauseAll(); });
 window.addEventListener('pagehide', pauseAll);
