@@ -304,6 +304,13 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 #pl.imm .strip,#pl.imm .pbar,#pl.imm .grab,#pl.imm .live{display:none!important}
 #pl.imm .stage{box-shadow:none}
 .immc{position:absolute;z-index:8}
+/* vista «a scorrimento» (schermo intero): uno strato trasparente sopra il video raccoglie lo scorrimento su/giù; il tocco mette in pausa dove possiamo comandare il lettore */
+.swz{position:absolute;z-index:2;top:0;bottom:0;left:0;right:0;background:transparent;touch-action:none;-webkit-tap-highlight-color:transparent}.swz.l{right:auto;width:19%}.swz.r{left:auto;width:19%}
+#pl:not(.imm) .swz{display:none}
+.swf{position:absolute;left:50%;top:50%;z-index:5;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:swf .7s ease-out forwards}@keyframes swf{0%{opacity:0;transform:scale(.7)}25%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+#st>.sup{animation:sup .28s ease-out}#st>.sdn{animation:sdn .28s ease-out}@keyframes sup{from{transform:translateY(38%);opacity:.2}}@keyframes sdn{from{transform:translateY(-38%);opacity:.2}}
+.swtip{position:absolute;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;background:rgba(20,14,10,.78);color:#fff;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:9px 16px;font-size:14.5px;font-weight:700;white-space:nowrap;pointer-events:none;animation:swtip 4.2s ease forwards}@keyframes swtip{0%{opacity:0}8%,85%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){#st>.sup,#st>.sdn,.swf{animation:none}}
 #immX{top:calc(env(safe-area-inset-top,0px) + 10px);left:12px}
 #immR{left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px);display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;background:rgba(16,11,8,.55);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);border-top:1px solid rgba(255,255,255,.08)}
 #pl.imm .stage{flex:none;height:calc(100% - 64px - env(safe-area-inset-bottom,0px))}#pl.imm .pz{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
@@ -1234,7 +1241,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v119', errLog = [];
+var APP_VER = 'v120', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1940,6 +1947,38 @@ function fsTip() {
   var b = $('pfs'); b.classList.add('pulse'); var t = el('div', 'fstip', '⛶ Schermo intero: ora è qui sotto'); $('pl').appendChild(t);
   setTimeout(function () { b.classList.remove('pulse'); t.remove(); }, 4500);
 }
+// strato per lo scorrimento sopra i video incorporati (lì dentro i tocchi non ci arrivano). Dove il lettore si può comandare copre tutto e il tocco fa pausa/play;
+// con Instagram e simili restano liberi il centro (per toccare il video) e si scorre dai due bordi.
+function swCtl(fr) { return !!fr && /youtube(-nocookie)?\.com\/embed|tiktok\.com\/player|player\.vimeo\.com/.test(fr.src || ''); }
+function swLayer(m) {
+  if (!m || !m.classList || !m.classList.contains('mwrap')) return; var fr = m.querySelector('iframe'); if (!fr) return;
+  if (swCtl(fr)) { var a = el('div', 'swz'); a.dataset.tap = '1'; m.appendChild(a); }
+  else ['l', 'r'].forEach(function (k) { m.appendChild(el('div', 'swz ' + k)); });
+}
+function swToggle() {
+  var fr = $('st').querySelector('iframe'); if (!fr || !fr.contentWindow) return; fr.__pz = !fr.__pz; var s = fr.src, w = fr.contentWindow, on = !fr.__pz;
+  try {
+    pzQuiet = Date.now();
+    if (/youtube/.test(s)) w.postMessage(JSON.stringify({ event: 'command', func: on ? 'playVideo' : 'pauseVideo', args: [] }), '*');
+    else if (/tiktok/.test(s)) w.postMessage({ type: on ? 'play' : 'pause', value: null, 'x-tiktok-player': true }, '*');
+    else w.postMessage(JSON.stringify({ method: on ? 'play' : 'pause' }), '*');
+  } catch (e) {}
+  var f = el('div', 'swf', on ? '▶' : '⏸'); $('st').appendChild(f); setTimeout(function () { f.remove(); }, 750);
+}
+// il lettore ci dice se sta andando o è fermo (anche quando il telefono blocca la partenza automatica): così il primo tocco fa la cosa giusta
+window.addEventListener('message', function (e) {
+  var fr = $('st') && $('st').querySelector('iframe'); if (!fr || e.source !== fr.contentWindow) return;
+  var d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; } if (!d) return;
+  var stt = d['x-tiktok-player'] && d.type === 'onStateChange' ? d.value : d.event === 'onStateChange' ? d.info : d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number' ? d.info.playerState : null;
+  if (typeof stt === 'number') fr.__pz = !(stt === 1 || stt === 3);
+});
+function swGo(d) { // d = +1 prossimo, -1 precedente
+  if (!seq) return;
+  if (d < 0 && seq.i <= 0) return; if (d > 0 && seq.i >= seq.q.length) { immSet(false); closeSeq(); return; }
+  try { navigator.vibrate && navigator.vibrate(6); } catch (e) {}
+  seq.dir = d; showAt(seq.i + d);
+}
+function swTip() { if (get('swtip', 0) || navigator.webdriver) return; put('swtip', 1); var t = el('div', 'swtip', '👆 Scorri in su per il prossimo'); $('pl').appendChild(t); setTimeout(function () { t.remove(); }, 4300); }
 function arm() { clearTimeout(timer); var sec = +$('ps').value; if (sec && seq && seq.cur) timer = setTimeout(function () { showAt(seq.i + 1); }, sec * 1000); }
 function showAt(i) {
   clearTimeout(timer); var st = $('st'); st.textContent = ''; $('pr').textContent = ''; $('immR').textContent = '';
@@ -1949,7 +1988,7 @@ function showAt(i) {
   if (!r) { showAt(i + 1); return; }
   seq.cur = r.id; seen[r.id] = 1; put('seen', seen);
   $('pc').textContent = (i + 1) + ' di ' + seq.q.length + ', da ' + r.n;
-  var m = media(r, true); st.appendChild(m); pbuild(r); arm();
+  var m = media(r, true); if (seq.dir) m.classList.add(seq.dir > 0 ? 'sup' : 'sdn'); seq.dir = 0; st.appendChild(m); swLayer(m); pbuild(r); arm();
   if (m.tagName === 'IFRAME' && /youtube\.com\/embed/.test(m.src)) m.addEventListener('load', function () { try { m.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
 }
 function openSeq() {
@@ -1959,6 +1998,7 @@ function openSeq() {
   if (!q.length) q = vis.map(function (r) { return r.id; });
   seq = { q: q, i: 0, cur: null };
   showPane('pl'); showAt(0);
+  if ('ontouchstart' in window && !navigator.webdriver) { seq.auto = true; immSet(true); setTimeout(swTip, 900); }
 }
 (function () {
   var pl = $('pl'), y0 = null, x0 = 0, dy = 0;
@@ -1966,19 +2006,29 @@ function openSeq() {
     if (e.touches.length !== 1 || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { y0 = null; return; }
     y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; dy = 0;
   }, { passive: true });
+  var dxm = 0, tgt = null;
+  pl.addEventListener('touchstart', function (e) { tgt = e.target; dxm = 0; }, { passive: true });
   pl.addEventListener('touchmove', function (e) {
     if (y0 === null) return;
-    dy = e.touches[0].clientY - y0; var dx = Math.abs(e.touches[0].clientX - x0);
+    dy = e.touches[0].clientY - y0; var dx = Math.abs(e.touches[0].clientX - x0); dxm = Math.max(dxm, dx);
+    if (pl.classList.contains('imm') && seq) return; // a scorrimento: niente trascinamento della scheda
     if (dy > 8 && dy > dx) { pl.classList.add('drag'); pl.style.transform = 'translateY(' + (dy * 0.7) + 'px)'; pl.style.opacity = String(Math.max(.4, 1 - dy / 600)); }
   }, { passive: true });
-  pl.addEventListener('touchend', function () {
+  pl.addEventListener('touchend', function (e) {
     if (y0 === null) return; pl.classList.remove('drag');
+    if (pl.classList.contains('imm') && seq) {
+      var inBar = tgt && tgt.closest && tgt.closest('#immR,#immX,.ovl,.mutb,button,a,input,select');
+      if (!inBar && Math.abs(dy) > 60 && Math.abs(dy) > dxm) swGo(dy < 0 ? 1 : -1);
+      else if (!inBar && Math.abs(dy) < 8 && dxm < 8 && tgt && tgt.dataset && tgt.dataset.tap) { if (e.cancelable) e.preventDefault(); swToggle(); }
+      y0 = null; dy = 0; return;
+    }
     if (dy > 110) closeSeq(); else { pl.style.transform = ''; pl.style.opacity = ''; }
     y0 = null; dy = 0;
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pl.classList.contains('show')) closeSeq(); });
 })();
 function closeSeq() {
+  if ($('pl').classList.contains('imm')) immSet(false);
   $('pl').style.transform = ''; $('pl').style.opacity = ''; clearTimeout(timer); seq = null; party = null; pzHide(); $('pzB').hidden = true; $('ps').hidden = false; $('lv').hidden = true; $('p3').hidden = true; $('cd').hidden = true; $('st').textContent = ''; showPane(tab); seqLabel(); }
 window.addEventListener('message', function (e) {
   if (!seq || !seq.cur || !+$('ps').value) return;
@@ -3819,7 +3869,7 @@ $('ps').value = get('speed', '0'); if (!$('ps').value) $('ps').value = '0';
 $('ps').addEventListener('change', function () { put('speed', $('ps').value); arm(); });
 $('sq').addEventListener('click', openSeq); $('px').addEventListener('click', function () { immSet(false); closeSeq(); });
 $('pfs').addEventListener('click', function () { immSet(!$('pl').classList.contains('imm')); });
-$('immOut').addEventListener('click', function () { immSet(false); });
+$('immOut').addEventListener('click', function () { var a = seq && seq.auto; immSet(false); if (a) closeSeq(); });
 $('pn').addEventListener('click', function () {
   if (party) { var n = neighbor(party.id, 1); if (n) goParty(n); else $('ll').textContent = 'Nessun altro Reel per ora.'; }
   else if (seq) showAt(seq.i + 1);
