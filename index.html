@@ -1272,7 +1272,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v126', errLog = [];
+var APP_VER = 'v127', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2204,7 +2204,7 @@ function onSes(d, who) {
   }
   return null;
 }
-function isInvite(u) { u = String(u || ''); return /#j=/.test(u) || u.indexOf(location.origin + location.pathname.replace(/index\.html$/, '')) === 0 || /github\.io\/Loopix/i.test(u); }
+function isInvite(u) { u = String(u || ''); return /#j=/.test(u) || u.indexOf(location.origin + location.pathname.replace(/index\.html$/, '')) === 0 || /github\.io\/Loopix|joinreelta\.github\.io/i.test(u); }
 var skippedInv = 0;
 function links(t) {
   var out = [], m, re = /https?:\/\/[^\s<>"']+/g; skippedInv = 0;
@@ -2575,7 +2575,8 @@ function hostHi(c, d) {
         });
 }
 function invLang() { var v = ''; try { v = localStorage.getItem(LSG + 'invLang') || ''; } catch (e) {} return /^(it|en|es)$/.test(v) ? v : (window.LX_LANG || 'it'); }
-function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return location.origin + location.pathname + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
+function homeUrl() { return window.MIG_HOME && location.protocol.indexOf('http') === 0 && !/^(localhost|127\.)/.test(location.hostname) ? window.MIG_HOME : location.origin + location.pathname.replace(/index\.html$/, ''); } // i link da mandare puntano sempre al nuovo indirizzo
+function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return homeUrl() + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
 function invLangUI() {
   var box = $('invL'); if (!box) return; box.textContent = '';
   [['it', '🇮🇹 Italiano'], ['en', '🇬🇧 English'], ['es', '🇪🇸 Español']].forEach(function (x) {
@@ -2585,7 +2586,7 @@ function invLangUI() {
   });
 }
 function invText() {
-  var sc = location.origin + location.pathname.replace(/index\.html$/, '') + 'scopri.html';
+  var sc = homeUrl() + 'scopri.html';
   var lg = invLang(), T = lg === 'it' ? String : (window.LX_TL ? function (x) { return window.LX_TL(x, lg); } : (window.LX_T || String));
   return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore.');
 }
@@ -3231,7 +3232,7 @@ function refCode() {
     localStorage.setItem(LSG + 'ref', c); return c; } catch (e) { return ''; }
 }
 function recommend() {
-  var c = refCode(), url = location.origin + location.pathname + (c ? '?r=' + c : '');
+  var c = refCode(), url = homeUrl() + (c ? '?r=' + c : '');
   var txt = (window.LX_T || String)('Ti consiglio Reelta: per mandarvi i Reel in due in un posto solo, privato e senza account. Create il vostro Duo da qui: ') + url;
   track('consiglia');
   if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); return; }
