@@ -69,8 +69,8 @@
       var b = this, h = document.getElementById('migH2'), lk = document.getElementById('migLk'); b.disabled = true; b.textContent = '📦 ' + T('Impacchetto…');
       var pr = pack(location.origin + location.pathname);
       copyP(pr).then(function (ok) {
-        pr.then(function (link) { lk.value = link; lk.hidden = false; b.disabled = false; b.textContent = ok ? '✓ ' + T('Copiato') : '📋 ' + T('Copia il pacchetto');
-          h.textContent = ok ? T('Ora apri l’icona Reelta e tocca “📋 Incolla l’invito che hai ricevuto”. Il pacchetto vale 14 giorni.') : T('Non riesco a copiarlo da solo: tieni premuto il link qui sopra → Copia.');
+        pr.then(function (link) { lk.value = link; lk.hidden = false; try { localStorage.setItem('reelta-mig-link', link); } catch (e) {} b.disabled = false; b.textContent = ok ? '✓ ' + T('Copiato') : '📋 ' + T('Copia il pacchetto');
+          h.textContent = ok ? T('Ora apri l’icona Reelta e tocca “📋 Incolla l’invito che hai ricevuto”. Se non va: tieni premuto nel campo “Hai un invito?” → Incolla. Il pacchetto vale 14 giorni.') : T('Non riesco a copiarlo da solo: tieni premuto il link qui sopra → Copia.');
           if (!ok) { lk.focus(); lk.select(); } });
       });
       pr.catch(function () { b.disabled = false; b.textContent = '📋 ' + T('Riprova'); h.textContent = T('Non è partito: controlla la connessione e riprova.'); });
@@ -1272,7 +1272,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v127', errLog = [];
+var APP_VER = 'v128', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -3986,11 +3986,11 @@ document.addEventListener('lx-bip', function () { if (window.__inst) $('ios').hi
 $('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
 $('haveInv').addEventListener('click', async function () {
   var t = '';
-  try { t = await navigator.clipboard.readText(); } catch (e) { $('ic').focus(); $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; return; }
+  try { t = await navigator.clipboard.readText(); } catch (e) { try { errAuto('incolla: lettura negata ' + (e && e.name), 'haveInv'); } catch (x) {} $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; await ask('Incolla a mano', 'Il telefono non mi lascia leggere gli appunti. Tieni premuto nel campo «Hai un invito? Incolla qui il link» e scegli «Incolla».', 'Ok'); $('ic').scrollIntoView({ block: 'center' }); $('ic').focus(); return; }
   if (tryDev(t)) return;
   var mg = /#mig=[a-f0-9]{32}\.[\w.-]+/.exec(t || ''); if (mg) { location.replace(location.pathname + mg[0]); location.reload(); return; }
   var m = /#j=([\w-]{8,100})/.exec(t || '');
-  if (!m) { $('sH').textContent = 'Non trovo un invito copiato. In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi torna qui e riprova.'; return; }
+  if (!m) { try { errAuto('incolla: niente invito (' + (t ? t.length : 0) + ' car.)', 'haveInv'); } catch (x) {} $('sH').textContent = 'Non trovo un invito copiato. In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi torna qui e riprova.'; ask('Non trovo niente da incollare', 'Negli appunti non c’è un invito né un pacchetto del trasloco. Copia di nuovo il link (tieni premuto → Copia) e riprova, oppure incollalo a mano nel campo qui sotto.', 'Ok'); return; }
   $('ic').value = location.origin + location.pathname + '#j=' + m[1];
   $('ic').dispatchEvent(new Event('input'));
   $('sH').textContent = 'Invito trovato ✓ Scrivi il tuo nome e tocca il bottone.';
