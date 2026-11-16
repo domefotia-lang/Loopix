@@ -13,7 +13,7 @@
    sul server per pochi minuti; il nuovo indirizzo li scarica, li decifra e il server li cancella.
    La chiave viaggia solo nel link (dopo il #), mai al server. */
 (function () {
-  var NEW_HOME = ''; // es. 'https://reelta.github.io/' — vuoto finché il nuovo indirizzo non è pronto
+  var NEW_HOME = 'https://joinreelta.github.io/'; // nuovo indirizzo di Reelta
   var SB = 'https://rvtxhsasngpqtojntpcn.supabase.co', SK = 'sb_publishable_gJzeHncdMVaGN2wvUAoTBA_TtnFhpC2';
   window.MIG_HOME = NEW_HOME;
   var T = function (x) { return (window.LX_T || String)(x); };
@@ -81,7 +81,7 @@
     document.getElementById('migGo').onclick = function () {
       var b = this; b.disabled = true; b.textContent = '📦 ' + T('Impacchetto…');
       pack().then(function (link) {
-        try { navigator.clipboard && navigator.clipboard.writeText(link); } catch (e) {}
+        try { navigator.clipboard && navigator.clipboard.writeText(link).catch(function () {}); } catch (e) {}
         try { localStorage.setItem('reelta-mig-link', link); } catch (e) {}
         if (ios && home) {
           card('<h2 style="margin:0 0 8px">📦 ' + T('Pacchetto pronto') + '</h2><ol style="margin:0;padding-left:20px"><li>' + T('Tocca “Apri la nuova casa”: si apre in Safari e porta tutto.') + '</li><li>' + T('In Safari: Condividi → “Aggiungi alla schermata Home”.') + '</li><li>' + T('Apri la nuova icona: ritrovi tutto. Poi cancella questa vecchia.') + '</li></ol><a href="' + link + '" target="_blank" rel="noopener" style="' + BTN + ';text-align:center;text-decoration:none;box-sizing:border-box">🏡 ' + T('Apri la nuova casa') + '</a><p style="margin:10px 0 0;font-size:13px;opacity:.8">' + T('Il link è già copiato: se serve, nella nuova app tocca “Ho già un invito”.') + '</p>');
@@ -119,9 +119,9 @@
 <meta property="og:site_name" content="Reelta">
 <meta property="og:title" content="Reelta 🔒 Il vostro posto privato per i Reel">
 <meta property="og:description" content="Tocca per entrare: scrivi il tuo nome e sei dentro. Solo voi, senza account.">
-<meta property="og:image" content="https://domefotia-lang.github.io/Loopix/og.jpg">
+<meta property="og:image" content="https://joinreelta.github.io/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:url" content="https://domefotia-lang.github.io/Loopix/">
+<meta property="og:url" content="https://joinreelta.github.io/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#241A13">
@@ -1243,7 +1243,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v124', errLog = [];
+var APP_VER = 'v125', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
