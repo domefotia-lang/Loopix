@@ -1272,7 +1272,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v129', errLog = [];
+var APP_VER = 'v130', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1785,9 +1785,11 @@ function emptyFeed() {
   try { who = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; })[0] || '' : (names || []).filter(function (n) { return n !== me.name; })[0] || ''; } catch (e) {}
   var d = el('div', 'empty e2');
   d.appendChild(el('div', 'ei', solo ? '🎬' : '💌'));
-  d.appendChild(el('b', null, solo ? 'Comincia anche da solo' : 'Manda il primo Reel'));
-  d.appendChild(el('p', null, solo ? 'Metti qui i Reel che vuoi far vedere: chi inviti li trova appena entra.' : who ? 'Copia il link di un Reel da Instagram, TikTok o YouTube: ' + who + ' lo vede qui.' : 'Copia il link di un Reel da Instagram, TikTok o YouTube e incollalo qui.'));
-  var b1 = el('button', 'btn go', '📋 Incolla un Reel'); b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
+  d.appendChild(el('b', null, solo ? 'Manca solo la tua persona' : 'Manda il primo Reel'));
+  d.appendChild(el('p', null, solo ? 'Reelta è fatta per due (o pochi): mandale il link su WhatsApp, entra in 10 secondi. Intanto puoi già mettere qui dei Reel: li trova appena entra.' : who ? 'Copia il link di un Reel da Instagram, TikTok o YouTube: ' + who + ' lo vede qui.' : 'Copia il link di un Reel da Instagram, TikTok o YouTube e incollalo qui.'));
+  if (solo) { var bi = el('button', 'btn go', '💌 Invita la tua persona'); bi.type = 'button'; bi.onclick = function () { track('invita-da-vuoto'); invite(); }; d.appendChild(bi); }
+  var b1 = el('button', solo ? 'btn-o wide' : 'btn go', '📋 Incolla un Reel'); b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
+  if (solo) b1.style.marginTop = '8px';
   var b3 = el('button', 'lnk', '▶ Guarda come funziona · 30 secondi'); b3.type = 'button'; b3.onclick = function () { demoOpen(); }; d.appendChild(b3);
   return d;
 }
@@ -3904,6 +3906,7 @@ $('go').addEventListener('click', function () {
     if (/iphone|ipad|ipod|android/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
   }
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
+  if (!jid && !navigator.webdriver) setTimeout(function () { try { if (me && me.role === 'host' && !Object.keys(allowed).length && !$('invM').classList.contains('open')) { track('invita-dopo-creato'); invite(); } } catch (e) {} }, 900); // appena creato il cerchio: subito l'invito
 });
 $('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
 $('inv').addEventListener('click', invite);
@@ -3980,6 +3983,21 @@ if (inBrowser) {
   $('iosT').querySelector('small').textContent = me && me.role !== 'host' ? 'Così ritrovi il cerchio e ricevi le notifiche.' : 'Si apre come un’app, con le notifiche.';
 }
 $('ios').hidden = !inBrowser || seenBanner;
+// chi apre Reelta dal browser per la seconda volta: invito chiaro a installarla (al massimo una volta al giorno, 3 volte in tutto)
+(function () {
+  if (!inBrowser || inApp || navigator.webdriver) return;
+  try {
+    var bn = +localStorage.getItem('lx-brN') || 0; localStorage.setItem('lx-brN', String(bn + 1));
+    var today = new Date().toDateString(), bc = +localStorage.getItem('lx-brC') || 0;
+    if (bn < 1 || bc >= 3 || localStorage.getItem('lx-brD') === today || typeof me === 'undefined' || !me) return;
+    localStorage.setItem('lx-brD', today); localStorage.setItem('lx-brC', String(bc + 1));
+    setTimeout(function () {
+      if (document.getElementById('migC') || $('instM').classList.contains('open') || $('invM').classList.contains('open')) return;
+      track('installa-promemoria');
+      ask('📲 Installa Reelta', 'Dal browser le notifiche non arrivano e rischi di perderti i Reel che ti mandano. Installala: ci vuole un minuto.', 'Installa ora').then(function (y) { if (y) instGo(); });
+    }, 3000);
+  } catch (e) {}
+})();
 $('instGo').addEventListener('click', instGo);
 $('instX').addEventListener('click', instClose);
 $('instM').addEventListener('click', function (e) { if (e.target === $('instM')) instClose(); });
