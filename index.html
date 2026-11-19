@@ -648,6 +648,10 @@ html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
 
 #trC,#supC,.card.plus{display:none!important}
 html.rs #decSi{background:var(--g);color:var(--ink)}
+.aifocus{margin:10px 0 4px}.aifocus .afr{display:flex;gap:6px;align-items:center}.aifocus input{flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px}.aifocus .btn-o{flex:none;min-height:44px;padding:0 12px;width:auto}.aifocus .refn{margin:6px 0 0}
+html.rs input::placeholder,html.rs textarea::placeholder{color:#8C8C98}html.rs.light input::placeholder,html.rs.light textarea::placeholder{color:#7A7894}
+html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:color-mix(in srgb,var(--g) 18%,var(--s2));color:var(--t)}
+.aifocus .afr{flex-wrap:wrap}.aifocus input{flex:1 1 100%}.aifocus .btn-o{flex:1 1 0}
 </style>
 </head>
 <body>
@@ -1313,7 +1317,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v138', errLog = [];
+var APP_VER = 'v139', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -3205,12 +3209,12 @@ function aiBox(r) {
     }
     out.appendChild(el('p', 'refn', 'Lo scrive l’AI di Google guardando il video pubblico, il titolo e la copertina: niente dei vostri nomi né messaggi.' + (anyP ? ' Alcuni link ci aiutano a tenere Reelta gratis: il prezzo per te non cambia.' : '')));
   }
-  function run(focus) {
-    ab.hidden = false; out.hidden = true; ab.disabled = true; ab.textContent = focus ? '✨ Cerco ' + focus + '…' : '✨ Guardo il video…'; track('ai-video');
-    aiAsk(r, '', [], focus).then(show, function () { ab.disabled = false; ab.textContent = r.n === me.name ? 'Non ci sono riuscito: riprova tra poco.' : 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; });
+  function run(focus, img) {
+    ab.hidden = false; out.hidden = true; ab.disabled = true; ab.textContent = focus || img ? '✨ Cerco ' + (focus || 'nello screenshot') + '…' : '✨ Guardo il video…'; track('ai-video');
+    aiAsk(r, '', [], focus, img).then(show, function () { ab.disabled = false; ab.textContent = r.n === me.name ? 'Non ci sono riuscito: riprova tra poco.' : 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; });
   }
   ab.onclick = function () { run(''); };
-  box.appendChild(ab); box.appendChild(out);
+  box.appendChild(ab); box.appendChild(out); box.appendChild(aiFocusRow(function (t, img) { run(t, img); }));
   if (r.aiX) show(r.aiX);
   return box;
 }
@@ -3250,15 +3254,41 @@ function sumAsk(r) {
 }
 /* ---- intelligenza artificiale su richiesta: il server legge titolo e descrizione pubblici del video ---- */
 var aiLast = null, KAI = { viaggio: 'il viaggio', compra: 'cosa comprare', cibo: 'cosa mangiare', esperienza: 'cosa fare', ricetta: 'la ricetta', altro: 'un’altra idea' };
-function aiAsk(r, want, avoid, focus) {
-  if (!want && !(avoid && avoid.length) && !focus && r.aiX) return Promise.resolve(r.aiX);
-  return mbCall({ a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2), want: want || '', avoid: avoid || [], focus: focus || '' }).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
+function aiAsk(r, want, avoid, focus, img) {
+  if (!want && !(avoid && avoid.length) && !focus && !img && r.aiX) return Promise.resolve(r.aiX);
+  var q = { a: 'ai', u: r.u, c: r.c || '', lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2), want: want || '', avoid: avoid || [], focus: focus || '' }; if (img) q.img = img;
+  return mbCall(q).then(function (x) { if (!x || x.error) throw new Error(x && x.error); return x; });
 }
-function aiPlan() {
+// uno screenshot del momento giusto: rimpicciolito sul telefono (max 1024 px) e mandato solo all'AI per questa ricerca
+function shrinkShot(file) {
+  return new Promise(function (ok, ko) {
+    if (!file || !/^image\//.test(file.type)) return ko(new Error('tipo'));
+    var u = URL.createObjectURL(file), im = new Image();
+    im.onload = function () { try { var k = Math.min(1, 1024 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); ok(c.toDataURL('image/jpeg', 0.82).split(',')[1]); } catch (e) { ko(e); } };
+    im.onerror = function () { URL.revokeObjectURL(u); ko(new Error('img')); }; im.src = u;
+  });
+}
+// «Cosa ti interessa nel video?» + 📸: chi guarda dice all'AI cosa cercare (es. «i pantaloni del ragazzo»)
+function aiFocusRow(onGo) {
+  var w = el('div', 'aifocus'), row = el('div', 'afr'), inp = document.createElement('input'), fi = document.createElement('input'), shot = '';
+  inp.type = 'text'; inp.maxLength = 40; inp.placeholder = (window.LX_T || String)('Cosa ti interessa? Es. i pantaloni'); inp.setAttribute('aria-label', (window.LX_T || String)('Cosa ti interessa nel video?'));
+  fi.type = 'file'; fi.accept = 'image/*'; fi.hidden = true;
+  var cam = el('button', 'btn-o', '📸 Screenshot'); cam.type = 'button'; cam.setAttribute('aria-label', (window.LX_T || String)('Aggiungi uno screenshot del video'));
+  var go = el('button', 'btn-o', '🔍 Cerca'); go.type = 'button';
+  var note = el('p', 'refn', 'Fai uno screenshot nel momento giusto del video e aggiungilo con 📸: l’AI guarda solo quello.');
+  cam.onclick = function () { fi.click(); };
+  fi.onchange = function () { var f = fi.files && fi.files[0]; if (!f) return; note.textContent = '📸 …'; shrinkShot(f).then(function (b) { shot = b; cam.textContent = '📸 ✓ Screenshot'; note.textContent = 'Screenshot pronto: va solo all’AI di Google per questa ricerca, non viene salvato.'; track('ai-screenshot'); }, function () { note.textContent = 'Questo file non è un’immagine.'; }); fi.value = ''; };
+  go.onclick = function () { var t = clean(inp.value, 40); if (!t && !shot) { inp.focus(); return; } track('ai-focus'); onGo(t, shot); shot = ''; cam.textContent = '📸 Screenshot'; };
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go.click(); } });
+  row.appendChild(inp); row.appendChild(cam); row.appendChild(go); w.appendChild(row); w.appendChild(fi); w.appendChild(note);
+  return w;
+}
+function aiPlan(focus, img) {
   var r = ideaRid && find(ideaRid), b = $('iAi'), lb = b.querySelector('b'), out = $('iAiR'); if (!r) return;
-  var cur = $('ik').value, want = aiLast && cur !== aiLast.k ? cur : '', avoid = (aiLast && aiLast.done) || [];
+  var cur = $('ik').value, want = !focus && !img && aiLast && cur !== aiLast.k ? cur : '', avoid = focus || img ? [] : (aiLast && aiLast.done) || [];
   b.disabled = true; b.classList.add('busy'); lb.textContent = want ? '✨ Cerco ' + KAI[want] + '…' : '✨ Guardo il video…'; $('iH').textContent = ''; out.hidden = true;
-  aiAsk(r, want, avoid.slice(-5)).then(function (x) {
+  if (focus || img) lb.textContent = '✨ Cerco ' + (focus || 'nello screenshot') + '…';
+  aiAsk(r, want, avoid.slice(-5), focus, img).then(function (x) {
     b.classList.remove('busy'); b.disabled = false;
     var sure = x.k !== 'altro' || (x.p && !/^(sconosciut|unknown|desconocid)/i.test(x.p));
     b.hidden = false;
@@ -3597,6 +3627,7 @@ function ideaGuide() {
   return g;
 }
 function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
+function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
   var g = $('ikg'); if (!g.children.length) Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); });
@@ -3610,6 +3641,7 @@ function openIdea(rid, opts) {
   $('idm').classList.add('open');
   if (auto) { $('iAi').hidden = true; $('iAiR').hidden = false; aiPlan(); if (!r0.aiX) { $('iAiR').textContent = '✨ Guardo il video…'; $('iAiR').hidden = false; } }
   else setTimeout(function () { $('ip').focus(); }, 50);
+  try { ideaFocus(); } catch (e) {}
 }
 function saveIdea(more) {
   var p = clean($('ip').value, 60);
