@@ -645,6 +645,9 @@ html.rs.pop .btn:active,html.rs.pop .btn-o:active,html.rs.pop .chip:active{trans
 html.rs.pop .tabs{background:#FFFFFF;border-top:2px solid #111}
 html.rs.pop .tabs .fab .ring{box-shadow:0 0 0 4px var(--bg),3px 3px 0 #111!important}
 html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
+
+#trC,#supC,.card.plus{display:none!important}
+html.rs #decSi{background:var(--g);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -665,8 +668,8 @@ html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
     <p id="sP">Tu e una persona, in privato.</p>
     <div id="kindBox" role="group" aria-label="Tipo di cerchio"><p style="margin:0 0 6px"><b>Che cerchio vuoi creare?</b></p>
       <div class="chips" style="padding:0 0 10px;flex-wrap:wrap">
-        <button type="button" class="chip" id="kC" aria-pressed="true">•• Duo (2 persone)</button>
-        <button type="button" class="chip" id="kG" aria-pressed="false">∴ Trio (3 persone)</button>
+        <button type="button" class="chip" id="kC" aria-pressed="true">Una persona</button>
+        <button type="button" class="chip" id="kG" aria-pressed="false">Un gruppo (fino a 8)</button>
         <button type="button" class="chip" id="kB" aria-pressed="false" hidden>∷ Gruppo (fino a 10)</button>
       </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
@@ -726,8 +729,8 @@ html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
-  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio (Duo o Trio)</button></div>
-  <div class="card"><h2>Ricordi della settimana</h2><div id="recap"></div></div>
+  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio</button></div>
+  <div class="card" hidden><h2>Ricordi della settimana</h2><div id="recap"></div></div>
   <div class="card"><button class="btn-o wide" style="margin-top:0" id="refGo">💌 Consiglia Reelta ad altre persone</button></div>
 
 </div></section>
@@ -815,7 +818,7 @@ html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
   <h2 id="imT">Come funziona</h2>
   <p>• <b>Privato:</b> Reel, piani e messaggi restano sui telefoni del cerchio. Non c’è un archivio online, non servono account né carte.</p>
   <p>• <b>Su invito:</b> per ora Reelta è in beta. Si entra con un link d’invito, che vale 24 ore. Chi crea il cerchio può annullare in ogni momento gli inviti già mandati.</p>
-  <p>• <b>Cerchi:</b> un Duo (2 persone) o un Trio (3 persone), separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
+  <p>• <b>Cerchi:</b> con una persona o un gruppo fino a 8, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.</p>
   <p>• <b>Chi crea il cerchio</b> è il centro e può togliere chi vuole. Se qualcuno non è collegato, Reel e messaggi lo aspettano sul server, cifrati: il server non può leggerli e li cancella appena consegnati.</p>
   <p>• <b>Collegamenti protetti:</b> i telefoni si parlano in modo cifrato e si riconoscono a ogni collegamento, così nessuno può fingersi un altro. Un servizio pubblico (PeerJS) aiuta solo i telefoni a trovarsi: vede gli indirizzi di rete, non i contenuti.</p>
   <p>• <b>Video:</b> sono quelli di Instagram, TikTok, YouTube e delle altre piattaforme, mostrati dentro Reelta. Quelle piattaforme possono registrare che li guardi.</p>
@@ -924,15 +927,15 @@ html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
 </div></div>
 <div class="mod" id="refM" role="dialog" aria-modal="true" aria-labelledby="refT"><div class="card" style="max-width:360px;width:100%;max-height:calc(var(--apph,100dvh) - 32px);overflow-y:auto">
   <h2 id="refT">Consiglia Reelta</h2>
-  <p>Manda l’app ad altre persone: creano il loro Duo, separato dal vostro. Conta quando la usano davvero (almeno 3 Reel).</p>
+  <p>Manda l’app ad altre persone: creano il loro cerchio, separato dal vostro. Conta quando la usano davvero (almeno 3 Reel).</p>
   <ol class="refl">
-    <li><b>1 Duo</b><span>1 mese di Stile: temi, effetti luce e suoni</span></li>
-    <li><b>3 Duo</b><span>Stile per sempre</span></li>
-    <li><b>5 Duo</b><span>3 mesi di “Riconosci dal video”</span></li>
-    <li><b>10 Duo</b><span>6 mesi di Reelta Plus completo</span></li>
+    <li><b>1 cerchio</b><span>1 mese di Stile: temi, effetti luce e suoni</span></li>
+    <li><b>3 cerchi</b><span>Stile per sempre</span></li>
+    <li><b>5 cerchi</b><span>3 mesi di “Riconosci dal video”</span></li>
+    <li><b>10 cerchi</b><span>6 mesi di Reelta Plus completo</span></li>
   </ol>
-  <p class="refn"><b>🏅 Traguardi da pioniere:</b> chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più Duo. Ogni anno i traguardi ripartono e potete vincerli di nuovo.</p>
-  <p class="refn">Anche il Duo che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: i Duo che consigli da oggi contano già.</p>
+  <p class="refn"><b>🏅 Traguardi da pioniere:</b> chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più cerchi. Ogni anno i traguardi ripartono e potete vincerli di nuovo.</p>
+  <p class="refn">Anche il cerchio che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: i cerchi che consigli da oggi contano già.</p>
   <button class="btn" id="refSend">💌 Manda l’app</button><button class="btn-o wide" id="refNo">Chiudi</button>
 </div></div>
 
@@ -1010,15 +1013,19 @@ function put(k, v) {
   }
 }
 // nome leggibile di un cerchio: con chi è, non solo "Coppia"
+function circKind(id) { try { var m = JSON.parse(localStorage.getItem(lsOf(id) + 'me') || 'null'); return m && m.kind || ''; } catch (e) { return ''; } }
 function circName(id) {
   try {
     var P = lsOf(id), m = JSON.parse(localStorage.getItem(P + 'me') || 'null'); if (!m || !m.role) return '';
     if (m.role === 'host') {
       var al = JSON.parse(localStorage.getItem(P + 'allowed') || '{}'), who = Object.keys(al).map(function (k) { return al[k]; }).filter(Boolean);
-      return kindName(m.kind) + (who.length ? ' con ' + who.join(', ') : ' · ancora nessuno');
+      var AND = window.LX_LANG === 'en' ? ' and ' : window.LX_LANG === 'es' ? ' y ' : ' e ';
+      if (!who.length) return (m.kind === 'couple' || !m.kind ? (window.LX_LANG === 'en' ? 'You' : window.LX_LANG === 'es' ? 'Tú' : 'Tu') : (window.LX_LANG === 'en' ? 'Group' : window.LX_LANG === 'es' ? 'Grupo' : 'Gruppo')) + (window.LX_LANG === 'en' ? ' · nobody yet' : window.LX_LANG === 'es' ? ' · nadie aún' : ' · ancora nessuno');
+      return m.kind === 'group' || m.kind === 'big' ? (who.length > 2 ? m.name + ', ' + who.slice(0, 2).join(', ') + ' +' + (who.length - 2) : m.name + ', ' + who.join(AND)) : m.name + AND + who[0];
     }
     var hn = JSON.parse(localStorage.getItem(P + 'hn') || '""');
-    return hn ? 'Cerchio di ' + hn : 'Cerchio di gruppo';
+    var AND2 = window.LX_LANG === 'en' ? ' and ' : window.LX_LANG === 'es' ? ' y ' : ' e ';
+    return hn ? (m.name ? m.name + AND2 + hn : 'Cerchio di ' + hn) : 'Cerchio di gruppo';
   } catch (e) { return ''; }
 }
 function regLabel() {
@@ -1054,7 +1061,7 @@ function canCreate(kind) {
   return hosted()[kind] < 1;
 }
 function canCreateAny() { return canCreate('couple') || canCreate('group') || canCreate('big'); }
-function kindName(k) { return k === 'big' ? '∷ Gruppo' : k === 'group' ? '∴ Trio' : '•• Duo'; }
+function kindName(k) { return k === 'big' ? 'Gruppo grande' : k === 'group' ? 'Gruppo' : 'In due'; }
 function applyDev() {
   if ($('kB')) $('kB').hidden = !isDev;
   if ($('devC')) $('devC').hidden = !isDev;
@@ -1142,8 +1149,8 @@ function applyBackup(data) {
   return { added: added, skipped: skipped };
 }
 function goGroupInvite() {
-  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && (x.label === 'Gruppo da 3' || x.label === '∴ Trio'); })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
-  var g = REG.list.filter(function (x) { return x.id !== REG.active && (x.label === 'Gruppo da 3' || x.label === '∴ Trio'); })[0];
+  if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && circKind(x.id) === 'group'; })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
+  var g = REG.list.filter(function (x) { return x.id !== REG.active && circKind(x.id) === 'group'; })[0];
   REG.after = 'invite'; REG.nm = me ? me.name : '';
   if (g && !(me && me.kind === 'group')) { REG.active = g.id; regSet(REG); safeReload(); }
   else newCircle();
@@ -1306,7 +1313,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v137', errLog = [];
+var APP_VER = 'v138', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1888,6 +1895,7 @@ function applyEv(d, who) {
     if (d.e === '') delete r.x[n]; else if (EMO.indexOf(d.e) >= 0) r.x[n] = d.e; else return null;
     if (party && party.id === r.id && d.e) floatE(d.e);
     if (d.e && r.n === me.name && n !== me.name) rxGot(n, d.e, r);
+    if (d.e === '❤️' && n !== me.name && r.x[me.name] === '❤️' && Date.now() - r.ts < 7 * 864e5 && ritMatch(r)) setTimeout(function () { ritMatchIn(r); }, 400);
     put('feed', feed); refresh(r); return { t: 'react', id: r.id, e: d.e, n: n };
   }
   if (d.t === 'sumq') {
@@ -1971,10 +1979,10 @@ function renderNov() {
   // da soli con qualche Reel già pronto: è il momento giusto per invitare
   var mineN = me.role === 'host' && !Object.keys(allowed).length ? feed.filter(function (r) { return r.n === me.name; }).length : 0;
   if (mineN >= 2) chip('💌 ' + (window.LX_T || String)('Hai ') + mineN + (window.LX_T || String)(' Reel pronti: invita qualcuno a vederli'), function () { track('invita-pronti'); invite(); });
-  var wk = wkDue(); if (wk) chip('📊 La vostra settimana', function () { wkOpen(wk); });
+  if (ritOn()) chip('🗓 ' + LXT('Il piano del weekend') + ' · ' + ritQueue().length + ' Reel', function () { ritOpen(); });
   var fbI = fbDue()[0]; if (fbI) chip('💭 Com’è andata: ' + fbI.p.slice(0, 22) + '?', function () { fbOpen(fbI); });
   if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
-  if (!um && !dec && !soon && !rxn.length && !newCount() && !wk && mineN < 2) {
+  if (!um && !dec && !soon && !rxn.length && !newCount() && !ritOn() && mineN < 2) {
     if (!feed.length) { box.hidden = true; return; }
     box.appendChild(el('span', 'ok', 'Tutto visto ✓'));
     var lov = ideas.filter(function (i) { return i.d && i.w && Object.keys(i.f || {}).some(function (n) { return i.f[n] === '❤️'; }) && Date.now() - new Date(i.w + 'T12:00:00') > 7 * 864e5; });
@@ -2285,7 +2293,7 @@ function post(u, c) {
 
 /* ---- stato ---- */
 function status() {
-  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il tuo Trio' : 'Il tuo Duo') : 'Cerchio di ' + (names[0] || 'gruppo');
+  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il vostro gruppo' : 'Il vostro cerchio') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
@@ -2304,7 +2312,8 @@ function cast(m) { if (m && m.t === 'people') { m.ck = circleKey(); m.all = rost
 
 /* ---- io al centro ---- */
 var allowed = get('allowed', {}), hostTries = 0;
-function cap() { return !me ? 1 : me.kind === 'big' ? BIG_MAX - 1 : me.kind === 'group' ? 2 : 1; }
+var GROUP_MAX = 8; // persone in un gruppo (tu compreso)
+function cap() { return !me ? 1 : me.kind === 'big' ? BIG_MAX - 1 : me.kind === 'group' ? GROUP_MAX - 1 : 1; }
 var circMax = 0;
 function startHost() {
   if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
@@ -2598,7 +2607,7 @@ function hostHi(c, d) {
         if (known) { accept(); return; }
         if (Object.keys(allowed).length >= cap()) {
           refuse('Questo invito era per un cerchio già completo. ' + me.name + ' ti sta mandando quello giusto: aprilo appena arriva.');
-          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito del Duo, che è già completo.') + ' Ti preparo un Trio e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
+          ask(nm + ' ha aperto un invito sbagliato', (me.kind === 'group' ? 'Questo gruppo è al completo.' : 'Era l’invito di un cerchio già completo.') + ' Ti preparo un gruppo e apro l’invito da rimandare a ' + nm + '.', 'Sistema e rimanda invito').then(function (y) { if (y) goGroupInvite(); });
           return;
         }
         if (code && validCode(code)) { accept(); return; }
@@ -2631,15 +2640,15 @@ function invite() {
   if (me.role !== 'host') return;
   if (Object.keys(allowed).length >= cap() && !(arguments[0] && arguments[0].again)) {
     var grp = me.kind === 'group' || me.kind === 'big', mem = Object.keys(allowed).map(function (k) { return allowed[k]; });
-    sheet(grp ? 'Il gruppo è al completo' : 'Il Duo è completo', 'Se con ' + mem.join(', ') + ' non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.', [
+    sheet(grp ? 'Il gruppo è al completo' : 'Il cerchio è completo', 'Se con ' + mem.join(', ') + ' non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.', [
       { t: '🔗 Rimanda l’invito a ' + (mem.length === 1 ? mem[0] : 'chi è nel cerchio'), f: function () { invite({ again: true }); } },
-      { t: grp ? '∴ Crea un nuovo Trio e invita' : '∴ Invita altre persone in un Trio', f: goGroupInvite }
+      { t: grp ? 'Crea un nuovo gruppo e invita' : 'Invita altre persone in un gruppo', f: goGroupInvite }
     ]);
     return;
   }
   if (Object.keys(allowed).length >= cap() && !(arguments[0] && arguments[0].again)) { // «Rimanda l’invito» deve arrivare al link, non al Trio
     var grp = me.kind === 'group' || me.kind === 'big';
-    ask(grp ? 'Questo gruppo è al completo' : 'Il Duo è già completo', grp ? 'Ti preparo un nuovo Trio e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un Trio, separato dal Duo, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
+    ask(grp ? 'Questo gruppo è al completo' : 'Il cerchio è già completo', grp ? 'Ti preparo un nuovo gruppo e apro subito l’invito da mandare.' : 'Per invitare altre persone ti preparo un gruppo, separato da questo cerchio, e apro subito l’invito da mandare.', grp ? 'Crea nuovo gruppo e invita' : 'Vai al gruppo e invita').then(function (y) { if (y) goGroupInvite(); });
     return;
   }
   var left = cap() - Object.keys(allowed).length;
@@ -3270,7 +3279,7 @@ function refCode() {
 }
 function recommend() {
   var c = refCode(), url = homeUrl() + (c ? '?r=' + c : '');
-  var txt = (window.LX_T || String)('Ti consiglio Reelta: per mandarvi i Reel in due in un posto solo, privato e senza account. Create il vostro Duo da qui: ') + url;
+  var txt = (window.LX_T || String)('Ti consiglio Reelta: per mandarvi i Reel in due in un posto solo, privato e senza account. Create il vostro cerchio da qui: ') + url;
   track('consiglia');
   if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); return; }
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
@@ -3448,7 +3457,51 @@ function circleSize() { return me.role === 'host' ? Object.keys(allowed).length 
 function isMatch(i) { var n = circleSize(); return n >= 2 && Object.keys(i.v || {}).length >= n; }
 function toDecide() { var sk = get('iskip', {}); return ideas.filter(function (i) { return !i.d && !i.v[me.name] && !sk[i.id]; }); }
 var decCur = null;
-function decOpen() { $('decM').classList.add('open'); decShow(); }
+function decOpen() { decMode = ''; $('decT').textContent = LXT('Decidete insieme'); $('decP').textContent = LXT('Ti va? Se piace anche all’altra persona, lo organizzate insieme.'); $('decM').classList.add('open'); decShow(); }
+/* ---- 🗓 Il piano del weekend: i Reel della settimana, ognuno dice ❤️ o passo; se piace a tutti è un match ---- */
+var decMode = '';
+function LXT(x) { return (window.LX_T || String)(x); }
+function ritMembers() { if (!me) return []; var L = me.role === 'host' ? [me.name].concat(Object.keys(allowed).map(function (k) { return allowed[k]; })) : (names && names.length ? names.slice() : [me.name]); if (L.indexOf(me.name) < 0) L.push(me.name); return L.filter(function (x, i) { return x && L.indexOf(x) === i; }); }
+function ritWeek() { var d = new Date(); d.setHours(0, 0, 0, 0); var back = (d.getDay() + 3) % 7; d.setDate(d.getDate() - back); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); } // settimana che parte dal giovedì
+function ritAll() { var wk = Date.now() - 7 * 864e5, used = {}; ideas.forEach(function (i) { if (i.rid) used[i.rid] = 1; }); return feed.filter(function (r) { return r.ts >= wk && !used[r.id] && !isMuted(r.n); }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 8); }
+function ritQueue() { var sk = get('rskip', {}); return ritAll().filter(function (r) { return !(r.x && r.x[me.name] === '❤️') && !sk[r.id]; }); }
+function ritMatch(r) { var M = ritMembers(); return M.length >= 2 && M.every(function (n) { return r.x && r.x[n] === '❤️'; }); }
+function ritOn() { var wd = new Date().getDay(); return (wd === 4 || wd === 5 || wd === 6 || wd === 0) && ritAll().length >= 2 && ritQueue().length > 0 && ritMembers().length >= 2; }
+function ritOpen() { decMode = 'rit'; track('rituale-apri'); $('decT').textContent = '🗓 ' + LXT('Il piano del weekend'); $('decP').textContent = LXT('I Reel di questa settimana: quale fate? Se piace a tutti, è un match.'); $('decM').classList.add('open'); ritShow(); }
+function ritShow() {
+  var c = $('decC'), q = ritQueue(); c.className = ''; c.textContent = ''; decCur = q[0] || null; $('decB').hidden = !decCur;
+  if (!decCur) {
+    var ms = ritAll().filter(ritMatch);
+    c.appendChild(el('div', 'e', ms.length ? '💞' : '🎉')); c.appendChild(el('h3', null, ms.length ? LXT('I vostri match') : LXT('Fatto!')));
+    if (!ms.length) c.appendChild(el('p', null, LXT('Hai votato tutti i Reel. Quando gli altri votano, i match compaiono qui e ti avviso.')));
+    ms.forEach(function (r) { var b = el('button', 'btn', '📅 ' + (clean(r.c, 40) || LXT('Reel di ') + r.n)); b.style.marginTop = '10px'; b.onclick = function () { $('decM').classList.remove('open'); openIdea(r.id); }; c.appendChild(b); });
+    return;
+  }
+  var r = decCur; c.appendChild(el('div', 'e', (KINDS[guessKind(r.c)] || '🎬').split(' ')[0]));
+  c.appendChild(el('h3', null, clean(r.c, 90) || LXT('Un Reel di ') + r.n));
+  var others = ritMembers().filter(function (n) { return n !== me.name && r.x && r.x[n] === '❤️'; });
+  c.appendChild(el('p', null, LXT('Mandato da ') + r.n + (others.length ? ' · ❤️ ' + others.join(', ') : '') + (q.length > 1 ? ' · ' + LXT('ne restano ') + q.length : '')));
+  var w = el('button', 'btn-o', '▶ ' + LXT('Guardalo')); w.type = 'button'; w.style.marginTop = '8px'; w.onclick = function () { $('decM').classList.remove('open'); goReel(r.id); }; c.appendChild(w);
+}
+function ritAnswer(yes) {
+  var r = decCur; if (!r) return; var c = $('decC'); c.className = yes ? 'r' : 'l';
+  try { navigator.vibrate && navigator.vibrate(yes ? 18 : 8); } catch (e) {}
+  setTimeout(function () {
+    if (yes) { if (!(r.x && r.x[me.name] === '❤️')) react(r.id, '❤️'); track('rituale-si'); }
+    else { var sk = get('rskip', {}); sk[r.id] = Date.now(); put('rskip', sk); }
+    if (yes && ritMatch(r)) ritMatchIn(r); else ritShow();
+    try { renderNov(); } catch (e) {}
+  }, 230);
+}
+function ritMatchIn(r) {
+  var seen = get('rmatch', {}); if (seen[r.id]) { if (decMode === 'rit') ritShow(); return; } seen[r.id] = 1; put('rmatch', seen); track('rituale-match');
+  try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
+  decMode = 'rit'; var c = $('decC'), m = $('decM'); $('decT').textContent = '🗓 ' + LXT('Il piano del weekend'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
+  c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, LXT('È un match!')));
+  c.appendChild(el('p', null, (ritMembers().length > 2 ? LXT('Lo volete tutti: ') : LXT('Lo volete entrambi: ')) + (clean(r.c, 80) || LXT('il Reel di ') + r.n)));
+  var go = el('button', 'btn', '📅 ' + LXT('Fatene un piano')); go.style.marginTop = '14px'; go.onclick = function () { m.classList.remove('open'); openIdea(r.id); }; c.appendChild(go);
+  var more = el('button', 'btn-o wide', LXT('Continua a votare')); more.style.marginTop = '8px'; more.onclick = function () { ritShow(); }; c.appendChild(more);
+}
 function decShow() {
   var c = $('decC'), q = toDecide(); c.className = ''; c.textContent = ''; decCur = q[0] || null;
   $('decB').hidden = !decCur;
@@ -3476,13 +3529,13 @@ function matchIn(i) {
   var go = el('button', 'btn', '📅 Scegliamo quando'); go.style.marginTop = '14px'; go.onclick = function () { m.classList.remove('open'); showPane('ideas'); pickDay(i); };
   c.appendChild(go);
 }
-$('decSi').addEventListener('click', function () { decAnswer(true); });
-$('decNo').addEventListener('click', function () { decAnswer(false); });
+$('decSi').addEventListener('click', function () { if (decMode === 'rit') ritAnswer(true); else decAnswer(true); });
+$('decNo').addEventListener('click', function () { if (decMode === 'rit') ritAnswer(false); else decAnswer(false); });
 $('decX').addEventListener('click', function () { $('decM').classList.remove('open'); });
 (function () { var x0 = null, c = $('decC');
   c.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
   c.addEventListener('touchmove', function (e) { if (x0 === null || !decCur) return; var dx = e.touches[0].clientX - x0; c.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 20 + 'deg)'; }, { passive: true });
-  c.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; c.style.transform = ''; if (decCur && Math.abs(dx) > 80) decAnswer(dx > 0); });
+  c.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; c.style.transform = ''; if (decCur && Math.abs(dx) > 80) { if (decMode === 'rit') ritAnswer(dx > 0); else decAnswer(dx > 0); } });
 })();
 function fmtDay(w) { try { var d = new Date(w + 'T12:00:00'); return d.toLocaleDateString(window.LX_LANG === 'en' ? 'en-GB' : window.LX_LANG === 'es' ? 'es-ES' : 'it-IT', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return w; } }
 function pickDay(i) {
@@ -3917,7 +3970,7 @@ function shareTip() {
   ask('📤 Più veloce: condividi da Instagram', 'In Instagram o TikTok tocca Condividi, poi scegli Reelta: il Reel arriva qui da solo, senza copiare il link. (Se non vedi Reelta, tocca “Altro” e aggiungila.)', 'Ok');
 }
 function pastedId() { var v = $('ic').value.trim(), m = /j=([\w-]{8,100})/.exec(v) || /^([\w-]{8,100})$/.exec(v); return m ? m[1] : null; }
-var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia' || /Duo/.test(x.label || ''); }) ? 'group' : 'couple';
+var kindSel = REG.after === 'invite' ? 'group' : REG.list.length > 1 && REG.list.some(function (x) { return x.label === 'Coppia' || /Duo/.test(x.label || '') || circKind(x.id) === 'couple'; }) ? 'group' : 'couple';
 function paintKind() {
   ['couple', 'group', 'big'].forEach(function (k) { var b = $(k === 'couple' ? 'kC' : k === 'group' ? 'kG' : 'kB'); b.setAttribute('aria-pressed', kindSel === k); b.hidden = !canCreate(k) || (k === 'big' && !isDev); });
   if (!canCreate(kindSel)) kindSel = ['couple', 'group', 'big'].filter(canCreate)[0] || kindSel;
@@ -3930,7 +3983,7 @@ $('kB').onclick = function () { kindSel = 'big'; paintKind(); };
 function syncKind() {
   var j = !!pastedId() || !!joinId, any = canCreateAny();
   $('kindBox').hidden = j || !any;
-  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo Trio' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
+  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
   $('icHelp').hidden = !!joinId;
   $('icHelp').textContent = any ? 'Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.' : 'In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi tocca “Incolla l’invito” qui sopra e scrivi il tuo nome.';
   var fresh = REG.list.length <= 1 && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
@@ -4439,7 +4492,7 @@ else {
     }
   }
   if (REG.list.length > 1) { $('sCancel').hidden = false; if (!joinId) $('sT').textContent = 'Nuovo cerchio'; }
-  if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo Trio'; }
+  if (REG.after === 'invite' && REG.nm) { $('nm').value = REG.nm; $('sT').textContent = 'Nuovo gruppo'; }
   syncKind(); showPane('setup');
 }
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {

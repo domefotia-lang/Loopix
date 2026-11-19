@@ -5513,6 +5513,150 @@
 "Classic",
 "Clásico"
 ],
+"Il piano del weekend": [
+"Weekend plan",
+"El plan del finde"
+],
+"I Reel di questa settimana: quale fate? Se piace a tutti, è un match.": [
+"This week’s Reels: which one will you do? If everyone likes it, it’s a match.",
+"Los Reels de esta semana: ¿cuál hacéis? Si gusta a todos, es un match."
+],
+"I vostri match": [
+"Your matches",
+"Vuestros matches"
+],
+"Hai votato tutti i Reel. Quando gli altri votano, i match compaiono qui e ti avviso.": [
+"You’ve voted on every Reel. When the others vote, matches show up here and I’ll let you know.",
+"Has votado todos los Reels. Cuando voten los demás, los matches aparecen aquí y te aviso."
+],
+"Un Reel di ": [
+"A Reel by ",
+"Un Reel de "
+],
+"il Reel di ": [
+"the Reel by ",
+"el Reel de "
+],
+"Mandato da ": [
+"Sent by ",
+"Enviado por "
+],
+"ne restano ": [
+"left: ",
+"quedan "
+],
+"Guardalo": [
+"Watch it",
+"Míralo"
+],
+"Fatene un piano": [
+"Make it a plan",
+"Haced un plan"
+],
+"Continua a votare": [
+"Keep voting",
+"Sigue votando"
+],
+"In due": [
+"Just two",
+"En pareja"
+],
+"Gruppo": [
+"Group",
+"Grupo"
+],
+"Una persona": [
+"One person",
+"Una persona"
+],
+"Un gruppo (fino a 8)": [
+"A group (up to 8)",
+"Un grupo (hasta 8)"
+],
+"➕ Crea un altro cerchio": [
+"➕ Create another circle",
+"➕ Crea otro círculo"
+],
+"Il vostro cerchio": [
+"Your circle",
+"Vuestro círculo"
+],
+"Il vostro gruppo": [
+"Your group",
+"Vuestro grupo"
+],
+"Il cerchio è già completo": [
+"The circle is already full",
+"El círculo ya está completo"
+],
+"Il cerchio è completo": [
+"The circle is full",
+"El círculo está completo"
+],
+"Invita altre persone in un gruppo": [
+"Invite more people in a group",
+"Invita a más personas en un grupo"
+],
+"Crea un nuovo gruppo e invita": [
+"Create a new group and invite",
+"Crea un grupo nuevo e invita"
+],
+"Per invitare altre persone ti preparo un gruppo, separato da questo cerchio, e apro subito l’invito da mandare.": [
+"To invite more people I’ll set up a group, separate from this circle, and open the invite to send right away.",
+"Para invitar a más personas te preparo un grupo, separado de este círculo, y abro la invitación para enviar."
+],
+"Ti preparo un nuovo gruppo e apro subito l’invito da mandare.": [
+"I’ll set up a new group and open the invite to send right away.",
+"Te preparo un grupo nuevo y abro la invitación para enviar."
+],
+" Ti preparo un gruppo e apro l’invito da rimandare a ": [
+" I’ll set up a group and open the invite to send back to ",
+" Te preparo un grupo y abro la invitación para reenviar a "
+],
+"Era l’invito di un cerchio già completo.": [
+"It was the invite to a circle that’s already full.",
+"Era la invitación de un círculo ya completo."
+],
+"Nuovo gruppo": [
+"New group",
+"Nuevo grupo"
+],
+"con una persona o un gruppo fino a 8, separati tra loro. Li trovi in Cerchio → I tuoi cerchi.": [
+"with one person or a group of up to 8, kept separate. Find them in Circle → Your circles.",
+"con una persona o un grupo de hasta 8, separados. Los encuentras en Círculo → Tus círculos."
+],
+"Manda l’app ad altre persone: creano il loro cerchio, separato dal vostro. Conta quando la usano davvero (almeno 3 Reel).": [
+"Send the app to others: they create their own circle, separate from yours. It counts when they really use it (at least 3 Reels).",
+"Manda la app a otras personas: crean su propio círculo, separado del vuestro. Cuenta cuando la usan de verdad (al menos 3 Reels)."
+],
+"1 cerchio": [
+"1 circle",
+"1 círculo"
+],
+"3 cerchi": [
+"3 circles",
+"3 círculos"
+],
+"5 cerchi": [
+"5 circles",
+"5 círculos"
+],
+"10 cerchi": [
+"10 circles",
+"10 círculos"
+],
+" chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più cerchi. Ogni anno i traguardi ripartono e potete vincerli di nuovo.": [
+" whoever joins now keeps them like this forever; later joiners will need more circles. Every year the milestones reset and you can win them again.",
+" quien entra ahora los mantiene así para siempre; a quien llegue más tarde le harán falta más círculos. Cada año los hitos se reinician y podéis ganarlos de nuevo."
+],
+"Anche il cerchio che arriva riceve 1 mese di Stile. I premi si attivano con l’arrivo di Reelta Plus: i cerchi che consigli da oggi contano già.": [
+"The new circle also gets 1 month of Style. Rewards switch on when Reelta Plus arrives: circles you recommend from today already count.",
+"El círculo que llega también recibe 1 mes de Estilo. Los premios se activan cuando llegue Reelta Plus: los círculos que recomiendes desde hoy ya cuentan."
+],
+"Ti consiglio Reelta: per mandarvi i Reel in due in un posto solo, privato e senza account. Create il vostro cerchio da qui: ": [
+"I recommend Reelta: to send each other Reels in one private place, no account needed. Create your circle here: ",
+"Te recomiendo Reelta: para mandaros Reels en un solo sitio, privado y sin cuenta. Cread vuestro círculo aquí: "
+],
 "adesso": [
 "now",
 "ahora"
@@ -5606,7 +5750,7 @@
 " personas."
 ]
 };
-  var FR = [": il server vede solo caselle con nomi casuali e testo illeggibile, e li cancella appena consegnati (al massimo dopo 14 giorni). Se attivi gli avvisi ad app chiusa, conserva l’indirizzo tecnico delle notifiche del telefono: la notifica dice solo “Hai qualcosa di nuovo su Reelta”, mai chi né cosa. Serve anche ad aprire i link corti di Facebook, Snapchat, LinkedIn e Spotify per mostrarli nell’app.", " (intelligenza artificiale, solo se tocchi “✨ Riconosci dal video” o “✨ Riassunto automatico”): riceve il link del video, il suo titolo e la descrizione pubblici, e l’eventuale commento di chi l’ha mandato. Mai i vostri nomi, i messaggi o altro. Durante la prova usiamo il piano gratuito di Google, che può usare questi testi per migliorare i suoi servizi.", ": vengono cifrati sul telefono, con una chiave nuova per ogni file che viaggia solo dentro il messaggio. Sul server (Supabase, Londra) restano solo finché chi deve riceverli li ha scaricati, al massimo 14 giorni, poi si cancellano. Sul telefono non si salvano: restano solo se li fissi 📌 o li salvi tu nella galleria. I video durano al massimo 30 secondi.", ": ogni tanto Reelta chiede 3 domande. Se tocchi “Invia”, partono le risposte e alcuni numeri d’uso di quel telefono (Reel e piani a settimana, giorni di uso), con un codice casuale al posto dei nomi. Prima di inviare vedi esattamente il testo che parte. Le risposte sono conservate su Supabase, a Londra (Regno Unito), e lette solo da chi sviluppa Reelta.", ": una volta al giorno il telefono manda solo “sono attivo”, con un codice casuale creato sul telefono, il tipo di telefono (iPhone o Android) e la versione dell’app. Per contare i cerchi manda un’impronta irreversibile di ciascuno: serve a sapere quanti sono, non quali. Niente nomi, messaggi o Reel. Questi dati si cancellano dopo 90 giorni.", "\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 24 ore.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.", ": se tocchi “Invia a Reelta” in “Segnala un problema”, partono il testo che scrivi e alcuni dettagli tecnici (versione, tipo di telefono, misure dello schermo), mai Reel, messaggi o chiavi.", ": il link che mandi a un’altra coppia contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quante coppie sono arrivate grazie a te, per i premi futuri.", " è il centro e può togliere chi vuole. Se qualcuno non è collegato, Reel e messaggi lo aspettano sul server, cifrati: il server non può leggerli e li cancella appena consegnati.", ": il link che mandi ad altre persone contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quanti Duo sono arrivati grazie a te, per i premi futuri.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più Duo. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " non viene più riconosciuto (succede se ha reinstallato Reelta o riaperto un vecchio invito). Vuoi ricollegarlo? Non perde niente.", " non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.", " I link si aprono nel browser, che è una copia separata: se entri da qui, nell’app non ti ritrovi. Entra dall’app:", " (server a Londra, Regno Unito): quando una persona del cerchio non è collegata, Reel e messaggi la aspettano lì, ", " ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n", "Tocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.", "Non si salva da nessuna parte: chi lo riceve può fissarlo 📌 o salvarlo nel telefono. Video al massimo ", "» vengono copiati in questo cerchio e li vedrà anche chi ne fa parte. Nell’altro cerchio restano.", ". Poi aprila dall’icona e crea lì il tuo cerchio: quello creato qui in Safari resta solo qui.", " apre Reelta vi collegate da soli. Intanto puoi mandare Reel e messaggi: arrivano lo stesso.", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", " (il pulsante dorato in basso, oppure “Incolla l’invito che hai ricevuto”). Poi tocca ", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " vogliono sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " vuole sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " giorni spariranno da questo telefono. Quelli con ⭐ restano sempre.", " di raccontartelo in una riga. Così decidi tu se guardarlo tutto.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", "” salvato. Ora il prossimo: scegli un tipo o chiedi all’AI.", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", "Copia il link di un Reel da Instagram, TikTok o YouTube: ", " non più disponibile: si conserva solo se viene fissato 📌", "” e gli altri: scegliete una data, così succede davvero.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "⏱️ Il tuo pass è scaduto (valeva 24 ore). Ho chiesto a ", " l’ha accesa: accendila anche tu per vedervi a vicenda.", "Era l’invito del cerchio di coppia, che è già completo.", ". Appena risponde lo vedi qui, e ti arriva un avviso.", " ti sta mandando quello giusto: aprilo appena arriva.", " Ti preparo un Trio e apro l’invito da rimandare a ", ". Accorcialo dalla galleria del telefono e riprova.", "\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ", "Accesa da te. Si attiva quando la accende anche ", "Questo invito era per un cerchio già completo. ", " l’ha spenta. Si riattiva quando la riaccende.", "Fatto ✓ Tienila in File o iCloud. Contiene ", "Era l’invito del Duo, che è già completo.", " non sa che lo guardi finché non lo apri.", " Scegli tu qui sotto: ci metti un attimo.", "⏳ I messaggi si cancellano da soli ", " vuole guardare i Reel insieme a te", " (sugli iPhone recenti è nel tasto ", " ha spento la trasparenza di coppia", ", su tutti i telefoni del cerchio.", "👍 A te va. ⏳ Manca la risposta di ", " Mettila prima sulla Home: tocca ", "Non ci sono riuscito: chiedilo a ", "❤️  Rivedi il Reel più amato, di ", " piani aspettano il tuo sì o no", " ha aperto un invito sbagliato", "I Reel senza ⭐ più vecchi di ", "Copia questo invito a mano: ", ", aprila dall’icona e tocca ", " Per averla come app: menu ", ". Lo vede tutto il cerchio.", "⬆️ C’è una versione nuova (", " piani sono fermi da un po’", " è rimasto a bocca aperta 😮", " (l’invito è già copiato).", " accanto all’indirizzo) → ", " piani aspettano il tuo sì", ". Reelta si riapre adesso.", " Invita la prima persona!", ", poi aprila dall’icona.", " è entrato nel cerchio ✓", " secondi: il massimo è ", " non è in altri gruppi.", " reazioni ai tuoi Reel", "🧹 Domani si puliscono ", " riceve la richiesta.", " Il link vale 24 ore.", " persone, in privato.", "🔗 Rimanda l’invito a ", "🎥 Gira un video (max ", "Modalità riservata: ", " · privata e cifrata", "Lo volete entrambi: ", " deve farti entrare.", "Nessun Reel tenuto.", "Copiato ✓ Ora apri ", " nuove segnalazioni", "Copia scaricata ✓ (", "Aspetta un attimo: ", "Problema di rete (", " ha messo in pausa", "Hai già chiesto a ", "Insieme, Reel di ", "Cerchio di gruppo", " nel tuo cerchio?", "Lo volete tutti: ", "\n\n⏱️ Vale 24 ore.", " · ancora nessuno", " Apri Reelta in ", "Gruppo grande · ", "Ho ripristinato ", " si è scollegato", " · Tutto pronto?", "💭 Com’è andata: ", " · non collegato", "Vuoi accettare ", "🕰 Un ricordo · ", " ti ha invitato", " Reel aggiunti.", "Ci sono ancora ", "Il telefono di ", "Gruppo da 3 · ", " ha segnalato ", " vuole entrare", " · ne restano ", ", proposto da ", " c’erano già)", " Reel nuovo ↓", "📌 fissato da ", " Reel nuovi ↓", " lo vede qui.", "Nel cerchio: ", " (tu, centro)", "✓✓ Letto da: ", "🕰 Ricordate? ", " è silenziato", "Messaggio di ", " ha messo ❤️", " dal cerchio", "🕶️ Video da ", "Tu e fino a ", " è anche in:", "🚩 Segnala a ", "Proposto da ", " e lì: menu ", "quel cerchio", "🔇 Silenzia ", "Recuperati ", "I Reel di «", "Cerchio di ", "Rispondi a ", " qui sotto.", "Scritto da ", "📝 Chiedi a ", "Domenica · ", "🔔 Avvisare ", "): aggiorna", " ha messo 🔥", "Votato da: ", "✓ Fatti · ", " offline 🔔", " Reel qui?", "⭐ Tenuti (", "▶  Guarda ", "Messaggi (", " (partner)", "Sabato · ", " e tocca ", "Reagisci ", "Video di ", "Chiedi a ", " · aperto", " cerchio.", "Domani · ", " (centro)", "Togliere ", " persone.", " secondi.", " chiedono", " Reel da ", "Coppia · ", "Copiare ", "Reel di ", " persone", "Foto di ", " ha riso", "✨ Cerco ", " cerchi.", "🚫 Togli ", " min fa", " chiede", " ore fa", "Appena ", " posti.", "Piani (", "Fatto: ", "Se con ", "Colore ", " ora fa", "Oggi · ", "Invita ", "Ciao! ", "Ora: ", ", da ", " (tu)", "Dura "];
+  var FR = [": il server vede solo caselle con nomi casuali e testo illeggibile, e li cancella appena consegnati (al massimo dopo 14 giorni). Se attivi gli avvisi ad app chiusa, conserva l’indirizzo tecnico delle notifiche del telefono: la notifica dice solo “Hai qualcosa di nuovo su Reelta”, mai chi né cosa. Serve anche ad aprire i link corti di Facebook, Snapchat, LinkedIn e Spotify per mostrarli nell’app.", " (intelligenza artificiale, solo se tocchi “✨ Riconosci dal video” o “✨ Riassunto automatico”): riceve il link del video, il suo titolo e la descrizione pubblici, e l’eventuale commento di chi l’ha mandato. Mai i vostri nomi, i messaggi o altro. Durante la prova usiamo il piano gratuito di Google, che può usare questi testi per migliorare i suoi servizi.", ": ogni tanto Reelta chiede 3 domande. Se tocchi “Invia”, partono le risposte e alcuni numeri d’uso di quel telefono (Reel e piani a settimana, giorni di uso), con un codice casuale al posto dei nomi. Prima di inviare vedi esattamente il testo che parte. Le risposte sono conservate su Supabase, a Londra (Regno Unito), e lette solo da chi sviluppa Reelta.", ": vengono cifrati sul telefono, con una chiave nuova per ogni file che viaggia solo dentro il messaggio. Sul server (Supabase, Londra) restano solo finché chi deve riceverli li ha scaricati, al massimo 14 giorni, poi si cancellano. Sul telefono non si salvano: restano solo se li fissi 📌 o li salvi tu nella galleria. I video durano al massimo 30 secondi.", ": una volta al giorno il telefono manda solo “sono attivo”, con un codice casuale creato sul telefono, il tipo di telefono (iPhone o Android) e la versione dell’app. Per contare i cerchi manda un’impronta irreversibile di ciascuno: serve a sapere quanti sono, non quali. Niente nomi, messaggi o Reel. Questi dati si cancellano dopo 90 giorni.", "\n2️⃣ Scrivi il tuo nome e tocca “Entra nel cerchio”. Fatto!\n⏱️ Il link vale 24 ore.\n\n📲 Hai già Reelta sulla Home? Copia questo messaggio, apri Reelta e tocca “Incolla”.\n\nSe ti chiede di installare l’app, segui i passaggi (1 minuto). Guida: ", " ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.", ": se tocchi “Invia a Reelta” in “Segnala un problema”, partono il testo che scrivi e alcuni dettagli tecnici (versione, tipo di telefono, misure dello schermo), mai Reel, messaggi o chiavi.", ": il link che mandi a un’altra coppia contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quante coppie sono arrivate grazie a te, per i premi futuri.", " è il centro e può togliere chi vuole. Se qualcuno non è collegato, Reel e messaggi lo aspettano sul server, cifrati: il server non può leggerli e li cancella appena consegnati.", ": il link che mandi ad altre persone contiene un codice casuale (tipo R-4F7K2M), non il tuo nome. Serve solo a sapere quanti Duo sono arrivati grazie a te, per i premi futuri.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più cerchi. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più coppie. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " chi entra adesso li tiene così per sempre; per chi arriverà più avanti serviranno più Duo. Ogni anno i traguardi ripartono e potete vincerli di nuovo.", " non viene più riconosciuto (succede se ha reinstallato Reelta o riaperto un vecchio invito). Vuoi ricollegarlo? Non perde niente.", " non vi collegate, rimanda l’invito: aprendolo, il suo telefono si ricollega a questo cerchio senza perdere niente.", " I link si aprono nel browser, che è una copia separata: se entri da qui, nell’app non ti ritrovi. Entra dall’app:", " (server a Londra, Regno Unito): quando una persona del cerchio non è collegata, Reel e messaggi la aspettano lì, ", " ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n", "Non si salva da nessuna parte: chi lo riceve può fissarlo 📌 o salvarlo nel telefono. Video al massimo ", "Tocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.", "» vengono copiati in questo cerchio e li vedrà anche chi ne fa parte. Nell’altro cerchio restano.", ". Poi aprila dall’icona e crea lì il tuo cerchio: quello creato qui in Safari resta solo qui.", " apre Reelta vi collegate da soli. Intanto puoi mandare Reel e messaggi: arrivano lo stesso.", " ti invita su Reelta 🔒 (il nostro posto privato per Reel e piani).\n\n1️⃣ Tocca questo link:\n", " ti sta aspettando su Reelta! Apri Reelta dall’icona sulla Home 😊 (non ce l’hai? da qui: ", " non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.", " (il pulsante dorato in basso, oppure “Incolla l’invito che hai ricevuto”). Poi tocca ", "Su questo telefono puoi creare cerchi senza limiti, anche gruppi grandi fino a ", " Qui non ritrovi i cerchi dell’app sulla Home. Per averla come app: tocca ", " di farti entrare: aspetta un attimo, oppure chiedigli un nuovo invito.", " vogliono sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " vuole sapere di cosa parla. Basta un tocco, la riga è facoltativa.", " giorni spariranno da questo telefono. Quelli con ⭐ restano sempre.", " di raccontartelo in una riga. Così decidi tu se guardarlo tutto.", " ti aspetta su Reelta 😊 Aprila per guardare i Reel insieme: ", "” salvato. Ora il prossimo: scegli un tipo o chiedi all’AI.", " non vedrà più i nuovi Reel, piani e messaggi del cerchio.", " Ti preparo il gruppo da 3 e apro l’invito da rimandare a ", "Copia il link di un Reel da Instagram, TikTok o YouTube: ", " non più disponibile: si conserva solo se viene fissato 📌", "” e gli altri: scegliete una data, così succede davvero.", "Era l’invito del cerchio di coppia, che è già completo.", "Grazie. Se vuoi non vederlo più, puoi anche silenziare ", "⏱️ Il tuo pass è scaduto (valeva 24 ore). Ho chiesto a ", " l’ha accesa: accendila anche tu per vedervi a vicenda.", " Ti preparo un gruppo e apro l’invito da rimandare a ", ". Appena risponde lo vedi qui, e ti arriva un avviso.", " ti sta mandando quello giusto: aprilo appena arriva.", ". Accorcialo dalla galleria del telefono e riprova.", " Ti preparo un Trio e apro l’invito da rimandare a ", "\n\n⏱️ Vale 24 ore. Se serve, la guida (1 minuto): ", "Accesa da te. Si attiva quando la accende anche ", "Questo invito era per un cerchio già completo. ", " l’ha spenta. Si riattiva quando la riaccende.", "Fatto ✓ Tienila in File o iCloud. Contiene ", " Scegli tu qui sotto: ci metti un attimo.", " non sa che lo guardi finché non lo apri.", "Era l’invito del Duo, che è già completo.", "Era l’invito di un cerchio già completo.", " ha spento la trasparenza di coppia", " vuole guardare i Reel insieme a te", "⏳ I messaggi si cancellano da soli ", " (sugli iPhone recenti è nel tasto ", ", su tutti i telefoni del cerchio.", "👍 A te va. ⏳ Manca la risposta di ", "❤️  Rivedi il Reel più amato, di ", "Non ci sono riuscito: chiedilo a ", " Mettila prima sulla Home: tocca ", " piani aspettano il tuo sì o no", " ha aperto un invito sbagliato", "I Reel senza ⭐ più vecchi di ", "Copia questo invito a mano: ", ", aprila dall’icona e tocca ", ". Lo vede tutto il cerchio.", " piani sono fermi da un po’", " è rimasto a bocca aperta 😮", "⬆️ C’è una versione nuova (", " Per averla come app: menu ", " piani aspettano il tuo sì", " accanto all’indirizzo) → ", ". Reelta si riapre adesso.", " (l’invito è già copiato).", " Invita la prima persona!", ", poi aprila dall’icona.", " è entrato nel cerchio ✓", " non è in altri gruppi.", " secondi: il massimo è ", " reazioni ai tuoi Reel", "🧹 Domani si puliscono ", "🔗 Rimanda l’invito a ", " persone, in privato.", "🎥 Gira un video (max ", " Il link vale 24 ore.", " riceve la richiesta.", " · privata e cifrata", " deve farti entrare.", "Lo volete entrambi: ", "Modalità riservata: ", "Copia scaricata ✓ (", "Copiato ✓ Ora apri ", "Aspetta un attimo: ", "Nessun Reel tenuto.", " nuove segnalazioni", " ha messo in pausa", "Problema di rete (", "Hai già chiesto a ", " nel tuo cerchio?", "Insieme, Reel di ", "Cerchio di gruppo", "\n\n⏱️ Vale 24 ore.", " · ancora nessuno", "Lo volete tutti: ", "💭 Com’è andata: ", " · non collegato", " si è scollegato", " · Tutto pronto?", "Ho ripristinato ", "Gruppo grande · ", " Apri Reelta in ", " Reel aggiunti.", "Il telefono di ", "Vuoi accettare ", " ti ha invitato", "Ci sono ancora ", "🕰 Un ricordo · ", "Gruppo da 3 · ", " vuole entrare", ", proposto da ", " ha segnalato ", " · ne restano ", " c’erano già)", " è silenziato", " Reel nuovi ↓", "✓✓ Letto da: ", "Messaggio di ", " (tu, centro)", "📌 fissato da ", " Reel nuovo ↓", " lo vede qui.", "Nel cerchio: ", "🕰 Ricordate? ", " e lì: menu ", "Tu e fino a ", "🕶️ Video da ", " ha messo ❤️", " dal cerchio", "quel cerchio", " è anche in:", "Proposto da ", "🚩 Segnala a ", "Votato da: ", "Recuperati ", " qui sotto.", "🔔 Avvisare ", "Rispondi a ", "Cerchio di ", "): aggiorna", "Un Reel di ", "Scritto da ", "Mandato da ", "I Reel di «", "🔇 Silenzia ", "📝 Chiedi a ", "Domenica · ", "il Reel di ", "ne restano ", " ha messo 🔥", "⭐ Tenuti (", "Messaggi (", "▶  Guarda ", "✓ Fatti · ", " offline 🔔", " Reel qui?", " (partner)", " e tocca ", " · aperto", "Video di ", " chiedono", " persone.", "Domani · ", "Sabato · ", " cerchio.", "Togliere ", "Reagisci ", " secondi.", "Chiedi a ", " Reel da ", "Coppia · ", " (centro)", "🚫 Togli ", "Foto di ", "Reel di ", "✨ Cerco ", "Copiare ", " ha riso", " cerchi.", " persone", "Piani (", "Oggi · ", " chiede", " ore fa", " posti.", "Appena ", " ora fa", "Fatto: ", "Se con ", "Colore ", "Invita ", " min fa", "Ciao! ", "Ora: ", " (tu)", "Dura ", ", da "];
   var RX = [[/^▶  (\d+) nuov[oi] da (.+)$/, '▶  $1 new from $2', '▶  $1 nuevo(s) de $2'], [/^▶  1 nuovo$/, '▶  1 new', '▶  1 nuevo'], [/^▶  (\d+) nuovi$/, '▶  $1 new', '▶  $1 nuevos'],
     [/^💬 1 messaggio$/, '💬 1 message', '💬 1 mensaje'], [/^💬 (\d+) messaggi$/, '💬 $1 messages', '💬 $1 mensajes'], [/^💘 (\d+) da decidere$/, '💘 $1 to decide', '💘 $1 por decidir'],
     [/ · oggi$/, ' · today', ' · hoy'], [/ · domani$/, ' · tomorrow', ' · mañana'],
