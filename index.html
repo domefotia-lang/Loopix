@@ -656,6 +656,11 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
+#inspL{overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:2px;flex:1;min-height:120px}#inspL>p{grid-column:1/-1}
+.insc{display:flex;flex-direction:column;gap:6px;background:var(--s2);border-radius:16px;padding:6px}.insc .btn,.insc .btn-o{min-height:40px;padding:8px;font-size:14px;width:100%}
+.inth{position:relative;display:block;width:100%;aspect-ratio:9/14;border:0;padding:0;border-radius:12px;overflow:hidden;background:#000;cursor:pointer}.inth img{width:100%;height:100%;object-fit:cover;display:block}
+.inpl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+.insc iframe{width:100%;aspect-ratio:9/14;border:0;border-radius:12px}.intt{font-size:13px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.inch{font-size:12px;color:var(--m)}
 </style>
 </head>
 <body>
@@ -1321,7 +1326,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v149', errLog = [];
+var APP_VER = 'v150', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1613,6 +1618,47 @@ function openSeqAt(id) {
   seq = { q: q, i: i, cur: null }; showPane('pl'); showAt(i);
   if ('ontouchstart' in window && !navigator.webdriver) { seq.auto = true; immSet(true); setTimeout(swTip, 900); }
 }
+/* ---- ✨ Ispirazione: gli Shorts di YouTube più visti su un argomento, da mandare alla propria persona ---- */
+var INSP_T = { it: ['Ristoranti da provare', 'Weekend fuori città', 'Ricette veloci', 'Cose da fare in coppia', 'Viaggi low cost', 'Idee regalo'], en: ['Restaurants to try', 'Weekend getaways', 'Quick recipes', 'Date ideas', 'Cheap travel', 'Gift ideas'], es: ['Restaurantes para probar', 'Escapadas de fin de semana', 'Recetas rápidas', 'Planes en pareja', 'Viajes baratos', 'Ideas de regalo'] };
+function inspOpen(q) {
+  var M = $('inspM');
+  if (!M) {
+    M = el('div', 'mod'); M.id = 'inspM'; M.setAttribute('role', 'dialog'); M.setAttribute('aria-modal', 'true');
+    var C = el('div', 'card'); C.style.cssText = 'max-width:420px;width:100%;max-height:calc(var(--apph,100dvh) - 24px);display:flex;flex-direction:column';
+    C.appendChild(el('h2', null, '✨ Ispirazione')); C.appendChild(el('p', 'refn', 'Gli Shorts più visti su YouTube. Manda alla tua persona quelli che vi piacciono, o fanne un piano.'));
+    var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
+    var row = el('div', 'afr'); row.className = 'aifocus'; var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
+    var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
+    qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) inspLoad(v); }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
+    var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
+    var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
+    C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
+    var x = el('button', 'btn-o wide', 'Chiudi'); x.type = 'button'; x.style.marginTop = '8px'; x.onclick = function () { M.classList.remove('open'); L.textContent = ''; }; C.appendChild(x);
+    M.appendChild(C); document.body.appendChild(M);
+  }
+  var T = INSP_T[window.LX_LANG] || INSP_T.it, tp2 = $('inspT'); tp2.textContent = '';
+  T.forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.onclick = function () { inspLoad(t); }; tp2.appendChild(b); });
+  M.classList.add('open'); track('insp-apri'); inspLoad(q || T[0]);
+}
+function inspLoad(q) {
+  var L = $('inspL'); L.textContent = ''; L.appendChild(el('p', 'refn', '✨ ' + (window.LX_T || String)('Cerco') + ' «' + q + '»…'));
+  document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.textContent === q)); });
+  mbCall({ a: 'insp', q: q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
+    L.textContent = '';
+    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
+    if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); return; }
+    x.items.forEach(function (v) {
+      var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
+      var c = el('div', 'insc'), th = el('button', 'inth'); th.type = 'button'; th.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + v.t);
+      var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; th.appendChild(im); th.appendChild(el('span', 'inpl', '▶'));
+      th.onclick = function () { var f = document.createElement('iframe'); f.src = yt(v.id) + '&autoplay=1'; f.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'; f.setAttribute('allowfullscreen', ''); f.title = v.t; th.replaceWith(f); track('insp-guarda'); };
+      c.appendChild(th); c.appendChild(el('div', 'intt', v.t)); c.appendChild(el('div', 'inch', v.ch));
+      var go = el('button', sent ? 'btn-o wide' : 'btn', sent ? '✓ Nel cerchio' : '➕ Mandalo'); go.type = 'button'; go.disabled = sent;
+      go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
+      c.appendChild(go); L.appendChild(c);
+    });
+  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: riprova tra poco.')); });
+}
 function lazyMedia(r) {
   var ph = el('div', 'mph'); ph._r = r;
   if (!('IntersectionObserver' in window)) { mediaIn(ph); ph._on = true; return ph; }
@@ -1655,6 +1701,7 @@ function dwOpen() {
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
     P.appendChild(s);
   }
+  if (srvOn()) { var isp = el('button', 'it'); isp.type = 'button'; isp.appendChild(el('span', null, '✨')); isp.appendChild(document.createTextNode('Ispirazione: i video più visti')); isp.onclick = function () { dwClose(); inspOpen(); }; var si = el('div', 'sec'); si.appendChild(isp); P.appendChild(si); }
   if (typeof dropOk === 'function' && dropOk()) { var db2 = el('button', 'it'); db2.type = 'button'; db2.appendChild(el('span', null, '📲')); db2.appendChild(document.createTextNode('Condividi da Instagram → Reelta')); db2.onclick = function () { dwClose(); dropOpen(); }; var sd = el('div', 'sec'); sd.appendChild(db2); P.appendChild(sd); }
   if (typeof inBrowser !== 'undefined' && inBrowser && !window.__inst) { var ib2 = el('button', 'it'); ib2.type = 'button'; ib2.appendChild(el('span', null, '📲')); ib2.appendChild(document.createTextNode('Installa Reelta sulla Home')); ib2.onclick = function () { dwClose(); instGo(); }; var sx = el('div', 'sec'); sx.appendChild(ib2); P.appendChild(sx); }
   sec('I tuoi contenuti', [
@@ -1872,7 +1919,8 @@ function emptyFeed() {
   d.appendChild(el('b', null, solo ? 'Manca solo la tua persona' : 'Manda il primo Reel'));
   d.appendChild(el('p', null, solo ? 'Reelta è fatta per due (o pochi): mandale il link su WhatsApp, entra in 10 secondi. Intanto puoi già mettere qui dei Reel: li trova appena entra.' : who ? 'Copia il link di un Reel da Instagram, TikTok o YouTube: ' + who + ' lo vede qui.' : 'Copia il link di un Reel da Instagram, TikTok o YouTube e incollalo qui.'));
   if (solo) { var bi = el('button', 'btn go', '💌 Invita la tua persona'); bi.type = 'button'; bi.onclick = function () { track('invita-da-vuoto'); invite(); }; d.appendChild(bi); }
-  var b1 = el('button', solo ? 'btn-o wide' : 'btn go', '📋 Incolla un Reel'); b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
+  var b1 = el('button', solo ? 'btn-o wide' : 'btn go', '📋 Incolla un Reel');
+  if (srvOn()) { var bx = el('button', 'btn-o wide', '✨ Non hai Reel? Guarda i più visti'); bx.type = 'button'; bx.style.marginTop = '8px'; bx.onclick = function () { track('insp-da-vuoto'); inspOpen(); }; setTimeout(function () { if (b1.parentNode) b1.parentNode.insertBefore(bx, b1.nextSibling); }, 0); } b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
   if (solo) b1.style.marginTop = '8px';
   var b3 = el('button', 'lnk', '▶ Guarda come funziona · 30 secondi'); b3.type = 'button'; b3.onclick = function () { demoOpen(); }; d.appendChild(b3);
   return d;
