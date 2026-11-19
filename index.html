@@ -654,6 +654,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 .aifocus .afr{flex-wrap:wrap}.aifocus input{flex:1 1 100%}.aifocus .btn-o{flex:1 1 0}
 .mph{position:relative}.mph .mtap{position:absolute;inset:0;z-index:2;background:transparent;border:0;padding:0;margin:0;cursor:pointer}.mph .ovl,.mph .sndp,.mph .ighint{z-index:3}
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
+#setup.inv #bkR2{display:none}
 </style>
 </head>
 <body>
@@ -1319,7 +1320,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v147', errLog = [];
+var APP_VER = 'v148', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1956,10 +1957,10 @@ $('nw').addEventListener('click', function () { var b = $('feed'); b.scrollTo({ 
 $('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unseen = 0; $('nw').hidden = true; } });
 /* ---- sequenza: i Reel di ogni piattaforma, uno dopo l'altro ---- */
 var seq = null, seen = get('seen', {}), timer = null;
-function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n); }).length; }
+function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n) && r.n !== me.name; }).length; } // i Reel che mandi tu non sono «nuovi» per te
 function seqLabel() {
   appBadge();
-  var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length;
+  var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length || !$('app').classList.contains('on');
   var who = []; feed.forEach(function (r) { if (!seen[r.id] && !isMuted(r.n) && r.n !== me.name && who.indexOf(r.n) < 0) who.push(r.n); });
   b.textContent = n ? '▶  ' + n + (n === 1 ? ' nuovo' : ' nuovi') + (who.length === 1 ? ' da ' + who[0] : '') : '▶  Rivedi tutti';
   renderNov();
@@ -2112,7 +2113,7 @@ function showAt(i) {
 function openSeq() {
   setTimeout(fsTip, 1200);
   var vis = feed.filter(function (r) { return !isMuted(r.n); });
-  var q = vis.filter(function (r) { return !seen[r.id]; }).map(function (r) { return r.id; });
+  var q = vis.filter(function (r) { return !seen[r.id] && r.n !== me.name; }).map(function (r) { return r.id; });
   if (!q.length) q = vis.map(function (r) { return r.id; });
   seq = { q: q, i: 0, cur: null };
   showPane('pl'); showAt(0);
@@ -2331,6 +2332,7 @@ function status() {
   regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il vostro gruppo' : 'Il vostro cerchio') : 'Cerchio di ' + (names[0] || 'gruppo');
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
+  if ($('sp')) $('sp').hidden = !feed.length || !live; // «Guardate insieme» solo quando c'è qualcuno collegato
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
   $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/' + (me.role === 'host' ? cap() + 1 : (circMax || 4)) + ')';
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
@@ -3774,8 +3776,9 @@ function renderCircle() {
       var on = conns.some(function (c) { return c.k === k && c.ok && c.open; });
       row(allowed[k] + (on ? '' : ' · non collegato'), on, function () { var nm = allowed[k]; ask('Togliere ' + nm + '?', nm + ' non vedrà più i nuovi Reel e piani del cerchio. Potrai invitarla di nuovo quando vuoi.', 'Togli dal cerchio', true).then(function (y) { if (y) removeMember(k); }); });
     });
-    m.appendChild(el('p', null, ks.length + ' di ' + cap() + (cap() === 1 ? ' posto' : ' posti') + ' usati.' + (ks.length ? '' : ' Invita la prima persona!')));
-    $('inv2').hidden = false; $('inv2').textContent = ks.length >= cap() ? '🔗 Non vi collegate? Rimanda l’invito' : 'Invita una persona'; $('invKill').hidden = false;
+    if (cap() > 1 || !ks.length) m.appendChild(el('p', null, cap() > 1 ? ks.length + ' di ' + cap() + ' posti usati.' : 'Invita la tua persona!'));
+    var allOn = ks.length && ks.every(function (k) { return conns.some(function (c) { return c.k === k && c.ok && c.open; }); });
+    $('inv2').hidden = ks.length >= cap() && allOn; $('inv2').textContent = ks.length >= cap() ? '🔗 Non vi collegate? Rimanda l’invito' : 'Invita una persona'; $('invKill').hidden = false; // se siete tutti collegati il tasto «rimanda» non serve
   } else {
     var live = !!(hostConn && hostConn.open);
     (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
@@ -4008,7 +4011,7 @@ function guide(force) {
     'Sei dentro! Quello che vi mandate resta solo tra voi.',
     'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
   ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
-  $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene';
+  $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene'; $('gdGo').hidden = !host; // per chi è invitato basta «Ho capito» $('gdX').className = host ? 'btn-o wide' : 'btn';
   $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (host) invite(); };
   $('gd').classList.add('open');
 }
