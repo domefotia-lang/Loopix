@@ -1317,7 +1317,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v139', errLog = [];
+var APP_VER = 'v140', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1983,7 +1983,9 @@ function renderNov() {
   // da soli con qualche Reel già pronto: è il momento giusto per invitare
   var mineN = me.role === 'host' && !Object.keys(allowed).length ? feed.filter(function (r) { return r.n === me.name; }).length : 0;
   if (mineN >= 2) chip('💌 ' + (window.LX_T || String)('Hai ') + mineN + (window.LX_T || String)(' Reel pronti: invita qualcuno a vederli'), function () { track('invita-pronti'); invite(); });
-  if (ritOn()) chip('🗓 ' + LXT('Il piano del weekend') + ' · ' + ritQueue().length + ' Reel', function () { ritOpen(); });
+  try { mixFetch(); } catch (e) {}
+  if (ritOn()) chip('🗓 ' + LXT('Il piano del weekend') + (mixCur() ? ' · ✨' : '') + (ritQueue().length ? ' · ' + ritQueue().length + ' Reel' : ''), function () { ritOpen(); });
+  else if (mixCur() && ritMembers().length >= 2) chip('✨ ' + LXT('Un’idea per voi: ') + clean(mixCur().s.p, 28), function () { ritOpen(); });
   var fbI = fbDue()[0]; if (fbI) chip('💭 Com’è andata: ' + fbI.p.slice(0, 22) + '?', function () { fbOpen(fbI); });
   if (soon) { var dd = Math.round((new Date(soon.w + 'T00:00:00') - today) / 864e5); chip('📅 ' + soon.p.slice(0, 24) + ' · ' + (dd === 0 ? 'oggi' : dd === 1 ? 'domani' : fmtDay(soon.w)), function () { showPane('ideas'); }); }
   if (!um && !dec && !soon && !rxn.length && !newCount() && !ritOn() && mineN < 2) {
@@ -3493,12 +3495,36 @@ var decMode = '';
 function LXT(x) { return (window.LX_T || String)(x); }
 function ritMembers() { if (!me) return []; var L = me.role === 'host' ? [me.name].concat(Object.keys(allowed).map(function (k) { return allowed[k]; })) : (names && names.length ? names.slice() : [me.name]); if (L.indexOf(me.name) < 0) L.push(me.name); return L.filter(function (x, i) { return x && L.indexOf(x) === i; }); }
 function ritWeek() { var d = new Date(); d.setHours(0, 0, 0, 0); var back = (d.getDay() + 3) % 7; d.setDate(d.getDate() - back); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); } // settimana che parte dal giovedì
-function ritAll() { var wk = Date.now() - 7 * 864e5, used = {}; ideas.forEach(function (i) { if (i.rid) used[i.rid] = 1; }); return feed.filter(function (r) { return r.ts >= wk && !used[r.id] && !isMuted(r.n); }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 8); }
+function ritAll() { var wk = Date.now() - 7 * 864e5, used = {}; ideas.forEach(function (i) { if (i.r) used[i.r] = 1; }); return feed.filter(function (r) { return r.ts >= wk && !used[r.id] && !isMuted(r.n); }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 8); }
 function ritQueue() { var sk = get('rskip', {}); return ritAll().filter(function (r) { return !(r.x && r.x[me.name] === '❤️') && !sk[r.id]; }); }
 function ritMatch(r) { var M = ritMembers(); return M.length >= 2 && M.every(function (n) { return r.x && r.x[n] === '❤️'; }); }
-function ritOn() { var wd = new Date().getDay(); return (wd === 4 || wd === 5 || wd === 6 || wd === 0) && ritAll().length >= 2 && ritQueue().length > 0 && ritMembers().length >= 2; }
+function ritOn() { var wd = new Date().getDay(); return (wd === 4 || wd === 5 || wd === 6 || wd === 0) && ritMembers().length >= 2 && (!!mixCur() || (ritAll().length >= 2 && ritQueue().length > 0)); }
 function ritOpen() { decMode = 'rit'; track('rituale-apri'); $('decT').textContent = '🗓 ' + LXT('Il piano del weekend'); $('decP').textContent = LXT('I Reel di questa settimana: quale fate? Se piace a tutti, è un match.'); $('decM').classList.add('open'); ritShow(); }
+/* ---- ✨ un'idea per il weekend: l'AI guarda le etichette dei Reel recenti (mai nomi, link o messaggi) e trova cosa vi piace ---- */
+var mixBusy = false;
+function mixItems() { var since = Date.now() - 30 * 864e5, used = {}; ideas.forEach(function (i) { if (i.r) used[i.r] = 1; });
+  return feed.filter(function (r) { return r.ts >= since && r.aiX && r.aiX.k && r.aiX.k !== 'altro' && !used[r.id]; }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 12)
+    .map(function (r) { return { k: r.aiX.k, p: clean(r.aiX.p || '', 60), s: clean(r.aiX.sum || '', 160), h: Object.keys(r.x || {}).filter(function (n) { return r.x[n] === '❤️'; }).length }; }); }
+function mixCur() { var m = get('mix', null); return m && m.wk === ritWeek() && m.s && m.s.p && !m.st ? m : null; }
+function mixFetch() {
+  if (mixBusy || !me || !srvOn()) return; var m = get('mix', null); if (m && m.wk === ritWeek()) return;
+  var it = mixItems(); if (it.length < 3) return; mixBusy = true;
+  mbCall({ a: 'mix', items: it, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
+    mixBusy = false; if (!x || x.error) return; put('mix', { wk: ritWeek(), s: x.p && x.k !== 'altro' ? x : null, st: '' }); if (x.p) track('idea-weekend'); try { renderNov(); } catch (e) {}
+  }, function () { mixBusy = false; });
+}
+function mixDone(st) { var m = get('mix', null); if (m) { m.st = st; put('mix', m); } }
+function mixCard(c, m) {
+  var s = m.s; c.appendChild(el('div', 'e', (KINDS[s.k] || '✨').split(' ')[0]));
+  c.appendChild(el('p', 'refn', '✨ ' + LXT('Un’idea di Reelta per voi')));
+  c.appendChild(el('h3', null, clean(s.p, 60)));
+  if (s.why) c.appendChild(el('p', null, clean(s.why, 160)));
+  if (s.o) c.appendChild(el('p', 'refn', clean(s.o, 200)));
+  var lk = el('div', 'ailinks'); linksFor({ k: s.k, p: clean(s.p, 60), q: clean(s.shop || '', 60) }).slice(0, 3).forEach(function (L) { var a = el('a', 'chip', L.t); a.href = L.u; a.target = '_blank'; a.rel = 'noopener noreferrer' + (L.p ? ' sponsored' : ''); lk.appendChild(a); }); c.appendChild(lk);
+}
 function ritShow() {
+  var mx = mixCur();
+  if (mx) { var c0 = $('decC'); c0.className = ''; c0.textContent = ''; decCur = { mix: true }; $('decB').hidden = false; mixCard(c0, mx); return; }
   var c = $('decC'), q = ritQueue(); c.className = ''; c.textContent = ''; decCur = q[0] || null; $('decB').hidden = !decCur;
   if (!decCur) {
     var ms = ritAll().filter(ritMatch);
@@ -3514,7 +3540,14 @@ function ritShow() {
   var w = el('button', 'btn-o', '▶ ' + LXT('Guardalo')); w.type = 'button'; w.style.marginTop = '8px'; w.onclick = function () { $('decM').classList.remove('open'); goReel(r.id); }; c.appendChild(w);
 }
 function ritAnswer(yes) {
-  var r = decCur; if (!r) return; var c = $('decC'); c.className = yes ? 'r' : 'l';
+  var r = decCur; if (!r) return;
+  if (r.mix) {
+    var mx = mixCur(); $('decC').className = yes ? 'r' : 'l';
+    setTimeout(function () {
+      if (yes && mx) { var v = {}; v[me.name] = 1; ideaAct({ t: 'idea', a: 'add', i: { id: uid(8), r: '', k: mx.s.k, p: clean(mx.s.p, 60), o: clean(mx.s.o || mx.s.why || '', 200), ts: Date.now(), v: v, q: clean(mx.s.shop || '', 60) } }); track('idea-weekend-si'); $('mh').textContent = LXT('Piano proposto: gli altri lo trovano in «Decidete insieme».'); }
+      mixDone(yes ? 'si' : 'no'); ritShow(); try { renderNov(); } catch (e) {}
+    }, 230); return;
+  } var c = $('decC'); c.className = yes ? 'r' : 'l';
   try { navigator.vibrate && navigator.vibrate(yes ? 18 : 8); } catch (e) {}
   setTimeout(function () {
     if (yes) { if (!(r.x && r.x[me.name] === '❤️')) react(r.id, '❤️'); track('rituale-si'); }
