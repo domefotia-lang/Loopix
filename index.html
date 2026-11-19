@@ -891,7 +891,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 
 <div class="mod" id="gd" role="dialog" aria-modal="true" aria-labelledby="gdT"><div class="card" style="max-width:350px;width:100%;max-height:88dvh;overflow-y:auto">
   <h2 id="gdT">Benvenuto in Reelta 👋</h2>
-  <p>Quattro passi e ci sei:</p>
+  <p>Due cose e ci sei:</p>
   <ol class="steps" id="gdS"></ol>
   <button class="btn" id="gdGo"></button>
   <button class="btn-o wide" id="gdDemo">▶ Guarda come funziona (30 s)</button>
@@ -1318,7 +1318,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v141', errLog = [];
+var APP_VER = 'v142', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -3982,14 +3982,12 @@ function guide(force) {
   put('guided', 1);
   var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
   (host ? [
-    'Tocca “Invita” → “Invia su WhatsApp”. Chi apre il link entra da solo (il link vale 24 ore). Tieni Reelta aperta mentre entra.',
-    'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
-    'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
+    'Invita la tua persona: le mandi il link su WhatsApp ed entra da sola, anche più tardi.',
+    'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
   ] : [
-    'Sei dentro! In alto vedi “Collegato” quando chi ti ha invitato ha Reelta aperta.',
-    'In Instagram, TikTok o YouTube tocca Condividi e poi “Copia link”.',
-    'Torna qui e tocca il pulsante dorato “Incolla” in basso. Fatto: lo vede tutto il cerchio.'
-  ]).concat(['Scrivetevi in “Messaggi”, e in Cerchio salva una copia di sicurezza: se cambi telefono ritrovi tutto.']).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
+    'Sei dentro! Quello che vi mandate resta solo tra voi.',
+    'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
+  ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
   $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene';
   $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (host) invite(); };
   $('gd').classList.add('open');
@@ -4082,7 +4080,7 @@ $('go').addEventListener('click', function () {
     if (/iphone|ipad|ipod|android/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
   }
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
-  if (!jid && !navigator.webdriver) setTimeout(function () { try { if (me && me.role === 'host' && !Object.keys(allowed).length && !$('invM').classList.contains('open')) { track('invita-dopo-creato'); invite(); } } catch (e) {} }, 900); // appena creato il cerchio: subito l'invito
+  if (!jid && !navigator.webdriver) setTimeout(function () { try { if (me && me.role === 'host' && !Object.keys(allowed).length && !$('invM').classList.contains('open') && !$('gd').classList.contains('open')) { track('invita-dopo-creato'); invite(); } } catch (e) {} }, 900); // appena creato il cerchio: subito l'invito
 });
 $('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
 $('inv').addEventListener('click', invite);
