@@ -157,7 +157,7 @@
 <meta property="og:url" content="https://joinreelta.github.io/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#241A13">
+<meta name="theme-color" content="#0E0E11">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -165,7 +165,7 @@
 <meta name="apple-mobile-web-app-title" content="Reelta">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" media="print" onload="this.media='all'">
 <style>
 :root{color-scheme:dark;--bg:#241A13;--s1:#31251B;--s2:#3E2F23;--s3:#55412F;--line:rgba(226,190,128,.26);--g:#DDB574;--gl:#F6E2B4;--ink:#2B1B0D;--t:#FBF2E4;--m:#CDB89D;--cy:#8FD6A0;
 --gold:linear-gradient(180deg,var(--gl),var(--g) 62%,#B98B4E);--spec:linear-gradient(120deg,#B98B4E,#F6E2B4 52%,#DDB574);--spec-ink:#2B1B0D;
@@ -615,6 +615,36 @@ body.kb .item .cpanel{max-height:30dvh}
 #veil.on{display:flex}#veil img{width:84px;height:84px;border-radius:20px}#veil svg path{fill:none;stroke:var(--g);stroke-width:3.4;stroke-linecap:round}
 .tap-load{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:22px;text-align:center;color:var(--m);font-size:14px;min-height:0}
 .tap-load b{color:var(--t);font-size:17px}
+
+/* ==== Restyle 2026: Notte (scuro) · Giorno (chiaro, segue il telefono) · Pop. «Classico» = il vecchio oro (senza .rs) ==== */
+html.rs{color-scheme:dark;--bg:#0E0E11;--s1:#1A1A20;--s2:#26262E;--s3:#34343E;--line:rgba(255,255,255,.09);--ink:#1A0A05;--t:#F5F5F7;--m:#A9A9B4;--cy:#4ADE80;
+--gold:var(--g);--spec:var(--g);--spec-ink:#1A0A05;--dis:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;--txt:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+html.rs.light{color-scheme:light;--bg:#F5F4FB;--s1:#FFFFFF;--s2:#ECEBF7;--s3:#DCDAF0;--line:rgba(28,27,46,.09);--ink:#FFFFFF;--t:#1C1B2E;--m:#5E5C78;--cy:#0E8A5F;--spec-ink:#FFFFFF}
+html.rs.pop{--bg:#FFF6DB;--s1:#FFFFFF;--s2:#FFEDB3;--s3:#FFDF7A;--line:#111111;--ink:#FFFFFF;--t:#111111;--m:#4A4A4A;--cy:#0B7A3E;--spec-ink:#FFFFFF;--dis:"Bricolage Grotesque","Plus Jakarta Sans",sans-serif}
+html.rs body,html.rs.light body{background:var(--bg)}
+html.rs .card,html.rs.light .card{background:var(--s1);border:1px solid var(--line);box-shadow:none}
+html.rs.light .card{border-color:transparent;box-shadow:0 1px 2px rgba(28,27,46,.04),0 8px 24px rgba(28,27,46,.07)}
+html.rs .btn{background:var(--g);color:var(--ink);box-shadow:0 8px 22px color-mix(in srgb,var(--g) 30%,transparent)}
+html.rs.light .btn{box-shadow:0 6px 18px color-mix(in srgb,var(--g) 28%,transparent)}
+html.rs .chip[aria-pressed="true"]{background:var(--g);color:var(--ink);border-color:var(--g)}
+html.rs .r-btn.mine,html.rs.light .r-btn.mine{background:color-mix(in srgb,var(--g) 16%,transparent);border-color:var(--g)}
+html.rs .ppl,html.rs.light .ppl{background:color-mix(in srgb,var(--g) 16%,transparent)}
+html.rs .mark path,html.rs .hero .big-mark path{stroke:var(--g)}html.rs .hero .big-mark{filter:none}
+html.rs .tabs{background:color-mix(in srgb,var(--bg) 94%,transparent)}
+html.rs .tabs button[aria-current="page"],html.rs .tabs .fab{color:var(--g)}
+html.rs .tabs .fab .ring{background:var(--g);box-shadow:0 0 0 4px var(--bg),0 8px 22px color-mix(in srgb,var(--g) 35%,transparent)}
+html.rs .tabs .fab .ring svg{stroke:var(--ink)}
+html.rs .logo,html.rs h1,html.rs h2,html.rs .idea h3{font-family:var(--dis);font-weight:800;letter-spacing:-.02em;color:var(--t)}
+html.rs .mod{background:rgba(8,8,12,.55)}html.rs.light .mod{background:rgba(28,27,46,.32)}
+html.rs .light input::placeholder,html.rs.light input::placeholder{color:#8A88A3}
+html.rs.light input,html.rs.light select{background:#FFFFFF;border-color:var(--s3);color:var(--t)}
+html.rs #dw .dwref{background:var(--g);color:var(--ink)}
+/* Pop: bordi neri e ombre «adesivo» */
+html.rs.pop .card,html.rs.pop .btn,html.rs.pop .btn-o,html.rs.pop .chip,html.rs.pop .r-btn,html.rs.pop input,html.rs.pop select,html.rs.pop .tabs .fab .ring{border:2px solid #111!important;box-shadow:3px 3px 0 #111!important}
+html.rs.pop .btn:active,html.rs.pop .btn-o:active,html.rs.pop .chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #111!important}
+html.rs.pop .tabs{background:#FFFFFF;border-top:2px solid #111}
+html.rs.pop .tabs .fab .ring{box-shadow:0 0 0 4px var(--bg),3px 3px 0 #111!important}
+html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
 </style>
 </head>
 <body>
@@ -1276,7 +1306,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v136', errLog = [];
+var APP_VER = 'v137', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -3629,15 +3659,19 @@ function renderRecap() {
 }
 
 /* ---- stile ---- */
-var THEMES = { champagne: ['Oro', '#DDB574', '#F6E2B4', '#B5683F', '#D08A63', 'Terracotta'], spettro: ['Rosa oro', '#E8A38C', '#FBE0D4', '#B5565E', '#D07A80', 'Rosa antico'], oceano: ['Sabbia', '#D9C29A', '#F7EBD3', '#8E6B47', '#AE8A64', 'Taupe'], rosa: ['Bronzo', '#C98E5A', '#F1CFA8', '#9C5730', '#B9744B', 'Cannella'], smeraldo: ['Salvia', '#A9BE8E', '#E3EDD3', '#587A48', '#779866', 'Salvia'] };
-function isLight() { var m = get('mode', 'auto'); if (m === 'light') return true; if (m === 'dark') return false; var h = new Date().getHours(); return h >= 7 && h < 19; }
+// Stile: «reelta» (Notte scura / Giorno chiara, segue il telefono), «pop» (sempre chiaro, colorato), «classico» (il vecchio oro)
+var THEMES = { reelta: ['Reelta', '#FF6A4D', '#FF9A85', '#4F46E5', '#7C74F0', 'Reelta'], pop: ['Pop', '#C8175F', '#E0457F', '#C8175F', '#E0457F', 'Pop'], classico: ['Classico', '#DDB574', '#F6E2B4', '#B5683F', '#D08A63', 'Classico'] };
+function curTheme() { var t = get('theme', 'reelta'); return THEMES[t] ? t : 'reelta'; } // i vecchi colori (oro, rosa oro…) passano al nuovo stile
+function isLight() { var m = get('mode', 'auto'); if (m === 'light') return true; if (m === 'dark') return false; try { return matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { return false; } }
 function applyTheme(t) {
-  var c = THEMES[t] || THEMES.champagne, L = isLight(), r = document.documentElement;
-  r.classList.toggle('light', L);
+  if (!THEMES[t]) t = 'reelta';
+  var c = THEMES[t], L = t === 'pop' ? true : isLight(), r = document.documentElement;
+  r.classList.toggle('light', L); r.classList.toggle('rs', t !== 'classico'); r.classList.toggle('pop', t === 'pop');
   r.style.setProperty('--g', L ? c[3] : c[1]); r.style.setProperty('--gl', L ? c[4] : c[2]);
-  var tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', L ? '#F9F5F0' : '#241A13');
+  var tc = document.querySelector('meta[name="theme-color"]'); if (tc) { var bg = ''; try { bg = getComputedStyle(r).getPropertyValue('--bg').trim(); } catch (e) {} tc.setAttribute('content', bg || (L ? '#F5F4FB' : '#0E0E11')); }
 }
-function applyMode() { applyTheme(get('theme', 'champagne')); if (tab === 'style' && $('style').classList.contains('show')) renderStyle(); }
+try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', function () { applyMode(); }); } catch (e) {}
+function applyMode() { applyTheme(curTheme()); if (tab === 'style' && $('style').classList.contains('show')) renderStyle(); }
 function renderPriv() {
   var on = !!get('riserv', 0); $('rsT').checked = on; $('rcT').checked = rcptOn();
   $('rsP').textContent = on ? 'Attiva: statistiche spente, i video si caricano solo quando tocchi ▶, lo schermo si copre quando esci dall’app. Per coprirlo al volo: doppio tocco con due dita.' : 'Per chi vuole il massimo della discrezione: niente statistiche, video solo al tocco, schermo coperto quando esci dall’app.';
@@ -3766,7 +3800,7 @@ $('prI').addEventListener('input', function () { $('prI').dataset.edit = '1'; })
 function renderStyle() {
   renderProfile(); renderNt();
   renderPriv();
-  var box = $('themes'), cur = get('theme', 'champagne'); box.textContent = '';
+  var box = $('themes'), cur = curTheme(); box.textContent = '';
   Object.keys(THEMES).forEach(function (k) {
     var t = THEMES[k], b = el('button', 'sw', isLight() ? t[5] : t[0]);
     var L = isLight(); b.style.background = 'linear-gradient(135deg,' + (L ? t[3] : t[1]) + ',' + (L ? t[4] : t[2]) + ')'; if (L) b.style.color = '#fff'; b.setAttribute('aria-pressed', String(cur === k)); b.setAttribute('aria-label', 'Colore ' + (isLight() ? t[5] : t[0]));
@@ -3774,7 +3808,7 @@ function renderStyle() {
   });
   var md = get('mode', 'auto');
   document.querySelectorAll('#modeB button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.m === md)); });
-  $('modeP').textContent = md === 'auto' ? 'Chiaro di giorno, scuro dalle 19 alle 7. Cambia da solo.' : md === 'light' ? 'Sempre chiaro.' : 'Sempre scuro, riposante per gli occhi la sera.';
+  $('modeP').textContent = cur === 'pop' ? 'Pop è sempre chiaro.' : md === 'auto' ? 'Segue il telefono: chiaro o scuro come le altre app.' : md === 'light' ? 'Sempre chiaro.' : 'Sempre scuro, riposante per gli occhi la sera.';
   $('pinS').textContent = pinRec ? 'Attivo: Reelta chiede il PIN quando la apri e quando torni dopo 30 secondi. I dati salvati su questo telefono sono cifrati: senza PIN non si leggono.' : 'Nessun PIN. Aggiungine uno se altre persone usano il tuo telefono.';
   $('pinB').textContent = pinRec ? 'Cambia PIN' : 'Imposta un PIN';
   $('pinR').hidden = !pinRec;
@@ -4088,7 +4122,7 @@ document.addEventListener('visibilitychange', function () {
   if (document.hidden) hidAt = Date.now();
   else if (hidAt && Date.now() - hidAt > 30000) showLock();
 });
-applyTheme(get('theme', 'champagne'));
+applyTheme(curTheme());
 document.querySelectorAll('#modeB button').forEach(function (x) { x.addEventListener('click', function () { put('mode', x.dataset.m); applyMode(); }); });
 setInterval(applyMode, 60000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) applyMode(); });
