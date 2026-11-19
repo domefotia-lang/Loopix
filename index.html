@@ -655,6 +655,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 .mph{position:relative}.mph .mtap{position:absolute;inset:0;z-index:2;background:transparent;border:0;padding:0;margin:0;cursor:pointer}.mph .ovl,.mph .sndp,.mph .ighint{z-index:3}
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
+.fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1320,7 +1321,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v148', errLog = [];
+var APP_VER = 'v149', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1819,6 +1820,8 @@ function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
 $('ru').addEventListener('blur', function () { setTimeout(function () { if (!$('ru').value.trim() && document.activeElement !== $('ru')) { compOpen = false; syncComp(); } }, 400); });
 // ⭐ tenuti: scelta personale, solo su questo telefono. Si conserva il link del Reel, non il video.
 var keeps = get('keep', {}), rhid = get('rhid', []), fview = 'all';
+var RCATS = { viaggio: '✈️ Viaggi', cibo: '🍝 Cibo', compra: '🛍️ Da comprare', esperienza: '🎟️ Da fare', ricetta: '👨‍🍳 Ricette' };
+function rcat(r) { var k = r && r.aiX && r.aiX.k; if (!RCATS[k]) { try { k = r && r.c ? guessKind(r.c) : ''; } catch (e) { k = ''; } } return RCATS[k] ? k : ''; } // categoria del Reel: quella dell'AI, altrimenti dal commento
 function keepToggle(id) {
   if (keeps[id]) delete keeps[id]; else { keeps[id] = Date.now(); $('mh').textContent = '⭐ Tenuto: lo ritrovi in “⭐ Tenuti”.'; }
   put('keep', keeps); var r = find(id); if (r) refresh(r); if (fview === 'keep' || Object.keys(keeps).length <= 1) render();
@@ -1844,11 +1847,17 @@ function render() {
   syncComp();
   var box = $('feed'); box.textContent = ''; nodes = {};
   var nk = feed.filter(function (r) { return keeps[r.id]; }).length;
-  if (feed.length && (nk || fview === 'keep')) {
-    var fv = el('div', 'fview');
-    [['all', 'Tutti'], ['keep', '⭐ Tenuti (' + nk + ')']].forEach(function (x) { var b = el('button', 'chip', x[1]); b.setAttribute('aria-pressed', String(fview === x[0])); b.onclick = function () { fview = x[0]; render(); }; fv.appendChild(b); });
+  // filtri: ⭐ tenuti e le categorie che l'AI ha riconosciuto (viaggi, cibo…), solo quelle presenti
+  var vis0 = feed.filter(function (r) { return !isMuted(r.n); }), cc = {}; vis0.forEach(function (r) { var c = rcat(r); if (c) cc[c] = (cc[c] || 0) + 1; });
+  var cats = Object.keys(RCATS).filter(function (c) { return cc[c]; }), showCats = vis0.length >= 3 && cats.length >= 2;
+  if (fview.indexOf('c:') === 0 && !cc[fview.slice(2)]) fview = 'all';
+  if (feed.length && (nk || fview === 'keep' || showCats)) {
+    var fv = el('div', 'fview'), F = [['all', 'Tutti']]; if (nk || fview === 'keep') F.push(['keep', '⭐ Tenuti (' + nk + ')']);
+    if (showCats) cats.forEach(function (c) { F.push(['c:' + c, RCATS[c] + ' ' + cc[c]]); });
+    F.forEach(function (x) { var b = el('button', 'chip', x[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(fview === x[0])); b.onclick = function () { fview = x[0]; if (x[0] !== 'all') track('filtro-' + x[0].replace('c:', '')); render(); }; fv.appendChild(b); });
     box.appendChild(fv);
   }
+  if (fview.indexOf('c:') === 0) { var cf = fview.slice(2); vis0.filter(function (r) { return rcat(r) === cf; }).forEach(function (r) { box.appendChild(build(r)); }); box.scrollTop = box.scrollHeight; return; }
   if (fview === 'keep') { var kl = feed.filter(function (r) { return keeps[r.id] && !isMuted(r.n); }); if (!kl.length) box.appendChild(el('div', 'empty', 'Nessun Reel tenuto.\n\nTocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.')); kl.forEach(function (r) { box.appendChild(build(r)); }); return; }
   if (!feed.length) { box.appendChild(emptyFeed()); return; }
   feed.forEach(function (r) { if (!isMuted(r.n)) box.appendChild(build(r)); });
