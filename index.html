@@ -1319,7 +1319,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v144', errLog = [];
+var APP_VER = 'v145', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1489,7 +1489,19 @@ function igFit() {
     fr.style.transform = 'scale(' + sc.toFixed(4) + ')';
   });
 }
-window.addEventListener('resize', function () { setTimeout(igFit, 60); });
+// Facebook a schermo intero: il video verticale riempie tutto lo schermo (come TikTok), senza la fascia nera sotto
+function fbFit() {
+  var imm = $('pl').classList.contains('imm');
+  document.querySelectorAll('.stage iframe[src*="facebook.com/plugins/video"]').forEach(function (fr) {
+    var bx = fr.parentNode, st = fr.closest('.stage'); if (!st) return;
+    if (!imm) { fr.style.width = fr.style.height = fr.style.transform = fr.style.position = fr.style.left = fr.style.top = ''; bx.style.overflow = ''; return; }
+    var W = st.clientWidth, H = st.clientHeight; if (!W || !H) return;
+    var h = Math.round(W * 16 / 9), sc = Math.max(1, H / h);
+    bx.style.overflow = 'hidden'; fr.style.position = 'absolute'; fr.style.left = '0'; fr.style.top = Math.round((H - h * sc) / 2) + 'px';
+    fr.style.width = W + 'px'; fr.style.height = h + 'px'; fr.style.transformOrigin = 'top center'; fr.style.transform = sc > 1.001 ? 'scale(' + sc.toFixed(4) + ')' : '';
+  });
+}
+window.addEventListener('resize', function () { setTimeout(igFit, 60); setTimeout(fbFit, 60); });
 function media(r, pl) {
   var s0 = embedFor(r.u);
   if (get('riserv', 0) && !pl && s0 && s0.indexOf('video:') !== 0) {
@@ -2040,7 +2052,7 @@ function immBuild(r) {
   var nb = el('button', null, '⏭'); nb.setAttribute('aria-label', 'Prossimo'); nb.onclick = function () { $('pn').click(); }; box.appendChild(nb);
 }
 function immFloat(e) { var st = $('st'); if (!st) return; var f = el('span', 'fl', e); f.style.left = (18 + Math.random() * 55) + '%'; st.appendChild(f); setTimeout(function () { f.remove(); }, 2100); }
-function immSet(on) { $('pl').classList.toggle('imm', on); $('immR').hidden = !on; $('immX').hidden = !on; setTimeout(igFit, 30); setTimeout(igFit, 350); }
+function immSet(on) { $('pl').classList.toggle('imm', on); $('immR').hidden = !on; $('immX').hidden = !on; setTimeout(igFit, 30); setTimeout(igFit, 350); setTimeout(fbFit, 30); setTimeout(fbFit, 350); }
 // la prima volta nel lettore: indica dov'è lo schermo intero
 function fsTip() {
   if (get('fstip2', 0) || navigator.webdriver) return; put('fstip2', 1);
@@ -2088,7 +2100,7 @@ function showAt(i) {
   if (!r) { showAt(i + 1); return; }
   seq.cur = r.id; seen[r.id] = 1; put('seen', seen);
   $('pc').textContent = (i + 1) + ' di ' + seq.q.length + ', da ' + r.n;
-  var m = media(r, true); if (seq.dir) m.classList.add(seq.dir > 0 ? 'sup' : 'sdn'); seq.dir = 0; st.appendChild(m); swLayer(m); pbuild(r); arm();
+  var m = media(r, true); if (seq.dir) m.classList.add(seq.dir > 0 ? 'sup' : 'sdn'); seq.dir = 0; st.appendChild(m); swLayer(m); pbuild(r); arm(); setTimeout(fbFit, 30); setTimeout(fbFit, 350);
   if (m.tagName === 'IFRAME' && /youtube\.com\/embed/.test(m.src)) m.addEventListener('load', function () { try { m.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
 }
 function openSeq() {
