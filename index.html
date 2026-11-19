@@ -1319,7 +1319,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v145', errLog = [];
+var APP_VER = 'v146', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1472,6 +1472,11 @@ function dropReel(id) {
   feed = feed.filter(function (x) { return x.id !== id; }); delete seen[id]; put('feed', feed);
   if (seq) seq.q = seq.q.filter(function (x) { return x !== id; });
   render(); seqLabel(); return true;
+}
+// togli un Reel solo da questo telefono (gli altri lo vedono ancora): non torna più nemmeno se qualcuno lo rimanda
+function hideReel(id) {
+  if (!find(id)) return; rhid.push(id); if (rhid.length > 2000) rhid = rhid.slice(-2000); put('rhid', rhid); delete keeps[id]; put('keep', keeps);
+  feed = feed.filter(function (r) { return r.id !== id; }); put('feed', feed); render(); track('reel-nascosto'); $('mh').textContent = 'Tolto dal tuo telefono.';
 }
 function delReel(id) {
   var r = find(id); if (!r) return;
@@ -1705,7 +1710,8 @@ function reelMenu(r) {
     { t: '🔗 Apri l’originale', f: function () { window.open(r.u, '_blank', 'noopener'); } }
   ];
   if (r.n !== me.name) opts.push({ t: '⋯ Altre azioni', f: function () { moreFor('reel', r); } });
-  if (r.n === me.name) opts.push({ t: '🗑 Elimina', f: function () { delReel(r.id); } });
+  if (r.n === me.name || me.role === 'host') opts.push({ t: '🗑 Elimina per tutti', f: function () { delReel(r.id); } });
+  if (r.n !== me.name) opts.push({ t: '🙈 Togli solo dal mio telefono', f: function () { hideReel(r.id); } });
   sheet(r.c ? '“' + r.c.slice(0, 40) + '”' : 'Reel di ' + r.n, '', opts);
 }
 (function () {
