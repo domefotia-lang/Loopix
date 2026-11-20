@@ -656,7 +656,14 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
-#inspT{flex-shrink:0}#inspL .pkth{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:12px;background:linear-gradient(160deg,var(--s2),var(--s1,#1b140d))}#inspL .pke{font-size:42px}#inspL a.btn{display:block;text-align:center;text-decoration:none;margin:6px 0 4px;padding:10px 6px;font-size:14px}
+#inspT{flex-shrink:0}#actM{z-index:130}#ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
+.ivtop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 6px;font-weight:700}.ivx{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px}
+.ivst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.ivst>*{width:100%;height:100%;max-width:calc((100dvh - 230px) * 9 / 16);margin:0 auto}.ivst iframe,.ivst video{width:100%;height:100%;border:0}
+.ivph{display:flex;align-items:center;justify-content:center;font-size:90px;background:linear-gradient(160deg,#2a1d10,#000);border-radius:18px}
+.ivp{padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);display:flex;flex-direction:column;gap:4px;background:linear-gradient(transparent,rgba(0,0,0,.6) 20%)}#ivT{font-size:19px}#ivD{font-size:14px;opacity:.8}
+.ivb{display:flex;gap:8px;margin-top:8px}.ivb>*{flex:1;min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:15px}.ivb a.btn-o{color:#fff!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.5)!important}
+.ivnav{display:flex;align-items:center;justify-content:space-between;margin-top:6px}.ivnav button{width:46px;min-height:38px;color:#fff!important;border:1px solid rgba(255,255,255,.35)!important;background:rgba(255,255,255,.1)!important;box-shadow:none!important}#ivC{font-size:13px;opacity:.7}
+#inspL .pkth{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:12px;background:linear-gradient(160deg,var(--s2),var(--s1,#1b140d))}#inspL .pke{font-size:42px}#inspL a.btn{display:block;text-align:center;text-decoration:none;margin:6px 0 4px;padding:10px 6px;font-size:14px}
 #inspL{overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:2px;flex:1;min-height:120px}#inspL>p{grid-column:1/-1}
 .insc{display:flex;flex-direction:column;gap:6px;background:var(--s2);border-radius:16px;padding:6px}.insc .btn,.insc .btn-o{min-height:40px;padding:8px;font-size:14px;width:100%}
 .inth{position:relative;display:block;width:100%;aspect-ratio:9/14;border:0;padding:0;border-radius:12px;overflow:hidden;background:#000;cursor:pointer}.inth img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1327,7 +1334,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v153', errLog = [];
+var APP_VER = 'v154', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1724,23 +1731,64 @@ function packLoad() {
     var go = el('button', 'btn-o wide', '➕ Mandalo'); go.type = 'button'; card.appendChild(go);
     var st = { u: it.l };
     go.onclick = function () { postAll(st.u, it.t); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.disabled = true; track('idea-manda-' + k); };
+    if (it.v) st.u = it.v;
+    th.onclick = function () { ideaView(i); };
     L.appendChild(card); cards.push({ th: th, st: st, it: it, k: k, reg: i < loc.length ? cityRegion(c) : 'GB' });
   });
-  L.appendChild(el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. Video pubblici da YouTube.')));
+  IV.list = cards;
+  var wv = el('button', 'btn wide', '▶ ' + (window.LX_T || String)('Guarda i video delle idee')); wv.type = 'button'; wv.style.gridColumn = '1/-1'; wv.onclick = function () { ideaView(0); }; L.insertBefore(wv, top.nextSibling);
+  L.appendChild(el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. I video vengono dai canali ufficiali e da YouTube.')));
   track('idee-viste-' + (loc.length ? 'altra-citta' : 'londra'));
   var fill = function (off) { return function (x) {
     if (!x || !x.items) return;
     x.items.forEach(function (v, i) {
       var o = cards[off + i]; if (!v || !o || !o.th.isConnected) return;
-      o.st.u = 'https://www.youtube.com/shorts/' + v.id;
+      if (!o.it.v) o.st.u = 'https://www.youtube.com/shorts/' + v.id;
       var b = el('button', 'inth'); b.type = 'button'; b.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + o.it.t);
       var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; b.appendChild(im); b.appendChild(el('span', 'inpl', '▶'));
-      b.onclick = function () { var f = document.createElement('iframe'); f.src = yt(v.id) + '&autoplay=1'; f.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'; f.setAttribute('allowfullscreen', ''); f.title = o.it.t; b.replaceWith(f); track('idea-guarda-' + o.k); };
+      b.onclick = function () { ideaView(cards.indexOf(o)); };
       o.th.replaceWith(b); o.th = b;
     });
   }; };
   if (loc.length) mbCall({ a: 'pack', qs: loc.map(function (x) { return x.q; }), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
   mbCall({ a: 'pack', qs: packLon().map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
+}
+/* ---- ▶ le idee come i Reel: video a tutto schermo dai canali ufficiali, sotto «Fatelo insieme» e «Prenota» ---- */
+var IV = { list: [], i: 0 };
+function ideaVidOf(o) { return o.st && /^https:\/\/(www\.)?(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|vm\.tiktok\.com|facebook\.com)\//.test(o.st.u) ? o.st.u : ''; }
+function ideaView(i) {
+  if (!IV.list.length) return; var V = $('ideaV');
+  if (!V) {
+    V = el('div'); V.id = 'ideaV'; V.setAttribute('role', 'dialog'); V.setAttribute('aria-modal', 'true');
+    V.innerHTML = '<div class="ivtop"><button type="button" class="ivx" id="ivX" aria-label="Chiudi">✕</button><span id="ivN"></span></div><div class="ivst" id="ivS"></div><div class="ivp" id="ivP"><b id="ivT"></b><span id="ivD"></span><div class="ivb"><button type="button" class="btn" id="ivGo"></button><a class="btn-o" id="ivBk" target="_blank" rel="noopener"></a></div><div class="ivnav"><button type="button" class="btn-o" id="ivPr" aria-label="Precedente">‹</button><span id="ivC"></span><button type="button" class="btn-o" id="ivNx" aria-label="Successivo">›</button></div></div>';
+    document.body.appendChild(V);
+    $('ivX').onclick = ideaViewClose; $('ivPr').onclick = function () { ideaViewAt(IV.i - 1); }; $('ivNx').onclick = function () { ideaViewAt(IV.i + 1); };
+    var y0 = null; [$('ivP'), V.querySelector('.ivtop')].forEach(function (z) { z.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true }); z.addEventListener('touchend', function (e) { if (y0 === null) return; var d = e.changedTouches[0].clientY - y0; y0 = null; if (Math.abs(d) > 50) ideaViewAt(IV.i + (d < 0 ? 1 : -1)); }, { passive: true }); });
+    document.addEventListener('keydown', function (e) { if (!V.classList.contains('open')) return; if (e.key === 'Escape') ideaViewClose(); if (e.key === 'ArrowDown' || e.key === 'ArrowRight') ideaViewAt(IV.i + 1); if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ideaViewAt(IV.i - 1); });
+  }
+  $('ivGo').textContent = '💞 ' + LXT('Fatelo insieme'); $('ivGo').onclick = function () { ideaWhat(IV.list[IV.i]); };
+  V.classList.add('open'); track('idee-video-apri'); ideaViewAt(i || 0);
+}
+function ideaViewAt(i) {
+  var n = IV.list.length; if (!n) return; IV.i = (i + n) % n; var o = IV.list[IV.i], it = o.it, S = $('ivS'); S.textContent = '';
+  var u = ideaVidOf(o);
+  if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); }
+  else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
+  $('ivN').textContent = '📍 ' + (cityGet() || '');
+  $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
+  var bk = $('ivBk'); bk.href = it.l; bk.textContent = (it.b === 'Biglietti' ? '🎟 ' : it.b === 'Prenota' ? '📅 ' : '🗺 ') + LXT(it.b) + ' ↗'; bk.onclick = function () { track('idea-link-' + o.k); };
+  $('ivC').textContent = (IV.i + 1) + ' / ' + n;
+}
+function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; }
+// «Fatelo insieme»: proporlo alla propria persona (diventa un piano da decidere), scegliere già il giorno, o mandare il video nel cerchio
+function ideaWhat(o) {
+  var it = o.it, id = ('pi-' + o.k).slice(0, 40), desc = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
+  var mk = function () { var x = findIdea(id); if (x) { if (!x.v[me.name]) ideaAct({ t: 'idea', a: 'vote', id: id, on: true }); return findIdea(id); } var v = {}; v[me.name] = 1; ideaAct({ t: 'idea', a: 'add', i: { id: id, r: '', k: /^(bobbob|oxo|stafford-caines|romantico|brunch)/.test(o.k) ? 'cibo' : 'esperienza', p: clean(LXT(it.t), 60), o: clean(desc, 200), ts: Date.now(), v: v, q: '', u: it.l } }); return findIdea(id); };
+  sheet('💞 ' + LXT('Cosa volete fare?'), LXT(it.t), [
+    { t: '💞 ' + LXT('Proponilo alla tua persona'), f: function () { mk(); track('idea-proponi-' + o.k); $('mh').textContent = LXT('Piano proposto: gli altri lo trovano in «Decidete insieme».'); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} } },
+    { t: '🗓 ' + LXT('Scegliete il giorno'), f: function () { var x = mk(); track('idea-giorno-' + o.k); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} if (x) { showPane('ideas'); pickDay(x); } } },
+    { t: '➕ ' + LXT('Manda il video nel cerchio'), f: function () { postAll(o.st.u, LXT(it.t)); track('idea-manda-' + o.k); } }
+  ]);
 }
 function packAuto() {
   if (navigator.webdriver || !srvOn() || document.querySelector('.mod.open') || !me || !me.name) return false;
