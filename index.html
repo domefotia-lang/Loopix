@@ -1327,7 +1327,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v152', errLog = [];
+var APP_VER = 'v153', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1673,12 +1673,19 @@ var PACK_LON = [
   { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 London concert', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
   { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur stadium tour', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
   { s: 'everyman', e: '🎬', t: 'Cinema Everyman', d: 'Divani, coperte e drink in sala', q: 'Everyman cinema London', l: 'https://www.everymancinema.com/', b: 'Biglietti' },
-  { s: 'dover', e: '🍽️', t: 'The Dover', d: 'Mayfair · uno dei tavoli più contesi', q: 'The Dover restaurant Mayfair', l: gmaps('The Dover Mayfair London'), b: 'Prenota' },
-  { s: 'nina', e: '🍝', t: 'Nina', d: 'Marylebone · trattoria italiana di gran moda', q: 'Nina Marylebone restaurant', l: gmaps('Nina Marylebone London'), b: 'Prenota' },
+  { s: 'bobbob', e: '🥂', t: 'Bob Bob Ricard', d: 'Soho · il tasto «Press for Champagne» al tavolo', q: 'Bob Bob Ricard Soho', l: gmaps('Bob Bob Ricard Soho London'), b: 'Prenota' },
+  { s: 'oxo', e: '🌃', t: 'Cena all’OXO Tower', d: 'South Bank · tavoli sul Tamigi', q: 'OXO Tower restaurant London view', l: gmaps('OXO Tower Restaurant London'), b: 'Prenota' },
   { s: 'skygarden', e: '🌇', t: 'Sky Garden', d: 'City · vista gratis, si prenota', q: 'Sky Garden London', l: 'https://skygarden.london/', b: 'Prenota' },
   { s: 'borough', e: '🥙', t: 'Borough Market', d: 'Street food da dividere', q: 'Borough Market food London', l: gmaps('Borough Market London'), b: 'Portami lì' },
   { s: 'primrose', e: '🌅', t: 'Primrose Hill al tramonto', d: 'Gratis · la vista più romantica', q: 'Primrose Hill sunset London', l: gmaps('Primrose Hill London'), b: 'Portami lì' }
 ];
+var PACK_XMAS = [
+  { s: 'winterwonderland', e: '🎡', t: 'Winter Wonderland a Hyde Park', d: 'Luci, giostre e vin brulé', q: 'Hyde Park Winter Wonderland', l: 'https://hydeparkwinterwonderland.com/', b: 'Biglietti' },
+  { s: 'skate', e: '⛸️', t: 'Pattinaggio a Somerset House', d: 'Sotto l’albero più bello di Londra', q: 'Skate at Somerset House', l: gmaps('Skate at Somerset House London'), b: 'Biglietti' },
+  { s: 'kew', e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew lights', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
+];
+function xmasOn() { var d = new Date(), m = d.getMonth(), g = d.getDate(); return (m === 10 && g >= 15) || m === 11 || (m === 0 && g <= 6); }
+function packLon() { return (xmasOn() ? PACK_XMAS : []).concat(PACK_LON); }
 function isLon(c) { return /^(Londra|London|Londres)$/.test(c); }
 // Fuori Londra: solo 2–3 grandi eventi in città (niente piccoli locali), poi le idee di Londra per chi ci viene.
 function packFor(c) {
@@ -1706,7 +1713,7 @@ function packLoad() {
   if (!c) { cityPick(function () { packLoad(); }); L.appendChild(el('p', 'refn', '📍 ' + (window.LX_T || String)('Scegli la tua città.'))); return; }
   var top = el('div'); top.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px';
   top.appendChild(el('b', null, '📍 ' + c)); var ch = el('button', 'chip', (window.LX_T || String)('Cambia città')); ch.type = 'button'; ch.onclick = function () { cityPick(function () { packLoad(); }); }; top.appendChild(ch); L.appendChild(top);
-  var loc = packFor(c), P = loc.concat(PACK_LON), cards = [], slug = c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
+  var loc = packFor(c), P = loc.concat(packLon()), cards = [], slug = c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
   P.forEach(function (it, i) {
     if (loc.length && i === loc.length) { var h = el('p', null, '✈️ ' + (window.LX_T || String)('Se venite a Londra')); h.style.cssText = 'grid-column:1/-1;font-weight:800;margin:10px 0 0'; L.appendChild(h); }
     var k = it.s + (i < loc.length ? '-' + slug : '');
@@ -1733,7 +1740,7 @@ function packLoad() {
     });
   }; };
   if (loc.length) mbCall({ a: 'pack', qs: loc.map(function (x) { return x.q; }), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
-  mbCall({ a: 'pack', qs: PACK_LON.map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
+  mbCall({ a: 'pack', qs: packLon().map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
 }
 function packAuto() {
   if (navigator.webdriver || !srvOn() || document.querySelector('.mod.open') || !me || !me.name) return false;
@@ -3531,7 +3538,7 @@ function cleanV(v) { var o = {}; if (v && typeof v === 'object') Object.keys(v).
 function normIdea(i, who) {
   if (!i || typeof i.id !== 'string' || i.id.length > 40) return null;
   var p = clean(i.p, 60); if (!p) return null;
-  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), f: cleanF(i.f), d: !!i.d, w: /^\d{4}-\d{2}-\d{2}$/.test(i.w || '') ? i.w : '', q: clean(i.q || '', 60) };
+  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), f: cleanF(i.f), d: !!i.d, w: /^\d{4}-\d{2}-\d{2}$/.test(i.w || '') ? i.w : '', q: clean(i.q || '', 60), u: /^https:\/\/[^\s<>"]{8,300}$/.test(i.u || '') ? String(i.u) : '' };
 }
 function findIdea(id) { return ideas.filter(function (x) { return x.id === id; })[0]; }
 function ideasChanged(rid) {
@@ -3543,7 +3550,7 @@ function applyIdea(d, who) {
   if (d.a === 'add') {
     var i = normIdea(d.i, who); if (!i) return null;
     var old = findIdea(i.id);
-    if (old) { Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); old.f = old.f || {}; Object.keys(i.f || {}).forEach(function (n) { if (!old.f[n]) old.f[n] = i.f[n]; }); if (i.d) old.d = true; if (i.w && !old.w) old.w = i.w; ideasChanged(old.r); return null; }
+    if (old) { var was0 = isMatch(old); Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.u && !old.u) old.u = i.u; old.f = old.f || {}; Object.keys(i.f || {}).forEach(function (n) { if (!old.f[n]) old.f[n] = i.f[n]; }); if (i.d) old.d = true; if (i.w && !old.w) old.w = i.w; ideasChanged(old.r); if (!was0 && isMatch(old)) matchIn(old); return null; }
     ideas.push(i); if (ideas.length > 200) ideas.shift();
     if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); noteIn('idea', i.n, i.p); }
     ideasChanged(i.r); return { t: 'idea', a: 'add', i: i };
@@ -3560,7 +3567,8 @@ function applyIdea(d, who) {
 function ideaAct(m) { var out = applyIdea(m, me.name); if (out) sendEv(out); }
 function enc(t) { return encodeURIComponent(t); }
 function amzDom() { var g = ((navigator.language || '').split('-')[1] || '').toUpperCase(), l = window.LX_LANG || 'it'; return { GB: 'co.uk', IT: 'it', ES: 'es', DE: 'de', FR: 'fr', US: 'com' }[g] || { it: 'it', es: 'es', en: 'co.uk' }[l] || 'co.uk'; }
-function linksFor(i) {
+function linksFor(i) { var L0 = linksFor0(i); if (i.u) L0.unshift({ t: '📅 ' + LXT('Prenota'), u: i.u }); return L0; }
+function linksFor0(i) {
   var G = 'https://www.google.com/search?q=', MAP = 'https://www.google.com/maps/search/?api=1&query=';
   var LW = { it: ['sito ufficiale', 'prezzo'], en: ['official site', 'price'], es: ['sitio oficial', 'precio'] }[window.LX_LANG || 'it'] || ['sito ufficiale', 'prezzo'];
   if (i.k === 'compra') return [{ t: '🌐 Sito ufficiale', u: G + enc(i.p + ' ' + LW[0]) }, { t: '💶 Prezzo', u: G + enc(i.p + ' ' + LW[1]) }, { t: '🛒 Dove comprarlo', u: 'https://www.google.com/search?tbm=shop&q=' + enc(i.p) }, { t: '📦 Amazon', u: 'https://www.amazon.' + amzDom() + '/s?k=' + enc(i.p) + (PARTNER.amazon ? '&tag=' + enc(PARTNER.amazon) : ''), p: !!PARTNER.amazon }, { t: '📍 Vicino a te', u: MAP + enc(i.q || i.p) }];
@@ -3668,7 +3676,29 @@ function ritWeek() { var d = new Date(); d.setHours(0, 0, 0, 0); var back = (d.g
 function ritAll() { var wk = Date.now() - 7 * 864e5, used = {}; ideas.forEach(function (i) { if (i.r) used[i.r] = 1; }); return feed.filter(function (r) { return r.ts >= wk && !used[r.id] && !isMuted(r.n); }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 8); }
 function ritQueue() { var sk = get('rskip', {}); return ritAll().filter(function (r) { return !(r.x && r.x[me.name] === '❤️') && !sk[r.id]; }); }
 function ritMatch(r) { var M = ritMembers(); return M.length >= 2 && M.every(function (n) { return r.x && r.x[n] === '❤️'; }); }
-function ritOn() { var wd = new Date().getDay(); return (wd === 4 || wd === 5 || wd === 6 || wd === 0) && ritMembers().length >= 2 && (!!mixCur() || (ritAll().length >= 2 && ritQueue().length > 0)); }
+function ritOn() { var wd = new Date().getDay(); return (wd === 4 || wd === 5 || wd === 6 || wd === 0) && ritMembers().length >= 2 && (!!mixCur() || !!packCur() || (ritAll().length >= 2 && ritQueue().length > 0)); }
+// 📍 ogni settimana un'idea per uscire entra nel rituale: stessa idea per tutto il cerchio (scelta dalla settimana), se tutti dicono sì è un match con «Prenota»
+function packWeekItem() {
+  var c = cityGet(), L = (c && !isLon(c) ? packFor(c) : []).concat(packLon()); if (!L.length) return null;
+  var p = ritWeek().split('-'), n = Math.floor(Date.UTC(+p[0], +p[1] - 1, +p[2]) / (7 * 864e5));
+  if (xmasOn()) { var x = n % PACK_XMAS.length; return PACK_XMAS[x]; }
+  return L[((n % L.length) + L.length) % L.length];
+}
+function packIdeaId(it) { return ('pk-' + ritWeek().replace(/-/g, '') + '-' + it.s).slice(0, 40); }
+function packCur() {
+  var it = packWeekItem(); if (!it) return null;
+  var a = get('pkr', {}); if (a[ritWeek()]) return null;
+  var ex = findIdea(packIdeaId(it)); if (ex && ex.v && ex.v[me.name]) return null;
+  return it;
+}
+function packRitCard(c, it) {
+  c.appendChild(el('div', 'e', it.e)); c.appendChild(el('p', 'refn', '📍 ' + LXT('Un’idea per uscire')));
+  c.appendChild(el('h3', null, LXT(it.t))); c.appendChild(el('p', null, typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c));
+  var ex = findIdea(packIdeaId(it)), oth = ex ? Object.keys(ex.v || {}).filter(function (n) { return n !== me.name; }) : [];
+  if (oth.length) c.appendChild(el('p', 'refn', '❤️ ' + oth.join(', ')));
+  var a = document.createElement('a'); a.className = 'chip'; a.href = it.l; a.target = '_blank'; a.rel = 'noopener'; a.textContent = (it.b === 'Biglietti' ? '🎟 ' : '📅 ') + LXT(it.b) + ' ↗'; a.onclick = function () { track('idea-link-rito-' + it.s); };
+  var lk = el('div', 'ailinks'); lk.appendChild(a); c.appendChild(lk);
+}
 function ritOpen() { decMode = 'rit'; track('rituale-apri'); $('decT').textContent = '🗓 ' + LXT('Il piano del weekend'); $('decP').textContent = LXT('I Reel di questa settimana: quale fate? Se piace a tutti, è un match.'); $('decM').classList.add('open'); ritShow(); }
 /* ---- ✨ un'idea per il weekend: l'AI guarda le etichette dei Reel recenti (mai nomi, link o messaggi) e trova cosa vi piace ---- */
 var mixBusy = false;
@@ -3695,6 +3725,7 @@ function mixCard(c, m) {
 function ritShow() {
   var mx = mixCur();
   if (mx) { var c0 = $('decC'); c0.className = ''; c0.textContent = ''; decCur = { mix: true }; $('decB').hidden = false; mixCard(c0, mx); return; }
+  var pk = packCur(); if (pk) { var c1 = $('decC'); c1.className = ''; c1.textContent = ''; decCur = { pack: pk }; $('decB').hidden = false; packRitCard(c1, pk); return; }
   var c = $('decC'), q = ritQueue(); c.className = ''; c.textContent = ''; decCur = q[0] || null; $('decB').hidden = !decCur;
   if (!decCur) {
     var ms = ritAll().filter(ritMatch);
@@ -3711,6 +3742,17 @@ function ritShow() {
 }
 function ritAnswer(yes) {
   var r = decCur; if (!r) return;
+  if (r.pack) {
+    var it = r.pack; $('decC').className = yes ? 'r' : 'l';
+    setTimeout(function () {
+      var a = get('pkr', {}); a[ritWeek()] = yes ? 'si' : 'no'; put('pkr', a);
+      if (yes) { var v = {}; v[me.name] = 1; var desc = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
+        var ex0 = findIdea(packIdeaId(it)); if (ex0) ideaAct({ t: 'idea', a: 'vote', id: ex0.id, on: true }); else ideaAct({ t: 'idea', a: 'add', i: { id: packIdeaId(it), r: '', k: /^(bobbob|oxo|stafford-caines|romantico|brunch)$/.test(it.s) ? 'cibo' : 'esperienza', p: clean(LXT(it.t), 60), o: clean(desc, 200), ts: Date.now(), v: v, q: '', u: it.l } });
+        track('rituale-idea-si-' + it.s); var ex = findIdea(packIdeaId(it)); if (!(ex && isMatch(ex))) $('mh').textContent = LXT('Piano proposto: gli altri lo trovano in «Decidete insieme».'); }
+      else track('rituale-idea-no-' + it.s);
+      ritShow(); try { renderNov(); } catch (e) {}
+    }, 230); return;
+  }
   if (r.mix) {
     var mx = mixCur(); $('decC').className = yes ? 'r' : 'l';
     setTimeout(function () {
@@ -3759,7 +3801,8 @@ function matchIn(i) {
   var c = $('decC'), m = $('decM'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
   c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, (circleSize() > 2 ? 'Siete tutti d’accordo!' : 'Siete d’accordo!')));
   c.appendChild(el('p', null, (circleSize() > 2 ? 'Lo volete tutti: ' : 'Lo volete entrambi: ') + i.p));
-  var go = el('button', 'btn', '📅 Scegliamo quando'); go.style.marginTop = '14px'; go.onclick = function () { m.classList.remove('open'); showPane('ideas'); pickDay(i); };
+  if (i.u) { var bk = document.createElement('a'); bk.className = 'btn'; bk.href = i.u; bk.target = '_blank'; bk.rel = 'noopener'; bk.textContent = '🎟 ' + LXT('Prenota adesso') + ' ↗'; bk.style.cssText = 'display:block;text-align:center;text-decoration:none;margin-top:14px'; bk.onclick = function () { track('idea-match-prenota-' + (i.id.split('-').pop() || '')); }; c.appendChild(bk); track('idea-match-' + (i.id.split('-').pop() || '')); }
+  var go = el('button', i.u ? 'btn-o wide' : 'btn', '📅 Scegliamo quando'); go.style.marginTop = i.u ? '8px' : '14px'; go.onclick = function () { m.classList.remove('open'); showPane('ideas'); pickDay(i); };
   c.appendChild(go);
 }
 $('decSi').addEventListener('click', function () { if (decMode === 'rit') ritAnswer(true); else decAnswer(true); });
