@@ -656,6 +656,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
+#inspT{flex-shrink:0}#inspL .pkth{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:12px;background:linear-gradient(160deg,var(--s2),var(--s1,#1b140d))}#inspL .pke{font-size:42px}#inspL a.btn{display:block;text-align:center;text-decoration:none;margin:6px 0 4px;padding:10px 6px;font-size:14px}
 #inspL{overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:2px;flex:1;min-height:120px}#inspL>p{grid-column:1/-1}
 .insc{display:flex;flex-direction:column;gap:6px;background:var(--s2);border-radius:16px;padding:6px}.insc .btn,.insc .btn-o{min-height:40px;padding:8px;font-size:14px;width:100%}
 .inth{position:relative;display:block;width:100%;aspect-ratio:9/14;border:0;padding:0;border-radius:12px;overflow:hidden;background:#000;cursor:pointer}.inth img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1326,7 +1327,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v150', errLog = [];
+var APP_VER = 'v151', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1625,7 +1626,7 @@ function inspOpen(q) {
   if (!M) {
     M = el('div', 'mod'); M.id = 'inspM'; M.setAttribute('role', 'dialog'); M.setAttribute('aria-modal', 'true');
     var C = el('div', 'card'); C.style.cssText = 'max-width:420px;width:100%;max-height:calc(var(--apph,100dvh) - 24px);display:flex;flex-direction:column';
-    C.appendChild(el('h2', null, '✨ Ispirazione')); C.appendChild(el('p', 'refn', 'Gli Shorts più visti su YouTube. Manda alla tua persona quelli che vi piacciono, o fanne un piano.'));
+    C.appendChild(el('h2', null, '✨ Idee per uscire')); C.appendChild(el('p', 'refn', 'Cose da fare insieme dove vivete e i video più visti. Mandateli alla vostra persona o prenotate.'));
     var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
     var row = el('div', 'afr'); row.className = 'aifocus'; var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
     var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
@@ -1637,12 +1638,14 @@ function inspOpen(q) {
     M.appendChild(C); document.body.appendChild(M);
   }
   var T = INSP_T[window.LX_LANG] || INSP_T.it, tp2 = $('inspT'); tp2.textContent = '';
-  T.forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.onclick = function () { inspLoad(t); }; tp2.appendChild(b); });
-  M.classList.add('open'); track('insp-apri'); inspLoad(q || T[0]);
+  var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp2.appendChild(pb);
+  T.forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t); }; tp2.appendChild(b); });
+  M.classList.add('open'); track('insp-apri'); inspLoad(q || '§pack');
 }
 function inspLoad(q) {
+  document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
+  if (q === '§pack') { packLoad(); return; }
   var L = $('inspL'); L.textContent = ''; L.appendChild(el('p', 'refn', '✨ ' + (window.LX_T || String)('Cerco') + ' «' + q + '»…'));
-  document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.textContent === q)); });
   mbCall({ a: 'insp', q: q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
@@ -1658,6 +1661,84 @@ function inspLoad(q) {
       c.appendChild(go); L.appendChild(c);
     });
   }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: riprova tra poco.')); });
+}
+/* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
+function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
+var PACK_LON = [
+  { s: 'stafford-bar', e: '🍸', t: 'American Bar al The Stafford', d: 'St James’s · cocktail in un bar leggendario', q: 'American Bar The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota' },
+  { s: 'stafford-tea', e: '🫖', t: 'Afternoon tea al The Stafford', d: 'St James’s · lusso a 5 stelle', q: 'The Stafford London afternoon tea', l: gmaps('The Stafford London'), b: 'Prenota' },
+  { s: 'candlelight', e: '🎶', t: 'Concerto a lume di candela', d: 'Candlelight · musica tra mille candele', q: 'Candlelight concert London', l: 'https://feverup.com/en/london/candlelight', b: 'Biglietti' },
+  { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 London concert', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
+  { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur stadium tour', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
+  { s: 'everyman', e: '🎬', t: 'Cinema Everyman', d: 'Divani, coperte e drink in sala', q: 'Everyman cinema London', l: 'https://www.everymancinema.com/', b: 'Biglietti' },
+  { s: 'dover', e: '🍽️', t: 'The Dover', d: 'Mayfair · uno dei tavoli più contesi', q: 'The Dover restaurant Mayfair', l: gmaps('The Dover Mayfair London'), b: 'Prenota' },
+  { s: 'nina', e: '🍝', t: 'Nina', d: 'Marylebone · trattoria italiana di gran moda', q: 'Nina Marylebone restaurant', l: gmaps('Nina Marylebone London'), b: 'Prenota' },
+  { s: 'skygarden', e: '🌇', t: 'Sky Garden', d: 'City · vista gratis, si prenota', q: 'Sky Garden London', l: 'https://skygarden.london/', b: 'Prenota' },
+  { s: 'borough', e: '🥙', t: 'Borough Market', d: 'Street food da dividere', q: 'Borough Market food London', l: gmaps('Borough Market London'), b: 'Portami lì' },
+  { s: 'primrose', e: '🌅', t: 'Primrose Hill al tramonto', d: 'Gratis · la vista più romantica', q: 'Primrose Hill sunset London', l: gmaps('Primrose Hill London'), b: 'Portami lì' }
+];
+function isLon(c) { return /^(Londra|London|Londres)$/.test(c); }
+// Fuori Londra: solo 2–3 grandi eventi in città (niente piccoli locali), poi le idee di Londra per chi ci viene.
+function packFor(c) {
+  if (isLon(c)) return [];
+  var gs = function (x) { return 'https://www.google.com/search?q=' + encodeURIComponent(x); };
+  return [
+    { s: 'concerti', e: '🎤', t: 'Un grande concerto', d: { f: 'I prossimi live a', c: c }, q: 'concert ' + c + ' live crowd', l: gs('concerti ' + c + ' biglietti'), b: 'Biglietti' },
+    { s: 'partita', e: '⚽', t: 'Una partita allo stadio', d: { f: 'Biglietti ufficiali a', c: c }, q: 'stadium atmosphere ' + c, l: gs('biglietti ufficiali partita ' + c), b: 'Biglietti' },
+    { s: 'esperienze', e: '🎟️', t: 'Un’esperienza insieme', d: { f: 'Tour e attività a', c: c }, q: 'things to do ' + c, l: gyg(c), b: 'Prenota' }
+  ];
+}
+var CITY_TZ = { 'Europe/London': 'Londra', 'America/New_York': 'New York', 'Europe/Paris': 'Parigi', 'Europe/Madrid': 'Madrid', 'Europe/Berlin': 'Berlino', 'Europe/Dublin': 'Dublino', 'Europe/Amsterdam': 'Amsterdam', 'America/Los_Angeles': 'Los Angeles', 'America/Chicago': 'Chicago', 'Europe/Lisbon': 'Lisbona' };
+var CITY_IT = ['Milano', 'Roma', 'Napoli', 'Torino', 'Firenze', 'Bologna'];
+function tzName() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
+function cityGet() { var c = ''; try { c = localStorage.getItem(LSG + 'city') || ''; } catch (e) {} return c || CITY_TZ[tzName()] || ''; }
+function citySet(c) { try { localStorage.setItem(LSG + 'city', c); } catch (e) {} track('citta-' + c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 24)); }
+function cityRegion(c) { return isLon(c) ? 'GB' : CITY_IT.indexOf(c) >= 0 || tzName() === 'Europe/Rome' ? 'IT' : tzName().indexOf('America/') === 0 ? 'US' : ((navigator.language || '').split('-')[1] || 'GB').slice(0, 2); }
+function cityPick(then) {
+  var opts = (tzName() === 'Europe/Rome' ? CITY_IT : ['Londra', 'Milano', 'Roma', 'New York', 'Parigi', 'Madrid']).map(function (c) { return { t: '📍 ' + c, f: function () { citySet(c); then(c); } }; });
+  opts.push({ t: '✏️ ' + (window.LX_T || String)('Un’altra città'), f: function () { var v = clean(prompt((window.LX_T || String)('Scrivi la tua città') + ':') || '', 40).trim(); if (v.length >= 2) { citySet(v); then(v); } } });
+  sheet('📍 ' + (window.LX_T || String)('Dove siete?'), (window.LX_T || String)('Vi mostro idee per uscire nella vostra città.'), opts);
+}
+function packLoad() {
+  var L = $('inspL'), c = cityGet(); L.textContent = '';
+  if (!c) { cityPick(function () { packLoad(); }); L.appendChild(el('p', 'refn', '📍 ' + (window.LX_T || String)('Scegli la tua città.'))); return; }
+  var top = el('div'); top.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px';
+  top.appendChild(el('b', null, '📍 ' + c)); var ch = el('button', 'chip', (window.LX_T || String)('Cambia città')); ch.type = 'button'; ch.onclick = function () { cityPick(function () { packLoad(); }); }; top.appendChild(ch); L.appendChild(top);
+  var loc = packFor(c), P = loc.concat(PACK_LON), cards = [], slug = c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
+  P.forEach(function (it, i) {
+    if (loc.length && i === loc.length) { var h = el('p', null, '✈️ ' + (window.LX_T || String)('Se venite a Londra')); h.style.cssText = 'grid-column:1/-1;font-weight:800;margin:10px 0 0'; L.appendChild(h); }
+    var k = it.s + (i < loc.length ? '-' + slug : '');
+    var card = el('div', 'insc'), th = el('div', 'inth pkth'); th.appendChild(el('span', 'pke', it.e)); card.appendChild(th);
+    card.appendChild(el('div', 'intt', it.t)); card.appendChild(el('div', 'inch', typeof it.d === 'string' ? it.d : (window.LX_T || String)(it.d.f) + ' ' + it.d.c));
+    var a = document.createElement('a'); a.className = 'btn'; a.href = it.l; a.target = '_blank'; a.rel = 'noopener'; a.textContent = (it.b === 'Biglietti' ? '🎟 ' : it.b === 'Prenota' ? '📅 ' : '🗺 ') + (window.LX_T || String)(it.b) + ' ↗';
+    a.onclick = function () { track('idea-link-' + k); }; card.appendChild(a);
+    var go = el('button', 'btn-o wide', '➕ Mandalo'); go.type = 'button'; card.appendChild(go);
+    var st = { u: it.l };
+    go.onclick = function () { postAll(st.u, it.t); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.disabled = true; track('idea-manda-' + k); };
+    L.appendChild(card); cards.push({ th: th, st: st, it: it, k: k, reg: i < loc.length ? cityRegion(c) : 'GB' });
+  });
+  L.appendChild(el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. Video pubblici da YouTube.')));
+  track('idee-viste-' + (loc.length ? 'altra-citta' : 'londra'));
+  var fill = function (off) { return function (x) {
+    if (!x || !x.items) return;
+    x.items.forEach(function (v, i) {
+      var o = cards[off + i]; if (!v || !o || !o.th.isConnected) return;
+      o.st.u = 'https://www.youtube.com/shorts/' + v.id;
+      var b = el('button', 'inth'); b.type = 'button'; b.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + o.it.t);
+      var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; b.appendChild(im); b.appendChild(el('span', 'inpl', '▶'));
+      b.onclick = function () { var f = document.createElement('iframe'); f.src = yt(v.id) + '&autoplay=1'; f.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'; f.setAttribute('allowfullscreen', ''); f.title = o.it.t; b.replaceWith(f); track('idea-guarda-' + o.k); };
+      o.th.replaceWith(b); o.th = b;
+    });
+  }; };
+  if (loc.length) mbCall({ a: 'pack', qs: loc.map(function (x) { return x.q; }), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
+  mbCall({ a: 'pack', qs: PACK_LON.map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
+}
+function packAuto() {
+  if (navigator.webdriver || !srvOn() || document.querySelector('.mod.open') || !me || !me.name) return false;
+  var seen = 1; try { seen = localStorage.getItem(LSG + 'packSeen'); } catch (e) {} if (seen) return false;
+  try { localStorage.setItem(LSG + 'packSeen', '1'); } catch (e) {}
+  track('idee-auto'); inspOpen('§pack'); return true;
 }
 function lazyMedia(r) {
   var ph = el('div', 'mph'); ph._r = r;
@@ -1701,7 +1782,7 @@ function dwOpen() {
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
     P.appendChild(s);
   }
-  if (srvOn()) { var isp = el('button', 'it'); isp.type = 'button'; isp.appendChild(el('span', null, '✨')); isp.appendChild(document.createTextNode('Ispirazione: i video più visti')); isp.onclick = function () { dwClose(); inspOpen(); }; var si = el('div', 'sec'); si.appendChild(isp); P.appendChild(si); }
+  if (srvOn()) { var isp = el('button', 'it'); isp.type = 'button'; isp.appendChild(el('span', null, '✨')); isp.appendChild(document.createTextNode('Idee per uscire e video più visti')); isp.onclick = function () { dwClose(); inspOpen(); }; var si = el('div', 'sec'); si.appendChild(isp); P.appendChild(si); }
   if (typeof dropOk === 'function' && dropOk()) { var db2 = el('button', 'it'); db2.type = 'button'; db2.appendChild(el('span', null, '📲')); db2.appendChild(document.createTextNode('Condividi da Instagram → Reelta')); db2.onclick = function () { dwClose(); dropOpen(); }; var sd = el('div', 'sec'); sd.appendChild(db2); P.appendChild(sd); }
   if (typeof inBrowser !== 'undefined' && inBrowser && !window.__inst) { var ib2 = el('button', 'it'); ib2.type = 'button'; ib2.appendChild(el('span', null, '📲')); ib2.appendChild(document.createTextNode('Installa Reelta sulla Home')); ib2.onclick = function () { dwClose(); instGo(); }; var sx = el('div', 'sec'); sx.appendChild(ib2); P.appendChild(sx); }
   sec('I tuoi contenuti', [
@@ -1920,7 +2001,7 @@ function emptyFeed() {
   d.appendChild(el('p', null, solo ? 'Reelta è fatta per due (o pochi): mandale il link su WhatsApp, entra in 10 secondi. Intanto puoi già mettere qui dei Reel: li trova appena entra.' : who ? 'Copia il link di un Reel da Instagram, TikTok o YouTube: ' + who + ' lo vede qui.' : 'Copia il link di un Reel da Instagram, TikTok o YouTube e incollalo qui.'));
   if (solo) { var bi = el('button', 'btn go', '💌 Invita la tua persona'); bi.type = 'button'; bi.onclick = function () { track('invita-da-vuoto'); invite(); }; d.appendChild(bi); }
   var b1 = el('button', solo ? 'btn-o wide' : 'btn go', '📋 Incolla un Reel');
-  if (srvOn()) { var bx = el('button', 'btn-o wide', '✨ Non hai Reel? Guarda i più visti'); bx.type = 'button'; bx.style.marginTop = '8px'; bx.onclick = function () { track('insp-da-vuoto'); inspOpen(); }; setTimeout(function () { if (b1.parentNode) b1.parentNode.insertBefore(bx, b1.nextSibling); }, 0); } b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
+  if (srvOn()) { var bx = el('button', 'btn-o wide', '✨ Non hai Reel? Guarda le idee per uscire'); bx.type = 'button'; bx.style.marginTop = '8px'; bx.onclick = function () { track('insp-da-vuoto'); inspOpen(); }; setTimeout(function () { if (b1.parentNode) b1.parentNode.insertBefore(bx, b1.nextSibling); }, 0); } b1.type = 'button'; b1.onclick = function () { if (typeof dropOk === 'function' && dropOk() && !get('dropOn', 0)) dropOpen(); else $('paste').click(); }; d.appendChild(b1);
   if (solo) b1.style.marginTop = '8px';
   var b3 = el('button', 'lnk', '▶ Guarda come funziona · 30 secondi'); b3.type = 'button'; b3.onclick = function () { demoOpen(); }; d.appendChild(b3);
   return d;
@@ -4101,7 +4182,7 @@ function begin() {
   if (me.role === 'host') startHost(); else startGuest();
   srvStart(); setTimeout(planNudge, 15000); setTimeout(pingDay, 8000);
   if (!get('gtip', 0) && 'ontouchstart' in window && !navigator.webdriver) setTimeout(function () { if (document.querySelector('.mod.open') || get('gtip', 0)) return; put('gtip', 1); ask('👆 Gesti più veloci', 'Scorri a destra o a sinistra per cambiare pagina. Doppio tocco su un Reel per il ❤️. Tieni premuto un Reel per il menu. Tira giù il feed per aggiornare. Nel lettore scorri per il Reel dopo.', 'Ok'); }, 6000); setTimeout(function () { cleanReels(); cleanWarn(); }, 9000);
-  shareIn();
+  shareIn(); if (get('guided', 0)) setTimeout(packAuto, 3500);
   if (/android/i.test(navigator.userAgent) && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches)) && !navigator.webdriver) setTimeout(shareTip, 20000);
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
@@ -4570,7 +4651,7 @@ function dropPull() {
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(dropPull, 300); });
 setTimeout(dropPull, 2500);
-$('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) setTimeout(demoOpen, 500); });
+$('gdX').addEventListener('click', function () { $('gd').classList.remove('open'); setTimeout(function () { if (packAuto()) return; var seen = 1; try { seen = localStorage.getItem(LSG + 'demo'); } catch (e) {} if (!seen && !navigator.webdriver) demoOpen(); }, 500); });
 // ▶ demo animata: 4 passi su una situazione di prova, nessun file video (pesa niente e si traduce da sola)
 var demoI = 0, demoT = null;
 function DT(x) { return window.LX_T ? LX_T(x) : x; }
