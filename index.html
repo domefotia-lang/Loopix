@@ -658,7 +658,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
 #inspT{flex-shrink:0}#actM{z-index:130}#ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
 .ivtop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 6px;font-weight:700}.ivx{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px}
-.ivst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.ivst>*{width:100%;height:100%;max-width:calc((100dvh - 230px) * 9 / 16);margin:0 auto}.ivst iframe,.ivst video{width:100%;height:100%;border:0}
+.ivst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.ivst>*{width:100%;height:100%;max-width:calc((100dvh - 230px) * 9 / 16);margin:0 auto;flex:none}.ivst>.igcrop{background:#000}.ivst iframe,.ivst video{width:100%;height:100%;border:0}
 .ivph{display:flex;align-items:center;justify-content:center;font-size:90px;background:linear-gradient(160deg,#2a1d10,#000);border-radius:18px}
 .ivp{padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);display:flex;flex-direction:column;gap:4px;background:linear-gradient(transparent,rgba(0,0,0,.6) 20%)}#ivT{font-size:19px}#ivD{font-size:14px;opacity:.8}
 .ivb{display:flex;gap:8px;margin-top:8px}.ivb>*{flex:1;min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:15px}.ivb a.btn-o{color:#fff!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.5)!important}
@@ -1334,7 +1334,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v155', errLog = [];
+var APP_VER = 'v156', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1499,7 +1499,7 @@ function delReel(id) {
 }
 function find(id) { return feed.filter(function (x) { return x.id === id; })[0]; }
 function igFit() {
-  document.querySelectorAll('.stage .igfit').forEach(function (c) {
+  document.querySelectorAll('.stage .igfit, .ivst .igfit').forEach(function (c) {
     var bx = c.firstChild, fr = bx && bx.firstChild; if (!fr) return;
     var W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
     var HD = 60, HM = W * 1.24, sc = Math.max(1, Math.min(H / HM, 1.4));
@@ -1773,7 +1773,7 @@ function ideaView(i) {
 function ideaViewAt(i) {
   var n = IV.list.length; if (!n) return; IV.i = (i + n) % n; var o = IV.list[IV.i], it = o.it, S = $('ivS'); S.textContent = '';
   var u = ideaVidOf(o);
-  if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); }
+  if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); setTimeout(igFit, 30); setTimeout(igFit, 400); }
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
