@@ -656,7 +656,12 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
-#inspT{flex-shrink:0}#actM{z-index:130}#ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
+#inspT{flex-shrink:0}.stor{display:flex;gap:12px;overflow-x:auto;padding:4px 14px 8px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
+.sto{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--t);position:relative;cursor:pointer}
+.stor-r{width:66px;height:66px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
+.stor-f{width:100%;height:100%;border-radius:50%;border:3px solid var(--bg,#111);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}.stor-f img{width:100%;height:100%;object-fit:cover}
+.stor-n{font-size:11px;line-height:1.2;max-width:74px;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.stor-v{position:absolute;top:46px;right:6px;width:20px;height:20px;border-radius:50%;background:#e8445a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg,#111)}
+#actM{z-index:130}#ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
 .ivtop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 6px;font-weight:700}.ivx{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px}
 .ivst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.ivst>*{width:100%;height:100%;max-width:calc((100dvh - 230px) * 9 / 16);margin:0 auto;flex:none}.ivst>.igcrop{background:#000}.ivst iframe,.ivst video{width:100%;height:100%;border:0}
 .ivph{display:flex;align-items:center;justify-content:center;font-size:90px;background:linear-gradient(160deg,#2a1d10,#000);border-radius:18px}
@@ -715,6 +720,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 </section>
 
 <section class="pane" id="main">
+  <div id="storW"></div>
   <div class="strip" hidden><div class="who" id="who"></div><button class="btn-o" id="inv" hidden>Invita</button></div>
   <div class="duo"><button class="btn go" id="sq" hidden>Guarda</button><button class="btn-o" id="sp" hidden>👀 Guardate insieme</button></div>
   <div class="steps" id="stp" hidden></div>
@@ -1334,7 +1340,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v156', errLog = [];
+var APP_VER = 'v157', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1709,7 +1715,7 @@ var CITY_TZ = { 'Europe/London': 'Londra', 'America/New_York': 'New York', 'Euro
 var CITY_IT = ['Milano', 'Roma', 'Napoli', 'Torino', 'Firenze', 'Bologna'];
 function tzName() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
 function cityGet() { var c = ''; try { c = localStorage.getItem(LSG + 'city') || ''; } catch (e) {} return c || CITY_TZ[tzName()] || ''; }
-function citySet(c) { try { localStorage.setItem(LSG + 'city', c); } catch (e) {} track('citta-' + c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 24)); }
+function citySet(c) { try { localStorage.setItem(LSG + 'city', c); } catch (e) {} pkvBusy = 0; setTimeout(function () { try { storiesRender(); packPrefetch(); } catch (e) {} }, 0); track('citta-' + c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 24)); }
 function cityRegion(c) { return isLon(c) ? 'GB' : CITY_IT.indexOf(c) >= 0 || tzName() === 'Europe/Rome' ? 'IT' : tzName().indexOf('America/') === 0 ? 'US' : ((navigator.language || '').split('-')[1] || 'GB').slice(0, 2); }
 function cityPick(then) {
   var opts = (tzName() === 'Europe/Rome' ? CITY_IT : ['Londra', 'Milano', 'Roma', 'New York', 'Parigi', 'Madrid']).map(function (c) { return { t: '📍 ' + c, f: function () { citySet(c); then(c); } }; });
@@ -1772,7 +1778,7 @@ function ideaView(i) {
 }
 function ideaViewAt(i) {
   var n = IV.list.length; if (!n) return; IV.i = (i + n) % n; var o = IV.list[IV.i], it = o.it, S = $('ivS'); S.textContent = '';
-  var u = ideaVidOf(o);
+  var u = ideaVidOf(o); try { var sn = JSON.parse(localStorage.getItem(LSG + 'ivseen') || '{}'); if (!sn[o.k]) { sn[o.k] = 1; localStorage.setItem(LSG + 'ivseen', JSON.stringify(sn)); } } catch (e) {}
   if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); setTimeout(igFit, 30); setTimeout(igFit, 400); }
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
@@ -1780,7 +1786,7 @@ function ideaViewAt(i) {
   var bk = $('ivBk'); bk.href = it.l; bk.textContent = (it.b === 'Biglietti' ? '🎟 ' : it.b === 'Prenota' ? '📅 ' : '🗺 ') + LXT(it.b) + ' ↗'; bk.onclick = function () { track('idea-link-' + o.k); };
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }
-function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; }
+function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; try { storiesRender(); } catch (e) {} }
 // «Fatelo insieme»: proporlo alla propria persona (diventa un piano da decidere), scegliere già il giorno, o mandare il video nel cerchio
 function ideaWhat(o) {
   var it = o.it, id = ('pi-' + o.k).slice(0, 40), desc = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
@@ -1791,6 +1797,37 @@ function ideaWhat(o) {
     { t: '➕ ' + LXT('Manda il video nel cerchio'), f: function () { postAll(o.st.u, LXT(it.t)); track('idea-manda-' + o.k); } }
   ]);
 }
+/* ---- 📍 le idee come «storie» in cima al feed: sempre a portata di dito, prima quelle con il video ufficiale del locale ---- */
+var PK_SHORT = { 'stafford-bar': 'American Bar', 'stafford-tea': 'Afternoon tea', 'stafford-caines': 'Michael Caines', 'stafford-terrace': 'Terrazza', winterwonderland: 'Winter Wonderland', skate: 'Pattinaggio', kew: 'Kew', candlelight: 'Candlelight', o2: 'O2', stadio: 'Tottenham', everyman: 'Cinema', bobbob: 'Bob Bob Ricard', oxo: 'OXO Tower', skygarden: 'Sky Garden', borough: 'Borough', primrose: 'Primrose Hill', concerti: 'Concerti', partita: 'Partita', esperienze: 'Esperienze' };
+var PKV = {}, pkvBusy = 0;
+function packList() {
+  var c = cityGet(), loc = c && !isLon(c) ? packFor(c) : [], slug = (c || '').toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
+  var L = loc.map(function (it) { return { it: it, k: it.s + '-' + slug }; }).concat(packLon().map(function (it) { return { it: it, k: it.s }; }));
+  L.forEach(function (o) { o.st = { u: o.it.v || (PKV[o.it.q] ? 'https://www.youtube.com/shorts/' + PKV[o.it.q] : o.it.l) }; });
+  return L.filter(function (o) { return o.it.v; }).concat(L.filter(function (o) { return !o.it.v; }));
+}
+function packPrefetch() {
+  if (pkvBusy || !srvOn()) return; pkvBusy = 1; var c = cityGet(), loc = c && !isLon(c) ? packFor(c) : [];
+  var got = function (qs) { return function (x) { if (x && x.items) x.items.forEach(function (v, i) { if (v && v.id) PKV[qs[i]] = v.id; }); try { storiesRender(); } catch (e) {} }; };
+  var q1 = packLon().map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: q1, lang: 'en', reg: 'GB' }).then(got(q1), function () {});
+  if (loc.length) { var q2 = loc.map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: q2, lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(got(q2), function () {}); }
+}
+function storiesEl() {
+  var L = packList(); if (!L.length || !me || !me.name) return null;
+  var seen = {}; try { seen = JSON.parse(localStorage.getItem(LSG + 'ivseen') || '{}'); } catch (e) {}
+  var row = el('div', 'stor'); row.id = 'stor'; row.setAttribute('aria-label', LXT('Idee per uscire'));
+  L.forEach(function (o, i) {
+    var b = el('button', 'sto' + (seen[o.k] ? ' seen' : '')); b.type = 'button'; b.setAttribute('aria-label', LXT(o.it.t));
+    var ring = el('span', 'stor-r'), face = el('span', 'stor-f'), yid = /youtube\.com\/shorts\/([\w-]+)/.exec(o.st.u);
+    if (yid) { var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + yid[1] + '/default.jpg'; im.alt = ''; im.loading = 'lazy'; face.appendChild(im); } else face.textContent = o.it.e;
+    ring.appendChild(face); b.appendChild(ring); b.appendChild(el('span', 'stor-n', LXT(PK_SHORT[o.it.s] || o.it.t)));
+    if (o.it.v) b.appendChild(el('span', 'stor-v', '▶'));
+    b.onclick = function () { track('storia-' + o.k); IV.list = packList(); ideaView(i); };
+    row.appendChild(b);
+  });
+  return row;
+}
+function storiesRender() { var W = $('storW'); if (!W) return; var n = storiesEl(), sl = $('stor') ? $('stor').scrollLeft : 0; W.textContent = ''; if (n) { W.appendChild(n); n.scrollLeft = sl; } }
 function packAuto() {
   if (navigator.webdriver || !srvOn() || document.querySelector('.mod.open') || !me || !me.name) return false;
   var seen = 1; try { seen = localStorage.getItem(LSG + 'packSeen'); } catch (e) {} if (seen) return false;
@@ -2030,7 +2067,7 @@ function render() {
   var bad = feed.filter(function (r) { return isInvite(r.u); });
   if (bad.length) { bad.forEach(function (r) { if (gone.indexOf(r.id) < 0) gone.push(r.id); }); feed = feed.filter(function (r) { return !isInvite(r.u); }); put('feed', feed); put('gone', gone); }
   syncComp();
-  var box = $('feed'); box.textContent = ''; nodes = {};
+  var box = $('feed'); box.textContent = ''; nodes = {}; try { storiesRender(); } catch (e) {}
   var nk = feed.filter(function (r) { return keeps[r.id]; }).length;
   // filtri: ⭐ tenuti e le categorie che l'AI ha riconosciuto (viaggi, cibo…), solo quelle presenti
   var vis0 = feed.filter(function (r) { return !isMuted(r.n); }), cc = {}; vis0.forEach(function (r) { var c = rcat(r); if (c) cc[c] = (cc[c] || 0) + 1; });
@@ -4275,7 +4312,7 @@ function begin() {
   if (me.role === 'host') startHost(); else startGuest();
   srvStart(); setTimeout(planNudge, 15000); setTimeout(pingDay, 8000);
   if (!get('gtip', 0) && 'ontouchstart' in window && !navigator.webdriver) setTimeout(function () { if (document.querySelector('.mod.open') || get('gtip', 0)) return; put('gtip', 1); ask('👆 Gesti più veloci', 'Scorri a destra o a sinistra per cambiare pagina. Doppio tocco su un Reel per il ❤️. Tieni premuto un Reel per il menu. Tira giù il feed per aggiornare. Nel lettore scorri per il Reel dopo.', 'Ok'); }, 6000); setTimeout(function () { cleanReels(); cleanWarn(); }, 9000);
-  shareIn(); if (get('guided', 0)) setTimeout(packAuto, 3500);
+  shareIn(); if (get('guided', 0)) setTimeout(packAuto, 3500); setTimeout(packPrefetch, 2500);
   if (/android/i.test(navigator.userAgent) && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches)) && !navigator.webdriver) setTimeout(shareTip, 20000);
   if (REG.after === 'invite' && me.role === 'host') { delete REG.after; delete REG.nm; regSet(REG); $('gd').classList.remove('open'); setTimeout(invite, 400); }
 }
