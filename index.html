@@ -1334,7 +1334,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v154', errLog = [];
+var APP_VER = 'v155', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1673,9 +1673,10 @@ function inspLoad(q) {
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
 var PACK_LON = [
-  { s: 'stafford-bar', e: '🍸', t: 'American Bar al The Stafford', d: 'St James’s · cocktail in un bar leggendario', q: 'American Bar The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota' },
-  { s: 'stafford-tea', e: '🫖', t: 'Afternoon tea al The Stafford', d: 'St James’s · lusso a 5 stelle', q: 'The Stafford London afternoon tea', l: gmaps('The Stafford London'), b: 'Prenota' },
-  { s: 'stafford-caines', e: '⭐', t: 'Cena da Michael Caines al The Stafford', d: 'St James’s · una stella Michelin', q: 'Michael Caines at The Stafford', l: gmaps('Michael Caines at The Stafford London'), b: 'Prenota' },
+  { s: 'stafford-bar', e: '🍸', t: 'American Bar al The Stafford', d: 'St James’s · cocktail in un bar leggendario', q: 'American Bar The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/Dfo738_RFrq/' },
+  { s: 'stafford-tea', e: '🫖', t: 'Afternoon tea al The Stafford', d: 'St James’s · lusso a 5 stelle', q: 'The Stafford London afternoon tea', l: gmaps('The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/De39FyPRwj-/' },
+  { s: 'stafford-caines', e: '⭐', t: 'Cena da Michael Caines al The Stafford', d: 'St James’s · una stella Michelin', q: 'Michael Caines at The Stafford', l: gmaps('Michael Caines at The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DZkBViYs7jP/' },
+  { s: 'stafford-terrace', e: '🌿', t: 'La terrazza dell’American Bar', d: 'St James’s · cocktail all’aperto, nel cortile', q: 'American Bar terrace The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DeolyknIgQl/' },
   { s: 'candlelight', e: '🎶', t: 'Concerto a lume di candela', d: 'Candlelight · musica tra mille candele', q: 'Candlelight concert London', l: 'https://feverup.com/en/london/candlelight', b: 'Biglietti' },
   { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 London concert', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
   { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur stadium tour', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
