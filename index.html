@@ -661,7 +661,8 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 .stor-r{width:66px;height:66px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
 .stor-f{width:100%;height:100%;border-radius:50%;border:3px solid var(--bg,#111);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}.stor-f img{width:100%;height:100%;object-fit:cover}
 .stor-n{font-size:11px;line-height:1.2;max-width:74px;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.stor-v{position:absolute;top:46px;right:6px;width:20px;height:20px;border-radius:50%;background:#e8445a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg,#111)}
-#actM{z-index:130}#ideaV .ivst{position:relative}.ivtip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;font-size:14px;font-weight:700;padding:10px 16px;border-radius:22px;pointer-events:none;transition:opacity .6s;white-space:nowrap}.ivtip.off{opacity:0}.ivvw{position:relative}.ivvw video{width:100%;height:100%;border-radius:12px;background:#000}.ivsnd{position:absolute;right:10px;bottom:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:20px}
+#actM{z-index:130}#ageG{position:fixed;inset:0;z-index:300;background:rgba(15,10,6,.92);display:flex;align-items:center;justify-content:center;padding:20px}#ageG .card{max-width:380px;width:100%;text-align:center}.agee{font-size:44px;margin-bottom:6px}.agel{display:block;margin-top:12px;font-size:13px;color:var(--m)}
+#ideaV .ivst{position:relative}.ivig{overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:12px}.ivig iframe{width:100%;height:calc((100dvh - 230px) * 9 / 16 * 1.25 + 230px);min-height:100%;border:0;display:block}.ivtip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;font-size:14px;font-weight:700;padding:10px 16px;border-radius:22px;pointer-events:none;transition:opacity .6s;white-space:nowrap}.ivtip.off{opacity:0}.ivvw{position:relative}.ivvw video{width:100%;height:100%;border-radius:12px;background:#000}.ivsnd{position:absolute;right:10px;bottom:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:20px}
 #ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
 .ivtop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 6px;font-weight:700}.ivx{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px}
 .ivst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.ivst>*{width:100%;height:100%;max-width:calc((100dvh - 230px) * 9 / 16);margin:0 auto;flex:none}.ivst>.igcrop{background:#000}.ivst iframe,.ivst video{width:100%;height:100%;border:0}
@@ -857,6 +858,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
   <p>• <b>Pareri:</b> ogni tanto Reelta chiede 3 domande. Le risposte e alcuni numeri d’uso (quanti Reel e piani a settimana, mai i contenuti né i nomi) partono solo se tocchi “Invia”, e prima vedi esattamente cosa parte.</p>
   <p id="statP" hidden>• Contiamo in modo anonimo quante volte si usa Reelta (aperture, Reel condivisi, cerchi creati), senza cookie, senza nomi e senza vedere i contenuti.</p>
   <p>• <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">Leggi la privacy policy completa</a></p>
+  <p>• <a href="termini.html" target="_blank" rel="noopener" style="color:var(--g);font-weight:700">Condizioni d’uso</a> · Reelta è per maggiori di 18 anni</p>
   <button class="btn" id="imc">Ho capito</button>
 </div></div>
 
@@ -1341,7 +1343,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v158', errLog = [];
+var APP_VER = 'v159', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1784,8 +1786,12 @@ function ideaViewAt(i) {
     var vd = document.createElement('video'); vd.src = u; vd.autoplay = true; vd.muted = true; vd.loop = true; vd.playsInline = true; vd.setAttribute('playsinline', ''); vd.style.objectFit = 'cover';
     var sb = el('button', 'ivsnd', '🔇'); sb.type = 'button'; sb.setAttribute('aria-label', LXT('Audio')); sb.onclick = function () { vd.muted = !vd.muted; sb.textContent = vd.muted ? '🔇' : '🔊'; if (!vd.muted) vd.play().catch(function () {}); };
     vd.onclick = function () { sb.click(); }; var wr = el('div', 'ivvw'); wr.appendChild(vd); wr.appendChild(sb); S.appendChild(wr); vd.play().catch(function () {}); track('idea-guarda-' + o.k);
-  } else if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); setTimeout(igFit, 30); setTimeout(igFit, 400);
-    if (/instagram\.com/.test(u)) { var tip = el('div', 'ivtip', '▶ ' + LXT('Tocca il video per farlo partire')); S.appendChild(tip); setTimeout(function () { tip.classList.add('off'); }, 3500); } }
+  } else if (u && /instagram\.com\/(reels?|p|tv)\/([\w-]+)/.test(u)) { // reel di Instagram: il riquadro ufficiale intero, con il nome dell'account, senza ritagli
+    var igid = /instagram\.com\/(?:reels?|p|tv)\/([\w-]+)/.exec(u)[1], igw = el('div', 'ivig'), igf = document.createElement('iframe');
+    igf.src = 'https://www.instagram.com/p/' + igid + '/embed/'; igf.title = LXT(it.t); igf.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'; igf.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups'); igf.referrerPolicy = 'strict-origin-when-cross-origin';
+    igw.appendChild(igf); S.appendChild(igw); track('idea-guarda-' + o.k);
+    var tip = el('div', 'ivtip', '▶ ' + LXT('Tocca il video per farlo partire')); S.appendChild(tip); setTimeout(function () { tip.classList.add('off'); }, 3500);
+  } else if (u) { var m = mediaRaw({ u: u, n: LXT(it.t), id: 'iv' + IV.i }, true); S.appendChild(m); track('idea-guarda-' + o.k); }
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
@@ -4877,6 +4883,20 @@ if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     var n = $('mh'); if (n) { n.textContent = '⬆️ C’è una versione nuova di Reelta: tocca qui per aggiornare.'; n.style.cursor = 'pointer'; n.onclick = function () { location.reload(); }; }
   });
 }
+// 🔞 Reelta propone bar e cocktail: è per maggiorenni. Una sola domanda, la prima volta su questo telefono.
+function ageGate() {
+  var ok = 0; try { ok = localStorage.getItem(LSG + 'age18'); } catch (e) { ok = 1; } if (ok) return;
+  var G = el('div'); G.id = 'ageG'; G.setAttribute('role', 'dialog'); G.setAttribute('aria-modal', 'true');
+  var C = el('div', 'card'); C.appendChild(el('div', 'agee', '🥂')); C.appendChild(el('h2', null, LXT('Reelta è per maggiorenni')));
+  C.appendChild(el('p', null, LXT('Dentro trovi anche idee per uscire con bar e cocktail. Confermi di avere almeno 18 anni?')));
+  var y = el('button', 'btn wide', LXT('Sì, ho 18 anni o più')), n = el('button', 'btn-o wide', LXT('No, ho meno di 18 anni')); y.type = n.type = 'button'; n.style.marginTop = '8px';
+  y.onclick = function () { try { localStorage.setItem(LSG + 'age18', String(Date.now())); } catch (e) {} G.remove(); track('eta-ok'); };
+  n.onclick = function () { C.textContent = ''; C.appendChild(el('div', 'agee', '👋')); C.appendChild(el('h2', null, LXT('Ci vediamo più avanti'))); C.appendChild(el('p', null, LXT('Reelta è solo per chi ha almeno 18 anni.'))); track('eta-no'); };
+  C.appendChild(y); C.appendChild(n);
+  var tl = document.createElement('a'); tl.href = 'termini.html'; tl.target = '_blank'; tl.rel = 'noopener'; tl.textContent = LXT('Condizioni d’uso'); tl.className = 'agel'; C.appendChild(tl);
+  G.appendChild(C); document.body.appendChild(G);
+}
+ageGate();
 </script>
 <script>
 /* ---- Cassaforte: con il PIN attivo, i dati di Reelta sono salvati cifrati.
