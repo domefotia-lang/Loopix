@@ -171,7 +171,7 @@
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
 <div class="app" id="app">
-<header><button class="hset" id="hdSet" aria-label="Menu" aria-expanded="false" aria-controls="dw"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i id="hdDot" hidden></i></button><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
+<header><button class="hset" id="hdSet" aria-label="Menu" aria-expanded="false" aria-controls="dw"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i id="hdDot" hidden></i></button><button class="logo" id="home" aria-label="Reelta, torna alla Home"><img class="mark" src="icon-180.png" alt=""><span>Reelta</span></button><div class="ppl" id="av" role="button" tabindex="0" aria-label="Il tuo profilo" style="cursor:pointer"></div><button class="hset" id="bell" aria-label="Notifiche"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><i id="bellN" hidden></i></button><button class="badge" id="bd" aria-live="polite">Non collegato</button></header>
 
 <div class="inv2 instb" id="ios" hidden style="margin:10px 14px 0"><span id="iosT"><b>📲 Mettila sulla Home</b><small>Si apre come un’app, con le notifiche.</small></span><button class="btn go" id="instGo">Installa</button><button class="btn-o" id="ix" aria-label="Non ora">✕</button></div>
 
@@ -378,6 +378,7 @@
 </div></div>
 <input type="file" id="bkF" hidden>
 
+<div class="mod" id="ntfM" role="dialog" aria-modal="true" aria-labelledby="ntfT"><div class="card" style="max-width:420px;width:100%;max-height:82vh;display:flex;flex-direction:column"><h2 id="ntfT" style="margin-bottom:4px">🔔 Notifiche</h2><div id="ntfL" style="overflow-y:auto;margin:6px -6px 10px;-webkit-overflow-scrolling:touch"></div><button class="btn-o wide" id="ntfX">Chiudi</button></div></div>
 <div class="mod" id="actM" role="dialog" aria-modal="true" aria-labelledby="actT"><div class="card" style="max-width:340px;width:100%">
   <h2 id="actT"></h2><p id="actP" style="margin-top:0"></p>
   <div id="actB"></div>
@@ -939,7 +940,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v169', errLog = [];
+var APP_VER = 'v170', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1168,7 +1169,7 @@ function mediaRaw(r, pl) {
     if (pl && /facebook\.com\/plugins\/video/.test(src)) src += '&autoplay=true&mute=1';
     var fr = el('iframe'); fr.src = src; if (!pl) fr.loading = 'lazy'; fr.title = 'Reel di ' + r.n;
     fr.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
-    fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation'); // senza allow-popups: un tocco dentro il video non apre Instagram/TikTok e non fa uscire dall'app (per uscire apposta c'è «Apri»)
+    fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation' + (/instagram\.com\/p\//.test(src) ? ' allow-popups allow-popups-to-escape-sandbox' : '')); // Instagram: come nelle storie, altrimenti il tocco su ▶ va a vuoto. Gli altri: senza allow-popups: un tocco dentro il video non apre Instagram/TikTok e non fa uscire dall'app (per uscire apposta c'è «Apri»)
     fr.referrerPolicy = 'strict-origin-when-cross-origin';
     var inner = fr;
     if (/instagram\.com\/p\//.test(src)) {
@@ -1787,7 +1788,7 @@ function addReel(r, mine) {
   if (isMuted(n.n)) { seqLabel(); return true; }
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
-  else { noteIn('reel', n.n, n.c); if (node.offsetTop > box.scrollTop + box.clientHeight * 0.6) { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; } }
+  else { if (Date.now() - n.ts < 3 * 864e5) actLog('reel', n.n, n.c, n.id); noteIn('reel', n.n, n.c); if (node.offsetTop > box.scrollTop + box.clientHeight * 0.6) { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; } }
   seqLabel();
   return true;
 }
@@ -1812,6 +1813,7 @@ function comment(id, text) {
 // chi manda un Reel sa che è piaciuto: un avviso discreto e una voce nelle novità
 var RXV = { '❤️': 'ha messo ❤️ al tuo Reel', '😂': 'ha riso 😂 al tuo Reel', '😮': 'è rimasto a bocca aperta 😮 col tuo Reel', '🔥': 'ha messo 🔥 al tuo Reel' };
 function rxGot(n, e, r) {
+  actLog('rx', n, r.c, r.id, e);
   var L = get('rxNew', []); L = L.filter(function (x) { return !(x.id === r.id && x.n === n); }); L.push({ id: r.id, n: n, e: e, ts: Date.now() }); put('rxNew', L.slice(-20));
   showNote({ kind: 'rx', who: n, text: r.c ? '“' + r.c.slice(0, 40) + '”' : '', e: e, rid: r.id }, Object.assign({}, ntCfg(), { pill: true, sound: false }), false);
   try { renderNov(); } catch (x) {}
@@ -1829,6 +1831,7 @@ function applyEv(d, who) {
   if (d.t === 'sumq') {
     var aq = who || clean(d.n, 30); if (!aq || aq === r.n || r.s || r.g) return null;
     r.q = r.q || {}; if (r.q[aq]) return null; r.q[aq] = 1; put('feed', feed); refresh(r);
+    if (r.n === me.name) actLog('sumq', aq, r.c, r.id);
     if (r.n === me.name) showNote({ kind: 'sumq', who: aq, text: 'Rispondi in una riga', n: 1 }, Object.assign({}, ntCfg(), { pill: true }), true);
     return { t: 'sumq', id: r.id, n: aq };
   }
@@ -1843,6 +1846,7 @@ function applyEv(d, who) {
     var c = cleanK([{ id: d.c.id, n: who || d.c.n, t: d.c.t, ts: d.c.ts }])[0]; if (!c) return null;
     r.k = r.k || []; if (r.k.some(function (y) { return y.id === c.id; })) return null;
     r.k.push(c); if (r.k.length > 50) r.k.shift();
+    if (Date.now() - (+c.ts || Date.now()) < 3 * 864e5) actLog('cmt', c.n, c.t, r.id);
     put('feed', feed); refresh(r); return { t: 'cmt', id: r.id, c: c };
   }
   return null;
@@ -1853,7 +1857,7 @@ $('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unse
 var seq = null, seen = get('seen', {}), timer = null;
 function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n) && r.n !== me.name; }).length; } // i Reel che mandi tu non sono «nuovi» per te
 function seqLabel() {
-  appBadge();
+  appBadge(); bellUI();
   var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length || !$('app').classList.contains('on');
   var who = []; feed.forEach(function (r) { if (!seen[r.id] && !isMuted(r.n) && r.n !== me.name && who.indexOf(r.n) < 0) who.push(r.n); });
   b.textContent = n ? '▶  ' + n + (n === 1 ? ' nuovo' : ' nuovi') + (who.length === 1 ? ' da ' + who[0] : '') : '▶  Rivedi tutti';
@@ -2538,7 +2542,7 @@ function hostHi(c, d) {
           if (code && srvOn()) mbBox(me.hostId + '_' + code, 'w').then(function (b) { return mbCall({ a: 'ack', box: b, upto: 9e15 }); }).catch(function () {}); // il pacchetto di benvenuto non serve più
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
           c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
-          $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
+          actLog('join', nm, '', ''); $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
           var same = Object.keys(allowed).filter(function (x) { return allowed[x].toLowerCase() === nm.toLowerCase(); })[0];
@@ -2671,7 +2675,7 @@ function guestData(d) {
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
       if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; if (d.w) me.pend = 1; put('me', me); }
       else if (d.t === 'hello' && !d.w && me.pend) { delete me.pend; put('me', me); }
-      if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
+      if (d.t === 'hello') { actQuiet = !feed.length; try { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); } finally { actQuiet = false; } status(); $('mh').textContent = '';
         var ob = outbox; outbox = []; put('outbox', []); ob.forEach(function (o) { gSend(o && o.t ? o : { t: 'reel', r: o }); }); if (tab === 'chat') renderChat(true);
         if (!d.w) clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
         if (d.aka && typeof d.aka === 'object') Object.keys(d.aka).slice(0, 50).forEach(function (o) { renameIn(o, d.aka[o]); });
@@ -2685,7 +2689,7 @@ function guestData(d) {
       else if (d.t === 'ren' && typeof d.a === 'string' && typeof d.b === 'string') renameIn(d.a, d.b);
       else if (d.t === 'pf' && typeof d.n === 'string') { if (d.n !== me.name) setPic(d.n, d.p); }
       else if (d.t === 'trill' && typeof d.n === 'string') trillIn(clean(d.n, 30));
-      else if (d.t === 'people') { names = (d.people || []).map(function (x) { return clean(x, 30); }); put('ppl', get('all', null) || names); status(); trillOut(hostConn); trUI(); }
+      else if (d.t === 'people') { var nb = names.slice(); names = (d.people || []).map(function (x) { return clean(x, 30); }); if (nb.length) names.forEach(function (x) { if (nb.indexOf(x) < 0) actLog('join', x, '', ''); }); put('ppl', get('all', null) || names); status(); trillOut(hostConn); trUI(); }
       else if (d.t === 'tr' && typeof d.n === 'string') { if (d.n !== me.name) trIn(clean(d.n, 30), d); }
       else if (d.t === 'reel') addReel(d.r);
       else if (d.t === 'rdel' && typeof d.id === 'string') dropReel(d.id);
@@ -2997,7 +3001,7 @@ function addMsg(m, who) {
   msgs.push(n); trimMsgs(); put('msgs', msgs);
   if (isMuted(n.n)) return n;
   if (tab === 'chat' && $('chat').classList.contains('show')) { var b = $('clog'); if (b.querySelector('.empty')) b.textContent = ''; b.appendChild(msgNode(n)); b.scrollTop = b.scrollHeight; if (n.n !== me.name) markSeen(); }
-  else if (n.n !== me.name) { chatSeen++; chatTab(); noteIn('msg', n.n, n.t); }
+  else if (n.n !== me.name) { chatSeen++; chatTab(); noteIn('msg', n.n, n.t); actLog('msg', n.n, n.t, ''); }
   return n;
 }
 // ↩️ rispondere a un messaggio: scorri il messaggio verso destra (o toccalo → Rispondi)
@@ -3335,14 +3339,15 @@ function applyIdea(d, who) {
     var old = findIdea(i.id);
     if (old) { var was0 = isMatch(old); Object.keys(i.v).forEach(function (n) { old.v[n] = 1; }); if (i.u && !old.u) old.u = i.u; old.f = old.f || {}; Object.keys(i.f || {}).forEach(function (n) { if (!old.f[n]) old.f[n] = i.f[n]; }); if (i.d) old.d = true; if (i.w && !old.w) old.w = i.w; ideasChanged(old.r); if (!was0 && isMatch(old)) matchIn(old); return null; }
     ideas.push(i); if (ideas.length > 200) ideas.shift();
+    if (i.n !== me.name && Date.now() - (+i.ts || 0) < 3 * 864e5) actLog('idea', i.n, i.p, i.id);
     if (i.n !== me.name && !(tab === 'ideas' && $('ideas').classList.contains('show'))) { ideaSeen++; ideaTab(); noteIn('idea', i.n, i.p); }
     ideasChanged(i.r); return { t: 'idea', a: 'add', i: i };
   }
   var x = findIdea(d.id); if (!x) return null;
-  if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; var was = isMatch(x); if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); if (!was && isMatch(x)) matchIn(x); return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
+  if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; var was = isMatch(x); if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); if (d.on && n !== me.name) actLog('vote', n, x.p, x.id); if (!was && isMatch(x)) { actLog('match', '', x.p, x.id); matchIn(x); } return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
   // giorno e «fatto»: vince la modifica più recente, uguale su tutti i telefoni anche se arrivano in ordine diverso (es. due offline)
   var at = Math.min(+d.at || 0, Date.now() + 6e4); if (!at && who === me.name) at = Date.now();
-  if (d.a === 'when') { if (at && (+x.wa || 0) > at) return null; x.w = /^\d{4}-\d{2}-\d{2}$/.test(d.w || '') ? d.w : ''; if (at) x.wa = at; ideasChanged(); return { t: 'idea', a: 'when', id: x.id, w: x.w, at: at || undefined }; }
+  if (d.a === 'when') { if (at && (+x.wa || 0) > at) return null; who = who || clean(d.n, 30); x.w = /^\d{4}-\d{2}-\d{2}$/.test(d.w || '') ? d.w : ''; if (at) x.wa = at; if (x.w && who && who !== me.name) actLog('when', who, x.p + ' · ' + new Date(x.w + 'T12:00').toLocaleDateString(window.LX_LANG === 'en' ? 'en-GB' : window.LX_LANG === 'es' ? 'es-ES' : 'it-IT', { weekday: 'short', day: 'numeric', month: 'short' }), x.id); ideasChanged(); return { t: 'idea', a: 'when', id: x.id, w: x.w, at: at || undefined, n: who || undefined }; }
   if (d.a === 'done') { if (at && (+x.da || 0) > at) return null; x.d = !!d.on; if (at) x.da = at; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d, at: at || undefined }; }
   // «com'è andata?» dopo la data del piano: ognuno risponde con un tocco; «non ci siamo andati» toglie la data, così si può riprogrammare
   if (d.a === 'feel') { var fn = who || clean(d.n, 30), fe = FEEL.indexOf(d.e) >= 0 ? d.e : ''; if (!fn || !fe) return null; x.f = x.f || {}; x.f[fn] = fe; if (fe === 'no') { if (!Object.keys(x.f).some(function (k) { return x.f[k] !== 'no'; })) x.w = ''; } else x.d = true; ideasChanged(); if (fn !== me.name && fe !== 'no') noteIn('idea', fn, x.p + ' ' + fe); return { t: 'idea', a: 'feel', id: x.id, e: fe, n: fn }; }
@@ -3664,6 +3669,42 @@ function ideaGuide() {
   r2.appendChild(a); r2.appendChild(b); g.appendChild(r2);
   return g;
 }
+/* ---- 🔔 notifiche: cosa è successo nel cerchio (salvato solo sul telefono, per cerchio) ---- */
+var actQuiet = false;
+var ACT_TXT = { reel: 'ha mandato un Reel', rx: 'ha reagito al tuo Reel', cmt: 'ha commentato un Reel', sumq: 'chiede di cosa parla il tuo Reel', idea: 'ha proposto un piano', vote: 'vuole fare questo piano', when: 'ha scelto il giorno', match: 'Vi piace a tutti! 🎉', msg: 'ti ha scritto', join: 'è entrato nel cerchio' };
+function actLog(k, n, t, id, e) {
+  if (actQuiet || !me || (n && (n === me.name || isMuted(n)))) return;
+  var L = get('acts', []), now = Date.now(), last = L[L.length - 1];
+  if (last && last.k === k && last.n === n && (k === 'msg' || last.id === id) && now - last.ts < 30 * 6e4) { last.ts = now; last.t = clean(t, 80); last.c = (last.c || 1) + 1; if (e) last.e = e; }
+  else L.push({ k: k, n: n || '', t: clean(t, 80), id: id || '', e: e || '', ts: now });
+  put('acts', L.slice(-80)); bellUI();
+}
+function actUnread() { var s0 = +get('actSeen', 0) || 0; return get('acts', []).filter(function (a) { return a.ts > s0; }).length; }
+function bellUI() { var b = $('bellN'); if (!b) return; var n = actUnread(); b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n); $('bell').setAttribute('aria-label', n ? LXT('Notifiche') + ': ' + n : LXT('Notifiche')); }
+function actGo(a) {
+  $('ntfM').classList.remove('open');
+  if (a.k === 'msg') return showPane('chat');
+  if (a.k === 'join') return showPane('circle');
+  if (a.k === 'idea' || a.k === 'vote' || a.k === 'when' || (a.k === 'match' && !find(a.id))) return showPane('ideas');
+  if (a.id && find(a.id)) return goReel(a.id);
+  showPane('main');
+}
+function bellOpen() {
+  var L = get('acts', []).slice().reverse(), s0 = +get('actSeen', 0) || 0, box = $('ntfL'); box.textContent = '';
+  if (!L.length) box.appendChild(el('p', 'hint', LXT('Qui vedrai i nuovi Reel, i cuori, i commenti, i piani e chi entra nel cerchio.')));
+  L.forEach(function (a) {
+    var row = el('button', 'ntf' + (a.ts > s0 ? ' new' : '')); row.type = 'button';
+    var av = a.k === 'match' ? el('span', 'ntfE', '🎉') : avatar(a.n); row.appendChild(av);
+    var tx = el('span', 'ntfX'), l1 = el('span', 'ntfL1');
+    if (a.n && a.k !== 'match') l1.appendChild(el('b', '', a.n + ' '));
+    l1.appendChild(document.createTextNode(LXT(a.k === 'rx' && a.e ? 'ha messo' : ACT_TXT[a.k] || '') + (a.k === 'rx' && a.e ? ' ' + a.e + ' ' + LXT('al tuo Reel') : '') + (a.c > 1 ? ' (' + a.c + ')' : '')));
+    tx.appendChild(l1); if (a.t) tx.appendChild(el('span', 'ntfL2', a.t)); tx.appendChild(el('span', 'ntfT', ago(a.ts)));
+    row.appendChild(tx); row.onclick = function () { actGo(a); }; box.appendChild(row);
+  });
+  put('actSeen', Date.now()); bellUI();
+  $('ntfM').classList.add('open'); track('notifiche-aperte');
+}
+$('bell').addEventListener('click', bellOpen); $('ntfX').addEventListener('click', function () { $('ntfM').classList.remove('open'); });
 function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
