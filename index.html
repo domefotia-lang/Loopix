@@ -656,7 +656,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
-#inspT{flex-shrink:0}.stor{display:flex;gap:12px;overflow-x:auto;padding:4px 14px 8px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
+#setup .big-mark{width:96px;height:96px}#setup .hero h1{font-size:clamp(26px,7vw,32px)}#setup .hero{padding-top:6px;padding-bottom:6px}#inspT{flex-shrink:0}.linkb{background:none;border:0;color:var(--g);font-weight:700;font-size:14.5px;padding:2px 0 10px;cursor:pointer;text-align:left}.stor{display:flex;gap:12px;overflow-x:auto;padding:4px 14px 8px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
 .sto{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--t);position:relative;cursor:pointer}
 .stor-r{width:66px;height:66px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
 .stor-f{width:100%;height:100%;border-radius:50%;border:3px solid var(--bg,#111);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}.stor-f img{width:100%;height:100%;object-fit:cover}
@@ -694,6 +694,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
   <div class="card">
     <h2 id="sT">Crea il tuo cerchio</h2>
     <p id="sP">Tu e una persona, in privato.</p>
+    <button type="button" class="linkb" id="kMore" hidden>👥 Vuoi fare un gruppo di amici?</button>
     <div id="kindBox" role="group" aria-label="Tipo di cerchio"><p style="margin:0 0 6px"><b>Che cerchio vuoi creare?</b></p>
       <div class="chips" style="padding:0 0 10px;flex-wrap:wrap">
         <button type="button" class="chip" id="kC" aria-pressed="true">Una persona</button>
@@ -701,7 +702,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
         <button type="button" class="chip" id="kB" aria-pressed="false" hidden>∷ Gruppo (fino a 10)</button>
       </div></div>
     <input id="nm" placeholder="Il tuo nome" aria-label="Il tuo nome" maxlength="30" autocomplete="given-name">
-    <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Incolla l’invito che hai ricevuto</button>
+    <button type="button" class="btn-o wide" id="haveInv" style="margin:0 0 10px">📋 Ho ricevuto un invito</button>
     <input id="ic" placeholder="Hai un invito? Incolla qui il link" aria-label="Link di invito" autocomplete="off">
     <p id="icHelp">Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.</p>
     <button class="btn" id="go">Inizia</button>
@@ -1343,7 +1344,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v160', errLog = [];
+var APP_VER = 'v161', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2551,6 +2552,7 @@ function postAll(t, c) {
   (async function () {
     for (var i = 0; i < L.length; i++) post(await resolveShort(L[i]), L.length === 1 ? c : '');
     if (L.length > 1) $('mh').textContent = L.length + ' Reel aggiunti.';
+    try { soloNudge(L[0], c); } catch (e) {}
   })();
   return L.length;
 }
@@ -2912,8 +2914,13 @@ function invLangUI() {
     box.appendChild(b);
   });
 }
+var INV_CTX = null; // il reel da cui parte l'invito: arriva insieme al link
 function invText() {
   var sc = homeUrl() + 'scopri.html';
+  if (INV_CTX) return '🎬 ' + (INV_CTX.t ? INV_CTX.t + '\n' : '') + INV_CTX.u + '\n\n' + invText0();
+  return invText0();
+}
+function invText0() {
   var lg = invLang(), T = lg === 'it' ? String : (window.LX_TL ? function (x) { return window.LX_TL(x, lg); } : (window.LX_T || String));
   return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore.');
 }
@@ -2952,7 +2959,17 @@ function openWA(text, done, fail) {
 $('invWA').onclick = function () { openWA(invText(), function () { invDone('Si è aperto WhatsApp: scegli la persona e premi invia.'); }, function () { invDone('WhatsApp non si è aperto, ma l’invito è già copiato: incollalo in una chat, oppure usa “Altre app…”.'); }); };
 $('invSh').onclick = function () { if (navigator.share) navigator.share({ title: 'Reelta', text: invText() }).then(function () { invDone('Invito inviato.'); }).catch(function () {}); else $('invCp').click(); };
 $('invCp').onclick = function () { var t = invText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { invDone('Copiato ✓ Ora incollalo in un messaggio a chi vuoi invitare.'); }, function () { $('invH').textContent = t; }); else $('invH').textContent = t; };
-$('invX').onclick = function () { $('invM').classList.remove('open'); };
+$('invX').onclick = function () { $('invM').classList.remove('open'); INV_CTX = null; };
+// Da soli? Il reel appena mandato diventa l'invito: arriva su WhatsApp con il video e il link per entrare.
+var soloT = 0;
+function soloNudge(u, t) {
+  if (!me || me.role !== 'host' || Object.keys(allowed).length || Date.now() - soloT < 120000 || navigator.webdriver && !window.__soloTest) return;
+  soloT = Date.now();
+  sheet('👀 ' + LXT('Per ora lo vedi solo tu'), LXT('Mandalo a chi vuoi: arriva su WhatsApp con il video e un link per entrare con te in Reelta.'), [
+    { t: '💬 ' + LXT('Mandalo alla tua persona'), f: function () { INV_CTX = { u: u, t: clean(t || '', 80) }; track('invito-da-reel'); invite(); } },
+    { t: LXT('Più tardi'), f: function () {} }
+  ]);
+}
 
 /* ---- ospite ---- */
 function startGuest() {
@@ -4353,13 +4370,18 @@ function paintKind() {
   $('sP').textContent = kindSel === 'big' ? 'Tu e fino a ' + (BIG_MAX - 1) + ' persone, in privato.' : kindSel === 'group' ? 'Tu e altre 2 persone, in privato.' : 'Tu e una persona, in privato.';
 }
 $('kC').onclick = function () { kindSel = 'couple'; paintKind(); };
+$('kMore').onclick = function () { kOpen = true; kindSel = canCreate('group') ? 'group' : kindSel; syncKind(); };
 $('kG').onclick = function () { kindSel = 'group'; paintKind(); };
 $('kB').onclick = function () { kindSel = 'big'; paintKind(); };
+var kOpen = false, icOpen = false;
+// primo ingresso semplice: solo il nome, si entra subito; le persone si aggiungono dopo (anche mandando un reel)
+function firstRun() { return REG.list.length <= 1 && !REG.after && !joinId; }
 function syncKind() {
-  var j = !!pastedId() || !!joinId, any = canCreateAny();
-  $('kindBox').hidden = j || !any;
-  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Crea il tuo cerchio'; if (!$('ic').value.trim()) $('go').textContent = 'Inizia'; paintKind(); }
-  $('icHelp').hidden = !!joinId;
+  var j = !!pastedId() || !!joinId, any = canCreateAny(), fr = firstRun() && !j && any;
+  $('kindBox').hidden = j || !any || (fr && !kOpen); $('kMore').hidden = !fr || kOpen;
+  $('ic').hidden = !!joinId || (fr && !icOpen && !$('ic').value.trim());
+  if (!j && any) { $('sT').textContent = REG.after ? 'Nuovo gruppo' : REG.list.length > 1 ? 'Nuovo cerchio' : 'Come ti chiami?'; if (!$('ic').value.trim()) $('go').textContent = fr ? 'Entra' : 'Inizia'; paintKind(); if (fr && !kOpen) $('sP').textContent = 'Entri subito. Le persone con cui uscire le aggiungi dopo, con un tocco.'; }
+  $('icHelp').hidden = !!joinId || $('ic').hidden;
   $('icHelp').textContent = any ? 'Se qualcuno ti ha invitato, incolla il suo link. Se no, lascia vuoto: creerai il tuo cerchio.' : 'In WhatsApp tieni premuto il messaggio d’invito → “Copia”, poi tocca “Incolla l’invito” qui sopra e scrivi il tuo nome.';
   var fresh = REG.list.length <= 1 && ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
   $('haveInv').className = any && !fresh ? 'btn-o wide' : 'btn wide'; $('haveInv').style.margin = '0 0 10px';
@@ -4383,7 +4405,7 @@ $('go').addEventListener('click', function () {
     if (/iphone|ipad|ipod|android/i.test(navigator.userAgent) && !standalone && navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + '#j=' + me.hostId + '_' + me.code + '_' + me.tok).catch(function () {});
   }
   put('me', me); if (joinId) history.replaceState(null, '', location.pathname); begin();
-  if (!jid && !navigator.webdriver) setTimeout(function () { try { if (me && me.role === 'host' && !Object.keys(allowed).length && !$('invM').classList.contains('open') && !$('gd').classList.contains('open')) { track('invita-dopo-creato'); invite(); } } catch (e) {} }, 900); // appena creato il cerchio: subito l'invito
+  if (false) setTimeout(function () { try { if (me && me.role === 'host' && !Object.keys(allowed).length && !$('invM').classList.contains('open') && !$('gd').classList.contains('open')) { track('invita-dopo-creato'); invite(); } } catch (e) {} }, 900); // appena creato il cerchio: subito l'invito
 });
 $('nm').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
 $('inv').addEventListener('click', invite);
@@ -4481,6 +4503,7 @@ $('instM').addEventListener('click', function (e) { if (e.target === $('instM'))
 document.addEventListener('lx-bip', function () { if (window.__inst) $('ios').hidden = true; });
 $('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
 $('haveInv').addEventListener('click', async function () {
+  icOpen = true; syncKind();
   var t = '';
   try { t = await navigator.clipboard.readText(); } catch (e) { try { errAuto('incolla: lettura negata ' + (e && e.name), 'haveInv'); } catch (x) {} $('sH').textContent = 'Il telefono non mi lascia leggere: tieni premuto nel campo qui sotto e scegli “Incolla”.'; await ask('Incolla a mano', 'Il telefono non mi lascia leggere gli appunti. Tieni premuto nel campo «Hai un invito? Incolla qui il link» e scegli «Incolla».', 'Ok'); $('ic').scrollIntoView({ block: 'center' }); $('ic').focus(); return; }
   if (tryDev(t)) return;
