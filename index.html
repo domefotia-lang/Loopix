@@ -842,7 +842,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v167', errLog = [];
+var APP_VER = 'v168', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2244,7 +2244,7 @@ function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(f
 function mbCall(body, ms) { // con rete pessima la richiesta si ferma da sola invece di restare appesa per minuti
   var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix') ? 40000 : 15000)) : 0;
   return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
-    .then(function (r) { clearTimeout(tt); if (r.status === 429) return r.json().catch(function () { return { error: 'limite' }; }); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
+    .then(function (r) { clearTimeout(tt); if (r.status === 429 || r.status === 503) return r.json().catch(function () { return { error: r.status === 429 ? 'limite' : 'srv' }; }); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
 }
 function mbPut(sec, dir, m, quiet) {
   if (!srvOn() || MBT[m.t] === undefined) return Promise.resolve(false);
