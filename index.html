@@ -656,11 +656,17 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 #pl.imm .sndp{bottom:auto;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px}
 #setup.inv #bkR2{display:none}
 .fview{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fview::-webkit-scrollbar{display:none}.fview .chip{flex:none;white-space:nowrap}
-#setup .big-mark{width:96px;height:96px}#setup .hero h1{font-size:clamp(26px,7vw,32px)}#setup .hero{padding-top:6px;padding-bottom:6px}#inspT{flex-shrink:0}.linkb{background:none;border:0;color:var(--g);font-weight:700;font-size:14.5px;padding:2px 0 10px;cursor:pointer;text-align:left}.stor{display:flex;gap:12px;overflow-x:auto;padding:4px 14px 8px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
-.sto{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--t);position:relative;cursor:pointer}
-.stor-r{width:66px;height:66px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
+#setup .big-mark{width:96px;height:96px}#setup .hero h1{font-size:clamp(26px,7vw,32px)}#setup .hero{padding-top:6px;padding-bottom:6px}#main.scr #storW,#main.scr #stp,#main.scr #duo,#main.scr #nov{display:none}.ico{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;margin-right:.45em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}@media (prefers-reduced-motion:no-preference){.pane.show{animation:pnin .22s ease-out}.mod.open>.card{animation:mdin .22s cubic-bezier(.2,.9,.3,1.2)}#ideaV.open{animation:pnin .2s ease-out}}
+@keyframes pnin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes mdin{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+.cft{position:fixed;inset:0;pointer-events:none;z-index:400;overflow:hidden}.cft i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:cfall 1.6s cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes cfall{to{transform:translate(var(--dx),105vh) rotate(var(--rt));opacity:.9}}
+.skel .inth{background:var(--s2);border-radius:12px;aspect-ratio:9/12}.skl{height:11px;border-radius:6px;background:var(--s2);margin-top:8px;width:90%}.skl.s2{width:60%}
+@media (prefers-reduced-motion:no-preference){.skel .inth,.skl{animation:skp 1.2s ease-in-out infinite}}@keyframes skp{50%{opacity:.45}}
+#inspT{flex-shrink:0}.linkb{background:none;border:0;color:var(--g);font-weight:700;font-size:14.5px;padding:2px 0 10px;cursor:pointer;text-align:left}.stor{display:flex;gap:10px;overflow-x:auto;padding:2px 14px 6px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
+.sto{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--t);position:relative;cursor:pointer}
+.stor-r{width:58px;height:58px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
 .stor-f{width:100%;height:100%;border-radius:50%;border:3px solid var(--bg,#111);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}.stor-f img{width:100%;height:100%;object-fit:cover}
-.stor-n{font-size:11px;line-height:1.2;max-width:74px;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.stor-v{position:absolute;top:46px;right:6px;width:20px;height:20px;border-radius:50%;background:#e8445a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg,#111)}
+.stor-n{font-size:11px;line-height:1.2;max-width:66px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.stor-v{position:absolute;top:40px;right:3px;width:20px;height:20px;border-radius:50%;background:#e8445a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg,#111)}
 #actM{z-index:130}#ageG{position:fixed;inset:0;z-index:300;background:rgba(15,10,6,.92);display:flex;align-items:center;justify-content:center;padding:20px}#ageG .card{max-width:380px;width:100%;text-align:center}.agee{font-size:44px;margin-bottom:6px}.agel{display:block;margin-top:12px;font-size:13px;color:var(--m)}
 #ideaV .ivst{position:relative}.ivig{overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000;border-radius:12px}.ivst>.ivtip{width:auto;height:auto;max-width:90%;margin:0}.ivig iframe{width:100%;height:calc((100dvh - 230px) * 9 / 16 * 1.25 + 230px);min-height:100%;border:0;display:block}.ivtip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;font-size:14px;font-weight:700;padding:10px 16px;border-radius:22px;pointer-events:none;transition:opacity .6s;white-space:nowrap}.ivtip.off{opacity:0}.ivvw{position:relative}.ivvw video{width:100%;height:100%;border-radius:12px;background:#000}.ivsnd{position:absolute;right:10px;bottom:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:20px}
 #ideaV{position:fixed;inset:0;z-index:120;background:#000;display:none;flex-direction:column;color:#fff}#ideaV.open{display:flex}
@@ -755,7 +761,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
   <div class="list" id="ilist"></div>
 </section>
 
-<section class="pane" id="circle" aria-label="Cerchio"><div class="head"><h2>Cerchio</h2></div><div class="list">
+<section class="pane" id="circle" aria-label="Persone"><div class="head"><h2>Persone</h2></div><div class="list">
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
@@ -839,7 +845,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
   <button data-p="main"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg>Reel</button>
   <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
   <button class="fab" id="paste" aria-label="Manda un Reel: incolla il link che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Manda</button>
-  <button data-p="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>Cerchio</button>
+  <button data-p="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>Persone</button>
   <button data-p="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg><span id="tChat">Messaggi</span></button>
 </nav>
 </div>
@@ -1344,7 +1350,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v162', errLog = [];
+var APP_VER = 'v163', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1438,7 +1444,7 @@ var muted = get('muted', []), reps = get('reps', []);
 function isMuted(n) { return muted.indexOf(n) >= 0; }
 function sheet(t, p, opts) {
   $('actT').textContent = t; $('actP').textContent = p || ''; var b = $('actB'); b.textContent = '';
-  opts.forEach(function (o) { var x = el('button', o.red ? 'btn-o wide danger' : 'btn-o wide', o.t); x.style.marginTop = '8px'; x.onclick = function () { $('actM').classList.remove('open'); o.f(); }; b.appendChild(x); });
+  opts.forEach(function (o) { var x = el('button', o.red ? 'btn-o wide danger' : 'btn-o wide', o.t); if (o.ic) withIco(x, o.ic); x.style.marginTop = '8px'; x.onclick = function () { $('actM').classList.remove('open'); o.f(); }; b.appendChild(x); });
   $('actX').onclick = function () { $('actM').classList.remove('open'); };
   $('actM').classList.add('open');
 }
@@ -1662,7 +1668,7 @@ function inspOpen(q) {
 function inspLoad(q) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
-  var L = $('inspL'); L.textContent = ''; L.appendChild(el('p', 'refn', '✨ ' + (window.LX_T || String)('Cerco') + ' «' + q + '»…'));
+  var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   mbCall({ a: 'insp', q: q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
@@ -1737,9 +1743,9 @@ function packLoad() {
     var k = it.s + (i < loc.length ? '-' + slug : '');
     var card = el('div', 'insc'), th = el('div', 'inth pkth'); th.appendChild(el('span', 'pke', it.e)); card.appendChild(th);
     card.appendChild(el('div', 'intt', it.t)); card.appendChild(el('div', 'inch', typeof it.d === 'string' ? it.d : (window.LX_T || String)(it.d.f) + ' ' + it.d.c));
-    var a = document.createElement('a'); a.className = 'btn'; a.href = it.l; a.target = '_blank'; a.rel = 'noopener'; a.textContent = (it.b === 'Biglietti' ? '🎟 ' : it.b === 'Prenota' ? '📅 ' : '🗺 ') + (window.LX_T || String)(it.b) + ' ↗';
+    var a = document.createElement('a'); a.className = 'btn'; a.href = it.l; a.target = '_blank'; a.rel = 'noopener'; withIco(a, it.b === 'Biglietti' ? 'ticket' : it.b === 'Prenota' ? 'cal' : 'pin', (window.LX_T || String)(it.b) + ' ↗');
     a.onclick = function () { track('idea-link-' + k); }; card.appendChild(a);
-    var go = el('button', 'btn-o wide', '➕ Mandalo'); go.type = 'button'; card.appendChild(go);
+    var go = withIco(el('button', 'btn-o wide', ''), 'plus', LXT('Mandalo')); go.type = 'button'; card.appendChild(go);
     var st = { u: it.l };
     go.onclick = function () { postAll(st.u, it.t); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.disabled = true; track('idea-manda-' + k); };
     if (it.v) st.u = it.v;
@@ -1747,7 +1753,7 @@ function packLoad() {
     L.appendChild(card); cards.push({ th: th, st: st, it: it, k: k, reg: i < loc.length ? cityRegion(c) : 'GB' });
   });
   IV.list = cards;
-  var wv = el('button', 'btn wide', '▶ ' + (window.LX_T || String)('Guarda i video delle idee')); wv.type = 'button'; wv.style.gridColumn = '1/-1'; wv.onclick = function () { ideaView(0); }; L.insertBefore(wv, top.nextSibling);
+  var wv = withIco(el('button', 'btn wide', ''), 'play', (window.LX_T || String)('Guarda i video delle idee')); wv.type = 'button'; wv.style.gridColumn = '1/-1'; wv.onclick = function () { ideaView(0); }; L.insertBefore(wv, top.nextSibling);
   L.appendChild(el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. I video vengono dai canali ufficiali e da YouTube.')));
   track('idee-viste-' + (loc.length ? 'altra-citta' : 'londra'));
   var fill = function (off) { return function (x) {
@@ -1764,6 +1770,31 @@ function packLoad() {
   if (loc.length) mbCall({ a: 'pack', qs: loc.map(function (x) { return x.q; }), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
   mbCall({ a: 'pack', qs: packLon().map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
 }
+/* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
+var ICO = {
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  ticket: '<path d="M3.5 7.5h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4z"/><path d="M14.5 7.5v10" stroke-dasharray="2 2.2"/>',
+  pin: '<path d="M12 21s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
+  spark: '<path d="M12 3.5l1.9 5 5 1.9-5 1.9-1.9 5-1.9-5-5-1.9 5-1.9z"/><path d="M18.5 3.5v3M17 5h3"/>',
+  chat: '<path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/>',
+  users: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9.5" r="2.4"/><path d="M16 14.2a4.6 4.6 0 0 1 5 4.8"/>',
+  copy: '<rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.5"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/>',
+  share: '<path d="M12 3.5v11M8 7.5l4-4 4 4M5 12.5v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
+  mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/>'
+};
+function icoEl(n) { var w = document.createElement('span'); w.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + (ICO[n] || '') + '</svg>'; return w.firstChild; }
+var EMOJI_LEAD = /^[☀-➿\uD83C-􏰀-\uDFFF️‍⭐⬆↔-↪⏩-⏺\s]+/;
+function withIco(b, n, label) {
+  if (!b) return b; var t = label != null ? label : b.textContent.replace(EMOJI_LEAD, '').trim();
+  b.textContent = ''; b.appendChild(icoEl(n)); b.appendChild(document.createTextNode(t)); b.classList.add('hasico'); return b;
+}
+function decorateStatic() {
+  [['invWA', 'chat'], ['invSh', 'share'], ['invCp', 'copy'], ['kMore', 'users'], ['haveInv', 'mail'], ['gdDemo', 'play']].forEach(function (x) { try { if ($(x[0]) && !$(x[0]).querySelector('.ico')) withIco($(x[0]), x[1]); } catch (e) {} });
+}
+setTimeout(decorateStatic, 0);
 /* ---- ▶ le idee come i Reel: video a tutto schermo dai canali ufficiali, sotto «Fatelo insieme» e «Prenota» ---- */
 var IV = { list: [], i: 0 };
 function ideaVidOf(o) { if (o.st && /^\.\/v\/[\w-]+\.mp4$/.test(o.st.u)) return o.st.u; return o.st && /^https:\/\/(www\.)?(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|vm\.tiktok\.com|facebook\.com)\//.test(o.st.u) ? o.st.u : ''; }
@@ -1777,7 +1808,7 @@ function ideaView(i) {
     var y0 = null; [$('ivP'), V.querySelector('.ivtop')].forEach(function (z) { z.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true }); z.addEventListener('touchend', function (e) { if (y0 === null) return; var d = e.changedTouches[0].clientY - y0; y0 = null; if (Math.abs(d) > 50) ideaViewAt(IV.i + (d < 0 ? 1 : -1)); }, { passive: true }); });
     document.addEventListener('keydown', function (e) { if (!V.classList.contains('open')) return; if (e.key === 'Escape') ideaViewClose(); if (e.key === 'ArrowDown' || e.key === 'ArrowRight') ideaViewAt(IV.i + 1); if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ideaViewAt(IV.i - 1); });
   }
-  $('ivGo').textContent = '💞 ' + LXT('Fatelo insieme'); $('ivGo').onclick = function () { ideaWhat(IV.list[IV.i]); };
+  withIco($('ivGo'), 'heart', LXT('Fatelo insieme')); $('ivGo').onclick = function () { ideaWhat(IV.list[IV.i]); };
   V.classList.add('open'); track('idee-video-apri'); ideaViewAt(i || 0);
 }
 function ideaViewAt(i) {
@@ -1796,7 +1827,7 @@ function ideaViewAt(i) {
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
-  var bk = $('ivBk'); bk.href = it.l; bk.textContent = (it.b === 'Biglietti' ? '🎟 ' : it.b === 'Prenota' ? '📅 ' : '🗺 ') + LXT(it.b) + ' ↗'; bk.onclick = function () { track('idea-link-' + o.k); };
+  var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' ? 'ticket' : it.b === 'Prenota' ? 'cal' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); };
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }
 function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; try { storiesRender(); } catch (e) {} }
@@ -1805,9 +1836,9 @@ function ideaWhat(o) {
   var it = o.it, id = ('pi-' + o.k).slice(0, 40), desc = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
   var mk = function () { var x = findIdea(id); if (x) { if (!x.v[me.name]) ideaAct({ t: 'idea', a: 'vote', id: id, on: true }); return findIdea(id); } var v = {}; v[me.name] = 1; ideaAct({ t: 'idea', a: 'add', i: { id: id, r: '', k: /^(bobbob|oxo|stafford-caines|romantico|brunch)/.test(o.k) ? 'cibo' : 'esperienza', p: clean(LXT(it.t), 60), o: clean(desc, 200), ts: Date.now(), v: v, q: '', u: it.l } }); return findIdea(id); };
   sheet('💞 ' + LXT('Cosa volete fare?'), LXT(it.t), [
-    { t: '💞 ' + LXT('Proponilo alla tua persona'), f: function () { mk(); track('idea-proponi-' + o.k); $('mh').textContent = LXT('Piano proposto: gli altri lo trovano in «Decidete insieme».'); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} } },
-    { t: '🗓 ' + LXT('Scegliete il giorno'), f: function () { var x = mk(); track('idea-giorno-' + o.k); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} if (x) { showPane('ideas'); pickDay(x); } } },
-    { t: '➕ ' + LXT('Manda il video nel cerchio'), f: function () { postAll(o.st.u, LXT(it.t)); track('idea-manda-' + o.k); } }
+    { ic: 'heart', t: LXT('Proponilo alla tua persona'), f: function () { mk(); track('idea-proponi-' + o.k); $('mh').textContent = LXT('Piano proposto: gli altri lo trovano in «Decidete insieme».'); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} } },
+    { ic: 'cal', t: LXT('Scegliete il giorno'), f: function () { var x = mk(); track('idea-giorno-' + o.k); ideaViewClose(); try { $('inspM').classList.remove('open'); } catch (e) {} if (x) { showPane('ideas'); pickDay(x); } } },
+    { ic: 'plus', t: LXT('Manda il video nel cerchio'), f: function () { postAll(o.st.u, LXT(it.t)); track('idea-manda-' + o.k); } }
   ]);
 }
 /* ---- 📍 le idee come «storie» in cima al feed: sempre a portata di dito, prima quelle con il video ufficiale del locale ---- */
@@ -2199,7 +2230,7 @@ function applyEv(d, who) {
   return null;
 }
 $('nw').addEventListener('click', function () { var b = $('feed'); b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }); unseen = 0; $('nw').hidden = true; });
-$('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unseen = 0; $('nw').hidden = true; } });
+$('feed').addEventListener('scroll', function () { if (unseen && atEnd()) { unseen = 0; $('nw').hidden = true; } var sc = this.scrollTop > 40, M = $('main'); if (M.classList.contains('scr') !== sc) M.classList.toggle('scr', sc); }, { passive: true });
 /* ---- sequenza: i Reel di ogni piattaforma, uno dopo l'altro ---- */
 var seq = null, seen = get('seen', {}), timer = null;
 function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n) && r.n !== me.name; }).length; } // i Reel che mandi tu non sono «nuovi» per te
@@ -2575,7 +2606,7 @@ function post(u, c) {
 
 /* ---- stato ---- */
 function status() {
-  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il vostro gruppo' : 'Il vostro cerchio') : 'Cerchio di ' + (names[0] || 'gruppo');
+  regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il vostro gruppo' : 'Con chi esci') : 'Con chi esci';
   var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
   $('app').classList.toggle('on', live);
   if ($('sp')) $('sp').hidden = !feed.length || !live; // «Guardate insieme» solo quando c'è qualcuno collegato
@@ -2966,7 +2997,7 @@ function soloNudge(u, t) {
   if (!me || me.role !== 'host' || Object.keys(allowed).length || Date.now() - soloT < 120000 || navigator.webdriver && !window.__soloTest) return;
   soloT = Date.now();
   sheet('👀 ' + LXT('Per ora lo vedi solo tu'), LXT('Mandalo a chi vuoi: arriva su WhatsApp con il video e un link per entrare con te in Reelta.'), [
-    { t: '💬 ' + LXT('Mandalo alla tua persona'), f: function () { INV_CTX = { u: u, t: clean(t || '', 80) }; track('invito-da-reel'); invite(); } },
+    { ic: 'chat', t: LXT('Mandalo alla tua persona'), f: function () { INV_CTX = { u: u, t: clean(t || '', 80) }; track('invito-da-reel'); invite(); } },
     { t: LXT('Più tardi'), f: function () {} }
   ]);
 }
@@ -3856,7 +3887,7 @@ function ritShow() {
   var w = el('button', 'btn-o', '▶ ' + LXT('Guardalo')); w.type = 'button'; w.style.marginTop = '8px'; w.onclick = function () { $('decM').classList.remove('open'); goReel(r.id); }; c.appendChild(w);
 }
 function ritAnswer(yes) {
-  var r = decCur; if (!r) return;
+  var r = decCur; if (!r) return; try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
   if (r.pack) {
     var it = r.pack; $('decC').className = yes ? 'r' : 'l';
     setTimeout(function () {
@@ -3883,8 +3914,15 @@ function ritAnswer(yes) {
     try { renderNov(); } catch (e) {}
   }, 230);
 }
+// 🎉 piccola festa per un match (niente se il telefono chiede meno movimento)
+function confetti() {
+  try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+  var C = ['#FF6A4D', '#FFC24D', '#4F46E5', '#E8445A', '#3BD3A8', '#F6E2B4'], box = el('div', 'cft');
+  for (var i = 0; i < 28; i++) { var p = el('i'); p.style.left = (5 + Math.random() * 90) + '%'; p.style.background = C[i % C.length]; p.style.animationDelay = (Math.random() * 0.25) + 's'; p.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px'); p.style.setProperty('--rt', (Math.random() * 720 - 360) + 'deg'); box.appendChild(p); }
+  document.body.appendChild(box); setTimeout(function () { box.remove(); }, 1900);
+}
 function ritMatchIn(r) {
-  var seen = get('rmatch', {}); if (seen[r.id]) { if (decMode === 'rit') ritShow(); return; } seen[r.id] = 1; put('rmatch', seen); track('rituale-match');
+  var seen = get('rmatch', {}); if (seen[r.id]) { if (decMode === 'rit') ritShow(); return; } seen[r.id] = 1; put('rmatch', seen); track('rituale-match'); confetti();
   try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
   decMode = 'rit'; var c = $('decC'), m = $('decM'); $('decT').textContent = '🗓 ' + LXT('Il piano del weekend'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
   c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, LXT('È un match!')));
@@ -3911,7 +3949,7 @@ function decAnswer(yes) {
   }, 230);
 }
 function matchIn(i) {
-  var seen = get('imatch', {}); if (seen[i.id]) return; seen[i.id] = 1; put('imatch', seen);
+  var seen = get('imatch', {}); if (seen[i.id]) return; seen[i.id] = 1; put('imatch', seen); confetti();
   try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
   var c = $('decC'), m = $('decM'); m.classList.add('open'); $('decB').hidden = true; decCur = null; c.className = ''; c.textContent = '';
   c.appendChild(el('div', 'big', '💞')); c.appendChild(el('h3', null, (circleSize() > 2 ? 'Siete tutti d’accordo!' : 'Siete d’accordo!')));
@@ -4312,7 +4350,7 @@ function guide(force) {
     'Sei dentro! Quello che vi mandate resta solo tra voi.',
     'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
   ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
-  $('gdGo').textContent = alone ? '✨ ' + LXT('Guarda le idee') : host ? '📨 Invita adesso' : 'Va bene'; $('gdGo').hidden = !host; // per chi è invitato basta «Ho capito» $('gdX').className = host ? 'btn-o wide' : 'btn';
+  if (alone) withIco($('gdGo'), 'spark', LXT('Guarda le idee')); else if (host) withIco($('gdGo'), 'mail', LXT('Invita adesso')); else $('gdGo').textContent = LXT('Va bene'); $('gdGo').hidden = !host; // per chi è invitato basta «Ho capito» $('gdX').className = host ? 'btn-o wide' : 'btn';
   $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (alone) { try { localStorage.setItem(LSG + 'packSeen', '1'); } catch (e) {} track('benvenuto-idee'); IV.list = packList(); ideaView(0); } else if (host) invite(); };
   $('gd').classList.add('open');
 }
