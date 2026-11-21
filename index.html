@@ -206,7 +206,7 @@
     </div>
     <button class="btn-o wide" id="sCancel" hidden style="margin-top:8px">Annulla</button>
     <div class="hint" id="sH" aria-live="polite"></div>
-    <button class="btn-o wide" id="bkR2" style="margin-top:10px">📂 Hai una copia di sicurezza? Ripristinala</button>
+    <button class="btn-o wide" id="bkR2" style="margin-top:10px">🔑 Hai un codice di recupero o una copia? Ripristina</button>
     <button class="btn-o" id="inf2" style="margin-top:10px">ℹ️ Come funziona e privacy</button>
   </div>
   <p style="font-size:14px;padding:0 4px">I Reel restano sui telefoni del cerchio. Non servono account né carte.</p>
@@ -321,7 +321,7 @@
     <ul><li>Reel ricevuti anche a telefono chiuso</li><li>Gruppi più grandi e più cerchi</li><li>Avvisi sul telefono per Reel e messaggi</li><li>Archivio illimitato e temi esclusivi</li></ul>
     <p>Oggi non si paga nulla. Plus sarà facoltativo, con prova gratuita e disdetta in un tocco, e le funzioni gratis restano gratis.</p></div>
   <div class="card" id="supC" hidden><h2>❤️ Sostieni Reelta</h2><p>Reelta è gratis e senza pubblicità. Se ti piace, puoi offrire un contributo libero, una volta sola. Non sblocca niente e non è un abbonamento.</p><a class="btn" id="supA" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">Offri un contributo</a></div>
-  <div class="card" id="bkC"><h2 data-e="💾">Copia di sicurezza</h2><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
+  <div class="card" id="bkC"><h2 data-e="💾">Copia di sicurezza</h2><div id="bkCl" hidden><h3 style="margin:0 0 6px">☁️ Copia automatica</h3><p class="hint" id="bkCp" style="margin-top:0"></p><button class="btn" id="bkCo">☁️ Attiva la copia automatica</button><button class="btn-o wide danger" id="bkCx" hidden>Disattiva la copia automatica</button></div><h3 style="margin:16px 0 6px">📄 Oppure un file</h3><p style="margin-top:0">Salva tutti i tuoi cerchi in un file protetto da password. Se cambi telefono o reinstalli Reelta, lo ricarichi e ritrovi tutto, senza nuovi inviti.</p><button class="btn-o wide" id="bkS">💾 Salva una copia</button><button class="btn-o wide" id="bkR">📂 Ripristina da una copia</button><div class="hint" id="bkH" aria-live="polite"></div></div>
   <div class="card"><button class="btn-o wide danger" style="margin-top:0" id="out">Esci da questo cerchio e cancellalo dal telefono</button></div>
 </div></section>
 
@@ -521,7 +521,7 @@ var LS = lsOf(REG.active);
 var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1 };
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
-function lsDel(k) { lsDel(k); }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
 function get(k, d) { try { var v = localStorage.getItem((GLOBALK[k] ? LSG : LS) + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 var feedSaveT = 0;
 function feedSaveNow() { clearTimeout(feedSaveT); feedSaveT = 0; put0('feed', feed); }
@@ -677,6 +677,103 @@ function applyBackup(data) {
   delete REG.prev; delete REG.after; regSet(REG);
   return { added: added, skipped: skipped };
 }
+/* ---- ☁️ copia automatica: cifrata qui sul telefono con il codice di recupero. Il server riceve solo un id (impronta del codice) e byte illeggibili ---- */
+var B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+function bkFmt(n) { return n.replace(/(.{4})(?!$)/g, '$1-'); }
+function bkCode() { var b = crypto.getRandomValues(new Uint8Array(20)), s = ''; for (var i = 0; i < 20; i++) s += B32[b[i] & 31]; return bkFmt(s); }
+function bkNorm(c) { var n = String(c || '').toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1').replace(/[^0-9A-Z]/g, ''); return n.length === 20 && n.split('').every(function (ch) { return B32.indexOf(ch) >= 0; }) ? n : ''; }
+function bkIds(c) {
+  var n = bkNorm(c);
+  return Promise.all([crypto.subtle.digest('SHA-256', te8.encode('reelta-bk-id:' + n)), crypto.subtle.digest('SHA-256', te8.encode('reelta-bk-key:' + n))])
+    .then(function (h) { return crypto.subtle.importKey('raw', h[1], 'AES-GCM', false, ['encrypt', 'decrypt']).then(function (k) { return { id: mbEnc(h[0]), key: k }; }); });
+}
+function gzOut(str) { if (typeof CompressionStream !== 'function') return Promise.resolve(null); return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer().catch(function () { return null; }); }
+function gzIn(buf) { return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); }
+function bkSeal(c, obj) {
+  var js = JSON.stringify(obj);
+  return Promise.all([bkIds(c), gzOut(js)]).then(function (v) {
+    var iv = crypto.getRandomValues(new Uint8Array(12)), raw = v[1] || te8.encode(js);
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, v[0].key, raw).then(function (e) { return { id: v[0].id, data: JSON.stringify({ app: 'reelta-cloud', v: 1, z: v[1] ? 1 : 0, iv: b64e(iv), data: b64e(e) }) }; });
+  });
+}
+function bkOpen(c, text) {
+  var box = JSON.parse(text);
+  return bkIds(c).then(function (x) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(box.iv) }, x.key, b64d(box.data)); })
+    .then(function (raw) { return box.z ? gzIn(raw) : new TextDecoder().decode(raw); }).then(JSON.parse);
+}
+function cloudOn() { return srvOn() && !!bkNorm(lsGet(LSG + 'bkc')); }
+var cloudBusy = false;
+// salva solo se qualcosa è cambiato, al massimo ogni 6 ore (meno dati e batteria); force: subito
+function cloudSync(force) {
+  if (!cloudOn() || cloudBusy || navigator.onLine === false) return Promise.resolve(false);
+  if (!force && Date.now() - (+(lsGet(LSG + 'bkt') || 0)) < 6 * 36e5) return Promise.resolve(false);
+  var data = bkCollect(); if (!data.circles.length) return Promise.resolve(false);
+  cloudBusy = true;
+  return crypto.subtle.digest('SHA-256', te8.encode(JSON.stringify([data.circles, data.global]))).then(function (h) {
+    var sig = hex(h).slice(0, 16);
+    if (!force && sig === lsGet(LSG + 'bkh')) { lsSet(LSG + 'bkt', String(Date.now())); return false; }
+    return bkSeal(lsGet(LSG + 'bkc'), data).then(function (x) {
+      if (x.data.length > 2800000) { lsSet(LSG + 'bkbig', '1'); return false; }
+      lsDel(LSG + 'bkbig');
+      return mbCall({ a: 'bkput', id: x.id, data: x.data }).then(function (r) { if (r && r.ok) { lsSet(LSG + 'bkh', sig); lsSet(LSG + 'bkt', String(Date.now())); put('bkAt', Date.now()); return true; } return false; });
+    });
+  }).catch(function () { return false; }).then(function (ok) { cloudBusy = false; cloudUI(); return ok; });
+}
+function cloudUI() {
+  var w = $('bkCl'); if (!w) return; w.hidden = !srvOn();
+  var on = cloudOn(), t = +(lsGet(LSG + 'bkt') || 0);
+  $('bkCp').textContent = on ? LXT('Attiva ✓ Quando cambia qualcosa salvo da sola una copia cifrata di tutti i tuoi cerchi.') + (t ? ' ' + LXT('Ultima copia:') + ' ' + new Date(t).toLocaleString(window.LX_LANG || 'it', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '') + (lsGet(LSG + 'bkbig') ? ' ' + LXT('⚠️ I cerchi sono troppo grandi per la copia automatica: salva anche un file qui sopra.') : '')
+    : LXT('Se perdi o cambi telefono, con un codice ritrovi tutto. La copia è cifrata qui sul telefono: il server non può leggerla.');
+  $('bkCo').textContent = on ? LXT('🔑 Mostra il codice di recupero') : LXT('☁️ Attiva la copia automatica'); $('bkCo').className = on ? 'btn-o wide' : 'btn';
+  $('bkCx').hidden = !on;
+}
+function cloudStart() {
+  if (!srvOn()) return;
+  if (cloudOn()) { ask(LXT('🔑 Il tuo codice di recupero'), lsGet(LSG + 'bkc') + '\n\n' + LXT('Serve per ritrovare tutto su un altro telefono: tienilo al sicuro.'), 'Ok'); return; }
+  var c = bkCode();
+  try { if (navigator.clipboard) navigator.clipboard.writeText(c).catch(function () {}); } catch (e) {}
+  ask(LXT('🔑 Il tuo codice di recupero'), c + '\n\n' + LXT('Scrivilo su carta o salvalo nelle note (l’ho anche copiato). Serve per ritrovare tutto su un altro telefono: senza codice la copia non si apre, nemmeno da noi.'), LXT('L’ho salvato')).then(function (y) {
+    if (!y) return;
+    lsSet(LSG + 'bkc', c); lsDel(LSG + 'bkh'); track('copia-auto-on'); cloudUI(); $('bkH').textContent = LXT('Salvo la prima copia…');
+    cloudSync(true).then(function (ok) { $('bkH').textContent = ok ? LXT('Copia automatica attiva ✓') : LXT('Attivata: la prima copia parte appena c’è rete.'); });
+  });
+}
+function cloudStop() {
+  ask(LXT('Disattivare la copia automatica?'), LXT('Cancello la copia dal server. I tuoi cerchi su questo telefono restano come sono.'), LXT('Disattiva'), true).then(function (y) {
+    if (!y) return; var c = lsGet(LSG + 'bkc');
+    if (bkNorm(c)) bkIds(c).then(function (x) { return mbCall({ a: 'bkdel', id: x.id }); }).catch(function () {});
+    ['bkc', 'bkh', 'bkt', 'bkbig'].forEach(function (k) { lsDel(LSG + k); }); cloudUI(); $('bkH').textContent = LXT('Copia automatica disattivata.');
+  });
+}
+function askCode() {
+  var i = $('pwI'), ph = i.placeholder, ty = i.type; i.type = 'text'; i.setAttribute('autocapitalize', 'characters'); i.placeholder = 'XXXX-XXXX-XXXX-XXXX-XXXX';
+  return askPw(LXT('Codice di recupero'), LXT('Scrivi il codice che hai salvato quando hai attivato la copia automatica.')).then(function (v) { i.type = ty; i.placeholder = ph; i.removeAttribute('autocapitalize'); return v; });
+}
+async function cloudRestore() {
+  if (!srvOn()) return;
+  for (;;) {
+    var c = await askCode(); if (!c) return;
+    var n = bkNorm(c);
+    if (!n) { if (!(await ask(LXT('Codice non valido'), LXT('Il codice ha 20 caratteri, in gruppi da 4. Controlla e riprova.'), LXT('Riprova')))) return; continue; }
+    var x = await bkIds(n), r = null, why = '';
+    try { r = await mbCall({ a: 'bkget', id: x.id }, 40000); } catch (e) { why = /404/.test(String(e && e.message)) ? 'none' : 'net'; }
+    if (r && r.error === 'limite') why = 'lim';
+    if (why === 'none') { if (!(await ask(LXT('Nessuna copia con questo codice'), LXT('Controlla di averlo scritto giusto. Se la copia automatica era stata disattivata, il codice non vale più.'), LXT('Riprova')))) return; continue; }
+    if (why || !r || !r.data) { await ask(LXT('Non riesco a scaricare la copia'), why === 'lim' ? LXT('Troppi tentativi per oggi: riprova domani.') : LXT('Controlla la connessione e riprova.'), 'Ok'); return; }
+    var data = null; try { data = await bkOpen(n, r.data); } catch (e) { data = null; }
+    if (!data || !Array.isArray(data.circles)) { await ask(LXT('Non riesco ad aprire la copia'), LXT('Il codice non corrisponde a questa copia.'), 'Ok'); return; }
+    lsSet(LSG + 'bkc', bkFmt(n)); lsSet(LSG + 'bkt', String(Date.now()));
+    try { sessionStorage.setItem('lxRestore', JSON.stringify(data)); } catch (e) {}
+    var res = applyBackup(data); track('copia-auto-ripristino');
+    await ask('Copia ripristinata ✓', res.added ? 'Ho ripristinato ' + res.added + (res.added === 1 ? ' cerchio' : ' cerchi') + (res.skipped ? ' (' + res.skipped + ' c’erano già)' : '') + '. Reelta si riapre adesso.' : 'Tutti i cerchi della copia sono già su questo telefono.', 'Ok');
+    history.replaceState(null, '', location.pathname); safeReload(); return;
+  }
+}
+function restoreChoice() {
+  if (!srvOn()) { pickBackup(); return; }
+  sheet(LXT('Ripristina i tuoi cerchi'), '', [{ t: '🔑 ' + LXT('Ho un codice di recupero'), f: function () { cloudRestore(); } }, { t: '📂 ' + LXT('Ho un file di copia'), f: pickBackup }]);
+}
+document.addEventListener('visibilitychange', function () { if (document.hidden) cloudSync(false); });
 function goGroupInvite() {
   if (!canCreate('group') && !REG.list.some(function (x) { return x.id !== REG.active && circKind(x.id) === 'group'; })) { ask('Per ora non puoi creare gruppi', 'Reelta è in beta su invito: i nuovi cerchi li crea solo chi gestisce l’app. Chiedi a lui di invitarvi in un gruppo.', 'Ho capito'); return; }
   var g = REG.list.filter(function (x) { return x.id !== REG.active && circKind(x.id) === 'group'; })[0];
@@ -842,7 +939,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v168', errLog = [];
+var APP_VER = 'v169', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -906,6 +1003,13 @@ function bugFixes() {
 }
 /* conteggio anonimo: una volta al giorno il telefono dice solo "sono attivo", con un codice casuale.
    Niente nomi, messaggi o Reel. I cerchi sono contati con un'impronta irreversibile, per sapere quanti sono, non quali. */
+// imbuto anonimo, solo numeri del cerchio aperto: quanti Reel, quanti diventano piani, quanti hanno un giorno, quanti si fanno
+function funnel() {
+  try {
+    var n = Date.now(), c = function (x) { return Math.max(0, Math.min(999, x | 0)); }, P = (typeof ideas !== 'undefined' ? ideas : []).filter(function (i) { return i && n - (+i.ts || 0) < 30 * 864e5; });
+    return { r7: c((typeof feed !== 'undefined' ? feed : []).filter(function (r) { return r && n - (+r.ts || 0) < 7 * 864e5; }).length), p30: c(P.length), w30: c(P.filter(function (i) { return !!i.w; }).length), d30: c(P.filter(function (i) { return !!i.d; }).length) };
+  } catch (e) { return {}; }
+}
 function pingDay() {
   if (!FEEDBACK.url || !FEEDBACK.anon || !window.crypto || !crypto.subtle) return;
   var today = new Date().toISOString().slice(0, 10), last = ''; try { last = localStorage.getItem(LSG + 'pingDay') || ''; } catch (e) {} if (last === today) return;
@@ -913,7 +1017,7 @@ function pingDay() {
   var hosts = []; (REG.list || []).forEach(function (x) { try { var m = JSON.parse(localStorage.getItem(lsOf(x.id) + 'me') || 'null'); if (m && m.hostId && (m.role === 'host' || m.joined)) hosts.push(m.hostId); } catch (e) {} });
   Promise.all(hosts.slice(0, 12).map(function (h) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode('reelta-c:' + h)).then(function (d) { return Array.from(new Uint8Array(d).slice(0, 6), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }); })).then(function (circ) {
     return fetch(FEEDBACK.url + '/rest/v1/pings', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: FEEDBACK.anon, Prefer: 'return=minimal' },
-      body: JSON.stringify({ iid: iid, plat: isIOS ? 'ios' : isAndroid ? 'android' : 'other', ver: APP_VER, circ: circ }) });
+      body: JSON.stringify(Object.assign({ iid: iid, plat: isIOS ? 'ios' : isAndroid ? 'android' : 'other', ver: APP_VER, circ: circ }, funnel())) });
   }).then(function (r) { if (r && (r.ok || r.status === 409)) lsSet(LSG + 'pingDay', today); }).catch(function () {});
 }
 var DEVBOX = 'reeltaDevAlerts_v1_7Hq2xP9mL4nB8sK3';
@@ -2267,6 +2371,7 @@ function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
   var jobs = me.role === 'host' ? Object.keys(allowed).map(function (k) { return { sec: k, dir: 'h', name: allowed[k] }; }).concat(codesNow().map(function (x) { return { sec: me.hostId + '_' + x.c, dir: 'j' }; })).concat([{ sec: 'door_' + me.hostId, dir: 'd' }]) : (me.tok ? [{ sec: me.tok, dir: 'g' }] : []);
+  if (me.role !== 'host' && !me.joined && me.code && me.hostId && joinTries > 0) jobs.push({ sec: me.hostId + '_' + me.code, dir: 'w' });
   var ckP = cbOn(); if (ckP) jobs.push({ sec: ckP, dir: 'c' });
   Promise.all(jobs.map(function (j) {
     return mbBox(j.sec, j.dir).then(function (box) {
@@ -2275,13 +2380,14 @@ function mbPull(force) {
         return items.reduce(function (p, it) {
           return p.then(function () { return mbOpen(j.sec, it.payload).then(function (d) {
             if (!d || typeof d !== 'object' || MBT[d.t] === undefined) return;
-            if (j.dir === 'j') { if (d.t === 'jhi') hostJoinVirt(d); }
+            if (j.dir === 'w') { if (d.t === 'hello' && !me.joined && !blocked) { guestData(d); track('entrato-senza-host'); } }
+            else if (j.dir === 'j') { if (d.t === 'jhi') hostJoinVirt(d); }
             else if (j.dir === 'd') { if (d.t === 'knock') hostKnock(d); }
             else if (j.dir === 'c') { if ((d.t === 'reel' || d.t === 'msg') && typeof d.cb === 'string' && d.cb !== me.name && (get('all', []) || []).indexOf(d.cb) >= 0) guestData(d); }
             else if (j.dir === 'h') { if (allowed[j.sec]) hostData({ ok: true, open: false, k: j.sec, name: allowed[j.sec], send: function () {} }, d); }
             else guestData(d);
           }, function () {}); });
-        }, Promise.resolve()).then(function () { if (j.dir === 'c') { put('cbAt', items[items.length - 1].id); return; } return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
+        }, Promise.resolve()).then(function () { if (j.dir === 'w') return; if (j.dir === 'c') { put('cbAt', items[items.length - 1].id); return; } return mbCall({ a: 'ack', box: box, upto: items[items.length - 1].id }); });
       }).then(function () { var was = srvSeen; srvSeen = Date.now(); if (me && Date.now() - was > 60000) status(); });
     });
   })).catch(function () {}).then(function () { mbBusy = false; });
@@ -2375,7 +2481,7 @@ function hostKnock(d) {
 var joinTries = 0, joinT = null;
 function srvJoin() {
   clearTimeout(joinT);
-  if (!srvOn() || !me || me.role === 'host' || (me.joined && !me.rejoin) || blocked || !me.code || !me.tok || !me.hostId || joinTries >= 12) return;
+  if (!srvOn() || !me || me.role === 'host' || (me.joined && !me.rejoin && !me.pend) || blocked || !me.code || !me.tok || !me.hostId || joinTries >= 12) return;
   joinTries++;
   mbPut(me.hostId + '_' + me.code, 'j', { t: 'jhi', n: me.name, k: me.tok, c: me.code }, joinTries > 1 && joinTries % 4).catch(function () {});
   setTimeout(function () { mbPull(true); }, 4000);
@@ -2401,7 +2507,7 @@ function srvStart() {
   if (me.rejoin && Date.now() - me.rejoin > 2 * 864e5) { delete me.rejoin; put('me', me); }
   setTimeout(function () { mbPull(true); }, 1500);
   setTimeout(devAlerts, 5000); document.addEventListener('visibilitychange', function () { if (!document.hidden) devAlerts(); });
-  if (me.role !== 'host' && (!me.joined || me.rejoin)) setTimeout(function () { if (!me.joined || me.rejoin) srvJoin(); }, me.rejoin ? 1500 : 7000);
+  if (me.role !== 'host' && (!me.joined || me.rejoin || me.pend)) setTimeout(function () { if (!me.joined || me.rejoin || me.pend) srvJoin(); }, me.rejoin ? 1500 : 7000);
   setTimeout(function () { knock(false); }, 12000);
   if (pushOK() && Notification.permission === 'granted') pushSync();
   else if (pushOK() && Notification.permission === 'default' && !get('pushAsked', 0) && (me.joined || me.role === 'host')) {
@@ -2429,6 +2535,7 @@ function hostHi(c, d) {
           if (prevN && people().indexOf(nm) >= 0) nm = prevN; // nome già usato da un altro: resta quello di prima
           if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
+          if (code && srvOn()) mbBox(me.hostId + '_' + code, 'w').then(function (b) { return mbCall({ a: 'ack', box: b, upto: 9e15 }); }).catch(function () {}); // il pacchetto di benvenuto non serve più
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
           c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
@@ -2455,7 +2562,16 @@ function hostHi(c, d) {
 }
 function invLang() { var v = ''; try { v = localStorage.getItem(LSG + 'invLang') || ''; } catch (e) {} return /^(it|en|es)$/.test(v) ? v : (window.LX_LANG || 'it'); }
 function homeUrl() { return window.MIG_HOME && location.protocol.indexOf('http') === 0 && !/^(localhost|127\.)/.test(location.hostname) ? window.MIG_HOME : location.origin + location.pathname.replace(/index\.html$/, ''); } // i link da mandare puntano sempre al nuovo indirizzo
-function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); return homeUrl() + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
+// pacchetto di benvenuto: quando nasce un invito, il creatore lascia nella casella dell'invito (cifrata con il codice del link)
+// lo stato del cerchio. Chi apre il link entra subito anche se il creatore ha Reelta chiusa; il creatore lo registra appena la riapre.
+function welcomePut(c) {
+  if (!srvOn() || !me || me.role !== 'host') return;
+  try {
+    var h = slimHello({ t: 'hello', w: 1, ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: {}, aka: aka });
+    mbPut(me.hostId + '_' + c, 'w', h, true).catch(function () {});
+  } catch (e) {}
+}
+function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); welcomePut(c); return homeUrl() + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
 function invLangUI() {
   var box = $('invL'); if (!box) return; box.textContent = '';
   [['it', '🇮🇹 Italiano'], ['en', '🇬🇧 English'], ['es', '🇪🇸 Español']].forEach(function (x) {
@@ -2553,10 +2669,11 @@ function guestData(d) {
       if ((d.t === 'hello' || d.t === 'people') && Array.isArray(d.all)) put('all', d.all.slice(0, 50).map(function (x) { return clean(x, 30); }).filter(Boolean));
       if ((d.t === 'hello' || d.t === 'people') && typeof d.ck === 'string' && /^[a-f0-9]{32}$/.test(d.ck) && d.ck !== get('ck', '')) { put('ck', d.ck); put('cbAt', 0); setTimeout(pushSync, 1500); }
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
-      if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; put('me', me); }
+      if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; if (d.w) me.pend = 1; put('me', me); }
+      else if (d.t === 'hello' && !d.w && me.pend) { delete me.pend; put('me', me); }
       if (d.t === 'hello') { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); status(); $('mh').textContent = '';
         var ob = outbox; outbox = []; put('outbox', []); ob.forEach(function (o) { gSend(o && o.t ? o : { t: 'reel', r: o }); }); if (tab === 'chat') renderChat(true);
-        clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
+        if (!d.w) clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
         if (d.aka && typeof d.aka === 'object') Object.keys(d.aka).slice(0, 50).forEach(function (o) { renameIn(o, d.aka[o]); });
         if (d.pics && typeof d.pics === 'object') Object.keys(d.pics).slice(0, 20).forEach(function (n) { if (n !== me.name) setPic(n, d.pics[n]); });
         if (me.pic !== undefined) gSend({ t: 'pf', p: me.pic || '' });
@@ -3204,7 +3321,7 @@ function cleanV(v) { var o = {}; if (v && typeof v === 'object') Object.keys(v).
 function normIdea(i, who) {
   if (!i || typeof i.id !== 'string' || i.id.length > 40) return null;
   var p = clean(i.p, 60); if (!p) return null;
-  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), f: cleanF(i.f), d: !!i.d, w: /^\d{4}-\d{2}-\d{2}$/.test(i.w || '') ? i.w : '', q: clean(i.q || '', 60), u: /^https:\/\/[^\s<>"]{8,300}$/.test(i.u || '') ? String(i.u) : '' };
+  return { id: clean(i.id, 40), r: typeof i.r === 'string' ? clean(i.r, 40) : '', k: KINDS[i.k] ? i.k : 'altro', p: p, o: clean(i.o, 200), n: who || clean(i.n, 30) || 'Ospite', ts: +i.ts || Date.now(), v: cleanV(i.v), f: cleanF(i.f), d: !!i.d, w: /^\d{4}-\d{2}-\d{2}$/.test(i.w || '') ? i.w : '', q: clean(i.q || '', 60), u: /^https:\/\/[^\s<>"]{8,300}$/.test(i.u || '') ? String(i.u) : '', wa: Math.max(0, +i.wa || 0) || undefined, da: Math.max(0, +i.da || 0) || undefined };
 }
 function findIdea(id) { return ideas.filter(function (x) { return x.id === id; })[0]; }
 function ideasChanged(rid) {
@@ -3223,8 +3340,10 @@ function applyIdea(d, who) {
   }
   var x = findIdea(d.id); if (!x) return null;
   if (d.a === 'vote') { var n = who || clean(d.n, 30); if (!n) return null; var was = isMatch(x); if (d.on) x.v[n] = 1; else delete x.v[n]; ideasChanged(); if (!was && isMatch(x)) matchIn(x); return { t: 'idea', a: 'vote', id: x.id, on: !!d.on, n: n }; }
-  if (d.a === 'when') { x.w = /^\d{4}-\d{2}-\d{2}$/.test(d.w || '') ? d.w : ''; ideasChanged(); return { t: 'idea', a: 'when', id: x.id, w: x.w }; }
-  if (d.a === 'done') { x.d = !!d.on; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d }; }
+  // giorno e «fatto»: vince la modifica più recente, uguale su tutti i telefoni anche se arrivano in ordine diverso (es. due offline)
+  var at = Math.min(+d.at || 0, Date.now() + 6e4); if (!at && who === me.name) at = Date.now();
+  if (d.a === 'when') { if (at && (+x.wa || 0) > at) return null; x.w = /^\d{4}-\d{2}-\d{2}$/.test(d.w || '') ? d.w : ''; if (at) x.wa = at; ideasChanged(); return { t: 'idea', a: 'when', id: x.id, w: x.w, at: at || undefined }; }
+  if (d.a === 'done') { if (at && (+x.da || 0) > at) return null; x.d = !!d.on; if (at) x.da = at; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d, at: at || undefined }; }
   // «com'è andata?» dopo la data del piano: ognuno risponde con un tocco; «non ci siamo andati» toglie la data, così si può riprogrammare
   if (d.a === 'feel') { var fn = who || clean(d.n, 30), fe = FEEL.indexOf(d.e) >= 0 ? d.e : ''; if (!fn || !fe) return null; x.f = x.f || {}; x.f[fn] = fe; if (fe === 'no') { if (!Object.keys(x.f).some(function (k) { return x.f[k] !== 'no'; })) x.w = ''; } else x.d = true; ideasChanged(); if (fn !== me.name && fe !== 'no') noteIn('idea', fn, x.p + ' ' + fe); return { t: 'idea', a: 'feel', id: x.id, e: fe, n: fn }; }
   if (d.a === 'del') { ideas = ideas.filter(function (y) { return y !== x; }); ideasChanged(x.r); return { t: 'idea', a: 'del', id: x.id }; }
@@ -3890,13 +4009,15 @@ function backupNudge() {
   try {
     var last = +get('bkAt', 0), first = +get('bkFirst', 0), now = Date.now();
     if (!first) { put('bkFirst', now); return; }
+    if (cloudOn()) return;
     if (now - Math.max(last, first) < 7 * 864e5 || !feed.length) return;
     put('bkFirst', now);
-    ask('💾 Salviamo una copia?', 'Se cancelli l’app o cambi telefono, con una copia ritrovi tutti i tuoi cerchi senza nuovi inviti. Ci vogliono 10 secondi.', 'Salva adesso').then(function (y) { if (y) { showPane('circle'); bkSave(); } });
+    if (srvOn()) ask('💾 Attiviamo la copia automatica?', 'Se perdi o cambi telefono, con un codice ritrovi tutti i tuoi cerchi senza nuovi inviti. È cifrata sul telefono e si attiva in 10 secondi.', 'Attiva').then(function (y) { if (y) cloudStart(); });
+    else ask('💾 Salviamo una copia?', 'Se cancelli l’app o cambi telefono, con una copia ritrovi tutti i tuoi cerchi senza nuovi inviti. Ci vogliono 10 secondi.', 'Salva adesso').then(function (y) { if (y) { showPane('circle'); bkSave(); } });
   } catch (e) {}
 }
 function begin() {
-  keepData(); setTimeout(backupNudge, 4000);
+  keepData(); setTimeout(backupNudge, 4000); setTimeout(function () { cloudSync(false); }, 20000);
   if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
   showPane('main'); render(); status(); seqLabel();
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
@@ -4101,7 +4222,8 @@ $('bugSend').addEventListener('click', bugSend);
 $('bugCp').addEventListener('click', function () { var t = bugText(); if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { $('bugH').textContent = 'Copiato ✓ Incollalo in un messaggio.'; }, function () { $('bugH').textContent = t; }); else $('bugH').textContent = t; });
 $('bkS').addEventListener('click', function () { bkSave().catch(function () { $('bkH').textContent = 'Non sono riuscito a creare la copia.'; }); });
 function pickBackup() { $('bkF').value = ''; $('bkF').click(); }
-$('bkR').addEventListener('click', pickBackup); $('bkR2').addEventListener('click', pickBackup);
+$('bkR').addEventListener('click', restoreChoice); $('bkR2').addEventListener('click', restoreChoice);
+$('bkCo').addEventListener('click', cloudStart); $('bkCx').addEventListener('click', cloudStop); cloudUI();
 $('bkF').addEventListener('change', function () { var f = $('bkF').files[0]; if (!f) return; if (f.size > 20e6) { ask('File troppo grande', 'Questo non sembra una copia di Reelta.', 'Ho capito'); return; } f.text().then(bkRestore); });
 $('invKill').addEventListener('click', function () { ask('Annullare gli inviti già mandati?', 'I link d’invito mandati finora smetteranno di funzionare. Chi è già nel cerchio resta dentro. Per invitare qualcuno ne manderai uno nuovo.', 'Annulla inviti', true).then(function (y) { if (y) { put('codes', []); $('ch').textContent = 'Fatto: i vecchi inviti non funzionano più.'; } }); });
 $('csend').addEventListener('click', sendMsg);
