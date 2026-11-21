@@ -842,7 +842,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v166', errLog = [];
+var APP_VER = 'v167', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1169,7 +1169,7 @@ function inspLoad(q) {
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   mbCall({ a: 'insp', q: q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
-    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
+    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee già pronte.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
     if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); return; }
     x.items.forEach(function (v) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
@@ -2244,7 +2244,7 @@ function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(f
 function mbCall(body, ms) { // con rete pessima la richiesta si ferma da sola invece di restare appesa per minuti
   var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix') ? 40000 : 15000)) : 0;
   return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
-    .then(function (r) { clearTimeout(tt); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
+    .then(function (r) { clearTimeout(tt); if (r.status === 429) return r.json().catch(function () { return { error: 'limite' }; }); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
 }
 function mbPut(sec, dir, m, quiet) {
   if (!srvOn() || MBT[m.t] === undefined) return Promise.resolve(false);
@@ -2832,6 +2832,7 @@ function mediaSend(file) {
     }).then(function (r) {
       var ct = new Blob([r[1]]);
       return mbCall({ a: 'up', sz: ct.size, n: mediaRecipients() }).then(function (up) {
+        if (up && up.error === 'limite') throw new Error('Per oggi basta video|Oggi avete mandato tanti video e foto: i prossimi partono domani. Link e messaggi funzionano come sempre.');
         if (!up || !up.id || !up.url) throw new Error('Invio non riuscito|Controlla la connessione e riprova.');
         return fetch(up.url, { method: 'PUT', body: ct, headers: { 'Content-Type': 'application/octet-stream' } }).then(function (res) {
           if (!res.ok) throw new Error('Invio non riuscito|Controlla la connessione e riprova.');
@@ -3055,7 +3056,7 @@ function aiBox(r) {
   }
   function run(focus, img) {
     ab.hidden = false; out.hidden = true; ab.disabled = true; ab.textContent = focus || img ? '✨ Cerco ' + (focus || 'nello screenshot') + '…' : '✨ Guardo il video…'; track('ai-video');
-    aiAsk(r, '', [], focus, img).then(show, function () { ab.disabled = false; ab.textContent = r.n === me.name ? 'Non ci sono riuscito: riprova tra poco.' : 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; });
+    aiAsk(r, '', [], focus, img).then(show, function (e) { ab.disabled = false; ab.textContent = e && e.message === 'limite' ? 'Per oggi l’AI ha finito i suggerimenti: domani si ricarica.' : r.n === me.name ? 'Non ci sono riuscito: riprova tra poco.' : 'Non ci sono riuscito: chiedilo a ' + r.n + ' qui sotto.'; });
   }
   ab.onclick = function () { run(''); };
   box.appendChild(ab); box.appendChild(out); box.appendChild(aiFocusRow(function (t, img) { run(t, img); }));
@@ -3141,7 +3142,7 @@ function aiPlan(focus, img) {
     out.textContent = (x.sum ? '✨ ' + x.sum : '') + (sure ? '' : ' Scegli tu qui sotto: ci metti un attimo.'); out.hidden = !out.textContent;
     if (sure && x.p && x.k !== 'altro') { var lk = el('div', 'ailinks'); linksFor({ k: x.k, p: clean(x.p, 60), q: aiLast.q }).forEach(function (L) { var a = el('a', 'chip', L.t); a.href = L.u; a.target = '_blank'; a.rel = 'noopener'; lk.appendChild(a); }); out.appendChild(lk); }
     ideaSug();
-  }, function () { b.hidden = false; $('idm').classList.remove('auto'); $('ikS').hidden = true; b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
+  }, function (e) { b.hidden = false; $('idm').classList.remove('auto'); $('ikS').hidden = true; b.disabled = false; b.classList.remove('busy'); lb.textContent = '✨ Riconosci dal video'; out.textContent = e && e.message === 'limite' ? 'Per oggi l’AI ha finito i suggerimenti: domani si ricarica. Intanto scegli tu qui sotto.' : 'Non sono riuscito a capirlo dal video: scegli tu qui sotto.'; out.hidden = false; });
 }
 /* ---- consiglia Reelta: l'app a un'altra coppia, che crea il suo cerchio ---- */
 // data di arrivo in Reelta: decide quali traguardi valgono per questo telefono (i primi tengono i più facili)
@@ -4349,7 +4350,7 @@ function aiNext() {
   if (aiBusy || !aiQ.length || document.hidden) return; var r = aiQ.shift(); if (r.aiX || !find(r.id)) { aiNext(); return; }
   var day = new Date().toISOString().slice(0, 10), c = get('aiDay', { d: '', n: 0 }); if (c.d !== day) c = { d: day, n: 0 }; if (c.n >= 15) { aiQ = []; return; }
   c.n++; put('aiDay', c); aiBusy = true;
-  setTimeout(function () { aiAsk(r, '', [], '').then(function (x) { var o = find(r.id); if (o && !o.aiX) { o.aiX = x; put('feed', feed); try { refresh(o); } catch (e) {} } }, function () {}).then(function () { aiBusy = false; aiNext(); }); }, 1500);
+  setTimeout(function () { aiAsk(r, '', [], '').then(function (x) { var o = find(r.id); if (o && !o.aiX) { o.aiX = x; put('feed', feed); try { refresh(o); } catch (e) {} } }, function (e) { if (e && e.message === 'limite') { put('aiDay', { d: day, n: 99 }); aiQ = []; } }).then(function () { aiBusy = false; aiNext(); }); }, 1500);
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) aiNext(); });
 /* ---- 📲 «Condividi → Reelta» su iPhone, con un Comando Rapido di Apple ----
