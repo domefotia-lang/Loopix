@@ -662,6 +662,7 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 @keyframes cfall{to{transform:translate(var(--dx),105vh) rotate(var(--rt));opacity:.9}}
 .skel .inth{background:var(--s2);border-radius:12px;aspect-ratio:9/12}.skl{height:11px;border-radius:6px;background:var(--s2);margin-top:8px;width:90%}.skl.s2{width:60%}
 @media (prefers-reduced-motion:no-preference){.skel .inth,.skl{animation:skp 1.2s ease-in-out infinite}}@keyframes skp{50%{opacity:.45}}
+.aic{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 10px;flex:none}.aic[hidden]{display:none}.aici{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--t);text-align:left;padding:2px 0;cursor:pointer}.aici .ico{color:var(--g);margin:0;width:20px;height:20px}.aict{min-width:0;display:flex;flex-direction:column;line-height:1.25}.aict b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.aict span{font-size:12.5px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.aicb{flex:none;background:var(--g);color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:9px 12px;border-radius:999px;white-space:nowrap}html.light .aicb,html.pop .aicb{color:#fff}
 #inspT{flex-shrink:0}.linkb{background:none;border:0;color:var(--g);font-weight:700;font-size:14.5px;padding:2px 0 10px;cursor:pointer;text-align:left}.stor{display:flex;gap:10px;overflow-x:auto;padding:2px 14px 6px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stor::-webkit-scrollbar{display:none}
 .sto{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--t);position:relative;cursor:pointer}
 .stor-r{width:58px;height:58px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,#f5b14c,#e8445a,#c13584,#f5b14c);display:block}.sto.seen .stor-r{background:var(--line,#555)}
@@ -1350,7 +1351,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v163', errLog = [];
+var APP_VER = 'v164', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2041,6 +2042,7 @@ function build(r) {
   nd.kb = el('button', 'keepb'); nd.kb.onclick = function () { keepToggle(r.id); }; f.appendChild(nd.kb); d.appendChild(f);
   if (r.c) d.appendChild(el('div', 'cm', r.c));
   d.appendChild(lazyMedia(r));
+  nd.ac = el('div', 'aic'); nd.ac.hidden = true; d.appendChild(nd.ac);
   nd.bar = el('div', 'bar'); d.appendChild(nd.bar);
   nd.cp = el('div', 'cpanel'); nd.cp.hidden = true; nd.list = el('div', 'cl'); nd.cp.appendChild(nd.list);
   var row = el('div', 'r'), inp = el('input'), go = el('button', 'btn-o', 'Invia');
@@ -2051,13 +2053,28 @@ function build(r) {
   row.appendChild(inp); row.appendChild(go); nd.cp.appendChild(row); d.appendChild(nd.cp);
   nodes[r.id] = nd; refresh(r); return d;
 }
+// ✨ la scheda automatica: appena l'AI ha letto il video, sotto compare cosa è, dove, quanto costa e il tasto per andarci
+var AIC_IC = { cibo: 'pin', esperienza: 'ticket', viaggio: 'pin', compra: 'share', ricetta: 'spark' };
+function aiCard(r, nd) {
+  var x = r.aiX, c = nd.ac; if (!c) return;
+  if (!x || !x.p || x.k === 'altro' || x.ask) { c.hidden = true; return; }
+  if (c.dataset.k === x.k + x.p) { c.hidden = false; return; } c.dataset.k = x.k + x.p; c.textContent = ''; c.hidden = false;
+  var L = linksFor0({ k: x.k, p: x.p, q: x.shop || '' }), pick = L[0];
+  if (x.k === 'compra') pick = L[2] || L[0]; if (x.k === 'viaggio') pick = L.filter(function (l) { return /Hotel/.test(l.t); })[0] || L[0]; if (x.k === 'esperienza') pick = L.filter(function (l) { return /Attivit/.test(l.t); })[0] || L[0];
+  var lab = { cibo: 'Prenota', esperienza: 'Prenota', viaggio: 'Hotel', compra: 'Dove comprarlo', ricetta: 'Ricetta' }[x.k] || 'Mappa';
+  var info = el('button', 'aici'); info.type = 'button'; info.appendChild(icoEl(AIC_IC[x.k] || 'pin'));
+  var tx = el('span', 'aict'); tx.appendChild(el('b', null, x.p)); if (x.o) tx.appendChild(el('span', null, x.o)); info.appendChild(tx);
+  info.setAttribute('aria-label', LXT('Fatene un piano') + ': ' + x.p); info.onclick = function () { track('scheda-apri-' + x.k); openIdea(r.id, { auto: true }); };
+  c.appendChild(info);
+  if (pick) { var a = document.createElement('a'); a.className = 'aicb'; a.href = pick.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = LXT(lab) + ' ↗'; a.onclick = function () { track('scheda-link-' + x.k); }; c.appendChild(a); }
+}
 function sumLabel(r) {
   var has = !!(r.s || r.g), asks = Object.keys(r.q || {}).length;
   if (r.n === me.name) return has ? ['📝 Riassunto', ''] : asks ? ['📝 ' + asks + (asks === 1 ? ' chiede' : ' chiedono'), 'ask'] : null;
   return has ? ['📝 Riassunto', ''] : r.q && r.q[me.name] ? ['📝 Chiesto', ''] : ['📝 Di cosa parla?', ''];
 }
 function refresh(r) {
-  var nd = nodes[r.id]; if (!nd) return;
+  var nd = nodes[r.id]; if (!nd) return; try { aiCard(r, nd); } catch (e) {}
   if (nd.sb) { var sl = sumLabel(r); if (sl && sl[1] !== 'ask') sl = null; nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
   if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.hidden = !kp; nd.kb.textContent = kp ? '⭐' : '☆'; nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
   nd.bar.textContent = '';
@@ -4830,7 +4847,7 @@ function aiNext() {
   if (aiBusy || !aiQ.length || document.hidden) return; var r = aiQ.shift(); if (r.aiX || !find(r.id)) { aiNext(); return; }
   var day = new Date().toISOString().slice(0, 10), c = get('aiDay', { d: '', n: 0 }); if (c.d !== day) c = { d: day, n: 0 }; if (c.n >= 15) { aiQ = []; return; }
   c.n++; put('aiDay', c); aiBusy = true;
-  setTimeout(function () { aiAsk(r, '', [], '').then(function (x) { var o = find(r.id); if (o && !o.aiX) { o.aiX = x; put('feed', feed); } }, function () {}).then(function () { aiBusy = false; aiNext(); }); }, 1500);
+  setTimeout(function () { aiAsk(r, '', [], '').then(function (x) { var o = find(r.id); if (o && !o.aiX) { o.aiX = x; put('feed', feed); try { refresh(o); } catch (e) {} } }, function () {}).then(function () { aiBusy = false; aiNext(); }); }, 1500);
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) aiNext(); });
 /* ---- 📲 «Condividi → Reelta» su iPhone, con un Comando Rapido di Apple ----
