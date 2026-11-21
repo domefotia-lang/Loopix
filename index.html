@@ -842,7 +842,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v165', errLog = [];
+var APP_VER = 'v166', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2084,7 +2084,9 @@ function links(t) {
 }
 function postAll(t, c) {
   if (tryDev(t)) return 0;
-  var L = links(t);
+  var L = links(t), L0 = L.length;
+  L = L.filter(function (u) { return !feed.some(function (r) { return r.u === u && me && r.n === me.name && Date.now() - (+r.ts || 0) < 60000; }); }); // doppio tocco: lo stesso Reel parte una volta
+  if (L0 && !L.length) { $('mh').textContent = LXT('Già mandato ✓'); return 0; }
   if (!L.length && skippedInv) {
     var jm = /#j=([\w-]{8,100})/.exec(String(t || ''));
     if (jm) { var jh = jm[1].split('_')[0];
@@ -2144,7 +2146,7 @@ var GROUP_MAX = 8; // persone in un gruppo (tu compreso)
 function cap() { return !me ? 1 : me.kind === 'big' ? BIG_MAX - 1 : me.kind === 'group' ? GROUP_MAX - 1 : 1; }
 var circMax = 0;
 function startHost() {
-  if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
+  if (!window.Peer) { $('mh').textContent = 'Connessione assente o lenta: riprova tra poco.'; return; }
   peer = new Peer(me.hostId);
   peer.on('open', function () { hostTries = 0; $('mh').textContent = ''; status(); });
   peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 2000); });
@@ -2239,9 +2241,10 @@ function mbKey(sec) {
 }
 function mbSeal(sec, obj) { var iv = crypto.getRandomValues(new Uint8Array(12)); return mbKey(sec).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, te8.encode(JSON.stringify(obj))); }).then(function (ct) { return mbEnc(iv) + '.' + mbEnc(ct); }); }
 function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mbDec(q[0]) }, k, mbDec(q[1])); }).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); }); }
-function mbCall(body) {
-  return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body) })
-    .then(function (r) { if (!r.ok) throw new Error('srv ' + r.status); return r.json(); });
+function mbCall(body, ms) { // con rete pessima la richiesta si ferma da sola invece di restare appesa per minuti
+  var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix') ? 40000 : 15000)) : 0;
+  return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
+    .then(function (r) { clearTimeout(tt); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
 }
 function mbPut(sec, dir, m, quiet) {
   if (!srvOn() || MBT[m.t] === undefined) return Promise.resolve(false);
@@ -2258,6 +2261,8 @@ function mbToGuests(m, except) {
 function mbToHost(m, fail, quiet) { if (!quiet && m.t === 'react') quiet = rxQuiet(m, get('hn', '') || (names[0] || '')); if (!quiet) cbPut(m); mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
 function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
 var mbBusy = false, mbLast = 0, srvSeen = 0;
+window.addEventListener('offline', function () { try { $('mh').textContent = LXT('Sei senza rete: quello che mandi parte appena torna.'); } catch (e) {} });
+window.addEventListener('online', function () { try { $('mh').textContent = LXT('Rete tornata ✓'); mbPull(true); } catch (e) {} });
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
@@ -2518,7 +2523,7 @@ function soloNudge(u, t) {
 
 /* ---- ospite ---- */
 function startGuest() {
-  if (!window.Peer) { $('mh').textContent = 'Servizio di appoggio non raggiungibile.'; return; }
+  if (!window.Peer) { $('mh').textContent = 'Connessione assente o lenta: riprova tra poco.'; return; }
   peer = new Peer();
   peer.on('disconnected', function () { again(); });
   peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? (srvOn() && !me.joined ? 'Chi ti ha invitato ha Reelta chiusa: gli ho mandato un avviso. Entri da solo appena la apre, anche se chiudi l’app.' : (srvOn() ? (get('hn', '') || 'Chi ti ha invitato') + ' ora ha Reelta chiusa: quello che mandi arriva lo stesso.' : 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.')) : 'Problema di rete (' + e.type + ').'; if (e.type === 'peer-unavailable' && !me.joined) srvJoin(); again(); });
@@ -3401,7 +3406,7 @@ function ritShow() {
   var w = el('button', 'btn-o', '▶ ' + LXT('Guardalo')); w.type = 'button'; w.style.marginTop = '8px'; w.onclick = function () { $('decM').classList.remove('open'); goReel(r.id); }; c.appendChild(w);
 }
 function ritAnswer(yes) {
-  var r = decCur; if (!r) return; try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
+  var r = decCur; if (!r || ritAnswer.busy) return; ritAnswer.busy = true; setTimeout(function () { ritAnswer.busy = false; }, 350); try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
   if (r.pack) {
     var it = r.pack; $('decC').className = yes ? 'r' : 'l';
     setTimeout(function () {
