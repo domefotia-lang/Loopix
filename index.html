@@ -1344,7 +1344,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v161', errLog = [];
+var APP_VER = 'v162', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -2941,8 +2941,8 @@ function invite() {
   }
   var left = cap() - Object.keys(allowed).length;
   if (left <= 0) { $('invT').textContent = 'Rimanda l’invito'; $('invS').textContent = 'Mandalo a chi è già nel cerchio: aprendolo si ricollega. Il link vale 24 ore.'; $('invH').textContent = ''; invLangUI(); $('invM').classList.add('open'); return; }
-  $('invT').textContent = 'Invita ' + (me.kind === 'group' || me.kind === 'big' ? 'qualcuno nel gruppo' : 'la tua persona');
-  $('invS').textContent = (left > 1 ? 'Ci sono ancora ' + left + ' posti.' : 'C’è ancora 1 posto.') + ' Il link vale 24 ore.';
+  $('invT').textContent = LXT(me.kind === 'group' || me.kind === 'big' ? 'Invita qualcuno nel gruppo' : 'Invita la tua persona');
+  $('invS').textContent = (left > 1 ? LXT('Posti liberi:') + ' ' + left + '.' : LXT('C’è ancora 1 posto.')) + ' ' + LXT('Il link vale 24 ore.');
   $('invH').textContent = ''; invLangUI(); $('invM').classList.add('open');
 }
 function invDone(m) { track('invito-inviato'); $('invH').textContent = m; }
@@ -4301,15 +4301,19 @@ function guide(force) {
   if (!force && get('guided', 0)) return;
   put('guided', 1);
   var host = me.role === 'host', ol = $('gdS'); ol.textContent = '';
-  (host ? [
+  var alone = host && !Object.keys(allowed).length;
+  (alone ? [
+    'Scegli un’idea in alto, oppure incolla un Reel che ti piace (Condividi → Copia link, poi qui “Incolla”).',
+    'Mandalo alla tua persona: le arriva su WhatsApp con il video ed entra con un tocco.'
+  ] : host ? [
     'Invita la tua persona: le mandi il link su WhatsApp ed entra da sola, anche più tardi.',
     'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
   ] : [
     'Sei dentro! Quello che vi mandate resta solo tra voi.',
     'Vedi un Reel che vi piace? Condividi → Copia link, poi qui tocca “Incolla”. Lo vede subito.'
   ]).forEach(function (t, i) { var li = el('li'); li.appendChild(el('span', 'n', String(i + 1))); li.appendChild(el('span', null, t)); ol.appendChild(li); });
-  $('gdGo').textContent = host ? '📨 Invita adesso' : 'Va bene'; $('gdGo').hidden = !host; // per chi è invitato basta «Ho capito» $('gdX').className = host ? 'btn-o wide' : 'btn';
-  $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (host) invite(); };
+  $('gdGo').textContent = alone ? '✨ ' + LXT('Guarda le idee') : host ? '📨 Invita adesso' : 'Va bene'; $('gdGo').hidden = !host; // per chi è invitato basta «Ho capito» $('gdX').className = host ? 'btn-o wide' : 'btn';
+  $('gdGo').onclick = function () { $('gd').classList.remove('open'); if (alone) { try { localStorage.setItem(LSG + 'packSeen', '1'); } catch (e) {} track('benvenuto-idee'); IV.list = packList(); ideaView(0); } else if (host) invite(); };
   $('gd').classList.add('open');
 }
 function setBig(on) { document.documentElement.classList.toggle('big', on); put('big', on ? 1 : 0); }
