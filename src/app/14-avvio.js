@@ -94,7 +94,7 @@ $('inv').addEventListener('click', invite);
 $('add').addEventListener('click', function () { if (postAll($('ru').value, $('rc').value)) { $('ru').value = ''; $('rc').value = ''; $('rc').hidden = true; compOpen = false; syncComp(); } });
 $('paste').addEventListener('click', async function () {
   $('pb').hidden = true; if (!$('main').classList.contains('show')) showPane('main');
-  try { postAll(await navigator.clipboard.readText(), ''); }
+  try { if (!postAll(await navigator.clipboard.readText(), '')) { compOpen = true; syncComp(); } }
   catch (e) { if (!$('main').classList.contains('show')) showPane('main'); compOpen = true; syncComp(); $('ru').focus(); $('mh').textContent = 'Il telefono non mi lascia leggere il link: tieni premuto nel campo qui sopra e scegli “Incolla”.'; }
 });
 $('out').addEventListener('click', function () {

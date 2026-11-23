@@ -53,7 +53,7 @@ function renderNov() {
   if (um) chip('💬 ' + um + (um === 1 ? ' messaggio' : ' messaggi'), function () { showPane('chat'); });
   var rxn = (get('rxNew', []) || []).filter(function (x) { return Date.now() - x.ts < 3 * 864e5 && find(x.id); });
   if (rxn.length) { var lx = rxn[rxn.length - 1]; chip(lx.e + ' ' + (rxn.length === 1 ? lx.n + ' ' + (RXV[lx.e] || 'ha reagito al tuo Reel').replace(/ al tuo Reel| col tuo Reel/, '') : rxn.length + ' reazioni ai tuoi Reel'), function () { put('rxNew', []); goReel(lx.id); renderNov(); }); }
-  if (feed.length && srvOn() && !cloudOn() && !get('bkAsk', 0) && typeof cloudStart === 'function') chip('☁️ ' + LXT('Non perdere i vostri Reel: attiva la copia'), function () { put('bkAsk', 1); track('copia-da-chip'); cloudStart(); renderNov(); });
+  if (feed.length >= 5 && srvOn() && !cloudOn() && !get('bkAsk', 0) && typeof cloudStart === 'function') chip('☁️ ' + LXT('Non perdere i vostri Reel: attiva la copia'), function () { put('bkAsk', 1); track('copia-da-chip'); cloudStart(); renderNov(); });
   if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
   // da soli con qualche Reel già pronto: è il momento giusto per invitare
   var mineN = me.role === 'host' && !Object.keys(allowed).length ? feed.filter(function (r) { return r.n === me.name; }).length : 0;

@@ -19,7 +19,7 @@ function hostHi(c, d) {
           if (code && srvOn()) mbBox(me.hostId + '_' + code, 'w').then(function (b) { return mbCall({ a: 'ack', box: b, upto: 9e15 }); }).catch(function () {}); // il pacchetto di benvenuto non serve più
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
           c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
-          actLog('join', nm, '', ''); $('mh').textContent = nm + ' è entrato nel cerchio ✓'; setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
+          actLog('join', nm, '', ''); $('mh').textContent = nm + ' è nel cerchio ✓'; if (!feed.length) render(); setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
           var same = Object.keys(allowed).filter(function (x) { return allowed[x].toLowerCase() === nm.toLowerCase(); })[0];

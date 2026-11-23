@@ -223,7 +223,7 @@ function refresh(r) {
   if (party && party.id === r.id) { pbuild(r); lines(r); }
 }
 var compOpen = false;
-function syncComp() { $('mbox').hidden = feed.length > 0 && !compOpen; }
+function syncComp() { $('mbox').hidden = !compOpen; }
 // il campo per il link compare solo quando serve (il telefono non lascia leggere il link) e sparisce appena hai finito
 $('ru').addEventListener('blur', function () { setTimeout(function () { if (!$('ru').value.trim() && document.activeElement !== $('ru')) { compOpen = false; syncComp(); } }, 400); });
 // ⭐ tenuti: scelta personale, solo su questo telefono. Si conserva il link del Reel, non il video.
@@ -321,7 +321,7 @@ function addReel(r, mine) {
   if (isMuted(n.n)) { seqLabel(); return true; }
   var node = build(n); box.appendChild(node);
   if (mine) node.scrollIntoView({ behavior: 'smooth' });
-  else { if (Date.now() - n.ts < 3 * 864e5) actLog('reel', n.n, n.c, n.id); noteIn('reel', n.n, n.c); if (node.offsetTop > box.scrollTop + box.clientHeight * 0.6) { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; } }
+  else { if (Date.now() - n.ts < 3 * 864e5) actLog('reel', n.n, n.c, n.id); noteIn('reel', n.n, n.c); if (node.offsetTop > box.scrollTop + box.clientHeight * 0.6 && !(typeof newCount === 'function' && newCount() >= 2)) { unseen++; $('nw').textContent = unseen + (unseen === 1 ? ' Reel nuovo' : ' Reel nuovi') + ' ↓'; $('nw').hidden = false; } }
   seqLabel();
   return true;
 }
