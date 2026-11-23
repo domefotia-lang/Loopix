@@ -133,7 +133,7 @@ body.kb .tabs,body.kb #pb,body.kb .chint{display:none!important}body.kb .cbar{pa
 .cpanel .r{display:flex;gap:8px}.cpanel input{margin:0;padding:11px 14px}
 .empty.e2{white-space:normal;max-width:34ch;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 22px}.empty.e2 .ei{font-size:34px;line-height:1}@media (max-height:700px){.empty.e2 .ei{display:none}}@media (max-height:600px){.empty.e2 p,.empty.e2 .lnk{display:none}.empty.e2 b{font-size:20px}}.empty.e2 b{font-family:var(--dis);font-size:23px;color:var(--gl);font-weight:600}.empty.e2 p{margin:0 0 4px;font-size:15.5px;line-height:1.5}.empty.e2 .btn,.empty.e2 .btn-o{margin:0}.empty.e2 .lnk{background:none;border:0;color:var(--m);font:inherit;font-size:14.5px;text-decoration:underline;padding:4px}
 .empty{margin:auto;padding:30px 26px;text-align:center;color:var(--m);font-size:16px;line-height:1.6;white-space:pre-line;max-width:32ch}
-.pill{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:5}
+.pill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:5}
 .comp{padding:6px 14px 4px;display:flex;flex-direction:column;gap:8px}
 .comp .r{display:flex;gap:8px}.comp input{margin:0}
 .orig{align-self:center;font-size:14px;color:var(--m);text-decoration:underline;text-underline-offset:3px;padding:2px 6px}
@@ -536,3 +536,4 @@ p.og.refn{grid-column:1/-1}
 
 .trrow{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:0 16px 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--s1,#fff);color:inherit;font:inherit;text-align:left;cursor:pointer}
 .trrow>span:first-child{font-size:22px}.trrow>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.trrow small{opacity:.7;font-size:13px}.trrow>span:last-child{opacity:.5;font-size:20px}
+.rgrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}.rgrow a{color:var(--t);text-decoration:none;font-size:14.5px;line-height:1.35}.rgrow .lnk{flex:none;padding:4px 8px}

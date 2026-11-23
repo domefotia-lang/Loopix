@@ -15,7 +15,7 @@ try {
   if (lxPend) { sessionStorage.removeItem('lxRestore'); window.__lxPend = JSON.parse(lxPend); }
 } catch (e) {}
 var LS = lsOf(REG.active);
-var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1 };
+var GLOBALK = { big: 1, pin: 1, theme: 1, dev: 1, riserv: 1, rcpt: 1, bkAt: 1, bkFirst: 1, nt: 1, regaliS: 1 };
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
 function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
@@ -446,7 +446,7 @@ function cleanK(k) {
 var gone = get('gone', []);
 /* ==== src/app/04-segnala.js ==== */
 /* ---- segnala un problema ---- */
-var APP_VER = 'v181', errLog = [];
+var APP_VER = 'v182', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -835,6 +835,75 @@ function ogRun(p, F) {
     }, function () {});
   }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
 }
+/* ---- 🎁 Regali: per chi, occasione, budget → 6 idee concrete, con la ricerca nel negozio.
+   Al server arrivano solo le tre scelte. I regali salvati restano su questo telefono: gli altri del cerchio non li vedono (sorprese al sicuro). ---- */
+var RG_AFF = { 'amazon.co.uk': '', 'amazon.it': '', 'amazon.es': '', 'amazon.com': '' }; // codici affiliato: vuoti finché non c'è il via libera
+function rgPref() { var p = {}; try { p = JSON.parse(lsGet(LSG + 'regali') || '{}') || {}; } catch (e) {} return { per: p.per || 'lei', occ: p.occ || 'pensiero', bud: p.bud || 'any' }; }
+function rgReg() { var c = cityGet(); if (c && isLon(c)) return 'GB'; var r = ((navigator.language || '').split('-')[1] || '').toUpperCase(); return ['GB', 'IT', 'ES', 'US', 'IE'].indexOf(r) >= 0 ? r : (window.LX_LANG === 'it' ? 'IT' : window.LX_LANG === 'es' ? 'ES' : 'GB'); }
+function rgShop(v, reg) {
+  if (v.k === 'experience') return { u: reg === 'GB' || reg === 'IE' ? gyg(v.s || v.n) : 'https://www.google.com/search?q=' + encodeURIComponent((v.s || v.n) + ' gift experience'), b: LXT('Cerca l’esperienza') };
+  var d = { GB: 'amazon.co.uk', IE: 'amazon.co.uk', IT: 'amazon.it', ES: 'amazon.es', US: 'amazon.com' }[reg] || 'amazon.co.uk';
+  return { u: 'https://www.' + d + '/s?k=' + encodeURIComponent(v.s || v.n) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : ''), b: LXT('Cerca e confronta') };
+}
+function rgList() { return get('regaliS', []); }
+function rgSaved(L) {
+  var old = $('rgS'); if (old) old.remove(); var S = rgList(); if (!S.length) return;
+  var B = el('div', 'ogf'); B.id = 'rgS'; B.appendChild(el('h3', null, '⭐ ' + LXT('I regali che hai salvato')));
+  B.appendChild(el('p', 'refn', LXT('Li vedi solo tu, su questo telefono.')));
+  S.forEach(function (v) {
+    var r = el('div', 'rgrow'), a = document.createElement('a'), sh = rgShop(v, rgReg()); a.href = sh.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = (v.k === 'experience' ? '🎟️ ' : '🎁 ') + v.n + (v.p ? ' · ' + v.p : '') + ' ↗'; r.appendChild(a);
+    var x = el('button', 'lnk', '✕'); x.type = 'button'; x.setAttribute('aria-label', LXT('Togli')); x.onclick = function () { put('regaliS', rgList().filter(function (z) { return z.n !== v.n; })); rgSaved(L); }; r.appendChild(x); B.appendChild(r);
+  });
+  L.insertBefore(B, L.firstChild ? L.firstChild.nextSibling : null);
+}
+function rgForm() {
+  var p = rgPref(), F = el('div', 'ogf');
+  F.appendChild(el('h3', null, '🎁 ' + LXT('Idee regalo')));
+  F.appendChild(el('p', 'refn', LXT('Scegli per chi e trovo 6 idee concrete, con il link per cercarle. Quello che salvi lo vedi solo tu.')));
+  var row = function (lab, key, opts) {
+    var r = el('div', 'ogr'); r.appendChild(el('span', 'ogl', LXT(lab))); var w = el('div', 'ogc');
+    opts.forEach(function (o) { var b = el('button', 'chip', LXT(o[1])); b.type = 'button'; b.setAttribute('aria-pressed', String(p[key] === o[0])); b.onclick = function () { p[key] = o[0]; lsSet(LSG + 'regali', JSON.stringify(p)); w.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); }); }; w.appendChild(b); });
+    r.appendChild(w); F.appendChild(r);
+  };
+  row('Per chi', 'per', [['lei', '💁‍♀️ Per lei'], ['lui', '🙋‍♂️ Per lui'], ['noi', '💑 Per noi due'], ['bimbi', '🧸 Per i bimbi'], ['amici', '🤝 Per un amico'], ['casa', '🏡 Per la casa']]);
+  row('Occasione', 'occ', [['pensiero', 'Un pensiero'], ['compleanno', 'Compleanno'], ['anniversario', 'Anniversario'], ['natale', 'Natale']]);
+  row('Budget', 'bud', [['any', 'Qualsiasi'], ['low', '£'], ['mid', '££'], ['high', '£££']]);
+  var go = withIco(el('button', 'btn wide', ''), 'spark', LXT('Trova idee regalo')); go.type = 'button';
+  go.onclick = function () { rgRun(rgPref(), F); };
+  F.appendChild(go);
+  return F;
+}
+function rgRun(p, F) {
+  var L = $('inspL'), reg = rgReg();
+  L.querySelectorAll('.og').forEach(function (x) { x.remove(); });
+  var anchor = F.nextSibling, put0 = function (n) { L.insertBefore(n, anchor); };
+  var hd = el('p', 'og ogh', '🎁 ' + LXT('Cerco idee regalo…')); put0(hd);
+  for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel og'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); put0(sc); }
+  hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  track('regali-' + p.per + '-' + p.occ);
+  var shared = p.per === 'noi' || p.per === 'casa' || p.per === 'bimbi'; // per lei / per lui / per un amico: niente nel cerchio, è una sorpresa
+  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 60000).then(function (x) {
+    L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
+    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
+    hd.textContent = '🎁 ' + LXT('Idee regalo per voi');
+    x.items.forEach(function (v) {
+      var sh = rgShop(v, reg), card = el('div', 'insc og'), th = el('div', 'inth pkth'); th.appendChild(el('span', 'pke', v.k === 'experience' ? '🎟️' : '🎁')); card.appendChild(th);
+      card.appendChild(el('div', 'intt', v.n)); card.appendChild(el('div', 'inch', [v.k === 'experience' ? LXT('Esperienza') : LXT('Oggetto'), v.p].filter(Boolean).join(' · ')));
+      if (v.w) card.appendChild(el('div', 'ogw', v.w));
+      var a = document.createElement('a'); a.className = 'btn-o wide'; a.href = sh.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🔍 ' + sh.b + ' ↗'; a.onclick = function () { track('regali-cerca'); }; card.appendChild(a);
+      var saved = rgList().some(function (z) { return z.n === v.n; });
+      var sv = el('button', saved ? 'btn-o wide' : 'btn wide', saved ? '✓ ' + LXT('Salvato') : '⭐ ' + LXT('Salva (lo vedi solo tu)')); sv.type = 'button'; sv.disabled = saved;
+      sv.onclick = function () { var S = rgList().filter(function (z) { return z.n !== v.n; }); S.unshift({ n: v.n, k: v.k, p: v.p, s: v.s }); put('regaliS', S.slice(0, 30)); sv.textContent = '✓ ' + LXT('Salvato'); sv.className = 'btn-o wide'; sv.disabled = true; rgSaved(L); track('regali-salva'); };
+      card.appendChild(sv);
+      if (shared) {
+        var k = 'rg-' + v.n.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24), o = { k: k, it: { s: k, e: v.k === 'experience' ? '🎟️' : '🎁', t: v.n, d: [v.p, v.w].filter(Boolean).join(' · '), l: sh.u, b: 'Cerca' }, st: { u: sh.u } };
+        var go = withIco(el('button', 'btn-o wide', ''), 'heart', LXT('Proponilo nel cerchio')); go.type = 'button'; go.onclick = function () { ideaWhat(o); track('regali-proponi'); }; card.appendChild(go);
+      }
+      put0(card);
+    });
+    put0(el('p', 'refn og', LXT('Idee scelte dall’AI: prezzi indicativi, controlla sul negozio prima di comprare.')));
+  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
+}
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
 var xplQ = '';
 function xplBuild() {
@@ -849,8 +918,9 @@ function xplBuild() {
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
   var T = INSP_T[window.LX_LANG] || INSP_T.it;
   var ob = el('button', 'chip', '🗓️ ' + (window.LX_T || String)('Oggi')); ob.type = 'button'; ob.dataset.q = '§oggi'; ob.onclick = function () { inspLoad('§oggi'); }; tp.appendChild(ob);
+  var gb = el('button', 'chip', '🎁 ' + (window.LX_T || String)('Regali')); gb.type = 'button'; gb.dataset.q = '§regali'; gb.onclick = function () { inspLoad('§regali'); }; tp.appendChild(gb);
   var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp.appendChild(pb);
-  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 1 || i === 3, INSP_QEN[i]); }; tp.appendChild(b); });
+  T.forEach(function (t, i) { if (INSP_QEN[i] === 'gift ideas') return; var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 1 || i === 3, INSP_QEN[i]); }; tp.appendChild(b); });
 }
 function inspOpen(q) { xplQ = q || ''; track('insp-apri'); showPane('xpl'); }
 // loc: ricerche di posti (ristoranti, cose da fare, ricerca libera) → si aggiunge la città, così YouTube trova video del posto e non a caso
@@ -858,6 +928,7 @@ function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 
 function inspLoad(q, loc, qx) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
+  if (q === '§regali') { var L1 = $('inspL'); L1.textContent = ''; L1.appendChild(rgForm()); rgSaved(L1); track('regali-apri'); return; }
   if (q === '§oggi') { var L0 = $('inspL'); L0.textContent = ''; L0.appendChild(ogForm()); packLoad(true); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   var qq = loc ? inspCity(qx || q) : (qx || q);
@@ -1493,6 +1564,7 @@ function renderSteps() {
   if (!get('stepsSeen', 0) && feed.length >= 10) put('steps', 1); // chi usa già Reelta da un po' non la vede
   var st = get('steps', 0); // 0 = in corso, 1 = chiusa, 2 = completata e festeggiata
   if (st || (all && !get('stepsSeen', 0))) { if (all && !st) { put('steps', 2); $('mh').textContent = '🎉 Primi passi fatti: ora Reelta è tutta vostra!'; } B.hidden = true; return; }
+  if (!feed.length || !$('ios').hidden) { B.hidden = true; return; } // una cosa alla volta: prima la scheda vuota o l'avviso «Mettila sulla Home»
   put('stepsSeen', 1); B.textContent = ''; B.hidden = false;
   var nx = L.filter(function (x) { return !x.ok; })[0], open = B.dataset.open === '1';
   var hd = el('button', 'sh'); hd.type = 'button'; hd.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -1851,7 +1923,7 @@ function status() {
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
   av.setAttribute('aria-label', 'Nel cerchio: ' + (list.length ? list.join(', ') : me.name));
   var others = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }); if (me.role !== 'host' && !others.length && get('hn', '')) others = [get('hn', '')]; // chi ha creato il cerchio resta in alto anche quando è offline
-  $('bd').textContent = live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita qualcuno' : 'Solo tu, per ora') : others.length === 1 ? others[0].slice(0, 12) + ' offline 🔔' : 'Gli altri sono offline 🔔';
+  $('bd').textContent = live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita' : 'Solo tu, per ora') : others.length === 1 ? others[0].slice(0, 12) + ' offline 🔔' : 'Gli altri sono offline 🔔';
   $('bd').setAttribute('aria-label', live ? 'Collegato' : 'Non collegato: tocca per avvisare con un messaggio');
   $('inv').hidden = me.role !== 'host';
   if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
@@ -3433,7 +3505,7 @@ function renderCircle() {
     $('inv2').hidden = ks.length >= cap() && allOn; $('inv2').textContent = ks.length >= cap() ? '🔗 Non vi collegate? Rimanda l’invito' : 'Invita una persona'; $('invKill').hidden = false; // se siete tutti collegati il tasto «rimanda» non serve
   } else {
     var live = !!(hostConn && hostConn.open);
-    (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (centro)' : ''), live, null); });
+    (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (ha creato il cerchio)' : ''), live, null); });
     $('inv2').hidden = true; $('invKill').hidden = true;
     m.appendChild(el('p', null, blocked ? 'Non fai più parte di questo cerchio. Puoi uscire e chiedere un nuovo invito.' : 'Solo chi ha creato il cerchio può invitare altre persone.'));
   }
@@ -3865,7 +3937,7 @@ $('instGo').addEventListener('click', instGo);
 $('instX').addEventListener('click', instClose);
 $('instM').addEventListener('click', function (e) { if (e.target === $('instM')) instClose(); });
 document.addEventListener('lx-bip', function () { if (window.__inst) $('ios').hidden = true; });
-$('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} });
+$('ix').addEventListener('click', function () { $('ios').hidden = true; try { sessionStorage.setItem('lx-banner', '1'); } catch (e) {} renderSteps(); });
 $('haveInv').addEventListener('click', async function () {
   icOpen = true; syncKind();
   var t = '';
