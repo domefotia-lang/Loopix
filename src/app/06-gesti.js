@@ -47,6 +47,7 @@ function dwOpen() {
     ['⚙️', 'Tutte le impostazioni', function () { dwGo('style'); }]
   ]);
   sec('Reelta', [
+    ['⭐', 'Reelta Plus · in arrivo', function () { dwClose(); plusAsk(); }],
     ['❓', 'Come si usa', function () { dwClose(); $('help').click(); }],
     ['🛠️', 'Segnala un problema', function () { dwClose(); $('bug').click(); }]
   ]);

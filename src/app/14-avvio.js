@@ -579,3 +579,21 @@ function ageGate() {
   G.appendChild(C); document.body.appendChild(G);
 }
 ageGate();
+
+/* ---- ✨ versione semplice: per chi arriva nuovo (la prova con le prime coppie) si vede solo l'essenziale.
+   Reel, piani e idee vicino a voi; «Guardate insieme», Regali e ricerche video restano spenti finché non si sceglie la versione completa. ---- */
+function simpleOn() { return lsGet(LSG + 'semplice') === '1'; }
+function simpleUI() {
+  document.body.classList.toggle('simple', simpleOn());
+  var b = $('simpleT'); if (b) b.textContent = simpleOn() ? '✨ ' + LXT('Versione semplice: attiva · passa alla completa') : '✨ ' + LXT('Passa alla versione semplice');
+}
+(function () {
+  if (lsGet(LSG + 'semplice') === null) lsSet(LSG + 'semplice', me && me.name ? '0' : '1'); // chi usa già Reelta resta com'è
+  simpleUI();
+  $('simpleT').addEventListener('click', function () { lsSet(LSG + 'semplice', simpleOn() ? '0' : '1'); track(simpleOn() ? 'semplice-on' : 'semplice-off'); simpleUI(); });
+})();
+// ⭐ Reelta Plus non esiste ancora: contiamo solo chi lo vorrebbe (nessun pagamento)
+function plusAsk() {
+  track('plus-interesse');
+  ask('⭐ Reelta Plus', LXT('Stiamo preparando Reelta Plus: idee AI senza limiti, eventi del giorno e altro, per la coppia (un abbonamento per due). Oggi non costa niente e non chiediamo dati: ci serve solo sapere se vi interessa.'), LXT('Mi interessa')).then(function (y) { if (y) { put('plusInt', 1); track('plus-si'); $('mh').textContent = LXT('Grazie! Lo diremo dentro l’app quando sarà pronto.'); } });
+}
