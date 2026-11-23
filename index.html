@@ -839,6 +839,13 @@ var incoming = null;
 function safeUrl(u) { try { var x = new URL(String(u).trim()); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
 // 🔊/🔇 come su Instagram: vale per tutti i video che lo permettono (YouTube, TikTok, Vimeo) e se lo ricorda
 var vMuted = false; try { vMuted = localStorage.getItem(LSG + 'mute') === '1'; } catch (e) {}
+// audio concesso in questa sessione (si azzera chiudendo l'app)
+function sndSess(on) { try { if (on) sessionStorage.setItem('lxSnd', '1'); return sessionStorage.getItem('lxSnd') === '1'; } catch (e) { return false; } }
+window.addEventListener('message', function (e) {
+  if (!/youtube/.test(e.origin || '')) return; var d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+  var st = d && (d.event === 'onStateChange' ? d.info : d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number' ? d.info.playerState : null); if (st === null || st === undefined) return;
+  document.querySelectorAll('iframe').forEach(function (f) { if (f.contentWindow === e.source) f.__st = st; });
+});
 function muteLabel(b) { b.textContent = vMuted ? '🔇' : '🔊'; b.setAttribute('aria-label', vMuted ? 'Attiva l’audio' : 'Togli l’audio'); }
 function muteFrame(fr) {
   var s = fr.src || '', w = fr.contentWindow; if (!w) return;
@@ -942,7 +949,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v174', errLog = [];
+var APP_VER = 'v176', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1197,12 +1204,26 @@ function mediaRaw(r, pl) {
     }
     if (/youtube\.com\/embed|tiktok\.com\/player|player\.vimeo\.com/.test(src)) {
       var mb = el('button', 'mutb'); mb.type = 'button'; muteLabel(mb); mb.onclick = function (e) { e.stopPropagation(); var sp0 = wrap.querySelector('.sndp'); if (sp0) { sp0.click(); return; } muteAll(!vMuted); }; wrap.appendChild(mb);
-      var needTap = pl && isIOSdev() && !vMuted && !/tiktok/.test(src); // su iPhone YouTube e Vimeo partono senza audio: serve un tocco
+      // su iPhone YouTube e Vimeo partono senza audio: serve un tocco. Dato una volta, vale per tutta la sessione (riaprendo l'app si richiede)
+      var sndS = sndSess(), needTap = pl && isIOSdev() && !vMuted && !/tiktok/.test(src) && !sndS;
       if (needTap) {
         mb.textContent = '🔇'; var sp = el('button', 'sndp', '🔇 Tocca per l’audio'); sp.type = 'button';
-        sp.onclick = function (e) { e.stopPropagation(); sp.remove(); muteLabel(mb); muteFrame(fr); try { if (/youtube/.test(src)) fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); } catch (x) {} };
+        sp.onclick = function (e) { e.stopPropagation(); sp.remove(); sndSess(1); muteLabel(mb); muteFrame(fr); try { if (/youtube/.test(src)) fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); } catch (x) {} };
         wrap.appendChild(sp);
-      } else fr.addEventListener('load', function () { setTimeout(function () { muteFrame(fr); }, 600); setTimeout(function () { muteFrame(fr); }, 1800); });
+      } else fr.addEventListener('load', function () {
+        setTimeout(function () { muteFrame(fr); }, 600); setTimeout(function () { muteFrame(fr); }, 1800);
+        // iPhone con l'audio già concesso: se il telefono blocca comunque il video con l'audio, torna muto, riparte e rimette il tasto
+        if (pl && sndS && isIOSdev() && /youtube/.test(src)) {
+          try { fr.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (x) {}
+          setTimeout(function () {
+            if (fr.__st === 1 || !fr.isConnected) return;
+            try { fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'mute', args: [] }), '*'); fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); } catch (x) {}
+            var sp2 = el('button', 'sndp', '🔇 Tocca per l’audio'); sp2.type = 'button'; mb.textContent = '🔇';
+            sp2.onclick = function (e) { e.stopPropagation(); sp2.remove(); muteLabel(mb); muteFrame(fr); try { fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); } catch (x) {} };
+            wrap.appendChild(sp2);
+          }, 3000);
+        }
+      });
     }
     return wrap;
   }
@@ -1248,6 +1269,8 @@ function openSeqAt(id) {
   if ('ontouchstart' in window && !navigator.webdriver) { seq.auto = true; immSet(true); setTimeout(swTip, 900); }
 }
 /* ---- ✨ Ispirazione: gli Shorts di YouTube più visti su un argomento, da mandare alla propria persona ---- */
+// cosa cerchiamo davvero su YouTube per ogni categoria (in inglese: a Londra i video migliori sono in inglese)
+var INSP_QEN = ['best restaurants', 'weekend trip from', 'quick easy recipe', 'date night ideas', 'cheap travel tips', 'gift ideas'];
 var INSP_T = { it: ['Ristoranti da provare', 'Weekend fuori città', 'Ricette veloci', 'Cose da fare in coppia', 'Viaggi low cost', 'Idee regalo'], en: ['Restaurants to try', 'Weekend getaways', 'Quick recipes', 'Date ideas', 'Cheap travel', 'Gift ideas'], es: ['Restaurantes para probar', 'Escapadas de fin de semana', 'Recetas rápidas', 'Planes en pareja', 'Viajes baratos', 'Ideas de regalo'] };
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
 var xplQ = '';
@@ -1263,24 +1286,30 @@ function xplBuild() {
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
   var T = INSP_T[window.LX_LANG] || INSP_T.it;
   var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp.appendChild(pb);
-  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 3); }; tp.appendChild(b); });
+  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 1 || i === 3, INSP_QEN[i]); }; tp.appendChild(b); });
 }
 function inspOpen(q) { xplQ = q || ''; track('insp-apri'); showPane('xpl'); }
 // loc: ricerche di posti (ristoranti, cose da fare, ricerca libera) → si aggiunge la città, così YouTube trova video del posto e non a caso
 function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 'London' : c, l = q.toLowerCase(); return l.indexOf(cn.toLowerCase()) >= 0 || l.indexOf(c.toLowerCase()) >= 0 ? q : q + ' ' + cn; }
-function inspLoad(q, loc) {
+function inspLoad(q, loc, qx) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
-  mbCall({ a: 'insp', q: loc ? inspCity(q) : q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
+  var qq = loc ? inspCity(qx || q) : (qx || q);
+  mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee già pronte.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
     if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); return; }
-    x.items.forEach(function (v) {
+    // via i video fuori tema: tengo quelli che nel titolo o nel canale nominano qualcosa della ricerca (se ne restano almeno 4)
+    var STOP = { best: 1, from: 1, tips: 1, ideas: 1, with: 1, easy: 1, quick: 1, london: 1, londra: 1, londres: 1 }, W = qq.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (w) { return w.length > 3 && !STOP[w]; });
+    var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
+    var items = keep.length >= 4 ? keep : x.items;
+    var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: loc ? gmaps(qq) : u, b: loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
+    items.forEach(function (v, vi) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
       var c = el('div', 'insc'), th = el('button', 'inth'); th.type = 'button'; th.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + v.t);
       var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; th.appendChild(im); th.appendChild(el('span', 'inpl', '▶'));
-      th.onclick = function () { var f = document.createElement('iframe'); f.src = yt(v.id) + '&autoplay=1'; f.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'; f.setAttribute('allowfullscreen', ''); f.title = v.t; th.replaceWith(f); track('insp-guarda'); };
+      th.onclick = function () { IV.list = LV; ideaView(vi); track('insp-guarda'); }; // a schermo intero, come le storie: si scorre al video dopo
       c.appendChild(th); c.appendChild(el('div', 'intt', v.t)); c.appendChild(el('div', 'inch', v.ch));
       var go = el('button', sent ? 'btn-o wide' : 'btn', sent ? '✓ Nel cerchio' : '➕ Mandalo'); go.type = 'button'; go.disabled = sent;
       go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
