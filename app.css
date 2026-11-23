@@ -537,3 +537,5 @@ p.og.refn{grid-column:1/-1}
 .trrow{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:0 16px 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--s1,#fff);color:inherit;font:inherit;text-align:left;cursor:pointer}
 .trrow>span:first-child{font-size:22px}.trrow>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.trrow small{opacity:.7;font-size:13px}.trrow>span:last-child{opacity:.5;font-size:20px}
 .rgrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}.rgrow a{color:var(--t);text-decoration:none;font-size:14.5px;line-height:1.35}.rgrow .lnk{flex:none;padding:4px 8px}
+.tabs .fab,.light .tabs .fab,html.rs .tabs .fab{color:var(--m)}
+#ikg:not(.all) button[data-k=compra],#ikg:not(.all) button[data-k=ricetta],#ikg:not(.all) button[data-k=altro]{display:none}#ikg.all .ikmore{display:none}

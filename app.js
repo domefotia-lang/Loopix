@@ -446,7 +446,7 @@ function cleanK(k) {
 var gone = get('gone', []);
 /* ==== src/app/04-segnala.js ==== */
 /* ---- segnala un problema ---- */
-var APP_VER = 'v182', errLog = [];
+var APP_VER = 'v183', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1129,6 +1129,7 @@ function packPrefetch() {
   if (loc.length) { var q2 = loc.map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: loc.map(packQ), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(got(q2), function () {}); }
 }
 function storiesEl() {
+  var c0 = cityGet(); if (!feed.length || !c0 || !isLon(c0) || newCount() > 0) return null; // prima il contenuto: le idee in cima solo per chi vive a Londra, a feed avviato, senza Reel nuovi da vedere
   var L = packList(); if (!L.length || !me || !me.name) return null;
   var seen = {}; try { seen = JSON.parse(localStorage.getItem(LSG + 'ivseen') || '{}'); } catch (e) {}
   var row = el('div', 'stor'); row.id = 'stor'; row.setAttribute('aria-label', LXT('Idee per uscire'));
@@ -1187,9 +1188,10 @@ function dwOpen() {
   var mb = el('button', 'me'); mb.type = 'button'; mb.appendChild(avatar(me.name)); var tx = el('div'); tx.appendChild(el('b', null, me.name)); tx.appendChild(el('small', null, 'Il tuo profilo ›')); mb.appendChild(tx);
   mb.onclick = function () { dwGo('prof'); }; P.appendChild(mb);
   var rf = el('button', 'dwref'); rf.type = 'button'; rf.appendChild(el('b', null, '💌 Consiglia Reelta')); rf.appendChild(el('small', null, 'Mandala a chi vuoi: arriva con il link giusto'));
-  rf.onclick = function () { dwClose(); $('refGo').click(); }; P.appendChild(rf);
+  rf.onclick = function () { dwClose(); $('refGo').click(); }; if (feed.length >= 3) P.appendChild(rf); // consigliarla ha senso dopo averla usata un po'
   var pp = el('button', 'it'); pp.type = 'button'; pp.appendChild(el('span', null, '👥')); pp.appendChild(document.createTextNode('Persone e inviti')); pp.onclick = function () { dwGo('circle'); }; var sp = el('div', 'sec'); sp.appendChild(pp); P.appendChild(sp);
   function sec(t, rows) {
+    rows = rows.filter(function (r) { return r[5] !== 0; }); if (!rows.length) return; // le voci vuote non si mostrano
     var s = el('div', 'sec'); s.appendChild(el('h4', null, t));
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
     P.appendChild(s);
@@ -1198,21 +1200,17 @@ function dwOpen() {
   if (typeof dropOk === 'function' && dropOk()) { var db2 = el('button', 'it'); db2.type = 'button'; db2.appendChild(el('span', null, '📲')); db2.appendChild(document.createTextNode('Condividi da Instagram → Reelta')); db2.onclick = function () { dwClose(); dropOpen(); }; var sd = el('div', 'sec'); sd.appendChild(db2); P.appendChild(sd); }
   if (typeof inBrowser !== 'undefined' && inBrowser && !window.__inst) { var ib2 = el('button', 'it'); ib2.type = 'button'; ib2.appendChild(el('span', null, '📲')); ib2.appendChild(document.createTextNode('Installa Reelta sulla Home')); ib2.onclick = function () { dwClose(); instGo(); }; var sx = el('div', 'sec'); sx.appendChild(ib2); P.appendChild(sx); }
   sec('I tuoi contenuti', [
-    ['⭐', 'Reel tenuti', function () { dwGo('main', null, function () { fview = 'keep'; render(); }); }, n.keep],
-    ['📌', 'Messaggi fissati', function () { dwGo('chat', null, pinOpen); }, n.pin],
-    ['💘', 'Piani da decidere', function () { dwGo('ideas', null, n.dec ? decOpen : null); }, n.dec, 1]
+    ['⭐', 'Reel tenuti', function () { dwGo('main', null, function () { fview = 'keep'; render(); }); }, n.keep, 0, n.keep ? 1 : 0],
+    ['📌', 'Messaggi fissati', function () { dwGo('chat', null, pinOpen); }, n.pin, 0, n.pin ? 1 : 0],
+    ['💘', 'Piani da decidere', function () { dwGo('ideas', null, n.dec ? decOpen : null); }, n.dec, 1, n.dec ? 1 : 0]
   ]);
   sec('Impostazioni', [
     ['🔔', 'Notifiche', function () { dwGo('style', 'ntC'); }],
-    ['🎨', 'Aspetto e colori', function () { dwGo('style', 'apC'); }],
-    ['🌍', 'Lingua', function () { dwGo('prof', 'lgC'); }],
-    ['🔒', 'Privacy e PIN', function () { dwGo('style', 'rsC'); }],
-  ].concat(isDuo() && trPartner() ? [['🤝', 'Trasparenza di coppia', function () { dwGo('style', 'trC'); }]] : []).concat([
     ['💾', 'Copia di sicurezza', function () { dwGo('style', 'bkC'); }],
+    ['🔒', 'Privacy e PIN', function () { dwGo('style', 'rsC'); }],
     ['⚙️', 'Tutte le impostazioni', function () { dwGo('style'); }]
-  ]));
+  ]);
   sec('Reelta', [
-    ['▶', 'Guarda come funziona', function () { dwClose(); demoOpen(); }],
     ['❓', 'Come si usa', function () { dwClose(); $('help').click(); }],
     ['🛠️', 'Segnala un problema', function () { dwClose(); $('bug').click(); }]
   ]);
@@ -1540,7 +1538,7 @@ var seq = null, seen = get('seen', {}), timer = null;
 function newCount() { return feed.filter(function (r) { return !seen[r.id] && !isMuted(r.n) && r.n !== me.name; }).length; } // i Reel che mandi tu non sono «nuovi» per te
 function seqLabel() {
   appBadge(); bellUI();
-  var n = newCount(), b = $('sq'); b.hidden = !feed.length; $('sp').hidden = !feed.length || !$('app').classList.contains('on');
+  var n = newCount(), b = $('sq'); b.hidden = n < 2; // con un Reel solo, il Reel è già lì sotto: niente bottone in mezzo $('sp').hidden = !feed.length || !$('app').classList.contains('on');
   var who = []; feed.forEach(function (r) { if (!seen[r.id] && !isMuted(r.n) && r.n !== me.name && who.indexOf(r.n) < 0) who.push(r.n); });
   b.textContent = n ? '▶  ' + n + (n === 1 ? ' nuovo' : ' nuovi') + (who.length === 1 ? ' da ' + who[0] : '') : '▶  Rivedi tutti';
   renderNov();
@@ -1564,7 +1562,7 @@ function renderSteps() {
   if (!get('stepsSeen', 0) && feed.length >= 10) put('steps', 1); // chi usa già Reelta da un po' non la vede
   var st = get('steps', 0); // 0 = in corso, 1 = chiusa, 2 = completata e festeggiata
   if (st || (all && !get('stepsSeen', 0))) { if (all && !st) { put('steps', 2); $('mh').textContent = '🎉 Primi passi fatti: ora Reelta è tutta vostra!'; } B.hidden = true; return; }
-  if (!feed.length || !$('ios').hidden) { B.hidden = true; return; } // una cosa alla volta: prima la scheda vuota o l'avviso «Mettila sulla Home»
+  if (!feed.length || !$('ios').hidden || newCount() > 0) { B.hidden = true; return; } // una cosa alla volta: prima la scheda vuota o l'avviso «Mettila sulla Home»
   put('stepsSeen', 1); B.textContent = ''; B.hidden = false;
   var nx = L.filter(function (x) { return !x.ok; })[0], open = B.dataset.open === '1';
   var hd = el('button', 'sh'); hd.type = 'button'; hd.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -1590,6 +1588,7 @@ function renderNov() {
   if (um) chip('💬 ' + um + (um === 1 ? ' messaggio' : ' messaggi'), function () { showPane('chat'); });
   var rxn = (get('rxNew', []) || []).filter(function (x) { return Date.now() - x.ts < 3 * 864e5 && find(x.id); });
   if (rxn.length) { var lx = rxn[rxn.length - 1]; chip(lx.e + ' ' + (rxn.length === 1 ? lx.n + ' ' + (RXV[lx.e] || 'ha reagito al tuo Reel').replace(/ al tuo Reel| col tuo Reel/, '') : rxn.length + ' reazioni ai tuoi Reel'), function () { put('rxNew', []); goReel(lx.id); renderNov(); }); }
+  if (feed.length && srvOn() && !cloudOn() && !get('bkAsk', 0) && typeof cloudStart === 'function') chip('☁️ ' + LXT('Non perdere i vostri Reel: attiva la copia'), function () { put('bkAsk', 1); track('copia-da-chip'); cloudStart(); renderNov(); });
   if (dec) chip('💘 ' + dec + ' da decidere', function () { showPane('ideas'); decOpen(); });
   // da soli con qualche Reel già pronto: è il momento giusto per invitare
   var mineN = me.role === 'host' && !Object.keys(allowed).length ? feed.filter(function (r) { return r.n === me.name; }).length : 0;
@@ -3417,8 +3416,10 @@ function goReel(id) {
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
-  var g = $('ikg'); if (!g.children.length) Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); });
-  var r0 = rid && find(rid); setKind(guessKind(r0 && r0.c) || 'viaggio');
+  var g = $('ikg'); if (!g.children.length) { Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); }); var mo = el('button', 'ikmore', '＋ ' + LXT('Altro')); mo.type = 'button'; mo.onclick = function () { g.classList.add('all'); }; g.appendChild(mo); }
+  var r0 = rid && find(rid), k0 = guessKind(r0 && r0.c) || 'viaggio'; setKind(k0);
+  // tre scelte in vista (posto, mangiare, fare); le altre con «＋ Altro», o già aperte se l'idea è di quel tipo
+  g.classList.toggle('all', ['viaggio', 'cibo', 'esperienza'].indexOf(k0) < 0);
   if (!(opts && opts.again)) aiLast = null; $('iok2').hidden = !r0;
   $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = aiLast ? '✨ Un’altra idea dal video' : '✨ Riconosci dal video'; $('iAi').querySelector('span').textContent = aiLast ? 'Oppure scegli prima un tipo: es. ✈️ per il viaggio' : 'L’AI compila il piano per te'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
