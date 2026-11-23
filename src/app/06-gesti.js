@@ -79,6 +79,22 @@ function rxPick(b, r) {
   setTimeout(function () { document.addEventListener('click', function off(e) { if (!p.contains(e.target)) { p.remove(); document.removeEventListener('click', off, true); } }, true); }, 50);
 }
 function rxHint() { if (get('rxtip', 0)) return; put('rxtip', 1); $('mh').textContent = 'Tieni premuto il cuore per 😂 😮 🔥'; }
+// cestino: un tocco toglie il Reel dal mio telefono (con «Annulla»); se è mio posso anche eliminarlo per tutti
+function reelTrash(r) {
+  if (r.n === me.name || me.role === 'host') return sheet('🗑 ' + LXT('Togliere questo Reel?'), '', [
+    { t: '🙈 ' + LXT('Solo dal mio telefono'), f: function () { trashHide(r); } },
+    { t: '🗑 Elimina per tutti', red: true, f: function () { delReel(r.id); } }
+  ]);
+  trashHide(r);
+}
+function trashHide(r) {
+  var i = feed.indexOf(r), k = !!keeps[r.id]; hideReel(r.id); track('cestino');
+  var old = document.querySelector('.undob'); if (old) old.remove();
+  var u = el('div', 'undob'); u.setAttribute('role', 'status'); u.appendChild(el('span', null, LXT('Tolto dal tuo telefono.')));
+  var b = el('button', null, LXT('Annulla')); b.type = 'button';
+  b.onclick = function () { u.remove(); rhid = rhid.filter(function (x) { return x !== r.id; }); put('rhid', rhid); if (!find(r.id)) { feed.splice(Math.max(0, Math.min(i, feed.length)), 0, r); put('feed', feed); } if (k) { keeps[r.id] = keeps[r.id] || 1; put('keep', keeps); } render(); track('cestino-annulla'); $('mh').textContent = LXT('Rimesso.'); };
+  u.appendChild(b); document.body.appendChild(u); setTimeout(function () { u.remove(); }, 6000);
+}
 function reelMenu(r) {
   var opts = [
     { t: keeps[r.id] ? '⭐ Non tenere più' : '⭐ Tieni questo Reel', f: function () { keepToggle(r.id); } },
@@ -196,6 +212,7 @@ function refresh(r) {
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; if (nd.open) { nd.list.scrollTop = nd.list.scrollHeight; nd.cp.scrollIntoView({ block: 'nearest' }); } }; nd.bar.appendChild(cb);
   var kp0 = !!keeps[r.id], sb0 = el('button', 'r-btn' + (kp0 ? ' mine' : ''), kp0 ? '⭐' : '☆'); sb0.setAttribute('aria-label', kp0 ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); sb0.setAttribute('aria-pressed', String(kp0)); sb0.onclick = function () { keepToggle(r.id); }; nd.bar.appendChild(sb0);
   var mb = el('button', 'r-btn', '⋯'); mb.setAttribute('aria-label', 'Altro: di cosa parla, tieni, elimina…'); mb.onclick = function () { reelMenu(r); }; nd.bar.appendChild(mb);
+  var tb = el('button', 'r-btn trash', '🗑'); tb.setAttribute('aria-label', 'Cestino: togli questo Reel'); tb.onclick = function () { reelTrash(r); }; nd.bar.appendChild(tb);
   var has = ideas.some(function (i) { return i.r === r.id; });
   var tip = !has && !get('ptip', 0) && !document.querySelector('.r-btn.plan.tip');
   var ib = el('button', 'r-btn plan' + (tip ? ' tip' : ''), has ? '✓ Piano' : '✨ Piano'); if (tip) setTimeout(function () { put('ptip', 1); }, 6000); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);

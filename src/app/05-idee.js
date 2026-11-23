@@ -59,7 +59,7 @@ function ogRun(p, F) {
   track('oggi-' + p.who + '-' + p.when);
   mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, date: p.when === 'data' ? p.date : undefined, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
-    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : lon ? LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto. Intanto qui sotto ci sono le idee in città scelte da noi.') : LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto.'); return; }
+    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : lon ? LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto. Intanto qui sotto ci sono le idee in città scelte da noi.') : LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto.'); put0(aiAskBtn(ogPrompt(p, city))); return; }
     hd.textContent = '✨ ' + LXT('Idee per voi') + ' · ' + (p.wl || LXT({ 'Central London': 'Centro', 'North London': 'Nord', 'South London': 'Sud', 'East London': 'Est', 'West London': 'Ovest', centre: 'Centro', around: 'Dintorni' }[p.where] || p.where));
     var cards = [];
     x.items.forEach(function (v, i) {
@@ -79,7 +79,7 @@ function ogRun(p, F) {
       if (!y || !y.items) return;
       y.items.forEach(function (vv, i) { var z = cards[i]; if (!vv || !z || !z.th.isConnected) return; z.o.st.u = 'https://www.youtube.com/shorts/' + vv.id; z.th.textContent = ''; var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + vv.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; z.th.appendChild(im); z.th.appendChild(el('span', 'inpl', '▶')); z.th.classList.remove('pkth'); });
     }, function () {});
-  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
+  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); put0(aiAskBtn(ogPrompt(p, city))); });
 }
 /* ---- 🎁 Regali: per chi, occasione, budget → 6 idee concrete, con la ricerca nel negozio.
    Al server arrivano solo le tre scelte. I regali salvati restano su questo telefono: gli altri del cerchio non li vedono (sorprese al sicuro). ---- */
@@ -94,6 +94,37 @@ var RG_FB = {
   casa: [['Pianta grande da interno', 'Large indoor plant', 'large indoor plant delivery', 0, '£30–70'], ['Coperta in lana', 'Wool throw blanket', 'wool throw blanket', 0, '£40–80'], ['Lampada da tavolo calda', 'Warm table lamp', 'table lamp living room', 0, '£30–60'], ['Corso di bricolage per la casa', 'DIY home workshop', 'diy home workshop', 1, '£40–80'], ['Set di bicchieri da vino', 'Wine glass set', 'wine glass set', 0, '£20–45'], ['Macchina per pasta fresca', 'Pasta maker', 'pasta maker machine', 0, '£30–60']]
 };
 function rgFallback(per) { var en = window.LX_LANG && window.LX_LANG !== 'it'; return (RG_FB[per] || RG_FB.noi).map(function (x) { return { n: en ? x[1] : x[0], s: x[2], k: x[3] ? 'experience' : 'thing', p: x[4], w: '' }; }); }
+/* ---- 🤖 «Chiedi alla tua AI»: se la nostra AI è occupata (o lo preferisci), la domanda si apre già scritta nella tua AI (ChatGPT o Gemini).
+   La domanda viene anche copiata: se l'app non la inserisce da sola, basta incollarla. A noi non costa niente, e decidi tu cosa mandare. ---- */
+function aiAskBtn(prompt) {
+  var b = withIco(el('button', 'btn-o wide og', ''), 'spark', LXT('Chiedi alla tua AI (ChatGPT o Gemini)')); b.type = 'button';
+  b.onclick = function (e) { if (e) e.stopPropagation(); tuaAi(prompt); }; return b;
+}
+function tuaAi(prompt) {
+  var cp = function () { try { if (navigator.clipboard) navigator.clipboard.writeText(prompt).catch(function () {}); } catch (e) {} };
+  var go = function (u, k) { cp(); track('tua-ai-' + k); window.open(u, '_blank', 'noopener'); };
+  sheet('🤖 ' + LXT('Chiedi alla tua AI'), LXT('La domanda è già pronta (e copiata): se non compare da sola, incollala.') + '\n\n«' + prompt + '»', [
+    { t: 'ChatGPT', f: function () { go('https://chatgpt.com/?q=' + encodeURIComponent(prompt), 'chatgpt'); } },
+    { t: 'Gemini', f: function () { go('https://gemini.google.com/app?q=' + encodeURIComponent(prompt), 'gemini'); } },
+    { t: LXT('Copia la domanda'), f: function () { cp(); track('tua-ai-copia'); $('mh').textContent = LXT('Domanda copiata: incollala nella tua AI.'); } }
+  ]);
+}
+function ogPrompt(p, city) {
+  var en = window.LX_LANG === 'en', W = { 'Central London': 'Central London', 'North London': 'North London', 'South London': 'South London', 'East London': 'East London', 'West London': 'West London', centre: en ? 'the centre' : 'il centro', around: en ? 'the surroundings' : 'i dintorni' }[p.where] || p.wl || p.where;
+  var who = { coppia: en ? 'a couple' : 'una coppia', bimbi: en ? 'a family with young children' : 'una famiglia con bambini piccoli', amici: en ? 'a group of friends' : 'un gruppo di amici' }[p.who];
+  var when = p.when === 'data' && p.date ? (en ? 'on ' : 'il ') + fmtDay(p.date) : ({ oggi: en ? 'today' : 'oggi', sera: en ? 'this evening' : 'stasera', domani: en ? 'tomorrow' : 'domani', weekend: en ? 'this weekend' : 'questo weekend' }[p.when]);
+  var bud = { any: en ? 'any budget' : 'qualsiasi budget', free: en ? 'free only' : 'solo gratis', low: en ? 'cheap' : 'economico', mid: en ? 'mid-range' : 'medio', high: en ? 'special occasion' : 'occasione speciale' }[p.bud];
+  return en ? 'Suggest 6 real things to do ' + when + ' in or near ' + W + ', ' + city + ', for ' + who + ', ' + bud + '. For each: name, area, price, why it suits us and the official website. Only places that really exist and are open.'
+    : 'Suggeriscimi 6 cose vere da fare ' + when + ' a ' + W + ' o vicino, ' + city + ', per ' + who + ', ' + bud + '. Per ognuna: nome, zona, prezzo, perché è adatta e il sito ufficiale. Solo posti che esistono davvero e sono aperti.';
+}
+function rgPrompt(p) {
+  var en = window.LX_LANG === 'en';
+  var per = { lei: en ? 'her (my partner)' : 'lei (la mia compagna)', lui: en ? 'him (my partner)' : 'lui (il mio compagno)', noi: en ? 'the two of us' : 'noi due', bimbi: en ? 'young children' : 'bambini piccoli', amici: en ? 'a friend' : 'un amico', casa: en ? 'our home' : 'la casa' }[p.per];
+  var occ = { pensiero: en ? 'just because' : 'un pensiero senza occasione', compleanno: en ? 'a birthday' : 'un compleanno', anniversario: en ? 'an anniversary' : 'un anniversario', natale: en ? 'Christmas' : 'Natale' }[p.occ];
+  var bud = { any: en ? 'any reasonable budget' : 'qualsiasi budget ragionevole', low: en ? 'under £25' : 'sotto le 25 £', mid: en ? '£25–75' : 'tra 25 e 75 £', high: en ? '£75–250' : 'tra 75 e 250 £' }[p.bud];
+  return en ? 'Suggest 6 concrete, original gift ideas for ' + per + ', for ' + occ + ', budget ' + bud + ', buyable in the UK. Mix things and experiences, no clichés, with a typical price.'
+    : 'Suggeriscimi 6 idee regalo concrete e originali per ' + per + ', per ' + occ + ', budget ' + bud + ', acquistabili nel Regno Unito. Mescola oggetti ed esperienze, niente idee banali, con il prezzo indicativo.';
+}
 function rgPref() { var p = {}; try { p = JSON.parse(lsGet(LSG + 'regali') || '{}') || {}; } catch (e) {} return { per: p.per || 'lei', occ: p.occ || 'pensiero', bud: p.bud || 'any' }; }
 function rgReg() { var c = cityGet(); if (c && isLon(c)) return 'GB'; var r = ((navigator.language || '').split('-')[1] || '').toUpperCase(); return ['GB', 'IT', 'ES', 'US', 'IE'].indexOf(r) >= 0 ? r : (window.LX_LANG === 'it' ? 'IT' : window.LX_LANG === 'es' ? 'ES' : 'GB'); }
 function rgShop(v, reg) {
@@ -143,6 +174,7 @@ function rgRun(p, F) {
     var fb = !x || x.error || !x.items || !x.items.length; // AI occupata: idee pronte, scelte da noi
     if (fb) x = { items: rgFallback(p.per) };
     hd.textContent = fb ? '🎁 ' + LXT('Idee regalo pronte (l’AI è occupata: riprova tra poco per idee nuove)') : '🎁 ' + LXT('Idee regalo per voi');
+    if (fb) put0(aiAskBtn(rgPrompt(p)));
     var cards = [];
     x.items.forEach(function (v, vi) {
       var sh = rgShop(v, reg), card = el('div', 'insc og'), th = el('button', 'inth pkth'); th.type = 'button'; th.appendChild(el('span', 'pke', v.k === 'experience' ? '🎟️' : '🎁')); card.appendChild(th);

@@ -544,3 +544,7 @@ p.og.refn{grid-column:1/-1}
 .ogd{display:block;margin-top:8px;width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-size:16px}
 /* versione semplice */
 body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:none}
+
+.r-btn.trash{padding:8px 11px}
+.undob{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;background:var(--s2);color:var(--t);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.4);font-size:15px;max-width:92vw}
+.undob button{background:var(--spec);color:var(--spec-ink);border:0;border-radius:999px;padding:8px 14px;font-weight:700;font-size:15px;min-height:38px}
