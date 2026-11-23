@@ -220,6 +220,15 @@ function xplBuild() {
   var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp.appendChild(pb);
   T.forEach(function (t, i) { if (INSP_QEN[i] === 'gift ideas') return; var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 1 || i === 3, INSP_QEN[i]); }; tp.appendChild(b); });
 }
+// quando le nostre ricerche finiscono: la stessa ricerca, già scritta, nelle app dei video (risultati veri, nessun limite)
+function elsewhere(q) {
+  var w = el('div', 'ailinks elsew'), e = encodeURIComponent(q), tag = q.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  [['▶ YouTube', 'https://www.youtube.com/results?search_query=' + e, 'yt'], ['🎵 TikTok', 'https://www.tiktok.com/search?q=' + e, 'tt'], ['📸 Instagram', 'https://www.instagram.com/explore/tags/' + encodeURIComponent(tag) + '/', 'ig']].forEach(function (x) {
+    if (x[2] === 'ig' && tag.length < 3) return;
+    var a = el('a', 'chip', LXT('Guarda su') + ' ' + x[0]); a.href = x[1]; a.target = '_blank'; a.rel = 'noopener'; a.onclick = function () { track('altrove-' + x[2]); }; w.appendChild(a);
+  });
+  return w;
+}
 function inspOpen(q) { xplQ = q || ''; track('insp-apri'); showPane('xpl'); }
 // loc: ricerche di posti (ristoranti, cose da fare, ricerca libera) → si aggiunge la città, così YouTube trova video del posto e non a caso
 function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 'London' : c, l = q.toLowerCase(); return l.indexOf(cn.toLowerCase()) >= 0 || l.indexOf(c.toLowerCase()) >= 0 ? q : q + ' ' + cn; }
@@ -232,8 +241,8 @@ function inspLoad(q, loc, qx) {
   var qq = loc ? inspCity(qx || q) : (qx || q);
   mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
-    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee già pronte.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
-    if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); return; }
+    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le nostre ricerche sono finite (domani si ricaricano): intanto guarda i video veri direttamente lì.' : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); if (!x || x.error !== 'insp-off') L.appendChild(elsewhere(qq)); return; }
+    if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); L.appendChild(elsewhere(qq)); return; }
     // via i video fuori tema: tengo quelli che nel titolo o nel canale nominano qualcosa della ricerca (se ne restano almeno 4)
     var STOP = { best: 1, from: 1, tips: 1, ideas: 1, with: 1, easy: 1, quick: 1, london: 1, londra: 1, londres: 1 }, W = qq.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (w) { return w.length > 3 && !STOP[w]; });
     var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
@@ -249,7 +258,7 @@ function inspLoad(q, loc, qx) {
       go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
       c.appendChild(go); L.appendChild(c);
     });
-  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: riprova tra poco.')); });
+  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qq)); });
 }
 /* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
