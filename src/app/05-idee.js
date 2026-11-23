@@ -59,7 +59,7 @@ function ogRun(p, F) {
   track('oggi-' + p.who + '-' + p.when);
   mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, date: p.when === 'data' ? p.date : undefined, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
-    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
+    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : lon ? LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto. Intanto qui sotto ci sono le idee in città scelte da noi.') : LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto.'); return; }
     hd.textContent = '✨ ' + LXT('Idee per voi') + ' · ' + (p.wl || LXT({ 'Central London': 'Centro', 'North London': 'Nord', 'South London': 'Sud', 'East London': 'Est', 'West London': 'Ovest', centre: 'Centro', around: 'Dintorni' }[p.where] || p.where));
     var cards = [];
     x.items.forEach(function (v, i) {
@@ -84,6 +84,16 @@ function ogRun(p, F) {
 /* ---- 🎁 Regali: per chi, occasione, budget → 6 idee concrete, con la ricerca nel negozio.
    Al server arrivano solo le tre scelte. I regali salvati restano su questo telefono: gli altri del cerchio non li vedono (sorprese al sicuro). ---- */
 var RG_AFF = { 'amazon.co.uk': '', 'amazon.it': '', 'amazon.es': '', 'amazon.com': '' }; // codici affiliato: vuoti finché non c'è il via libera
+// idee pronte se l'AI è occupata (mai uno schermo vuoto): [italiano, inglese, ricerca, esperienza?, prezzo]
+var RG_FB = {
+  lei: [['Corso di fiori freschi e composizioni', 'Floristry workshop', 'flower arranging workshop', 1, '£45–80'], ['Profumo in formato da viaggio', 'Travel-size perfume set', 'perfume discovery set women', 0, '£20–40'], ['Spa per due con tè', 'Spa day for two with tea', 'spa day for two afternoon tea', 1, '£90–160'], ['Libro di ricette illustrato', 'Illustrated cookbook', 'illustrated cookbook gift', 0, '£15–30'], ['Lezione di ballo per due', 'Dance class for two', 'dance class for two couples', 1, '£40–70'], ['Pigiama in cotone di qualità', 'Quality cotton pyjamas', 'women cotton pyjama set gift', 0, '£35–70']],
+  lui: [['Kit per cocktail a casa', 'Home cocktail kit', 'cocktail making kit gift', 0, '£25–50'], ['Giro in kart', 'Go-karting session', 'go karting experience', 1, '£40–70'], ['Portafoglio sottile in pelle', 'Slim leather wallet', 'slim leather wallet men', 0, '£20–45'], ['Degustazione di birre artigianali', 'Craft beer tasting', 'craft beer tasting experience', 1, '£25–45'], ['Coltello da cucina giapponese', 'Japanese kitchen knife', 'japanese chef knife gift', 0, '£40–90'], ['Biglietti per una partita', 'Tickets to a match', 'football match tickets', 1, '£40–100']],
+  noi: [['Corso di cucina italiana per due', 'Italian cooking class for two', 'italian cooking class for two', 1, '£80–140'], ['Gioco da tavolo per coppie', 'Board game for couples', 'two player board game couples', 0, '£15–35'], ['Notte in un glamping', 'A night glamping', 'glamping night for two', 1, '£90–200'], ['Album di foto da riempire insieme', 'Photo album to fill together', 'couples photo album', 0, '£20–40'], ['Cinema con divani e coperte', 'Cinema with sofas and blankets', 'luxury cinema tickets for two', 1, '£30–50'], ['Set per fondue', 'Fondue set', 'fondue set', 0, '£30–60']],
+  bimbi: [['Kit da piccolo scienziato', 'Junior science kit', 'kids science experiment kit', 0, '£15–30'], ['Giornata in una fattoria con animali', 'Day at a petting farm', 'petting farm day out', 1, '£10–25'], ['Costruzioni magnetiche', 'Magnetic building tiles', 'magnetic building tiles kids', 0, '£25–50'], ['Spettacolo per bambini a teatro', 'Children’s theatre show', 'children theatre show tickets', 1, '£15–30'], ['Libro pop-up', 'Pop-up book', 'pop up book kids', 0, '£10–20'], ['Lezione di arrampicata per bambini', 'Kids climbing session', 'kids indoor climbing session', 1, '£15–25']],
+  amici: [['Candela profumata artigianale', 'Hand-poured scented candle', 'hand poured scented candle', 0, '£15–30'], ['Quiz serale al pub insieme', 'Pub quiz night together', 'pub quiz night', 1, '£0–10'], ['Tazza fatta a mano', 'Handmade mug', 'handmade ceramic mug', 0, '£15–25'], ['Lezione di yoga all’aperto', 'Outdoor yoga class', 'outdoor yoga class', 1, '£10–20'], ['Gioco di carte da festa', 'Party card game', 'party card game adults', 0, '£15–25'], ['Brunch offerto', 'A brunch on you', 'best brunch spots', 1, '£20–40']],
+  casa: [['Pianta grande da interno', 'Large indoor plant', 'large indoor plant delivery', 0, '£30–70'], ['Coperta in lana', 'Wool throw blanket', 'wool throw blanket', 0, '£40–80'], ['Lampada da tavolo calda', 'Warm table lamp', 'table lamp living room', 0, '£30–60'], ['Corso di bricolage per la casa', 'DIY home workshop', 'diy home workshop', 1, '£40–80'], ['Set di bicchieri da vino', 'Wine glass set', 'wine glass set', 0, '£20–45'], ['Macchina per pasta fresca', 'Pasta maker', 'pasta maker machine', 0, '£30–60']]
+};
+function rgFallback(per) { var en = window.LX_LANG && window.LX_LANG !== 'it'; return (RG_FB[per] || RG_FB.noi).map(function (x) { return { n: en ? x[1] : x[0], s: x[2], k: x[3] ? 'experience' : 'thing', p: x[4], w: '' }; }); }
 function rgPref() { var p = {}; try { p = JSON.parse(lsGet(LSG + 'regali') || '{}') || {}; } catch (e) {} return { per: p.per || 'lei', occ: p.occ || 'pensiero', bud: p.bud || 'any' }; }
 function rgReg() { var c = cityGet(); if (c && isLon(c)) return 'GB'; var r = ((navigator.language || '').split('-')[1] || '').toUpperCase(); return ['GB', 'IT', 'ES', 'US', 'IE'].indexOf(r) >= 0 ? r : (window.LX_LANG === 'it' ? 'IT' : window.LX_LANG === 'es' ? 'ES' : 'GB'); }
 function rgShop(v, reg) {
@@ -128,10 +138,11 @@ function rgRun(p, F) {
   hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
   track('regali-' + p.per + '-' + p.occ);
   var shared = p.per === 'noi' || p.per === 'casa' || p.per === 'bimbi'; // per lei / per lui / per un amico: niente nel cerchio, è una sorpresa
-  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 60000).then(function (x) {
+  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 60000).catch(function () { return { error: 'net' }; }).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
-    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
-    hd.textContent = '🎁 ' + LXT('Idee regalo per voi');
+    var fb = !x || x.error || !x.items || !x.items.length; // AI occupata: idee pronte, scelte da noi
+    if (fb) x = { items: rgFallback(p.per) };
+    hd.textContent = fb ? '🎁 ' + LXT('Idee regalo pronte (l’AI è occupata: riprova tra poco per idee nuove)') : '🎁 ' + LXT('Idee regalo per voi');
     var cards = [];
     x.items.forEach(function (v, vi) {
       var sh = rgShop(v, reg), card = el('div', 'insc og'), th = el('button', 'inth pkth'); th.type = 'button'; th.appendChild(el('span', 'pke', v.k === 'experience' ? '🎟️' : '🎁')); card.appendChild(th);
