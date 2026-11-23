@@ -6,7 +6,9 @@ var INSP_T = { it: ['Ristoranti da provare', 'Weekend fuori città', 'Ricette ve
 // quartieri di Londra: «Vicino a me» trova il più vicino sul telefono e manda solo il nome (mai la posizione)
 var OG_AREAS = [['Westminster', 51.4995, -0.1357], ['Soho', 51.5137, -0.1337], ['Covent Garden', 51.5117, -0.124], ['Camden', 51.539, -0.1426], ['King’s Cross', 51.5308, -0.1238], ['Islington', 51.5362, -0.1033], ['Hackney', 51.545, -0.0553], ['Shoreditch', 51.5265, -0.0798], ['Stratford', 51.5416, -0.0033], ['Canary Wharf', 51.5054, -0.0235], ['Greenwich', 51.4826, -0.0077], ['Lewisham', 51.4615, -0.0138], ['Eltham', 51.4508, 0.0525], ['Woolwich', 51.4906, 0.0636], ['Bromley', 51.4039, 0.0198], ['Croydon', 51.3762, -0.0982], ['Brixton', 51.4613, -0.1156], ['Clapham', 51.4618, -0.1384], ['Battersea', 51.4791, -0.1625], ['Southwark', 51.5035, -0.0804], ['Wimbledon', 51.4214, -0.2064], ['Richmond', 51.4613, -0.3037], ['Kingston', 51.4123, -0.3007], ['Hammersmith', 51.4927, -0.2339], ['Chelsea', 51.4875, -0.1687], ['Kensington', 51.5006, -0.1937], ['Notting Hill', 51.5094, -0.1967], ['Marylebone', 51.5194, -0.1499], ['Hampstead', 51.556, -0.1781], ['Highgate', 51.5716, -0.1448], ['Walthamstow', 51.5908, -0.0134], ['Tottenham', 51.5975, -0.0681], ['Wembley', 51.5588, -0.2817], ['Ealing', 51.513, -0.3089], ['Ilford', 51.559, 0.0741], ['Romford', 51.5751, 0.1857], ['Bexleyheath', 51.4573, 0.1427], ['Sutton', 51.3618, -0.1945], ['Harrow', 51.5806, -0.3416], ['Enfield', 51.6523, -0.0807]];
 var OG_EM = { food: '🍽️', kids: '🧸', outdoor: '🌳', culture: '🏛️', show: '🎭', night: '🌙', activity: '🎯' };
-function ogPref() { var p = {}; try { p = JSON.parse(localStorage.getItem(LSG + 'oggi') || '{}') || {}; } catch (e) {} return { who: p.who || 'coppia', when: p.when || 'oggi', bud: p.bud || 'any', where: p.where || '', wl: p.wl || '' }; }
+function ogPref() { var p = {}; try { p = JSON.parse(localStorage.getItem(LSG + 'oggi') || '{}') || {}; } catch (e) {} var w = p.when || 'oggi', dt = p.date || ''; if (w === 'data' && (!/^\d{4}-\d{2}-\d{2}$/.test(dt) || dt < ogIso(new Date()))) { w = 'oggi'; dt = ''; } // un giorno già passato non vale più
+  return { who: p.who || 'coppia', when: w, date: dt, bud: p.bud || 'any', where: p.where || '', wl: p.wl || '' }; }
+function ogIso(x) { return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
 function ogNear(cb) {
   if (!navigator.geolocation) { cb(''); return; }
   navigator.geolocation.getCurrentPosition(function (pos) {
@@ -26,7 +28,18 @@ function ogForm() {
     r.appendChild(w); F.appendChild(r);
   };
   row('Con chi', 'who', [['coppia', '💑 In coppia'], ['bimbi', '🧸 Con i bambini'], ['amici', '🍻 Con amici']]);
-  row('Quando', 'when', [['oggi', 'Oggi'], ['sera', 'Stasera'], ['weekend', 'Questo weekend']]);
+  row('Quando', 'when', [['oggi', 'Oggi'], ['sera', 'Stasera'], ['domani', 'Domani'], ['weekend', 'Questo weekend'], ['data', '📅 Un altro giorno']]);
+  // 📅 calendarietto: qualsiasi giorno nei prossimi 2 mesi
+  (function () {
+    var qr = F.lastChild, dc = [].filter.call(qr.querySelectorAll('.chip'), function (b) { return b._k === 'data'; })[0], t0 = new Date();
+    var dIn = document.createElement('input'); dIn.type = 'date'; dIn.className = 'ogd'; dIn.min = ogIso(t0); dIn.max = ogIso(new Date(t0.getTime() + 60 * 864e5));
+    dIn.value = p.date || ogIso(new Date(t0.getTime() + 2 * 864e5)); dIn.hidden = p.when !== 'data'; dIn.setAttribute('aria-label', LXT('Scegli il giorno'));
+    var save = function () { lsSet(LSG + 'oggi', JSON.stringify(p)); if (p.when === 'data' && p.date) dc.textContent = '📅 ' + fmtDay(p.date); else dc.textContent = '📅 ' + LXT('Un altro giorno'); };
+    var oc = dc.onclick; dc.onclick = function () { oc(); p.date = p.date || dIn.value; dIn.hidden = false; save(); try { if (dIn.showPicker) dIn.showPicker(); else dIn.focus(); } catch (e) { dIn.focus(); } };
+    [].forEach.call(qr.querySelectorAll('.chip'), function (b) { if (b !== dc) b.addEventListener('click', function () { dIn.hidden = true; save(); }); });
+    dIn.addEventListener('change', function () { if (!dIn.value) return; p.date = dIn.value; p.when = 'data'; [].forEach.call(qr.querySelectorAll('.chip'), function (b) { b.setAttribute('aria-pressed', String(b === dc)); }); save(); });
+    qr.appendChild(dIn); save();
+  })();
   row('Budget', 'bud', [['any', 'Qualsiasi'], ['free', 'Gratis'], ['low', '£'], ['mid', '££'], ['high', '£££']]);
   row('Dove', 'where', [['near', p.wl ? p.wl : '📍 Vicino a me']].concat(lon ? [['Central London', 'Centro'], ['North London', 'Nord'], ['South London', 'Sud'], ['East London', 'Est'], ['West London', 'Ovest']] : [['centre', 'Centro'], ['around', 'Dintorni']]));
   if (p.wl) { var nb = F.querySelector('.ogr:last-child .chip'); if (nb) nb.textContent = '📍 ' + p.wl; }
@@ -44,7 +57,7 @@ function ogRun(p, F) {
   hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
   var where = p.where === 'centre' ? 'the centre' : p.where === 'around' ? 'the surroundings' : p.where;
   track('oggi-' + p.who + '-' + p.when);
-  mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
+  mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, date: p.when === 'data' ? p.date : undefined, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
     hd.textContent = '✨ ' + LXT('Idee per voi') + ' · ' + (p.wl || LXT({ 'Central London': 'Centro', 'North London': 'Nord', 'South London': 'Sud', 'East London': 'Est', 'West London': 'Ovest', centre: 'Centro', around: 'Dintorni' }[p.where] || p.where));
