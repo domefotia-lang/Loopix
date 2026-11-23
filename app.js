@@ -446,7 +446,7 @@ function cleanK(k) {
 var gone = get('gone', []);
 /* ==== src/app/04-segnala.js ==== */
 /* ---- segnala un problema ---- */
-var APP_VER = 'v179', errLog = [];
+var APP_VER = 'v180', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -599,7 +599,6 @@ function delMsg(id, spread) {
   var before = msgs.length; msgs = msgs.filter(function (m) { return m.id !== id; }); if (msgs.length === before) return false;
   put('msgs', msgs); renderChat(); if (spread) { if (me.role === 'host') cast({ t: 'mdel', id: id }); else sendEv({ t: 'mdel', id: id }); } return true;
 }
-function canDel(r) { return me.role === 'host' || r.n === me.name; }
 function dropReel(id) {
   var r = find(id); if (gone.indexOf(id) < 0) { gone.push(id); if (gone.length > 300) gone.shift(); put('gone', gone); }
   if (!r) return false;
@@ -4080,32 +4079,6 @@ document.querySelectorAll('#style > .card, #style .card').forEach(function (c) {
 window.addEventListener('blur', function () { setTimeout(function () { var f = document.activeElement; if (!f || f.tagName !== 'IFRAME') return; var w = f.closest('.igw'); var o = w && w.querySelector('.ovl'); if (!o) return; o.classList.remove('glow'); void o.offsetWidth; o.classList.add('glow'); setTimeout(function () { o.classList.remove('glow'); }, 3500);
   // la scritta non sta più fissa sopra il video: compare qualche secondo, solo le prime volte che tocchi un Reel di Instagram
   var n = get('ighN', 0); if (n < 3 && !w.querySelector('.ighint')) { put('ighN', n + 1); var ih = el('div', 'ighint', 'Non parte? Tocca «Apri» ↗'); w.appendChild(ih); setTimeout(function () { ih.remove(); }, 4000); } }, 0); });
-/* ---- 📊 la vostra settimana: domenica e lunedì, un riepilogo degli ultimi 7 giorni (tutto calcolato sul telefono) ---- */
-function wkData() {
-  var t0 = Date.now() - 7 * 864e5, R = feed.filter(function (r) { return r.ts > t0; }), by = {}, rx = 0, top = null, tn = 0;
-  R.forEach(function (r) { by[r.n] = (by[r.n] || 0) + 1; var n = Object.keys(r.x || {}).length; rx += n; if (n && n >= tn) { tn = n; top = r; } });
-  var pl = ideas.filter(function (i) { return i.ts > t0; }).length;
-  var done = ideas.filter(function (i) { return i.d && i.w && new Date(i.w + 'T12:00:00').getTime() > t0 && Object.keys(i.f || {}).some(function (n) { return i.f[n] !== 'no'; }); });
-  return { n: R.length, by: by, rx: rx, top: top, pl: pl, done: done };
-}
-function wkDue() {
-  try {
-    if (!me) return null; var d = new Date(), wd = d.getDay(); if (wd > 1) return null;
-    var sun = new Date(d.getTime() - wd * 864e5), key = sun.getFullYear() + '-' + (sun.getMonth() + 1) + '-' + sun.getDate();
-    if (get('wkSeen', '') === key) return null; var w = wkData(); if (w.n < 3 && !w.done.length) return null; w.key = key; return w;
-  } catch (e) { return null; }
-}
-function wkOpen(w) {
-  var B = $('wkB'); B.textContent = '';
-  var st = el('div', 'wks'); [[w.n, 'Reel'], [w.rx, 'reazioni'], [w.pl, w.pl === 1 ? 'piano' : 'piani']].forEach(function (x) { var c = el('div'); c.appendChild(el('b', null, String(x[0]))); c.appendChild(el('small', null, x[1])); st.appendChild(c); }); B.appendChild(st);
-  var who = Object.keys(w.by).sort(function (a, b) { return w.by[b] - w.by[a]; }), mx = who.length ? w.by[who[0]] : 1;
-  if (who.length > 1) who.slice(0, 6).forEach(function (n) { var r = el('div', 'wkbar'); r.appendChild(el('span', null, n)); var i = el('i'); i.style.width = Math.max(6, Math.round(w.by[n] / mx * 130)) + 'px'; r.appendChild(i); r.appendChild(el('em', null, String(w.by[n]))); B.appendChild(r); });
-  if (w.top) { var p = el('p', 'wkl'); p.style.marginTop = '12px'; p.appendChild(el('b', null, '🏆 Il più amato: ')); p.appendChild(document.createTextNode((w.top.c ? '“' + w.top.c.slice(0, 60) + '”, ' : '') + (window.LX_T || String)('mandato da ') + w.top.n + ' ' + Object.keys(w.top.x).map(function (n) { return w.top.x[n]; }).join(''))); B.appendChild(p);
-    var tb = el('button', 'btn-o wide', '▶ Rivedilo'); tb.type = 'button'; tb.style.margin = '0 0 10px'; tb.onclick = function () { $('wkM').classList.remove('open'); goReel(w.top.id); var nd = nodes[w.top.id]; if (nd) { nd.el.classList.remove('flash'); void nd.el.offsetWidth; nd.el.classList.add('flash'); } }; B.appendChild(tb); }
-  if (w.done.length) { var q = el('p', 'wkl'); q.appendChild(el('b', null, '💞 Fatto insieme: ')); q.appendChild(document.createTextNode(w.done.slice(0, 3).map(function (i) { return i.p + ' ' + Object.keys(i.f).map(function (n) { return i.f[n] === 'no' ? '' : i.f[n]; }).join(''); }).join(' · '))); B.appendChild(q); }
-  put('wkSeen', w.key); track('settimana'); $('wkM').classList.add('open');
-}
-$('wkX').addEventListener('click', function () { $('wkM').classList.remove('open'); renderNov(); });
 /* ---- 💭 com'è andata? il giorno dopo la data di un piano, un tocco a testa: chiude il giro Reel → piano → ricordo ---- */
 function fbDue() {
   if (!me) return []; var sk = get('fbSkip', {}), now = Date.now();

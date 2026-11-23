@@ -211,7 +211,6 @@ select{width:auto;padding:10px 12px;font-size:14px;margin:0;border-radius:999px;
 @media (prefers-reduced-motion:reduce){.dsc.on .dtap{animation:none;opacity:1}.dmdots i.on::after{animation:none;width:100%}}
 .trl{margin:6px 0 0;padding:0;list-style:none}.trl li{padding:9px 0;border-top:1px solid var(--line);font-weight:600}.trl li small{display:block;color:var(--m);font-weight:500;font-size:13px}
 .demob{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0 8px;padding:14px 16px;border:1px dashed var(--line);border-radius:18px;background:transparent;color:var(--t);font:inherit;text-align:left;cursor:pointer}.demob>span{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.demob b{display:block;font-size:15.5px}.demob small{color:var(--m);font-size:13px}
-.wks{display:flex;gap:8px;margin:4px 0 12px}.wks div{flex:1;text-align:center;padding:12px 4px;border-radius:16px;background:var(--s2);border:1px solid var(--line)}.wks b{display:block;font-family:var(--dis);font-size:28px;color:var(--gl);line-height:1.1}.wks small{font-size:12.5px;color:var(--m)}.wkl{margin:0 0 10px;font-size:15.5px;line-height:1.45}.wkl b{color:var(--gl)}.wkbar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:14.5px}.wkbar span{width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wkbar i{height:10px;border-radius:6px;background:var(--gold);min-width:6px}.wkbar em{font-style:normal;color:var(--m)}
 .backc{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}.backc button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--s2);color:var(--t);font:inherit;font-weight:600;font-size:15.5px}#backI{width:100%;margin-top:8px}
 .rxpick{position:fixed;z-index:120;display:flex;gap:4px;padding:6px;background:var(--s1);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:rxin .16s ease-out}.rxpick button{width:46px;height:46px;border-radius:50%;border:0;background:transparent;font-size:26px;cursor:pointer}.rxpick button.mine{background:var(--s2)}@keyframes rxin{from{transform:scale(.8);opacity:0}}
 .r-btn.rx{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -328,7 +327,6 @@ a.r-btn{text-decoration:none}
 .sw{width:60px;height:60px;border-radius:20px;border:0;cursor:pointer;font-size:11px;color:var(--ink);font-weight:800;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--gl)}
 select.full{width:100%;padding:14px 16px;font-size:16px;margin-bottom:10px;border-radius:16px;background:rgba(0,0,0,.22);border:1.5px solid var(--s3)}
-.plus ul{margin:0 0 8px 20px}.plus li{font-size:15px;color:var(--t);margin:6px 0;line-height:1.4}
 .steps{list-style:none;margin:8px 0 16px}.steps li{display:flex;gap:14px;align-items:flex-start;font-size:16px;line-height:1.45;margin:14px 0;color:var(--t)}
 .steps .n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center}
 .tog{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:16px}
@@ -478,7 +476,7 @@ html.rs.pop .tabs{background:#FFFFFF;border-top:2px solid #111}
 html.rs.pop .tabs .fab .ring{box-shadow:0 0 0 4px var(--bg),3px 3px 0 #111!important}
 html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
 
-#supC,.card.plus{display:none!important}
+#supC{display:none!important}
 html.rs #decSi{background:var(--g);color:var(--ink)}
 .aifocus{margin:10px 0 4px}.aifocus .afr{display:flex;gap:6px;align-items:center}.aifocus input{flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px}.aifocus .btn-o{flex:none;min-height:44px;padding:0 12px;width:auto}.aifocus .refn{margin:6px 0 0}
 html.rs input::placeholder,html.rs textarea::placeholder{color:#8C8C98}html.rs.light input::placeholder,html.rs.light textarea::placeholder{color:#7A7894}
