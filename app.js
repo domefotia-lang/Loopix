@@ -446,7 +446,7 @@ function cleanK(k) {
 var gone = get('gone', []);
 /* ==== src/app/04-segnala.js ==== */
 /* ---- segnala un problema ---- */
-var APP_VER = 'v180', errLog = [];
+var APP_VER = 'v181', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1345,8 +1345,18 @@ function render() {
   if (fview.indexOf('c:') === 0) { var cf = fview.slice(2); vis0.filter(function (r) { return rcat(r) === cf; }).forEach(function (r) { box.appendChild(build(r)); }); box.scrollTop = box.scrollHeight; return; }
   if (fview === 'keep') { var kl = feed.filter(function (r) { return keeps[r.id] && !isMuted(r.n); }); if (!kl.length) box.appendChild(el('div', 'empty', 'Nessun Reel tenuto.\n\nTocca ☆ accanto al nome su un Reel che vuoi conservare: resta qui anche quando gli altri si puliscono.')); kl.forEach(function (r) { box.appendChild(build(r)); }); return; }
   if (!feed.length) { box.appendChild(emptyFeed()); return; }
-  feed.forEach(function (r) { if (!isMuted(r.n)) box.appendChild(build(r)); });
-  box.scrollTop = box.scrollHeight;
+  // con tanti Reel si disegnano solo gli ultimi (il telefono resta veloce); quelli prima arrivano con un tocco
+  var L = feed.filter(function (r) { return !isMuted(r.n); }), more = L.length - feedWin;
+  if (more > 0) { box.appendChild(olderBtn(more, 'Reel', function () { feedWin += FEED_STEP; render(); })); L = L.slice(-feedWin); }
+  L.forEach(function (r) { box.appendChild(build(r)); });
+  if (!keepPos) box.scrollTop = box.scrollHeight;
+}
+var FEED_STEP = 60, feedWin = FEED_STEP, keepPos = false;
+// «Mostra i precedenti»: disegna un blocco in più in cima senza far saltare lo schermo
+function olderBtn(n, what, go) {
+  var b = el('button', 'btn-o wide older', LXT('↑ Mostra i precedenti') + ' (' + n + ')'); b.type = 'button';
+  b.onclick = function () { var box = b.parentNode, h0 = box.scrollHeight, t0 = box.scrollTop; keepPos = true; try { go(); } finally { keepPos = false; } box.scrollTop = box.scrollHeight - h0 + t0; track('precedenti-' + what); };
+  return b;
 }
 // feed vuoto: non un muro di testo ma il prossimo passo, con i bottoni. Da soli si può già cominciare: chi entra dopo trova tutto.
 function emptyFeed() {
@@ -2588,10 +2598,13 @@ setInterval(function () { if (me) cleanReels(); }, 36e5);
 $('fixB').addEventListener('click', pinOpen); $('rX').addEventListener('click', stopReply); $('pinX').addEventListener('click', function () { $('pinM').classList.remove('open'); }); $('pinQ').addEventListener('input', pinRender);
 function hideMsg(id) { if (mhid.indexOf(id) < 0) { mhid.push(id); if (mhid.length > 500) mhid.shift(); put('mhid', mhid); } delMsg(id, false); renderChat(true); }
 function copyMsg(m) { try { navigator.clipboard.writeText(m.t).then(function () { $('mh').textContent = 'Copiato ✓'; }, function () {}); } catch (e) {} }
+var CHAT_STEP = 150, chatWin = CHAT_STEP;
 function renderChat(keep) {
   pruneMsgs(); ttlNote(); var b = $('clog'), st = b.scrollTop, atBottom = b.scrollHeight - b.scrollTop - b.clientHeight < 60; b.textContent = '';
   if (!msgs.length) { b.appendChild(el('div', 'empty', 'Nessun messaggio ancora.\n\nScrivetevi qui: lo legge solo chi è nel cerchio.')); return; }
-  msgs.forEach(function (m) { if (!isMuted(m.n)) b.appendChild(msgNode(m)); }); b.scrollTop = keep && !atBottom ? st : b.scrollHeight;
+  var L = msgs.filter(function (m) { return !isMuted(m.n); }), more = L.length - chatWin;
+  if (more > 0) { b.appendChild(olderBtn(more, 'chat', function () { chatWin += CHAT_STEP; renderChat(true); })); L = L.slice(-chatWin); }
+  L.forEach(function (m) { b.appendChild(msgNode(m)); }); if (!keepPos) b.scrollTop = keep && !atBottom ? st : b.scrollHeight;
   if ($('chat').classList.contains('show')) markSeen();
 }
 function addMsg(m, who) {
@@ -3324,7 +3337,11 @@ function pplHint() {
   setTimeout(pplHintOff, 9000);
 }
 function pplHintOff() { var h = $('pplH'); if (h) h.remove(); }
-function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
+function goReel(id) {
+  showPane('main'); var nd = nodes[id];
+  if (!nd && fview === 'all') { var L = feed.filter(function (r) { return !isMuted(r.n); }), i = L.map(function (r) { return r.id; }).indexOf(id); if (i >= 0 && L.length - i > feedWin) { feedWin = Math.ceil((L.length - i) / FEED_STEP) * FEED_STEP; render(); nd = nodes[id]; } }
+  if (nd) nd.el.scrollIntoView({ behavior: 'smooth' });
+}
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
