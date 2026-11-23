@@ -940,7 +940,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v170', errLog = [];
+var APP_VER = 'v171', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1312,7 +1312,9 @@ var PACK_XMAS = [
   { s: 'kew', e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew lights', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
 ];
 function xmasOn() { var d = new Date(), m = d.getMonth(), g = d.getDate(); return (m === 10 && g >= 15) || m === 11 || (m === 0 && g <= 6); }
-function packLon() { return (xmasOn() ? PACK_XMAS : []).concat(PACK_LON); }
+// Stafford nascosta finché l'HR non dà il consenso scritto: per rimetterla basta STAFFORD_OK = true
+var STAFFORD_OK = !!window.LX_STAFFORD; // i test la riaccendono per controllarla
+function packLon() { return (xmasOn() ? PACK_XMAS : []).concat(PACK_LON).filter(function (x) { return STAFFORD_OK || !/^stafford-/.test(x.s); }); }
 function isLon(c) { return /^(Londra|London|Londres)$/.test(c); }
 // Fuori Londra: solo 2–3 grandi eventi in città (niente piccoli locali), poi le idee di Londra per chi ci viene.
 function packFor(c) {
