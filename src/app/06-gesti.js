@@ -115,7 +115,7 @@ function reelMenu(r) {
     tg = e.target; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); moved = false; pull = 0;
     clearTimeout(lp);
     var item = tg.closest && tg.closest('#feed .item');
-    if (item && gestOk(tg) && !tg.closest('button,a')) lp = setTimeout(function () { if (moved) return; var r = find(item.dataset.id); if (r) { try { navigator.vibrate && navigator.vibrate(15); } catch (x) {} reelMenu(r); tg = null; } }, 550);
+    if (item && gestOk(tg) && (!tg.closest('button,a') || tg.closest('.mtap'))) lp = setTimeout(function () { if (moved) return; var r = find(item.dataset.id); if (r) { try { navigator.vibrate && navigator.vibrate(15); } catch (x) {} reelMenu(r); tg = null; } }, 550);
   }, { passive: true });
   document.addEventListener('touchmove', function (e) {
     if (!tg) return; var dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
@@ -139,6 +139,9 @@ function reelMenu(r) {
     if (horiz && dx > 0 && x0 < 28 && curPane() !== 'pl' && curPane() !== 'setup' && !document.querySelector('.mod.open')) { dwOpen(); return; }
     if (!gestOk(t)) return;
     var pane = curPane();
+    // sul Reel nel feed: verso sinistra = ✨ Piano; sopra i video niente cambio di scheda per sbaglio
+    var fit = pane === 'main' && t.closest && t.closest('#feed .item'), onv = fit && t.closest('.mph,.mwrap,.mtap,.igcrop');
+    if (onv && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 700) { if (dx < 0 && find(fit.dataset.id)) { track('swipe-piano'); openIdea(fit.dataset.id); } return; }
     // scorrimento orizzontale
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 700) {
       if (pane === 'pl') { var b = dx < 0 ? $('pn') : $('pp'); if (b && !b.hidden && !b.disabled) b.click(); return; }

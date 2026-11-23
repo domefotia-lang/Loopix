@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v193', errLog = [];
+var APP_VER = 'v194', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -199,6 +199,9 @@ function fbFit() {
   });
 }
 window.addEventListener('resize', function () { setTimeout(igFit, 60); setTimeout(fbFit, 60); });
+// gesti sul video nel feed, come su Instagram: un tocco = schermo intero, doppio tocco = ❤️, tenuto premuto = menu, scorri a sinistra = ✨ Piano
+function glTip() { if (get('gtip', 0) || !me) return; put('gtip', 1); setTimeout(function () { if (!$('mh').textContent) $('mh').textContent = LXT('Come su Instagram: doppio tocco sul video = ❤️, tieni premuto = menu, scorri a sinistra = ✨ Piano.'); }, 1500); }
+function glHeart(r, wrap) { var x = find(r.id) || r; if (me && (x.x || {})[me.name] !== '❤️') react(r.id, '❤️'); heartAt(wrap); track('doppio-tocco'); }
 function media(r, pl) {
   var s0 = embedFor(r.u);
   if (get('riserv', 0) && !pl && s0 && s0.indexOf('video:') !== 0) {
@@ -310,7 +313,7 @@ function orig(r) { var a = el('a', 'orig', 'Non si vede? Apri l’originale'); a
 // il feed carica i video solo vicino a dove stai guardando e libera quelli lontani: meno memoria, batteria e dati
 var feedNear = null, feedFar = null;
 // toccare il video nel feed lo apre a schermo intero (come TikTok e Instagram), e da lì si scorre agli altri
-function mediaIn(p) { var m = media(p._r, false); p.appendChild(m); if (!get('riserv', 0)) { var t = el('button', 'mtap'); t.type = 'button'; t.setAttribute('aria-label', 'Guarda a schermo intero'); t.onclick = function () { openSeqAt(p._r.id); }; var o = m.querySelector && m.querySelector('.ovl'); if (o) { if (getComputedStyle(m).position === 'static') m.style.position = 'relative'; m.insertBefore(t, o); } else p.appendChild(t); } }
+function mediaIn(p) { var m = media(p._r, false); p.appendChild(m); if (!get('riserv', 0)) { var t = el('button', 'mtap'); t.type = 'button'; t.setAttribute('aria-label', 'Guarda a schermo intero'); var last = 0, tm = null; glTip(); t.onclick = function () { if (document.querySelector('.mod.open')) return; var now = Date.now(); if (now - last < 330) { clearTimeout(tm); last = 0; glHeart(p._r, m.classList && m.classList.contains('mwrap') ? m : p); return; } last = now; clearTimeout(tm); tm = setTimeout(function () { last = 0; if (!document.querySelector('.mod.open')) openSeqAt(p._r.id); }, 300); }; var o = m.querySelector && m.querySelector('.ovl'); if (o) { if (getComputedStyle(m).position === 'static') m.style.position = 'relative'; m.insertBefore(t, o); } else p.appendChild(t); } }
 function openSeqAt(id) {
   var vis = feed.filter(function (r) { return !isMuted(r.n); }), q = vis.map(function (r) { return r.id; }), i = q.indexOf(id); if (i < 0) return;
   track('reel-schermo-intero'); setTimeout(fsTip, 1200);

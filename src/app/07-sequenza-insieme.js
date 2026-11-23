@@ -170,7 +170,7 @@ function openSeq() {
     if (e.touches.length !== 1 || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { y0 = null; return; }
     y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; dy = 0;
   }, { passive: true });
-  var dxm = 0, tgt = null;
+  var dxm = 0, tgt = null, plTap = 0, plTm = null;
   pl.addEventListener('touchstart', function (e) { tgt = e.target; dxm = 0; }, { passive: true });
   pl.addEventListener('touchmove', function (e) {
     if (y0 === null) return;
@@ -183,7 +183,13 @@ function openSeq() {
     if (pl.classList.contains('imm') && seq) {
       var inBar = tgt && tgt.closest && tgt.closest('#immR,#immX,.ovl,.mutb,button,a,input,select');
       if (!inBar && Math.abs(dy) > 60 && Math.abs(dy) > dxm) swGo(dy < 0 ? 1 : -1);
-      else if (!inBar && Math.abs(dy) < 8 && dxm < 8 && tgt && tgt.dataset && tgt.dataset.tap) { if (e.cancelable) e.preventDefault(); var snd = $('st').querySelector('.sndp'); if (snd) { snd.click(); track('audio-tocco'); } else swToggle(); } // primo tocco: accende l'audio (su iPhone parte muto), poi pausa/play
+      else if (!inBar && Math.abs(dy) < 8 && dxm < 8 && tgt && tgt.classList && tgt.classList.contains('swz')) {
+        if (e.cancelable) e.preventDefault();
+        // doppio tocco = ❤️ (come Reels); un tocco solo = audio la prima volta, poi pausa/play
+        var now = Date.now(), cur = seq.q[seq.i] && find(seq.q[seq.i]);
+        if (now - plTap < 330) { clearTimeout(plTm); plTap = 0; if (cur) { if ((cur.x || {})[me.name] !== '❤️') react(cur.id, '❤️'); immFloat('❤️'); heartAt($('st')); track('doppio-tocco-visore'); } }
+        else { plTap = now; var tp = tgt.dataset.tap; clearTimeout(plTm); plTm = setTimeout(function () { plTap = 0; if (!tp) return; var snd = $('st').querySelector('.sndp'); if (snd) { snd.click(); track('audio-tocco'); } else swToggle(); }, 300); }
+      } // primo tocco: accende l'audio (su iPhone parte muto), poi pausa/play
       y0 = null; dy = 0; return;
     }
     if (dy > 110) closeSeq(); else { pl.style.transform = ''; pl.style.opacity = ''; }
