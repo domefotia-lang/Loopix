@@ -247,7 +247,7 @@
   <div class="list" id="ilist"></div>
 </section>
 
-<section class="pane" id="circle" aria-label="Persone"><div class="head"><h2>Persone</h2><button class="btn-o" id="pplProf">Il tuo profilo ›</button></div><div class="list">
+<section class="pane" id="circle" aria-label="Persone"><div class="head"><h2>Persone</h2><button class="btn-o" id="pplProf">Il tuo profilo ›</button></div><button type="button" class="trrow" id="trGo" hidden><span>🤝</span><span><b>Trasparenza di coppia</b><small id="trGoS"></small></span><span>›</span></button><div class="list">
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
@@ -949,7 +949,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v176', errLog = [];
+var APP_VER = 'v177', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1272,6 +1272,72 @@ function openSeqAt(id) {
 // cosa cerchiamo davvero su YouTube per ogni categoria (in inglese: a Londra i video migliori sono in inglese)
 var INSP_QEN = ['best restaurants', 'weekend trip from', 'quick easy recipe', 'date night ideas', 'cheap travel tips', 'gift ideas'];
 var INSP_T = { it: ['Ristoranti da provare', 'Weekend fuori città', 'Ricette veloci', 'Cose da fare in coppia', 'Viaggi low cost', 'Idee regalo'], en: ['Restaurants to try', 'Weekend getaways', 'Quick recipes', 'Date ideas', 'Cheap travel', 'Gift ideas'], es: ['Restaurantes para probar', 'Escapadas de fin de semana', 'Recetas rápidas', 'Planes en pareja', 'Viajes baratos', 'Ideas de regalo'] };
+/* ---- 🗓️ «Cosa facciamo oggi?»: con chi, quando, budget, dove → 6 idee vere vicino a voi (video se c'è, altrimenti il sito) ---- */
+// quartieri di Londra: «Vicino a me» trova il più vicino sul telefono e manda solo il nome (mai la posizione)
+var OG_AREAS = [['Westminster', 51.4995, -0.1357], ['Soho', 51.5137, -0.1337], ['Covent Garden', 51.5117, -0.124], ['Camden', 51.539, -0.1426], ['King’s Cross', 51.5308, -0.1238], ['Islington', 51.5362, -0.1033], ['Hackney', 51.545, -0.0553], ['Shoreditch', 51.5265, -0.0798], ['Stratford', 51.5416, -0.0033], ['Canary Wharf', 51.5054, -0.0235], ['Greenwich', 51.4826, -0.0077], ['Lewisham', 51.4615, -0.0138], ['Eltham', 51.4508, 0.0525], ['Woolwich', 51.4906, 0.0636], ['Bromley', 51.4039, 0.0198], ['Croydon', 51.3762, -0.0982], ['Brixton', 51.4613, -0.1156], ['Clapham', 51.4618, -0.1384], ['Battersea', 51.4791, -0.1625], ['Southwark', 51.5035, -0.0804], ['Wimbledon', 51.4214, -0.2064], ['Richmond', 51.4613, -0.3037], ['Kingston', 51.4123, -0.3007], ['Hammersmith', 51.4927, -0.2339], ['Chelsea', 51.4875, -0.1687], ['Kensington', 51.5006, -0.1937], ['Notting Hill', 51.5094, -0.1967], ['Marylebone', 51.5194, -0.1499], ['Hampstead', 51.556, -0.1781], ['Highgate', 51.5716, -0.1448], ['Walthamstow', 51.5908, -0.0134], ['Tottenham', 51.5975, -0.0681], ['Wembley', 51.5588, -0.2817], ['Ealing', 51.513, -0.3089], ['Ilford', 51.559, 0.0741], ['Romford', 51.5751, 0.1857], ['Bexleyheath', 51.4573, 0.1427], ['Sutton', 51.3618, -0.1945], ['Harrow', 51.5806, -0.3416], ['Enfield', 51.6523, -0.0807]];
+var OG_EM = { food: '🍽️', kids: '🧸', outdoor: '🌳', culture: '🏛️', show: '🎭', night: '🌙', activity: '🎯' };
+function ogPref() { var p = {}; try { p = JSON.parse(localStorage.getItem(LSG + 'oggi') || '{}') || {}; } catch (e) {} return { who: p.who || 'coppia', when: p.when || 'oggi', bud: p.bud || 'any', where: p.where || '', wl: p.wl || '' }; }
+function ogNear(cb) {
+  if (!navigator.geolocation) { cb(''); return; }
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    var la = pos.coords.latitude, lo = pos.coords.longitude, best = '', bd = 1e9;
+    OG_AREAS.forEach(function (a) { var dd = Math.hypot((a[1] - la) * 111, (a[2] - lo) * 69); if (dd < bd) { bd = dd; best = a[0]; } });
+    cb(bd < 15 ? best : (Math.round(la * 10) / 10) + ', ' + (Math.round(lo * 10) / 10)); // fuori Londra: solo una zona larga ~10 km
+  }, function () { cb(''); }, { maximumAge: 6e5, timeout: 9000, enableHighAccuracy: false });
+}
+function ogForm() {
+  var p = ogPref(), c = cityGet() || 'Londra', lon = isLon(c), F = el('div', 'ogf');
+  F.appendChild(el('h3', null, '🗓️ ' + LXT('Cosa facciamo oggi?')));
+  F.appendChild(el('p', 'refn', LXT('Scegli e trovo idee vere vicino a voi: con il video se c’è, altrimenti il sito.')));
+  var row = function (lab, key, opts) {
+    var r = el('div', 'ogr'); r.appendChild(el('span', 'ogl', LXT(lab))); var w = el('div', 'ogc');
+    opts.forEach(function (o) { var b = el('button', 'chip', LXT(o[1])); b.type = 'button'; b.setAttribute('aria-pressed', String(p[key] === o[0])); b.onclick = function () { if (o[0] === 'near') { b.textContent = '📍 …'; ogNear(function (a) { if (!a) { b.textContent = '📍 ' + LXT('Vicino a me'); $('mh').textContent = LXT('Non riesco a sapere la zona: scegline una qui sotto.'); return; } p.where = a; p.wl = a; b.textContent = '📍 ' + a; mark(); }); return; } p[key] = o[0]; if (key === 'where') p.wl = ''; mark(); }; b._k = o[0]; w.appendChild(b); });
+    function mark() { w.querySelectorAll('.chip').forEach(function (b) { b.setAttribute('aria-pressed', String(key === 'where' ? (b._k === 'near' ? !!p.wl : p.where === b._k && !p.wl) : p[key] === b._k)); }); lsSet(LSG + 'oggi', JSON.stringify(p)); }
+    r.appendChild(w); F.appendChild(r);
+  };
+  row('Con chi', 'who', [['coppia', '💑 In coppia'], ['bimbi', '🧸 Con i bambini'], ['amici', '🍻 Con amici']]);
+  row('Quando', 'when', [['oggi', 'Oggi'], ['sera', 'Stasera'], ['weekend', 'Questo weekend']]);
+  row('Budget', 'bud', [['any', 'Qualsiasi'], ['free', 'Gratis'], ['low', '£'], ['mid', '££'], ['high', '£££']]);
+  row('Dove', 'where', [['near', p.wl ? p.wl : '📍 Vicino a me']].concat(lon ? [['Central London', 'Centro'], ['North London', 'Nord'], ['South London', 'Sud'], ['East London', 'Est'], ['West London', 'Ovest']] : [['centre', 'Centro'], ['around', 'Dintorni']]));
+  if (p.wl) { var nb = F.querySelector('.ogr:last-child .chip'); if (nb) nb.textContent = '📍 ' + p.wl; }
+  var go = withIco(el('button', 'btn wide', ''), 'spark', LXT('Trova idee')); go.type = 'button';
+  go.onclick = function () { var q = ogPref(); if (!q.where) { q.where = lon ? 'Central London' : 'centre'; lsSet(LSG + 'oggi', JSON.stringify(q)); } ogRun(q, F); };
+  F.appendChild(go);
+  return F;
+}
+function ogRun(p, F) {
+  var L = $('inspL'), c = cityGet() || 'Londra', lon = isLon(c), city = lon ? 'London' : c;
+  L.querySelectorAll('.og').forEach(function (x) { x.remove(); });
+  var anchor = F.nextSibling, put0 = function (n) { L.insertBefore(n, anchor); };
+  var hd = el('p', 'og ogh', '✨ ' + LXT('Sto cercando idee vere vicino a voi…')); put0(hd);
+  for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel og'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); put0(sc); }
+  hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  var where = p.where === 'centre' ? 'the centre' : p.where === 'around' ? 'the surroundings' : p.where;
+  track('oggi-' + p.who + '-' + p.when);
+  mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
+    L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
+    if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
+    hd.textContent = '✨ ' + LXT('Idee per voi') + ' · ' + (p.wl || LXT({ 'Central London': 'Centro', 'North London': 'Nord', 'South London': 'Sud', 'East London': 'Est', 'West London': 'Ovest', centre: 'Centro', around: 'Dintorni' }[p.where] || p.where));
+    var cards = [];
+    x.items.forEach(function (v, i) {
+      var link = v.u || gmaps(v.n + ' ' + (v.a || city)), k = 'og-' + v.n.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24);
+      var o = { k: k, it: { s: k, e: OG_EM[v.k] || '🎯', t: v.n, d: [v.a, v.p, v.t].filter(Boolean).join(' · '), l: link, b: v.u ? 'Sito' : 'Mappa' }, st: { u: link } };
+      var card = el('div', 'insc og'), th = el('button', 'inth pkth'); th.type = 'button'; th.appendChild(el('span', 'pke', o.it.e)); card.appendChild(th);
+      card.appendChild(el('div', 'intt', v.n)); card.appendChild(el('div', 'inch', [v.a, v.p].filter(Boolean).join(' · ')));
+      if (v.w) card.appendChild(el('div', 'ogw', v.w)); if (v.t) card.appendChild(el('div', 'inch', '🕒 ' + v.t));
+      var a = document.createElement('a'); a.className = 'btn-o wide'; a.href = link; a.target = '_blank'; a.rel = 'noopener'; withIco(a, v.u ? 'pin' : 'pin', LXT(v.u ? 'Sito' : 'Mappa') + ' ↗'); a.onclick = function () { track('oggi-link'); }; card.appendChild(a);
+      var go = withIco(el('button', 'btn wide', ''), 'heart', LXT('Fatelo insieme')); go.type = 'button'; go.onclick = function () { ideaWhat(o); }; card.appendChild(go);
+      th.onclick = function () { IV.list = cards.map(function (z) { return z.o; }); ideaView(i); };
+      put0(card); cards.push({ o: o, th: th });
+    });
+    put0(el('p', 'refn og', LXT(x.live ? 'Idee trovate dall’AI con la ricerca Google: controlla orari e prezzi sul sito prima di andare.' : 'Idee scelte dall’AI tra posti stabili e conosciuti: controlla orari e prezzi sul sito prima di andare.')));
+    // un video per ogni idea, se esiste (canale ufficiale prima)
+    mbCall({ a: 'pack', qs: x.items.map(function (v) { return { q: (v.n + ' ' + (v.a || city)).slice(0, 60), o: [v.n.toLowerCase().slice(0, 40)] }; }), lang: lon ? 'en' : (window.LX_LANG || 'it'), reg: lon ? 'GB' : cityRegion(c) }).then(function (y) {
+      if (!y || !y.items) return;
+      y.items.forEach(function (vv, i) { var z = cards[i]; if (!vv || !z || !z.th.isConnected) return; z.o.st.u = 'https://www.youtube.com/shorts/' + vv.id; z.th.textContent = ''; var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + vv.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; z.th.appendChild(im); z.th.appendChild(el('span', 'inpl', '▶')); z.th.classList.remove('pkth'); });
+    }, function () {});
+  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
+}
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
 var xplQ = '';
 function xplBuild() {
@@ -1285,6 +1351,7 @@ function xplBuild() {
   var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
   var T = INSP_T[window.LX_LANG] || INSP_T.it;
+  var ob = el('button', 'chip', '🗓️ ' + (window.LX_T || String)('Oggi')); ob.type = 'button'; ob.dataset.q = '§oggi'; ob.onclick = function () { inspLoad('§oggi'); }; tp.appendChild(ob);
   var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp.appendChild(pb);
   T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 1 || i === 3, INSP_QEN[i]); }; tp.appendChild(b); });
 }
@@ -1294,6 +1361,7 @@ function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 
 function inspLoad(q, loc, qx) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
+  if (q === '§oggi') { var L0 = $('inspL'); L0.textContent = ''; L0.appendChild(ogForm()); packLoad(true); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   var qq = loc ? inspCity(qx || q) : (qx || q);
   mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
@@ -1368,8 +1436,8 @@ function cityPick(then) {
   opts.push({ t: '✏️ ' + (window.LX_T || String)('Un’altra città'), f: function () { var v = clean(prompt((window.LX_T || String)('Scrivi la tua città') + ':') || '', 40).trim(); if (v.length >= 2) { citySet(v); then(v); } } });
   sheet('📍 ' + (window.LX_T || String)('Dove siete?'), (window.LX_T || String)('Vi mostro idee per uscire nella vostra città.'), opts);
 }
-function packLoad() {
-  var L = $('inspL'), c = cityGet(); L.textContent = '';
+function packLoad(keep) {
+  var L = $('inspL'), c = cityGet(); if (!keep) L.textContent = '';
   if (!c) { cityPick(function () { packLoad(); }); L.appendChild(el('p', 'refn', '📍 ' + (window.LX_T || String)('Scegli la tua città.'))); return; }
   var top = el('div'); top.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px';
   top.appendChild(el('b', null, '📍 ' + c)); var ch = el('button', 'chip', (window.LX_T || String)('Cambia città')); ch.type = 'button'; ch.onclick = function () { cityPick(function () { packLoad(); }); }; top.appendChild(ch); L.appendChild(top);
@@ -1512,7 +1580,7 @@ function packAuto() {
   if (navigator.webdriver || !srvOn() || document.querySelector('.mod.open') || !me || !me.name) return false;
   var seen = 1; try { seen = localStorage.getItem(LSG + 'packSeen'); } catch (e) {} if (seen) return false;
   lsSet(LSG + 'packSeen', '1');
-  track('idee-auto'); inspOpen('§pack'); return true;
+  track('idee-auto'); inspOpen(); return true;
 }
 function lazyMedia(r) {
   var ph = el('div', 'mph'); ph._r = r;
@@ -2384,7 +2452,7 @@ function mbKey(sec) {
 function mbSeal(sec, obj) { var iv = crypto.getRandomValues(new Uint8Array(12)); return mbKey(sec).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, te8.encode(JSON.stringify(obj))); }).then(function (ct) { return mbEnc(iv) + '.' + mbEnc(ct); }); }
 function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mbDec(q[0]) }, k, mbDec(q[1])); }).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); }); }
 function mbCall(body, ms) { // con rete pessima la richiesta si ferma da sola invece di restare appesa per minuti
-  var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix') ? 40000 : 15000)) : 0;
+  var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix' || body.a === 'oggi') ? 40000 : 15000)) : 0;
   return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
     .then(function (r) { clearTimeout(tt); if (r.status === 429 || r.status === 503) return r.json().catch(function () { return { error: r.status === 429 ? 'limite' : 'srv' }; }); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
 }
@@ -2800,7 +2868,7 @@ function showPane(id) {
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
   if (id === 'chat') { chatSeen = 0; put('chatAt', Date.now()); chatTab(); renderChat(); renderNov(); }
   if (id === 'circle') renderCircle();
-  if (id === 'xpl') { xplBuild(); var q0 = xplQ; xplQ = ''; if (q0) inspLoad(q0); else if (!$('inspL').children.length) inspLoad('§pack'); }
+  if (id === 'xpl') { xplBuild(); var q0 = xplQ; xplQ = ''; if (q0) inspLoad(q0); else if (!$('inspL').children.length) inspLoad('§oggi'); }
   if (id === 'style' || id === 'prof') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;
@@ -3823,6 +3891,7 @@ function renderCircles() {
 }
 function renderCircle() {
   renderCircles(); renderReports(); renderMuted();
+  try { var duo = isDuo() && !!trPartner(), P0 = get('trP', null); $('trGo').hidden = !duo; if (duo) $('trGoS').textContent = get('trasp', false) ? (P0 && P0.on ? LXT('Attiva per tutti e due ✓') : LXT('Accesa da te: aspetta il sì di') + ' ' + trPartner()) : LXT('Vedere in quali altri gruppi è l’altro, solo se siete d’accordo tutti e due'); } catch (e) {}
   $('ttlBox').hidden = me.role !== 'host'; $('cMore').hidden = me.role !== 'host'; $('ttlS').value = String(ttlMs());
   var m = $('mlist'); m.textContent = '';
   function row(t, on, rm) {
@@ -4323,6 +4392,7 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $(
 
 $('av').addEventListener('click', function () { pplHintOff(); showPane('circle'); }); $('av').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pplHintOff(); showPane('circle'); } });
 $('pplProf').addEventListener('click', function () { showPane('prof'); });
+$('trGo').addEventListener('click', function () { dwGo('style', 'trC'); });
 $('goProf').addEventListener('click', function () { showPane('prof'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { lsDel(LSG + 'dev'); isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });

@@ -478,7 +478,7 @@ html.rs.pop .tabs{background:#FFFFFF;border-top:2px solid #111}
 html.rs.pop .tabs .fab .ring{box-shadow:0 0 0 4px var(--bg),3px 3px 0 #111!important}
 html.rs.pop .logo,html.rs.pop h1,html.rs.pop h2{letter-spacing:-.01em}
 
-#trC,#supC,.card.plus{display:none!important}
+#supC,.card.plus{display:none!important}
 html.rs #decSi{background:var(--g);color:var(--ink)}
 .aifocus{margin:10px 0 4px}.aifocus .afr{display:flex;gap:6px;align-items:center}.aifocus input{flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px}.aifocus .btn-o{flex:none;min-height:44px;padding:0 12px;width:auto}.aifocus .refn{margin:6px 0 0}
 html.rs input::placeholder,html.rs textarea::placeholder{color:#8C8C98}html.rs.light input::placeholder,html.rs.light textarea::placeholder{color:#7A7894}
@@ -529,3 +529,12 @@ html.rs .kgrid button[aria-checked="true"]{border-color:var(--g);background:colo
 .pplh::before{content:'';position:absolute;top:-7px;left:var(--ax,30px);border:7px solid transparent;border-top:0;border-bottom-color:var(--g,#5B4DFF)}
 @keyframes pplIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 #xpl{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+
+.ogf{grid-column:1/-1;background:var(--s1,#fff);border:1px solid var(--line);border-radius:18px;padding:14px;margin:2px 0 10px}
+.ogf h3{margin:0 0 4px;font-size:18px}.ogr{margin:10px 0 0}.ogl{display:block;font-size:12px;font-weight:700;opacity:.65;margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.ogc{display:flex;flex-wrap:wrap;gap:6px}.ogc .chip{margin:0}.ogf>.btn{margin-top:14px}
+.ogh{grid-column:1/-1;font-weight:800;margin:6px 0 2px}.ogw{font-size:13px;line-height:1.35;margin:4px 0 6px}
+p.og.refn{grid-column:1/-1}
+
+.trrow{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:0 16px 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--s1,#fff);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.trrow>span:first-child{font-size:22px}.trrow>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.trrow small{opacity:.7;font-size:13px}.trrow>span:last-child{opacity:.5;font-size:20px}
