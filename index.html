@@ -940,7 +940,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v171', errLog = [];
+var APP_VER = 'v172', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1256,7 +1256,7 @@ function inspOpen(q) {
     var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
     var row = el('div', 'afr'); row.className = 'aifocus'; var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
     var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
-    qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) inspLoad(v); }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
+    qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) inspLoad(v, true); }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
     var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
     var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
     C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
@@ -1265,14 +1265,16 @@ function inspOpen(q) {
   }
   var T = INSP_T[window.LX_LANG] || INSP_T.it, tp2 = $('inspT'); tp2.textContent = '';
   var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp2.appendChild(pb);
-  T.forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t); }; tp2.appendChild(b); });
+  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 3); }; tp2.appendChild(b); });
   M.classList.add('open'); track('insp-apri'); inspLoad(q || '§pack');
 }
-function inspLoad(q) {
+// loc: ricerche di posti (ristoranti, cose da fare, ricerca libera) → si aggiunge la città, così YouTube trova video del posto e non a caso
+function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 'London' : c, l = q.toLowerCase(); return l.indexOf(cn.toLowerCase()) >= 0 || l.indexOf(c.toLowerCase()) >= 0 ? q : q + ' ' + cn; }
+function inspLoad(q, loc) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
-  mbCall({ a: 'insp', q: q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
+  mbCall({ a: 'insp', q: loc ? inspCity(q) : q, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee già pronte.' : 'Non sono riuscito a cercare adesso: riprova tra poco.')); return; }
     if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); return; }
@@ -1297,8 +1299,8 @@ var PACK_LON = [
   { s: 'stafford-caines', e: '⭐', t: 'Cena da Michael Caines al The Stafford', d: 'St James’s · una stella Michelin', q: 'Michael Caines at The Stafford', l: gmaps('Michael Caines at The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DZkBViYs7jP/' },
   { s: 'stafford-terrace', e: '🌿', t: 'La terrazza dell’American Bar', d: 'St James’s · cocktail all’aperto, nel cortile', q: 'American Bar terrace The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DeolyknIgQl/' },
   { s: 'candlelight', e: '🎶', t: 'Concerto a lume di candela', d: 'Candlelight · musica tra mille candele', q: 'Candlelight concert London', l: 'https://feverup.com/en/london/candlelight', b: 'Biglietti' },
-  { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 London concert', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
-  { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur stadium tour', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
+  { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 arena London gig night', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
+  { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur Stadium tour skywalk', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
   { s: 'everyman', e: '🎬', t: 'Cinema Everyman', d: 'Divani, coperte e drink in sala', q: 'Everyman cinema London', l: 'https://www.everymancinema.com/', b: 'Biglietti' },
   { s: 'bobbob', e: '🥂', t: 'Bob Bob Ricard', d: 'Soho · il tasto «Press for Champagne» al tavolo', q: 'Bob Bob Ricard Soho', l: gmaps('Bob Bob Ricard Soho London'), b: 'Prenota' },
   { s: 'oxo', e: '🌃', t: 'Cena all’OXO Tower', d: 'South Bank · tavoli sul Tamigi', q: 'OXO Tower restaurant London view', l: gmaps('OXO Tower Restaurant London'), b: 'Prenota' },
@@ -1309,7 +1311,7 @@ var PACK_LON = [
 var PACK_XMAS = [
   { s: 'winterwonderland', e: '🎡', t: 'Winter Wonderland a Hyde Park', d: 'Luci, giostre e vin brulé', q: 'Hyde Park Winter Wonderland', l: 'https://hydeparkwinterwonderland.com/', b: 'Biglietti' },
   { s: 'skate', e: '⛸️', t: 'Pattinaggio a Somerset House', d: 'Sotto l’albero più bello di Londra', q: 'Skate at Somerset House', l: gmaps('Skate at Somerset House London'), b: 'Biglietti' },
-  { s: 'kew', e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew lights', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
+  { s: 'kew', e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew Gardens trail', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
 ];
 function xmasOn() { var d = new Date(), m = d.getMonth(), g = d.getDate(); return (m === 10 && g >= 15) || m === 11 || (m === 0 && g <= 6); }
 // Stafford nascosta finché l'HR non dà il consenso scritto: per rimetterla basta STAFFORD_OK = true
