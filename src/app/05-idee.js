@@ -132,8 +132,12 @@ function rgRun(p, F) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); return; }
     hd.textContent = '🎁 ' + LXT('Idee regalo per voi');
-    x.items.forEach(function (v) {
-      var sh = rgShop(v, reg), card = el('div', 'insc og'), th = el('div', 'inth pkth'); th.appendChild(el('span', 'pke', v.k === 'experience' ? '🎟️' : '🎁')); card.appendChild(th);
+    var cards = [];
+    x.items.forEach(function (v, vi) {
+      var sh = rgShop(v, reg), card = el('div', 'insc og'), th = el('button', 'inth pkth'); th.type = 'button'; th.appendChild(el('span', 'pke', v.k === 'experience' ? '🎟️' : '🎁')); card.appendChild(th);
+      var ko = 'rg-' + v.n.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24), o0 = { k: ko, it: { s: ko, e: v.k === 'experience' ? '🎟️' : '🎁', t: v.n, d: [v.p, v.w].filter(Boolean).join(' · '), l: sh.u, b: 'Cerca' }, st: { u: sh.u } };
+      th.onclick = function () { IV.list = cards.map(function (z) { return z.o; }); ideaView(vi); };
+      cards.push({ o: o0, th: th });
       card.appendChild(el('div', 'intt', v.n)); card.appendChild(el('div', 'inch', [v.k === 'experience' ? LXT('Esperienza') : LXT('Oggetto'), v.p].filter(Boolean).join(' · ')));
       if (v.w) card.appendChild(el('div', 'ogw', v.w));
       var a = document.createElement('a'); a.className = 'btn-o wide'; a.href = sh.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🔍 ' + sh.b + ' ↗'; a.onclick = function () { track('regali-cerca'); }; card.appendChild(a);
@@ -148,6 +152,11 @@ function rgRun(p, F) {
       put0(card);
     });
     put0(el('p', 'refn og', LXT('Idee scelte dall’AI: prezzi indicativi, controlla sul negozio prima di comprare.')));
+    // un video per ogni idea regalo, se ne esiste uno pertinente (altrimenti resta l'icona)
+    mbCall({ a: 'pack', qs: x.items.map(function (v) { return { q: (v.s || v.n).slice(0, 60), o: [] }; }), lang: 'en', reg: reg }).then(function (y) {
+      if (!y || !y.items) return;
+      y.items.forEach(function (vv, i) { var z = cards[i]; if (!vv || !z || !z.th.isConnected) return; z.o.st.u = 'https://www.youtube.com/shorts/' + vv.id; z.th.textContent = ''; var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + vv.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; z.th.appendChild(im); z.th.appendChild(el('span', 'inpl', '▶')); z.th.classList.remove('pkth'); });
+    }, function () {});
   }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
 }
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
