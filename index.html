@@ -940,7 +940,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v172', errLog = [];
+var APP_VER = 'v173', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1298,25 +1298,27 @@ var PACK_LON = [
   { s: 'stafford-tea', e: '🫖', t: 'Afternoon tea al The Stafford', d: 'St James’s · lusso a 5 stelle', q: 'The Stafford London afternoon tea', l: gmaps('The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/De39FyPRwj-/' },
   { s: 'stafford-caines', e: '⭐', t: 'Cena da Michael Caines al The Stafford', d: 'St James’s · una stella Michelin', q: 'Michael Caines at The Stafford', l: gmaps('Michael Caines at The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DZkBViYs7jP/' },
   { s: 'stafford-terrace', e: '🌿', t: 'La terrazza dell’American Bar', d: 'St James’s · cocktail all’aperto, nel cortile', q: 'American Bar terrace The Stafford London', l: gmaps('American Bar The Stafford London'), b: 'Prenota', v: 'https://www.instagram.com/reel/DeolyknIgQl/' },
-  { s: 'candlelight', e: '🎶', t: 'Concerto a lume di candela', d: 'Candlelight · musica tra mille candele', q: 'Candlelight concert London', l: 'https://feverup.com/en/london/candlelight', b: 'Biglietti' },
-  { s: 'o2', e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 arena London gig night', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
-  { s: 'stadio', e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur Stadium tour skywalk', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
-  { s: 'everyman', e: '🎬', t: 'Cinema Everyman', d: 'Divani, coperte e drink in sala', q: 'Everyman cinema London', l: 'https://www.everymancinema.com/', b: 'Biglietti' },
-  { s: 'bobbob', e: '🥂', t: 'Bob Bob Ricard', d: 'Soho · il tasto «Press for Champagne» al tavolo', q: 'Bob Bob Ricard Soho', l: gmaps('Bob Bob Ricard Soho London'), b: 'Prenota' },
-  { s: 'oxo', e: '🌃', t: 'Cena all’OXO Tower', d: 'South Bank · tavoli sul Tamigi', q: 'OXO Tower restaurant London view', l: gmaps('OXO Tower Restaurant London'), b: 'Prenota' },
-  { s: 'skygarden', e: '🌇', t: 'Sky Garden', d: 'City · vista gratis, si prenota', q: 'Sky Garden London', l: 'https://skygarden.london/', b: 'Prenota' },
-  { s: 'borough', e: '🥙', t: 'Borough Market', d: 'Street food da dividere', q: 'Borough Market food London', l: gmaps('Borough Market London'), b: 'Portami lì' },
-  { s: 'primrose', e: '🌅', t: 'Primrose Hill al tramonto', d: 'Gratis · la vista più romantica', q: 'Primrose Hill sunset London', l: gmaps('Primrose Hill London'), b: 'Portami lì' }
+  { s: 'candlelight', o: ['candlelight', 'fever'], e: '🎶', t: 'Concerto a lume di candela', d: 'Candlelight · musica tra mille candele', q: 'Candlelight concert London', l: 'https://feverup.com/en/london/candlelight', b: 'Biglietti' },
+  { s: 'o2', o: ['the o2'], e: '🎤', t: 'Concerti all’O2', d: 'Greenwich · i grandi live', q: 'The O2 arena London gig night', l: 'https://www.theo2.co.uk/events', b: 'Biglietti' },
+  { s: 'stadio', o: ['tottenham hotspur', 'spurs'], e: '⚽', t: 'Tour dello stadio Tottenham', d: 'Spogliatoi e tunnel dei giocatori', q: 'Tottenham Hotspur Stadium tour skywalk', l: gyg('Tottenham Hotspur Stadium tour'), b: 'Prenota' },
+  { s: 'everyman', o: ['everyman'], e: '🎬', t: 'Cinema Everyman', d: 'Divani, coperte e drink in sala', q: 'Everyman cinema sofa London', l: 'https://www.everymancinema.com/', b: 'Biglietti' },
+  { s: 'bobbob', o: ['bob bob ricard'], e: '🥂', t: 'Bob Bob Ricard', d: 'Soho · il tasto «Press for Champagne» al tavolo', q: 'Bob Bob Ricard restaurant', l: gmaps('Bob Bob Ricard Soho London'), b: 'Prenota' },
+  { s: 'oxo', o: ['oxo tower', 'harvey nichols'], e: '🌃', t: 'Cena all’OXO Tower', d: 'South Bank · tavoli sul Tamigi', q: 'OXO Tower Brasserie view', l: gmaps('OXO Tower Restaurant London'), b: 'Prenota' },
+  { s: 'skygarden', o: ['sky garden'], e: '🌇', t: 'Sky Garden', d: 'City · vista gratis, si prenota', q: 'Sky Garden London', l: 'https://skygarden.london/', b: 'Prenota' },
+  { s: 'borough', o: ['borough market'], e: '🥙', t: 'Borough Market', d: 'Street food da dividere', q: 'Borough Market food London', l: gmaps('Borough Market London'), b: 'Portami lì' },
+  { s: 'primrose', o: ['royal parks'], e: '🌅', t: 'Primrose Hill al tramonto', d: 'Gratis · la vista più romantica', q: 'Primrose Hill sunset London', l: gmaps('Primrose Hill London'), b: 'Portami lì' }
 ];
 var PACK_XMAS = [
-  { s: 'winterwonderland', e: '🎡', t: 'Winter Wonderland a Hyde Park', d: 'Luci, giostre e vin brulé', q: 'Hyde Park Winter Wonderland', l: 'https://hydeparkwinterwonderland.com/', b: 'Biglietti' },
-  { s: 'skate', e: '⛸️', t: 'Pattinaggio a Somerset House', d: 'Sotto l’albero più bello di Londra', q: 'Skate at Somerset House', l: gmaps('Skate at Somerset House London'), b: 'Biglietti' },
-  { s: 'kew', e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew Gardens trail', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
+  { s: 'winterwonderland', o: ['winter wonderland'], e: '🎡', t: 'Winter Wonderland a Hyde Park', d: 'Luci, giostre e vin brulé', q: 'Hyde Park Winter Wonderland', l: 'https://hydeparkwinterwonderland.com/', b: 'Biglietti' },
+  { s: 'skate', o: ['somerset house', 'skate'], e: '⛸️', t: 'Pattinaggio a Somerset House', d: 'Sotto l’albero più bello di Londra', q: 'Skate at Somerset House', l: gmaps('Skate at Somerset House London'), b: 'Biglietti' },
+  { s: 'kew', o: ['kew'], e: '✨', t: 'Christmas at Kew', d: 'Un sentiero di luci nei giardini', q: 'Christmas at Kew Gardens trail', l: gmaps('Kew Gardens London'), b: 'Biglietti' }
 ];
 function xmasOn() { var d = new Date(), m = d.getMonth(), g = d.getDate(); return (m === 10 && g >= 15) || m === 11 || (m === 0 && g <= 6); }
 // Stafford nascosta finché l'HR non dà il consenso scritto: per rimetterla basta STAFFORD_OK = true
 var STAFFORD_OK = !!window.LX_STAFFORD; // i test la riaccendono per controllarla
 function packLon() { return (xmasOn() ? PACK_XMAS : []).concat(PACK_LON).filter(function (x) { return STAFFORD_OK || !/^stafford-/.test(x.s); }); }
+// al server: la ricerca e i nomi dei canali ufficiali (vincono su tutti gli altri)
+function packQ(x) { return x.o ? { q: x.q, o: x.o } : x.q; }
 function isLon(c) { return /^(Londra|London|Londres)$/.test(c); }
 // Fuori Londra: solo 2–3 grandi eventi in città (niente piccoli locali), poi le idee di Londra per chi ci viene.
 function packFor(c) {
@@ -1374,8 +1376,8 @@ function packLoad() {
       o.th.replaceWith(b); o.th = b;
     });
   }; };
-  if (loc.length) mbCall({ a: 'pack', qs: loc.map(function (x) { return x.q; }), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
-  mbCall({ a: 'pack', qs: packLon().map(function (x) { return x.q; }), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
+  if (loc.length) mbCall({ a: 'pack', qs: loc.map(packQ), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
+  mbCall({ a: 'pack', qs: packLon().map(packQ), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
 }
 /* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
 var ICO = {
@@ -1460,8 +1462,8 @@ function packList() {
 function packPrefetch() {
   if (pkvBusy || !srvOn()) return; pkvBusy = 1; var c = cityGet(), loc = c && !isLon(c) ? packFor(c) : [];
   var got = function (qs) { return function (x) { if (x && x.items) x.items.forEach(function (v, i) { if (v && v.id) PKV[qs[i]] = v.id; }); try { storiesRender(); } catch (e) {} }; };
-  var q1 = packLon().map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: q1, lang: 'en', reg: 'GB' }).then(got(q1), function () {});
-  if (loc.length) { var q2 = loc.map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: q2, lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(got(q2), function () {}); }
+  var q1 = packLon().map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: packLon().map(packQ), lang: 'en', reg: 'GB' }).then(got(q1), function () {});
+  if (loc.length) { var q2 = loc.map(function (x) { return x.q; }); mbCall({ a: 'pack', qs: loc.map(packQ), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(got(q2), function () {}); }
 }
 function storiesEl() {
   var L = packList(); if (!L.length || !me || !me.name) return null;
