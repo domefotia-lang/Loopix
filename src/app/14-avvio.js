@@ -597,3 +597,12 @@ function plusAsk() {
   track('plus-interesse');
   ask('⭐ Reelta Plus', LXT('Stiamo preparando Reelta Plus: idee AI senza limiti, eventi del giorno e altro, per la coppia (un abbonamento per due). Oggi non costa niente e non chiediamo dati: ci serve solo sapere se vi interessa.'), LXT('Mi interessa')).then(function (y) { if (y) { put('plusInt', 1); track('plus-si'); $('mh').textContent = LXT('Grazie! Lo diremo dentro l’app quando sarà pronto.'); } });
 }
+
+// 🗓 dalla notifica del venerdì: si apre direttamente «Il piano del weekend» (se c'è qualcosa da scegliere)
+function ritFromPush(src) {
+  track('rituale-notifica');
+  try { if (/[?&]q=rit/.test(location.search)) history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+  setTimeout(function () { if (!me || !me.name) return; if (typeof ritOn === 'function' && ritOn()) ritOpen(); else { showPane('ideas'); } }, 900);
+}
+if (window.__qrit) ritFromPush('url');
+if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.q === 'rit') ritFromPush('sw'); });

@@ -1,4 +1,4 @@
-window.__qback=/[?&]q=back\b/.test(location.search);window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});window.addEventListener("appinstalled",function(){window.__bip=null;window.__inst=1;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});
+window.__qback=/[?&]q=back\b/.test(location.search);window.__qrit=/[?&]q=rit\b/.test(location.search);window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});window.addEventListener("appinstalled",function(){window.__bip=null;window.__inst=1;try{document.dispatchEvent(new Event("lx-bip"))}catch(x){}});
 /* ---- trasloco a un nuovo indirizzo (senza perdere niente) ----
    Il vecchio indirizzo impacchetta tutti i dati del telefono, li cifra con una chiave nuova e li lascia
    sul server per pochi minuti; il nuovo indirizzo li scarica, li decifra e il server li cancella.
