@@ -239,13 +239,15 @@
   <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o pfsb" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn-o" id="pzB" hidden aria-label="Metti in pausa per tutti">⏸</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
 </section>
 
-<section class="pane" id="ideas" aria-label="Idee">
+<section class="pane" id="xpl" aria-label="Idee per uscire"><div class="head"><h2>✨ Idee per uscire</h2></div><div id="inspM" class="xplb"></div></section>
+
+<section class="pane" id="ideas" aria-label="Piani">
   <div class="head"><h2>Piani</h2><button class="btn-o" id="inew">+ Nuovo piano</button></div>
   <div class="chips" id="ichips"></div>
   <div class="list" id="ilist"></div>
 </section>
 
-<section class="pane" id="circle" aria-label="Persone"><div class="head"><h2>Persone</h2></div><div class="list">
+<section class="pane" id="circle" aria-label="Persone"><div class="head"><h2>Persone</h2><button class="btn-o" id="pplProf">Il tuo profilo ›</button></div><div class="list">
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
@@ -327,9 +329,9 @@
 
 <nav class="tabs" id="tabs" hidden aria-label="Sezioni">
   <button data-p="main"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg>Reel</button>
-  <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
+  <button data-p="xpl"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Idee</button>
   <button class="fab" id="paste" aria-label="Manda un Reel: incolla il link che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Manda</button>
-  <button data-p="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>Persone</button>
+  <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
   <button data-p="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg><span id="tChat">Messaggi</span></button>
 </nav>
 </div>
@@ -940,7 +942,7 @@ function cleanK(k) {
 }
 var gone = get('gone', []);
 /* ---- segnala un problema ---- */
-var APP_VER = 'v173', errLog = [];
+var APP_VER = 'v174', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -1247,27 +1249,23 @@ function openSeqAt(id) {
 }
 /* ---- ✨ Ispirazione: gli Shorts di YouTube più visti su un argomento, da mandare alla propria persona ---- */
 var INSP_T = { it: ['Ristoranti da provare', 'Weekend fuori città', 'Ricette veloci', 'Cose da fare in coppia', 'Viaggi low cost', 'Idee regalo'], en: ['Restaurants to try', 'Weekend getaways', 'Quick recipes', 'Date ideas', 'Cheap travel', 'Gift ideas'], es: ['Restaurantes para probar', 'Escapadas de fin de semana', 'Recetas rápidas', 'Planes en pareja', 'Viajes baratos', 'Ideas de regalo'] };
-function inspOpen(q) {
-  var M = $('inspM');
-  if (!M) {
-    M = el('div', 'mod'); M.id = 'inspM'; M.setAttribute('role', 'dialog'); M.setAttribute('aria-modal', 'true');
-    var C = el('div', 'card'); C.style.cssText = 'max-width:420px;width:100%;max-height:calc(var(--apph,100dvh) - 24px);display:flex;flex-direction:column';
-    C.appendChild(el('h2', null, '✨ Idee per uscire')); C.appendChild(el('p', 'refn', 'Cose da fare insieme dove vivete e i video più visti. Mandateli alla vostra persona o prenotate.'));
-    var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
-    var row = el('div', 'afr'); row.className = 'aifocus'; var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
-    var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
-    qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) inspLoad(v, true); }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
-    var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:15px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
-    var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
-    C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
-    var x = el('button', 'btn-o wide', 'Chiudi'); x.type = 'button'; x.style.marginTop = '8px'; x.onclick = function () { M.classList.remove('open'); L.textContent = ''; }; C.appendChild(x);
-    M.appendChild(C); document.body.appendChild(M);
-  }
-  var T = INSP_T[window.LX_LANG] || INSP_T.it, tp2 = $('inspT'); tp2.textContent = '';
-  var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp2.appendChild(pb);
-  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 3); }; tp2.appendChild(b); });
-  M.classList.add('open'); track('insp-apri'); inspLoad(q || '§pack');
+// ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
+var xplQ = '';
+function xplBuild() {
+  var C = $('inspM'); if (!C || C.children.length) return;
+  C.appendChild(el('p', 'refn', 'Cose da fare insieme dove vivete e i video più visti. Mandateli alla vostra persona o prenotate.'));
+  var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
+  var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
+  var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
+  qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) { qi.blur(); inspLoad(v, true); } }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
+  var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:16px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
+  var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
+  C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
+  var T = INSP_T[window.LX_LANG] || INSP_T.it;
+  var pb = el('button', 'chip', '📍 ' + (window.LX_T || String)('Idee in città')); pb.type = 'button'; pb.dataset.q = '§pack'; pb.onclick = function () { inspLoad('§pack'); }; tp.appendChild(pb);
+  T.forEach(function (t, i) { var b = el('button', 'chip', t); b.type = 'button'; b.dataset.q = t; b.onclick = function () { inspLoad(t, i === 0 || i === 3); }; tp.appendChild(b); });
 }
+function inspOpen(q) { xplQ = q || ''; track('insp-apri'); showPane('xpl'); }
 // loc: ricerche di posti (ristoranti, cose da fare, ricerca libera) → si aggiunge la città, così YouTube trova video del posto e non a caso
 function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 'London' : c, l = q.toLowerCase(); return l.indexOf(cn.toLowerCase()) >= 0 || l.indexOf(c.toLowerCase()) >= 0 ? q : q + ' ' + cn; }
 function inspLoad(q, loc) {
@@ -1500,7 +1498,7 @@ function lazyMedia(r) {
 /* ---- gesti, come nelle app social ----
    ← → cambia pagina · doppio tocco = ❤️ · tieni premuto un Reel = menu · tira giù il feed = aggiorna
    nel lettore: ← → Reel dopo / prima, ↓ chiude. (Sopra il video i tocchi vanno al video stesso.) */
-var TABS = ['main', 'ideas', 'circle', 'chat'];
+var TABS = ['main', 'xpl', 'ideas', 'chat'];
 function curPane() { var p = document.querySelector('.pane.show'); return p ? p.id : ''; }
 function gestOk(t) { return !document.querySelector('.mod.open,#dw.open') && !(t && t.closest && t.closest('input,textarea,select,.fview,.retr,#decC')); }
 // ☰ menu laterale: le cose che si usano ogni tanto. Quelle di tutti i giorni restano nelle schede in basso.
@@ -1524,6 +1522,7 @@ function dwOpen() {
   mb.onclick = function () { dwGo('prof'); }; P.appendChild(mb);
   var rf = el('button', 'dwref'); rf.type = 'button'; rf.appendChild(el('b', null, '💌 Consiglia Reelta')); rf.appendChild(el('small', null, 'Mandala a chi vuoi: arriva con il link giusto'));
   rf.onclick = function () { dwClose(); $('refGo').click(); }; P.appendChild(rf);
+  var pp = el('button', 'it'); pp.type = 'button'; pp.appendChild(el('span', null, '👥')); pp.appendChild(document.createTextNode('Persone e inviti')); pp.onclick = function () { dwGo('circle'); }; var sp = el('div', 'sec'); sp.appendChild(pp); P.appendChild(sp);
   function sec(t, rows) {
     var s = el('div', 'sec'); s.appendChild(el('h4', null, t));
     rows.forEach(function (r) { var b = el('button', 'it'); b.type = 'button'; b.appendChild(el('span', null, r[0])); b.appendChild(document.createTextNode(r[1])); if (r[3]) { var e = el('em', r[4] ? 'hot' : null, String(r[3])); b.appendChild(e); } b.onclick = r[2]; s.appendChild(b); });
@@ -2762,7 +2761,7 @@ function showPane(id) {
   if (id !== 'chat') pauseIn($('chat'));
   if (id === 'style') try { trUI(); } catch (e) {}
   if (id !== 'main') stopFeed();
-  ['setup', 'main', 'pl', 'ideas', 'circle', 'style', 'prof', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
+  ['setup', 'main', 'pl', 'xpl', 'ideas', 'circle', 'style', 'prof', 'chat'].forEach(function (p) { $(p).classList.toggle('show', p === id); });
   var on = id !== 'setup' && id !== 'pl';
   document.querySelector('header').hidden = id === 'pl';
   $('tabs').hidden = !on;
@@ -2772,6 +2771,7 @@ function showPane(id) {
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
   if (id === 'chat') { chatSeen = 0; put('chatAt', Date.now()); chatTab(); renderChat(); renderNov(); }
   if (id === 'circle') renderCircle();
+  if (id === 'xpl') { xplBuild(); var q0 = xplQ; xplQ = ''; if (q0) inspLoad(q0); else if (!$('inspL').children.length) inspLoad('§pack'); }
   if (id === 'style' || id === 'prof') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;
@@ -3711,6 +3711,17 @@ function bellOpen() {
   $('ntfM').classList.add('open'); track('notifiche-aperte');
 }
 $('bell').addEventListener('click', bellOpen); $('ntfX').addEventListener('click', function () { $('ntfM').classList.remove('open'); });
+// Persone non è più in basso: una volta sola, a chi usava già Reelta, una freccia sull'avatar
+function pplHint() {
+  try { if (localStorage.getItem(LSG + 'pplHint') || navigator.webdriver) return; } catch (e) { return; }
+  lsSet(LSG + 'pplHint', '1');
+  if (!get('acts', []).length && !feed.length && !msgs.length) return; // nuovo utente: niente da spiegare
+  var h = el('button', 'pplh', LXT('👥 Persone ora è qui: tocca la tua foto')); h.type = 'button'; h.id = 'pplH';
+  h.onclick = function () { pplHintOff(); showPane('circle'); }; document.body.appendChild(h);
+  try { var r = $('av').getBoundingClientRect(), L = Math.max(8, Math.min(window.innerWidth - h.offsetWidth - 8, r.left + r.width / 2 - 34)); h.style.left = L + 'px'; h.style.right = 'auto'; h.style.top = (r.bottom + 10) + 'px'; var ov = h.getBoundingClientRect().right - (document.documentElement.clientWidth - 8); if (ov > 0) { L -= ov; h.style.left = L + 'px'; } h.style.setProperty('--ax', (r.left + r.width / 2 - L - 7) + 'px'); } catch (e) {}
+  setTimeout(pplHintOff, 9000);
+}
+function pplHintOff() { var h = $('pplH'); if (h) h.remove(); }
 function goReel(id) { showPane('main'); var nd = nodes[id]; if (nd) nd.el.scrollIntoView({ behavior: 'smooth' }); }
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
@@ -4067,6 +4078,8 @@ function begin() {
   keepData(); setTimeout(backupNudge, 4000); setTimeout(function () { cloudSync(false); }, 20000);
   if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
   showPane('main'); render(); status(); seqLabel();
+  if (!feed.length && srvOn() && !navigator.webdriver) showPane('xpl');
+  setTimeout(pplHint, 1500);
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();
   srvStart(); setTimeout(planNudge, 15000); setTimeout(pingDay, 8000);
@@ -4279,7 +4292,8 @@ $('hdSet').addEventListener('click', dwOpen);
 $('dwS').addEventListener('click', dwClose);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('dw').classList.contains('open')) dwClose(); });
 
-$('av').addEventListener('click', function () { showPane('prof'); }); $('av').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPane('prof'); } });
+$('av').addEventListener('click', function () { pplHintOff(); showPane('circle'); }); $('av').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pplHintOff(); showPane('circle'); } });
+$('pplProf').addEventListener('click', function () { showPane('prof'); });
 $('goProf').addEventListener('click', function () { showPane('prof'); });
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { lsDel(LSG + 'dev'); isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
