@@ -550,3 +550,4 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .undob button{background:var(--spec);color:var(--spec-ink);border:0;border-radius:999px;padding:8px 14px;font-weight:700;font-size:15px;min-height:38px}
 #pl .strip #ps{max-width:118px;flex:0 1 auto;min-width:0}#pl .strip .who{flex:1 1 auto;min-width:48px}
 #idm.auto #iFoc{display:none}
+#bd.live{font-size:0;width:12px!important;height:12px!important;min-width:0!important;min-height:0!important;max-height:12px;flex:none;align-self:center;line-height:0;padding:0;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}
