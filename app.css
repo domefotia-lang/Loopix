@@ -539,3 +539,5 @@ p.og.refn{grid-column:1/-1}
 .rgrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}.rgrow a{color:var(--t);text-decoration:none;font-size:14.5px;line-height:1.35}.rgrow .lnk{flex:none;padding:4px 8px}
 .tabs .fab,.light .tabs .fab,html.rs .tabs .fab{color:var(--m)}
 #ikg:not(.all) button[data-k=compra],#ikg:not(.all) button[data-k=ricetta],#ikg:not(.all) button[data-k=altro]{display:none}#ikg.all .ikmore{display:none}
+/* tocchi comodi: almeno 36-40 px di altezza */
+.chip{min-height:36px}.badge{min-height:40px}
