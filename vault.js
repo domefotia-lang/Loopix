@@ -2,7 +2,8 @@
 (function () { var f = document.getElementById('lxFonts'); if (f) f.media = 'all'; })();
 /* ---- Cassaforte: con il PIN attivo, i dati di Reelta sono salvati cifrati.
    Una chiave dati casuale cifra tutto; la chiave dati è chiusa due volte: con il PIN e (se attivo) con Face ID / impronta. ---- */
-(function () {
+// parte dopo l'archivio (store.js), così legge e scrive passando da lì
+(window.LX_STORE_READY || Promise.resolve()).then(function () {
   var VK = 'loopixvault', LS = window.localStorage, P = Storage.prototype;
   var oGet = P.getItem, oSet = P.setItem, oDel = P.removeItem;
   var mem = null, dk = null, dkRaw = null, wraps = null, timer = null;
@@ -100,7 +101,7 @@
       return prfGet(wraps.b.id, wraps.b.s).then(function (k) { return unwrapWith(k, wraps.b); }).then(function () { return true; });
     }
   };
-  function runMain() { var sc = document.createElement('script'); sc.src = 'app.js?v178'; sc.async = false; document.body.appendChild(sc); }
+  function runMain() { var sc = document.createElement('script'); sc.src = 'app.js?v179'; sc.async = false; document.body.appendChild(sc); }
   var raw = oGet.call(LS, VK);
   if (!raw) { runMain(); return; }
   var box; try { box = JSON.parse(raw); } catch (e) { box = null; }
@@ -143,4 +144,4 @@
     window.lxVault.destroy(); location.reload();
   };
   if (!box) { hint.textContent = 'Dati danneggiati.'; }
-})();
+});
