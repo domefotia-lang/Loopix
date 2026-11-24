@@ -210,7 +210,7 @@ function xplBuild() {
   var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
   var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
   var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
-  qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) { qi.blur(); inspLoad(v, true); } }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
+  qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) { qi.blur(); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); } }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
   var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:16px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
   var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
