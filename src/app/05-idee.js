@@ -57,7 +57,7 @@ function ogRun(p, F) {
   hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
   var where = p.where === 'centre' ? 'the centre' : p.where === 'around' ? 'the surroundings' : p.where;
   track('oggi-' + p.who + '-' + p.when);
-  mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, date: p.when === 'data' ? p.date : undefined, bud: p.bud, lang: window.LX_LANG || 'it' }, 75000).then(function (x) {
+  mbCall({ a: 'oggi', where: where, city: city, who: p.who, when: p.when, date: p.when === 'data' ? p.date : undefined, bud: p.bud, lang: window.LX_LANG || 'it' }, 20000).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     if (!x || x.error || !x.items || !x.items.length) { hd.textContent = x && x.error === 'limite' ? LXT('Per oggi le ricerche sono finite: domani si ricaricano. Intanto guarda le idee qui sotto.') : lon ? LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto. Intanto qui sotto ci sono le idee in città scelte da noi.') : LXT('L’AI è molto richiesta in questo momento: riprova tra un minuto.'); put0(aiAskBtn(ogPrompt(p, city))); return; }
     hd.textContent = '✨ ' + LXT('Idee per voi') + ' · ' + (p.wl || LXT({ 'Central London': 'Centro', 'North London': 'Nord', 'South London': 'Sud', 'East London': 'Est', 'West London': 'Ovest', centre: 'Centro', around: 'Dintorni' }[p.where] || p.where));
@@ -169,7 +169,7 @@ function rgRun(p, F) {
   hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
   track('regali-' + p.per + '-' + p.occ);
   var shared = p.per === 'noi' || p.per === 'casa' || p.per === 'bimbi'; // per lei / per lui / per un amico: niente nel cerchio, è una sorpresa
-  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 60000).catch(function () { return { error: 'net' }; }).then(function (x) {
+  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 16000).catch(function () { return { error: 'net' }; }).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     var fb = !x || x.error || !x.items || !x.items.length; // AI occupata: idee pronte, scelte da noi
     if (fb) x = { items: rgFallback(p.per) };

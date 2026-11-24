@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v196', errLog = [];
+var APP_VER = 'v197', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
