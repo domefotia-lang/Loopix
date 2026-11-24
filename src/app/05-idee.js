@@ -248,6 +248,7 @@ function inspLoad(q, loc, qx) {
     var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
     var items = keep.length >= 4 ? keep : x.items;
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: loc ? gmaps(qq) : u, b: loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
+    var act = inspAct(qx || q, qq);
     items.forEach(function (v, vi) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
       var c = el('div', 'insc'), th = el('button', 'inth'); th.type = 'button'; th.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + v.t);
@@ -256,11 +257,22 @@ function inspLoad(q, loc, qx) {
       c.appendChild(th); c.appendChild(el('div', 'intt', v.t)); c.appendChild(el('div', 'inch', v.ch));
       var go = el('button', sent ? 'btn-o wide' : 'btn', sent ? '✓ Nel cerchio' : '➕ Mandalo'); go.type = 'button'; go.disabled = sent;
       go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
-      c.appendChild(go); L.appendChild(c);
+      c.appendChild(go); if (act) { var ab = el('a', 'btn-o wide inact', act.b); ab.href = act.u; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('insp-' + act.k); }; c.appendChild(ab); } L.appendChild(c);
     });
   }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qq)); });
 }
 /* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
+// dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
+// I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
+function inspAct(q, qq) {
+  var t = String(q || '').toLowerCase(), reg = rgReg();
+  if (/hotel|soggiorn|vacanz|viaggi|weekend a|weekend in|gita|trip|holiday|getaway|stay|city break|vacacion|escapada/.test(t)) return { k: 'prenota-viaggio', b: '🏨 ' + LXT('Trova dove dormire'), u: 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(qq) };
+  if (/tour|esperienz|bigliett|ticket|spa|corso|lezion|class|workshop|experience|attivit|activity|concert|show|mostr|teatr|museo|museum|escape room|kart|parco|zoo|actividad|entrada/.test(t)) return { k: 'prenota-esperienza', b: '🎟️ ' + LXT('Prenota'), u: gyg(qq) };
+  if (/ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cocktail|pizz|sushi|restaurant|dinner|lunch|cafe|coffee|food|comer|cenar|restaurante|mercat|market|parc|park|cosa fare|things to do|date|serata|night/.test(t)) return { k: 'mappa', b: '📍 ' + LXT('Vedi sulla mappa'), u: gmaps(qq) };
+  if (/ricett|recipe|receta|cucinar|cook/.test(t)) return null;
+  var d = { GB: 'amazon.co.uk', IE: 'amazon.co.uk', IT: 'amazon.it', ES: 'amazon.es', US: 'amazon.com' }[reg] || 'amazon.co.uk';
+  return { k: 'compra', b: '🛒 ' + LXT('Dove comprarlo'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
+}
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
 var PACK_LON = [
