@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v194', errLog = [];
+var APP_VER = 'v195', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -313,7 +313,24 @@ function orig(r) { var a = el('a', 'orig', 'Non si vede? Apri l’originale'); a
 // il feed carica i video solo vicino a dove stai guardando e libera quelli lontani: meno memoria, batteria e dati
 var feedNear = null, feedFar = null;
 // toccare il video nel feed lo apre a schermo intero (come TikTok e Instagram), e da lì si scorre agli altri
-function mediaIn(p) { var m = media(p._r, false); p.appendChild(m); if (!get('riserv', 0)) { var t = el('button', 'mtap'); t.type = 'button'; t.setAttribute('aria-label', 'Guarda a schermo intero'); var last = 0, tm = null; glTip(); t.onclick = function () { if (document.querySelector('.mod.open')) return; var now = Date.now(); if (now - last < 330) { clearTimeout(tm); last = 0; glHeart(p._r, m.classList && m.classList.contains('mwrap') ? m : p); return; } last = now; clearTimeout(tm); tm = setTimeout(function () { last = 0; if (!document.querySelector('.mod.open')) openSeqAt(p._r.id); }, 300); }; var o = m.querySelector && m.querySelector('.ovl'); if (o) { if (getComputedStyle(m).position === 'static') m.style.position = 'relative'; m.insertBefore(t, o); } else p.appendChild(t); } }
+// nel feed: la copertina (come la griglia di Instagram) al posto della finestra del sito; il video parte a schermo intero.
+// YouTube ci dà la foto vera; per Instagram e gli altri, finché Meta non ce la dà, una copertina nostra con il commento.
+function covPlat(u) { var h = ''; try { h = new URL(u).hostname.replace(/^(www|m|vm|vt)\./, ''); } catch (e) {} return { 'tiktok.com': ['TikTok', 'ti-brand-tiktok'], 'instagram.com': ['Instagram', 'ti-brand-instagram'], 'youtube.com': ['YouTube', 'ti-brand-youtube'], 'youtu.be': ['YouTube', 'ti-brand-youtube'], 'facebook.com': ['Facebook', 'ti-brand-facebook'], 'fb.watch': ['Facebook', 'ti-brand-facebook'], 'snapchat.com': ['Snapchat', 'ti-brand-snapchat'], 'vimeo.com': ['Vimeo', 'ti-brand-vimeo'] }[h] || [h || 'Video', '']; }
+function coverFor(r) {
+  if (get('riserv', 0)) return null;
+  var s = embedFor(r.u); if (!s || s.indexOf('video:') === 0) return null;
+  var y = s.match(/youtube(?:-nocookie)?\.com\/embed\/([\w-]{11})/), pk = covPlat(r.u), n = 0;
+  for (var i = 0; i < String(r.id).length; i++) n = (n * 31 + String(r.id).charCodeAt(i)) % 997;
+  var c = el('div', 'cov ' + (y ? 'img' : 'gen c' + (n % 4))); if (y) c.dataset.yt = y[1];
+  if (y) { var im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.src = 'https://i.ytimg.com/vi/' + y[1] + '/hqdefault.jpg'; im.onerror = function () { c.className = 'cov gen c' + (n % 4); im.remove(); var k = c.querySelector('.covc'); if (k) k.remove(); c.insertBefore(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')), c.querySelector('.covp')); }; c.appendChild(im); }
+  var b = el('span', 'covb', pk[0]); c.appendChild(b);
+  var cap = (r.c || (r.aiX && r.aiX.sum) || '').trim();
+  if (!y) c.appendChild(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')));
+  c.appendChild(el('span', 'covp', '▶'));
+  if (y && cap) c.appendChild(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap));
+  return c;
+}
+function mediaIn(p) { var cv = coverFor(p._r), m = cv || media(p._r, false); p.appendChild(m); if (cv && cv.querySelector('.covq,.covc') && p._r.c) { var itm = p.closest && p.closest('.item'); if (itm) itm.classList.add('covd'); } if (!get('riserv', 0)) { var t = el('button', 'mtap'); t.type = 'button'; t.setAttribute('aria-label', 'Guarda a schermo intero'); var last = 0, tm = null; glTip(); t.onclick = function () { if (document.querySelector('.mod.open')) return; var now = Date.now(); if (now - last < 330) { clearTimeout(tm); last = 0; glHeart(p._r, m.classList && m.classList.contains('mwrap') ? m : p); return; } last = now; clearTimeout(tm); tm = setTimeout(function () { last = 0; if (!document.querySelector('.mod.open')) openSeqAt(p._r.id); }, 300); }; var o = !cv && m.querySelector && m.querySelector('.ovl'); if (cv) cv.appendChild(t); else if (o) { if (getComputedStyle(m).position === 'static') m.style.position = 'relative'; m.insertBefore(t, o); } else p.appendChild(t); } }
 function openSeqAt(id) {
   var vis = feed.filter(function (r) { return !isMuted(r.n); }), q = vis.map(function (r) { return r.id; }), i = q.indexOf(id); if (i < 0) return;
   track('reel-schermo-intero'); setTimeout(fsTip, 1200);
