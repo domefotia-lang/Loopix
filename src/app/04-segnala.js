@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v195', errLog = [];
+var APP_VER = 'v196', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -323,12 +323,33 @@ function coverFor(r) {
   for (var i = 0; i < String(r.id).length; i++) n = (n * 31 + String(r.id).charCodeAt(i)) % 997;
   var c = el('div', 'cov ' + (y ? 'img' : 'gen c' + (n % 4))); if (y) c.dataset.yt = y[1];
   if (y) { var im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.src = 'https://i.ytimg.com/vi/' + y[1] + '/hqdefault.jpg'; im.onerror = function () { c.className = 'cov gen c' + (n % 4); im.remove(); var k = c.querySelector('.covc'); if (k) k.remove(); c.insertBefore(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')), c.querySelector('.covp')); }; c.appendChild(im); }
-  var b = el('span', 'covb', pk[0]); c.appendChild(b);
+  var hd = (String(r.u).match(/tiktok\.com\/@([\w.]{2,30})/) || String(r.u).match(/instagram\.com\/(?!reel|reels|p|tv|stories)([\w.]{2,30})\//) || [])[1];
+  var b = el('span', 'covb', pk[0] + (hd ? ' · @' + hd : '')); c.appendChild(b);
+  var kk = typeof rcat === 'function' ? rcat(r) : ''; if (kk && RCATS[kk]) c.appendChild(el('span', 'covk', RCATS[kk]));
   var cap = (r.c || (r.aiX && r.aiX.sum) || '').trim();
   if (!y) c.appendChild(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')));
   c.appendChild(el('span', 'covp', '▶'));
   if (y && cap) c.appendChild(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap));
+  if (!y && pk[0] === 'TikTok') ttCover(r.u, function (t) {
+    if (!t) return;
+    var im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
+    im.onload = function () { c.className = 'cov img tt'; c.insertBefore(im, c.firstChild); var q = c.querySelector('.covq'); if (q) { q.remove(); if (cap) c.insertBefore(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap), c.querySelector('.mtap')); } };
+    im.src = t;
+  });
   return c;
+}
+// copertine TikTok: dal nostro server (TikTok le dà gratis), ricordate un giorno su questo telefono
+var ttMem = {};
+function ttCover(u, cb) {
+  var now = Date.now(), m = ttMem[u]; if (!m) { try { m = JSON.parse(localStorage.getItem(LSG + 'ttc') || '{}')[u]; } catch (e) {} }
+  if (m && now - m.at < 864e5) { ttMem[u] = m; return cb(m.t); }
+  if (!srvOn()) return cb('');
+  mbCall({ a: 'ttcov', u: u }, 7000).then(function (x) {
+    var t = x && typeof x.t === 'string' && /^(https:\/\/|\/[\w.-]+$)/.test(x.t) ? x.t : '';
+    var v = { t: t, at: Date.now() }; ttMem[u] = v;
+    try { var all = JSON.parse(localStorage.getItem(LSG + 'ttc') || '{}'); all[u] = v; var ks = Object.keys(all); if (ks.length > 120) ks.sort(function (a, b) { return all[a].at - all[b].at; }).slice(0, ks.length - 120).forEach(function (k) { delete all[k]; }); localStorage.setItem(LSG + 'ttc', JSON.stringify(all)); } catch (e) {}
+    cb(t);
+  }, function () { cb(''); });
 }
 function mediaIn(p) { var cv = coverFor(p._r), m = cv || media(p._r, false); p.appendChild(m); if (cv && cv.querySelector('.covq,.covc') && p._r.c) { var itm = p.closest && p.closest('.item'); if (itm) itm.classList.add('covd'); } if (!get('riserv', 0)) { var t = el('button', 'mtap'); t.type = 'button'; t.setAttribute('aria-label', 'Guarda a schermo intero'); var last = 0, tm = null; glTip(); t.onclick = function () { if (document.querySelector('.mod.open')) return; var now = Date.now(); if (now - last < 330) { clearTimeout(tm); last = 0; glHeart(p._r, m.classList && m.classList.contains('mwrap') ? m : p); return; } last = now; clearTimeout(tm); tm = setTimeout(function () { last = 0; if (!document.querySelector('.mod.open')) openSeqAt(p._r.id); }, 300); }; var o = !cv && m.querySelector && m.querySelector('.ovl'); if (cv) cv.appendChild(t); else if (o) { if (getComputedStyle(m).position === 'static') m.style.position = 'relative'; m.insertBefore(t, o); } else p.appendChild(t); } }
 function openSeqAt(id) {

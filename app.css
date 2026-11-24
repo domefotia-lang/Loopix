@@ -561,3 +561,5 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .covc{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-size:15px;line-height:1.35}
 .cov .mtap{z-index:3}
 .item.covd>.cm{display:none}
+.covk{position:absolute;top:10px;right:10px;z-index:1;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600}
+.cov.tt img{transform:none}
