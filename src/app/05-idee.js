@@ -239,14 +239,18 @@ function inspLoad(q, loc, qx) {
   if (q === '§oggi') { var L0 = $('inspL'); L0.textContent = ''; L0.appendChild(ogForm()); packLoad(true); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   var qq = loc ? inspCity(qx || q) : (qx || q);
+  // un oggetto da comprare: cerco recensioni e confronti, non video qualsiasi dove compare per caso
+  var buy = !loc && (inspAct(qx || q, qq) || {}).k === 'compra' && !/recension|review|reseña|migliori|best|mejores/i.test(qq);
+  var qe = qq; if (buy) qq = qq + ' ' + ({ it: 'recensione', es: 'reseña' }[window.LX_LANG] || 'review');
   mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
     L.textContent = '';
-    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le nostre ricerche sono finite (domani si ricaricano): intanto guarda i video veri direttamente lì.' : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); if (!x || x.error !== 'insp-off') L.appendChild(elsewhere(qq)); return; }
-    if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); L.appendChild(elsewhere(qq)); return; }
+    if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le nostre ricerche sono finite (domani si ricaricano): intanto guarda i video veri direttamente lì.' : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); if (!x || x.error !== 'insp-off') L.appendChild(elsewhere(qe)); return; }
+    if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); L.appendChild(elsewhere(qe)); return; }
     // via i video fuori tema: tengo quelli che nel titolo o nel canale nominano qualcosa della ricerca (se ne restano almeno 4)
     var STOP = { best: 1, from: 1, tips: 1, ideas: 1, with: 1, easy: 1, quick: 1, london: 1, londra: 1, londres: 1 }, W = qq.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (w) { return w.length > 3 && !STOP[w]; });
     var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
     var items = keep.length >= 4 ? keep : x.items;
+    if (buy) { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: loc ? gmaps(qq) : u, b: loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
     var act = inspAct(qx || q, qq);
     items.forEach(function (v, vi) {
@@ -259,7 +263,7 @@ function inspLoad(q, loc, qx) {
       go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
       c.appendChild(go); if (act) { var ab = el('a', 'btn-o wide inact', act.b); ab.href = act.u; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('insp-' + act.k); }; c.appendChild(ab); } L.appendChild(c);
     });
-  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qq)); });
+  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qe)); });
 }
 /* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
