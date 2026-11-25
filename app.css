@@ -564,3 +564,7 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .covk{position:absolute;top:10px;right:10px;z-index:1;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600}
 .cov.tt img{transform:none}
 #idm #io{display:none}#idm.note #io{display:block}#idm.note #inote{display:none}
+.cov.nocap .covn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
+.cov.nocap .covn .covp{position:static;transform:none;width:78px;height:78px;font-size:30px;background:rgba(0,0,0,.35);box-shadow:0 0 0 10px rgba(255,255,255,.08)}
+.cov.nocap .covt{font-family:Fraunces,Georgia,serif;font-size:clamp(24px,7vw,30px);font-weight:600;line-height:1.2}
+.cov.nocap .covs{font-size:15px;opacity:.85}

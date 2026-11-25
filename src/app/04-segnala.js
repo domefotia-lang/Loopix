@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v201', errLog = [];
+var APP_VER = 'v202', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -327,8 +327,13 @@ function coverFor(r) {
   var b = el('span', 'covb', pk[0] + (hd ? ' · @' + hd : '')); c.appendChild(b);
   var kk = typeof rcat === 'function' ? rcat(r) : ''; if (kk && RCATS[kk]) c.appendChild(el('span', 'covk', RCATS[kk]));
   var cap = (r.c || (r.aiX && r.aiX.sum) || '').trim();
-  if (!y) c.appendChild(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')));
-  c.appendChild(el('span', 'covp', '▶'));
+  if (!y && cap) c.appendChild(el('div', 'covq', '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»'));
+  if (!y && !cap) { // senza commento: niente scritta enorme nel vuoto, ma una copertina ordinata (cosa è e da chi)
+    c.classList.add('nocap'); var w = el('div', 'covn');
+    w.appendChild(el('span', 'covp', '▶')); w.appendChild(el('div', 'covt', window.LX_LANG === 'en' ? pk[0] + ' Reel' : LXT('Reel di') + ' ' + pk[0]));
+    w.appendChild(el('div', 'covs', LXT('Tocca per guardarlo')));
+    c.appendChild(w);
+  } else c.appendChild(el('span', 'covp', '▶'));
   if (y && cap) c.appendChild(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap));
   if (!y && pk[0] === 'TikTok') ttCover(r.u, function (t) {
     if (!t) return;
