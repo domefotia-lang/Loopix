@@ -7,7 +7,7 @@ function status() {
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
   $('who').textContent = (list.length ? list.join(', ') : me.name) + ' (' + Math.max(list.length, 1) + '/' + (me.role === 'host' ? cap() + 1 : (circMax || 4)) + ')';
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
-  av.setAttribute('aria-label', 'Nel cerchio: ' + (list.length ? list.join(', ') : me.name));
+  av.setAttribute('aria-label', LXT('Nel cerchio') + ': ' + (list.length ? list.join(', ') : me.name));
   var others = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }); if (me.role !== 'host' && !others.length && get('hn', '')) others = [get('hn', '')]; // chi ha creato il cerchio resta in alto anche quando è offline
   $('bd').textContent = live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita' : '') : others.length === 1 ? LXT('Avvisa') + ' 🔔' : LXT('Avvisa') + ' 🔔';
   $('bd').setAttribute('aria-label', live ? 'Collegato' : (others.length ? others.join(', ') + ' offline: tocca per avvisare con un messaggio' : 'Invita')); $('bd').classList.toggle('live', live);

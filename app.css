@@ -563,3 +563,4 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .item.covd>.cm{display:none}
 .covk{position:absolute;top:10px;right:10px;z-index:1;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600}
 .cov.tt img{transform:none}
+#idm #io{display:none}#idm.note #io{display:block}#idm.note #inote{display:none}

@@ -209,7 +209,7 @@ function refresh(r) {
   var xs = r.x || {}, tot = Object.keys(xs).length, mineE = xs[me.name];
   var kinds = EMO.filter(function (e) { return Object.keys(xs).some(function (k) { return xs[k] === e; }); });
   var hb = el('button', 'r-btn rx' + (mineE ? ' mine' : ''), (kinds.length ? kinds.slice(0, 3).join('') : '🤍') + (tot ? ' ' + tot : ''));
-  hb.setAttribute('aria-label', (mineE ? 'Hai reagito ' + mineE : 'Metti ❤️') + '. Tieni premuto per altre reazioni');
+  hb.setAttribute('aria-label', (mineE ? LXT('Hai reagito') + ' ' + mineE : LXT('Metti ❤️')) + '. ' + LXT('Tieni premuto per altre reazioni'));
   rxPress(hb, r); nd.bar.appendChild(hb);
   var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; if (nd.open) { nd.list.scrollTop = nd.list.scrollHeight; nd.cp.scrollIntoView({ block: 'nearest' }); } }; nd.bar.appendChild(cb);

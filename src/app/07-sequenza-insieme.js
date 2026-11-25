@@ -151,7 +151,7 @@ function showAt(i) {
   var r = find(seq.q[i]); seq.i = i;
   if (!r) { showAt(i + 1); return; }
   seq.cur = r.id; seen[r.id] = 1; put('seen', seen);
-  $('pc').textContent = (i + 1) + ' di ' + seq.q.length + ', da ' + r.n;
+  $('pc').textContent = (i + 1) + '/' + seq.q.length + ' · ' + r.n; $('pc').setAttribute('aria-label', (i + 1) + ' di ' + seq.q.length + ', da ' + r.n);
   var m = media(r, true); if (seq.dir) m.classList.add(seq.dir > 0 ? 'sup' : 'sdn'); seq.dir = 0; st.appendChild(m); swLayer(m); pbuild(r); arm(); setTimeout(fbFit, 30); setTimeout(fbFit, 350);
   if (m.tagName === 'IFRAME' && /youtube\.com\/embed/.test(m.src)) m.addEventListener('load', function () { try { m.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*'); } catch (e) {} });
 }

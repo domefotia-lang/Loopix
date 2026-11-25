@@ -231,7 +231,7 @@ function aiPlan(focus, img) {
     b.classList.remove('busy'); b.disabled = false;
     var sure = x.k !== 'altro' || (x.p && !/^(sconosciut|unknown|desconocid)/i.test(x.p));
     b.hidden = false;
-    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) $('io').value = x.o; aiLast = { k: x.k, p: clean(x.p || '', 60), q: clean(x.shop || '', 60), done: avoid.concat(x.p ? [x.p] : []) }; lb.textContent = '✨ Un’altra idea dal video'; b.querySelector('span').textContent = 'Non è questo? L’AI ne propone una diversa'; }
+    if (sure) { setKind(x.k); if (x.p) $('ip').value = x.p; if (x.o) { $('io').value = x.o; $('idm').classList.add('note'); } aiLast = { k: x.k, p: clean(x.p || '', 60), q: clean(x.shop || '', 60), done: avoid.concat(x.p ? [x.p] : []) }; lb.textContent = '✨ Un’altra idea dal video'; b.querySelector('span').textContent = 'Non è questo? L’AI ne propone una diversa'; }
     else { lb.textContent = '✨ Riprova'; $('idm').classList.remove('auto'); $('ikS').hidden = true; }
     out.textContent = (x.sum ? '✨ ' + x.sum : '') + (sure ? '' : ' Scegli tu qui sotto: ci metti un attimo.'); out.hidden = !out.textContent;
     if (sure && x.p && x.k !== 'altro') { var lk = el('div', 'ailinks'); linksFor({ k: x.k, p: clean(x.p, 60), q: aiLast.q }).forEach(function (L) { var a = el('a', 'chip', L.t); a.href = L.u; a.target = '_blank'; a.rel = 'noopener'; lk.appendChild(a); }); out.appendChild(lk); }

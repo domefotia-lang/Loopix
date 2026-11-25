@@ -251,8 +251,8 @@ function inspLoad(q, loc, qx) {
     var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
     var items = keep.length >= 4 ? keep : x.items;
     if (buy) { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
-    var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: loc ? gmaps(qq) : u, b: loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
     var act = inspAct(qx || q, qq);
+    var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: act ? act.u : loc ? gmaps(qq) : u, b: act ? act.t : loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
     items.forEach(function (v, vi) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
       var c = el('div', 'insc'), th = el('button', 'inth'); th.type = 'button'; th.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + v.t);
@@ -270,12 +270,12 @@ function inspLoad(q, loc, qx) {
 // I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
 function inspAct(q, qq) {
   var t = String(q || '').toLowerCase(), reg = rgReg();
-  if (/hotel|soggiorn|vacanz|viaggi|weekend a|weekend in|gita|trip|holiday|getaway|stay|city break|vacacion|escapada/.test(t)) return { k: 'prenota-viaggio', b: '🏨 ' + LXT('Trova dove dormire'), u: 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(qq) };
-  if (/tour|esperienz|bigliett|ticket|spa|corso|lezion|class|workshop|experience|attivit|activity|concert|show|mostr|teatr|museo|museum|escape room|kart|parco|zoo|actividad|entrada/.test(t)) return { k: 'prenota-esperienza', b: '🎟️ ' + LXT('Prenota'), u: gyg(qq) };
-  if (/ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cocktail|pizz|sushi|restaurant|dinner|lunch|cafe|coffee|food|comer|cenar|restaurante|mercat|market|parc|park|cosa fare|things to do|date|serata|night/.test(t)) return { k: 'mappa', b: '📍 ' + LXT('Vedi sulla mappa'), u: gmaps(qq) };
+  if (/hotel|soggiorn|vacanz|viaggi|weekend a|weekend in|gita|trip|holiday|getaway|stay|city break|vacacion|escapada/.test(t)) return { k: 'prenota-viaggio', t: 'Trova dove dormire', b: '🏨 ' + LXT('Trova dove dormire'), u: 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(qq) };
+  if (/tour|esperienz|bigliett|ticket|spa|corso|lezion|class|workshop|experience|attivit|activity|concert|show|mostr|teatr|museo|museum|escape room|kart|parco|zoo|actividad|entrada/.test(t)) return { k: 'prenota-esperienza', t: 'Prenota', b: '🎟️ ' + LXT('Prenota'), u: gyg(qq) };
+  if (/ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cocktail|pizz|sushi|restaurant|dinner|lunch|cafe|coffee|food|comer|cenar|restaurante|mercat|market|parc|park|cosa fare|things to do|date|serata|night/.test(t)) return { k: 'mappa', t: 'Mappa', b: '📍 ' + LXT('Vedi sulla mappa'), u: gmaps(qq) };
   if (/ricett|recipe|receta|cucinar|cook/.test(t)) return null;
   var d = { GB: 'amazon.co.uk', IE: 'amazon.co.uk', IT: 'amazon.it', ES: 'amazon.es', US: 'amazon.com' }[reg] || 'amazon.co.uk';
-  return { k: 'compra', b: '🛒 ' + LXT('Dove comprarlo'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
+  return { k: 'compra', t: 'Dove comprarlo', b: '🛒 ' + LXT('Dove comprarlo'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
 }
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
@@ -367,6 +367,8 @@ function packLoad(keep) {
 }
 /* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
 var ICO = {
+  bag: '<path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  bed: '<path d="M3.5 18.5v-11M3.5 14h17v4.5M20.5 14v-2.5a3 3 0 0 0-3-3h-6v5.5"/><circle cx="7.5" cy="11" r="1.8"/>',
   heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
   cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   ticket: '<path d="M3.5 7.5h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4z"/><path d="M14.5 7.5v10" stroke-dasharray="2 2.2"/>',
@@ -422,7 +424,7 @@ function ideaViewAt(i) {
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
-  var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' ? 'ticket' : it.b === 'Prenota' ? 'cal' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); };
+  var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' || it.b === 'Prenota' ? 'ticket' : it.b === 'Trova dove dormire' ? 'bed' : it.b === 'Dove comprarlo' ? 'bag' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); };
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }
 function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; try { storiesRender(); } catch (e) {} }

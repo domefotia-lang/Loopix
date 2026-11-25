@@ -52,7 +52,7 @@ function goReel(id) {
 }
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
-  ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = '';
+  ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = ''; $('idm').classList.remove('note'); $('inote').onclick = function () { $('idm').classList.add('note'); $('io').focus(); };
   var g = $('ikg'); if (!g.children.length) { Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); }); var mo = el('button', 'ikmore', '＋ ' + LXT('Altro')); mo.type = 'button'; mo.onclick = function () { g.classList.add('all'); }; g.appendChild(mo); }
   var r0 = rid && find(rid), k0 = guessKind(r0 && r0.c) || 'viaggio'; setKind(k0);
   // tre scelte in vista (posto, mangiare, fare); le altre con «＋ Altro», o già aperte se l'idea è di quel tipo
@@ -143,7 +143,7 @@ function renderCircle() {
     $('inv2').hidden = ks.length >= cap() && allOn; $('inv2').textContent = ks.length >= cap() ? '🔗 Non vi collegate? Rimanda l’invito' : 'Invita una persona'; $('invKill').hidden = false; // se siete tutti collegati il tasto «rimanda» non serve
   } else {
     var live = !!(hostConn && hostConn.open);
-    (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (tu)' : i === 0 ? ' (ha creato il cerchio)' : ''), live, null); });
+    (names.length ? names : [me.name]).forEach(function (n, i) { row(n + (n === me.name ? ' (' + LXT('tu') + ')' : i === 0 ? ' (' + LXT('ha creato il cerchio') + ')' : ''), live, null); });
     $('inv2').hidden = true; $('invKill').hidden = true;
     m.appendChild(el('p', null, blocked ? 'Non fai più parte di questo cerchio. Puoi uscire e chiedere un nuovo invito.' : 'Solo chi ha creato il cerchio può invitare altre persone.'));
   }
