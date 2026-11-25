@@ -79,7 +79,7 @@ function ogRun(p, F) {
       if (!y || !y.items) return;
       y.items.forEach(function (vv, i) { var z = cards[i]; if (!vv || !z || !z.th.isConnected) return; z.o.st.u = 'https://www.youtube.com/shorts/' + vv.id; z.th.textContent = ''; var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + vv.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; z.th.appendChild(im); z.th.appendChild(el('span', 'inpl', '▶')); z.th.classList.remove('pkth'); });
     }, function () {});
-  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); put0(aiAskBtn(ogPrompt(p, city))); });
+  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = navigator.onLine === false ? LXT('Sei offline: ecco le idee pronte. Quelle nuove tornano con la rete.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); put0(aiAskBtn(ogPrompt(p, city))); });
 }
 /* ---- 🎁 Regali: per chi, occasione, budget → 6 idee concrete, con la ricerca nel negozio.
    Al server arrivano solo le tre scelte. I regali salvati restano su questo telefono: gli altri del cerchio non li vedono (sorprese al sicuro). ---- */
@@ -173,7 +173,7 @@ function rgRun(p, F) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     var fb = !x || x.error || !x.items || !x.items.length; // AI occupata: idee pronte, scelte da noi
     if (fb) x = { items: rgFallback(p.per) };
-    hd.textContent = fb ? '🎁 ' + LXT('Idee regalo pronte (l’AI è occupata: riprova tra poco per idee nuove)') : '🎁 ' + LXT('Idee regalo per voi');
+    hd.textContent = fb ? '🎁 ' + LXT(navigator.onLine === false ? 'Idee regalo pronte (sei offline: quelle nuove tornano con la rete)' : 'Idee regalo pronte (l’AI è occupata: riprova tra poco per idee nuove)') : '🎁 ' + LXT('Idee regalo per voi');
     if (fb) put0(aiAskBtn(rgPrompt(p)));
     var cards = [];
     x.items.forEach(function (v, vi) {
@@ -200,7 +200,7 @@ function rgRun(p, F) {
       if (!y || !y.items) return;
       y.items.forEach(function (vv, i) { var z = cards[i]; if (!vv || !z || !z.th.isConnected) return; z.o.st.u = 'https://www.youtube.com/shorts/' + vv.id; z.th.textContent = ''; var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + vv.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; z.th.appendChild(im); z.th.appendChild(el('span', 'inpl', '▶')); z.th.classList.remove('pkth'); });
     }, function () {});
-  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
+  }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = navigator.onLine === false ? LXT('Sei offline: ecco le idee pronte. Quelle nuove tornano con la rete.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
 }
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
 var xplQ = '';
@@ -263,7 +263,7 @@ function inspLoad(q, loc, qx) {
       go.onclick = function () { postAll(u, ''); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.className = 'btn-o wide'; go.disabled = true; track('insp-manda'); };
       c.appendChild(go); if (act) { var ab = el('a', 'btn-o wide inact', act.b); ab.href = act.u; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('insp-' + act.k); }; c.appendChild(ab); } L.appendChild(c);
     });
-  }, function () { L.textContent = ''; L.appendChild(el('p', null, 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qe)); });
+  }, function () { L.textContent = ''; L.appendChild(el('p', null, navigator.onLine === false ? LXT('Sei offline: la ricerca torna con la rete.') : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); L.appendChild(elsewhere(qe)); });
 }
 /* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.

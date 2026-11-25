@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v202', errLog = [];
+var APP_VER = 'v203', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -200,7 +200,7 @@ function fbFit() {
 }
 window.addEventListener('resize', function () { setTimeout(igFit, 60); setTimeout(fbFit, 60); });
 // gesti sul video nel feed, come su Instagram: un tocco = schermo intero, doppio tocco = ❤️, tenuto premuto = menu, scorri a sinistra = ✨ Piano
-function glTip() { if (get('gtip', 0) || !me) return; put('gtip', 1); setTimeout(function () { if (!$('mh').textContent) $('mh').textContent = LXT('Come su Instagram: doppio tocco sul video = ❤️, tieni premuto = menu, scorri a sinistra = ✨ Piano.'); }, 1500); }
+function glTip() { if (get('gtip', 0) || !me) return; put('gtip', 1); setTimeout(function () { if (document.querySelector('.tipb, .mod.open')) return; var t = el('div', 'tipb'); t.setAttribute('role', 'status'); t.appendChild(document.createTextNode('👆 ' + LXT('Come su Instagram: doppio tocco sul video = ❤️, tieni premuto = menu, scorri a sinistra = ✨ Piano.'))); var x = el('button', null, '✕'); x.type = 'button'; x.setAttribute('aria-label', LXT('Chiudi')); x.onclick = function () { t.remove(); }; t.appendChild(x); document.body.appendChild(t); setTimeout(function () { t.remove(); }, 8000); }, 1500); } // una volta sola, in un fumetto che sparisce: non ruba spazio al video
 function glHeart(r, wrap) { var x = find(r.id) || r; if (me && (x.x || {})[me.name] !== '❤️') react(r.id, '❤️'); heartAt(wrap); track('doppio-tocco'); }
 function media(r, pl) {
   var s0 = embedFor(r.u);

@@ -338,16 +338,26 @@ function onSes(d, who) {
 }
 function isInvite(u) { u = String(u || ''); return /#j=/.test(u) || u.indexOf(location.origin + location.pathname.replace(/index\.html$/, '')) === 0 || /github\.io\/Loopix|joinreelta\.github\.io/i.test(u); }
 var skippedInv = 0;
+// lo stesso Reel copiato due volte ha spesso codici diversi in fondo (?igsh=, ?si=, utm…): li tolgo, così non arriva doppio
+function normUrl(u) {
+  if (!u) return u;
+  try { var x = new URL(u); ['igsh', 'igshid', 'si', 'feature', 'fbclid', 'mibextid', 'rdid', 'share_url', '_t', '_r', 'is_from_webapp', 'sender_device', 'sender_web_id', 'is_copy_url', 'share_app_id', 'share_link_id', 'ref', 'refsrc'].forEach(function (k) { x.searchParams.delete(k); }); Array.from(x.searchParams.keys()).forEach(function (k) { if (/^utm_/.test(k)) x.searchParams.delete(k); }); x.hash = /youtu/.test(x.hostname) ? x.hash : ''; return x.href.replace(/\?$/, ''); } catch (e) { return u; }
+}
+function sameReel(a, b) { return normUrl(a).replace(/\/$/, '').replace('://m.', '://www.') === normUrl(b).replace(/\/$/, '').replace('://m.', '://www.'); }
 function links(t) {
   var out = [], m, re = /https?:\/\/[^\s<>"']+/g; skippedInv = 0;
-  while ((m = re.exec(String(t || ''))) && out.length < 20) { var u = safeUrl(m[0].replace(/[.,;:!?)\]]+$/, '')); if (u && isInvite(u)) { skippedInv++; continue; } if (u && out.indexOf(u) < 0) out.push(u); }
+  while ((m = re.exec(String(t || ''))) && out.length < 20) { var u = normUrl(safeUrl(m[0].replace(/[.,;:!?)\]]+$/, ''))); if (u && isInvite(u)) { skippedInv++; continue; } if (u && out.indexOf(u) < 0) out.push(u); }
   return out;
 }
+function isVideoUrl(u) { try { var h = new URL(u).hostname.replace(/^(www|m|vm|vt|web)\./, ''); return /(^|\.)(instagram|tiktok|youtube|youtu|facebook|fb|x|twitter|threads|pinterest|pin|snapchat|linkedin|vimeo|dailymotion|dai|twitch|spotify|reddit|bsky|tumblr)\.(com|be|net|tv|ly|watch|it|link|app|co\.uk)$/.test(h) || /\.(mp4|mov|webm)(\?|$)/i.test(u); } catch (e) { return false; } }
 function postAll(t, c) {
   if (tryDev(t)) return 0;
   var L = links(t), L0 = L.length;
-  L = L.filter(function (u) { return !feed.some(function (r) { return r.u === u && me && r.n === me.name && Date.now() - (+r.ts || 0) < 60000; }); }); // doppio tocco: lo stesso Reel parte una volta
-  if (L0 && !L.length) { $('mh').textContent = LXT('Già mandato ✓'); return 0; }
+  var dupBy = '';
+  L = L.filter(function (u) { var d = feed.find(function (r) { return sameReel(r.u, u); }); if (d) dupBy = d.n; return !d; }); // lo stesso Reel c'è già (da me o dall'altra persona): non arriva doppio
+  if (L0 && !L.length) { $('mh').textContent = dupBy && me && dupBy !== me.name ? LXT('Questo Reel c’è già: l’ha mandato') + ' ' + dupBy + ' ✓' : LXT('Già mandato ✓'); return 0; }
+  // 5. un solo link che non è un video: chiedo prima
+  if (L.length === 1 && !postAll.ok && !isVideoUrl(L[0])) { var t0 = t, c0 = c; ask(LXT('Non sembra un video'), LXT('Reelta è fatta per i Reel e i video. Lo mando lo stesso?'), LXT('Mandalo lo stesso')).then(function (y) { if (y) { postAll.ok = 1; try { postAll(t0, c0); } finally { postAll.ok = 0; } } }); return 0; }
   if (!L.length && skippedInv) {
     var jm = /#j=([\w-]{8,100})/.exec(String(t || ''));
     if (jm) { var jh = jm[1].split('_')[0];
@@ -360,6 +370,7 @@ function postAll(t, c) {
   (async function () {
     for (var i = 0; i < L.length; i++) post(await resolveShort(L[i]), L.length === 1 ? c : '');
     if (L.length > 1) $('mh').textContent = L.length + ' Reel aggiunti.';
+    if (navigator.onLine === false) $('mh').textContent = LXT('Sei offline: lo mando appena torni online.');
     try { soloNudge(L[0], c); } catch (e) {}
   })();
   return L.length;

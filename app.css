@@ -568,3 +568,9 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .cov.nocap .covn .covp{position:static;transform:none;width:78px;height:78px;font-size:30px;background:rgba(0,0,0,.35);box-shadow:0 0 0 10px rgba(255,255,255,.08)}
 .cov.nocap .covt{font-family:Fraunces,Georgia,serif;font-size:clamp(24px,7vw,30px);font-weight:600;line-height:1.2}
 .cov.nocap .covs{font-size:15px;opacity:.85}
+#bd.off{opacity:.75}
+@media (max-width:360px){#feed .item .bar{gap:5px}#feed .item .bar>.r-btn:not(.plan){padding-left:8px;padding-right:8px;min-width:38px}.r-btn.plan{white-space:nowrap;font-size:15px;padding-left:10px;padding-right:10px}}
+.r-btn.plan{white-space:nowrap}
+.mph:has(.cov){min-height:240px}
+.tipb{position:fixed;left:12px;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;background:var(--s2);color:var(--t);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:12px 44px 12px 14px;font-size:15px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.tipb button{position:absolute;top:6px;right:6px;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:18px}

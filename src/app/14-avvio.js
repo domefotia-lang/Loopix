@@ -270,6 +270,7 @@ $('veil').addEventListener('click', function () { veil(false); });
 $('bd').addEventListener('click', function () {
   if (!me) return;
   if (me.role === 'host' && !Object.keys(allowed).length) { invite(); return; }
+  if (navigator.onLine === false) { $('mh').textContent = LXT('Sei offline: quello che mandi parte appena torna la rete.'); return; }
   if ($('app').classList.contains('on')) { $('mh').textContent = 'Siete collegati.'; return; }
   var app = location.origin + location.pathname.replace(/index\.html$/, '');
   var T = window.LX_T || function (x) { return x; };

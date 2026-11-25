@@ -1,7 +1,7 @@
 /* ---- stato ---- */
 function status() {
   regLabel(); $('cT').textContent = me.role === 'host' ? (me.kind === 'big' ? 'Il tuo Gruppo' : me.kind === 'group' ? 'Il vostro gruppo' : 'Con chi esci') : 'Con chi esci';
-  var live = me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open);
+  var off = navigator.onLine === false, live = !off && (me.role === 'host' ? conns.some(function (c) { return c.ok && c.open; }) : !!(hostConn && hostConn.open));
   $('app').classList.toggle('on', live);
   if ($('sp')) $('sp').hidden = !feed.length || !live; // «Guardate insieme» solo quando c'è qualcuno collegato
   var list = me.role === 'host' ? [me.name].concat(conns.filter(function (c) { return c.ok; }).map(function (c) { return c.name; })) : names;
@@ -9,8 +9,8 @@ function status() {
   var av = $('av'); av.textContent = ''; (list.length ? list : [me.name]).slice(0, 4).forEach(function (n) { av.appendChild(avatar(n)); });
   av.setAttribute('aria-label', LXT('Nel cerchio') + ': ' + (list.length ? list.join(', ') : me.name));
   var others = me.role === 'host' ? Object.keys(allowed).map(function (k) { return allowed[k]; }) : names.filter(function (n) { return n !== me.name; }); if (me.role !== 'host' && !others.length && get('hn', '')) others = [get('hn', '')]; // chi ha creato il cerchio resta in alto anche quando è offline
-  $('bd').textContent = live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita' : '') : others.length === 1 ? LXT('Avvisa') + ' 🔔' : LXT('Avvisa') + ' 🔔';
-  $('bd').setAttribute('aria-label', live ? 'Collegato' : (others.length ? others.join(', ') + ' offline: tocca per avvisare con un messaggio' : 'Invita')); $('bd').classList.toggle('live', live);
+  $('bd').textContent = off ? 'Offline' : live ? 'Collegato' : !others.length ? (me.role === 'host' ? '＋ Invita' : '') : others.length === 1 ? LXT('Avvisa') + ' 🔔' : LXT('Avvisa') + ' 🔔';
+  $('bd').setAttribute('aria-label', live ? 'Collegato' : (others.length ? others.join(', ') + ' offline: tocca per avvisare con un messaggio' : 'Invita')); $('bd').classList.toggle('live', live); $('bd').classList.toggle('off', off); if (off) $('bd').setAttribute('aria-label', LXT('Sei offline: quello che mandi parte appena torna la rete.'));
   $('inv').hidden = me.role !== 'host';
   if (tab === 'circle' && $('circle').classList.contains('show')) renderCircle();
 }
@@ -139,8 +139,8 @@ function mbToGuests(m, except) {
 function mbToHost(m, fail, quiet) { if (!quiet && m.t === 'react') quiet = rxQuiet(m, get('hn', '') || (names[0] || '')); if (!quiet) cbPut(m); mbPut(me.tok, 'h', m, quiet).then(function (ok) { if (!ok && fail) fail(); }, function () { if (fail) fail(); }); }
 function relay(c, m) { conns.forEach(function (x) { if (x !== c && x.ok && x.open) x.send(m); }); mbToGuests(m, c); }
 var mbBusy = false, mbLast = 0, srvSeen = 0;
-window.addEventListener('offline', function () { try { $('mh').textContent = LXT('Sei senza rete: quello che mandi parte appena torna.'); } catch (e) {} });
-window.addEventListener('online', function () { try { $('mh').textContent = LXT('Rete tornata ✓'); mbPull(true); } catch (e) {} });
+window.addEventListener('offline', function () { try { $('mh').textContent = LXT('Sei senza rete: quello che mandi parte appena torna.'); status(); } catch (e) {} });
+window.addEventListener('online', function () { try { $('mh').textContent = LXT('Rete tornata ✓'); status(); mbPull(true); } catch (e) {} });
 function mbPull(force) {
   if (!srvOn() || !me || mbBusy || (!force && Date.now() - mbLast < 8000)) return;
   mbBusy = true; mbLast = Date.now();
