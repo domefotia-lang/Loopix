@@ -89,6 +89,24 @@ function vidInfo(file) {
 }
 function mediaRecipients() { return me.role === 'host' ? Math.max(1, Object.keys(allowed).length) : Math.max(1, names.length - 1); }
 var mBusy = false;
+// cifra e carica una foto già rimpicciolita; dà i dati per riaprirla (chiave compresa), che viaggiano solo nei messaggi cifrati
+function mediaUp(x, n) {
+  var iv = crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']).then(function (key) {
+    return Promise.all([crypto.subtle.exportKey('raw', key), x.b.arrayBuffer().then(function (buf) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, buf); })]);
+  }).then(function (r) {
+    var ct = new Blob([r[1]]);
+    return mbCall({ a: 'up', sz: ct.size, n: n || 1 }).then(function (up) {
+      if (!up || !up.id || !up.url) throw new Error('up');
+      return fetch(up.url, { method: 'PUT', body: ct, headers: { 'Content-Type': 'application/octet-stream' } }).then(function (res) {
+        if (!res.ok) throw new Error('up');
+        var a = { id: up.id, k: mdE(new Uint8Array(r[0])), iv: mdE(iv), mt: x.mt, w: x.w, h: x.h, d: 0 };
+        MCACHE[a.id] = x.b; try { idbPut(a.id, x.b); } catch (e) {}
+        return a;
+      });
+    });
+  });
+}
 function mediaSend(file) {
   if (!file || mBusy) return;
   if (!srvOn()) { $('mh').textContent = 'Foto e video non disponibili in questo momento.'; return; }

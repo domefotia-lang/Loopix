@@ -62,7 +62,7 @@ function normIdea(i, who) {
 }
 function findIdea(id) { return ideas.filter(function (x) { return x.id === id; })[0]; }
 function ideasChanged(rid) {
-  put('ideas', ideas);
+  put('ideas', ideas); try { remSync(); } catch (e) {}
   if (tab === 'ideas' && $('ideas').classList.contains('show')) renderIdeas();
   var r = rid && find(rid); if (r) refresh(r);
 }
@@ -84,6 +84,8 @@ function applyIdea(d, who) {
   if (d.a === 'done') { if (at && (+x.da || 0) > at) return null; x.d = !!d.on; if (at) x.da = at; ideasChanged(); return { t: 'idea', a: 'done', id: x.id, on: x.d, at: at || undefined }; }
   // «com'è andata?» dopo la data del piano: ognuno risponde con un tocco; «non ci siamo andati» toglie la data, così si può riprogrammare
   if (d.a === 'feel') { var fn = who || clean(d.n, 30), fe = FEEL.indexOf(d.e) >= 0 ? d.e : ''; if (!fn || !fe) return null; x.f = x.f || {}; x.f[fn] = fe; if (fe === 'no') { if (!Object.keys(x.f).some(function (k) { return x.f[k] !== 'no'; })) x.w = ''; } else x.d = true; ideasChanged(); if (fn !== me.name && fe !== 'no') noteIn('idea', fn, x.p + ' ' + fe); return { t: 'idea', a: 'feel', id: x.id, e: fe, n: fn }; }
+  // 📸 la foto del ricordo: cifrata come quelle dei messaggi; ognuno la conserva nel proprio telefono
+  if (d.a === 'pic') { var pa = cleanAtt(d.m); if (!pa) return null; x.ph = pa; x.d = true; if (who !== me.name) { try { mediaKeep(pa, false); } catch (e) {} } ideasChanged(); return { t: 'idea', a: 'pic', id: x.id, m: pa }; }
   if (d.a === 'del') { ideas = ideas.filter(function (y) { return y !== x; }); ideasChanged(x.r); return { t: 'idea', a: 'del', id: x.id }; }
   return null;
 }
@@ -105,13 +107,50 @@ function linksFor0(i) {
   if (i.k === 'viaggio') L.push({ t: '🍽️ Ristoranti', u: 'https://www.google.com/maps/search/?api=1&query=' + enc('ristoranti ' + i.p) });
   return L;
 }
+// 📸 un ricordo: la foto vostra (o la copertina del Reel), il titolo, da quando l'avevate salvato a quando l'avete fatto, come vi è sembrato
+function memDate(t) { try { return new Date(t).toLocaleDateString(window.LX_LANG === 'en' ? 'en-GB' : window.LX_LANG === 'es' ? 'es-ES' : 'it-IT', { day: 'numeric', month: 'long' }); } catch (e) { return ''; } }
+function memCard(i) {
+  var c = el('div', 'card mem'), top = el('div', 'memtop'), r = i.r && find(i.r);
+  if (i.ph) { var lb = el('div', 'ml', '📷'); top.appendChild(lb); mediaBlob(i.ph, false).then(function (b) { top.textContent = ''; var im = el('img'); im.alt = LXT('La vostra foto'); im.src = murl(i.ph.id, b); top.appendChild(im); }, function () { lb.textContent = ''; }); }
+  else if (r) { var cv = coverFor(r); if (cv) { cv.querySelectorAll('.covp,.covs,.covq,.covc,.covn').forEach(function (x) { x.remove(); }); top.appendChild(cv); } }
+  if (!top.children.length) { top.classList.add('memgen', 'c' + (String(i.id).charCodeAt(0) % 4)); top.appendChild(el('span', 'memk', (KINDS[i.k] || '✨').split(' ')[0])); }
+  c.appendChild(top);
+  var body = el('div', 'membody'); body.appendChild(el('h3', null, i.p));
+  var sv = r ? r.ts : i.ts, dn = i.w ? new Date(i.w + 'T12:00').getTime() : (i.da || 0);
+  body.appendChild(el('div', 'memwhen', (sv ? LXT('Salvato il') + ' ' + memDate(sv) : '') + (dn ? ' → ' + LXT('fatto il') + ' ' + memDate(dn) : '')));
+  var fk = Object.keys(i.f || {}).filter(function (n) { return i.f[n] !== 'no'; }); if (fk.length) body.appendChild(el('div', 'memfeel', fk.map(function (n) { return n + ' ' + i.f[n]; }).join(' · ')));
+  var go = el('div', 'inext');
+  if (!i.ph) { var pb = el('button', 'btn-o', '📸 ' + LXT('Aggiungi una vostra foto')); pb.type = 'button'; pb.onclick = function () { memPic(i); }; go.appendChild(pb); }
+  var mb = el('button', 'r-btn ic'); mb.type = 'button'; mb.appendChild(icoEl('dots')); mb.setAttribute('aria-label', LXT('Altre azioni per questo piano')); mb.onclick = function () { ideaMenu(i, []); }; go.appendChild(mb);
+  body.appendChild(go); c.appendChild(body);
+  return c;
+}
+function memPic(i) {
+  if (!srvOn()) { $('mh').textContent = LXT('Le foto non sono disponibili in questo momento.'); return; }
+  var f = el('input'); f.type = 'file'; f.accept = 'image/*'; f.style.display = 'none'; document.body.appendChild(f);
+  f.onchange = function () { var file = f.files && f.files[0]; f.remove(); if (!file) return; $('mh').textContent = '📷 ' + LXT('Salvo la foto del ricordo…');
+    shrinkImg(file).then(function (x) { if (!x) throw new Error('img'); return mediaUp(x, Math.max(1, mediaRecipients())); }).then(function (a) { ideaAct({ t: 'idea', a: 'pic', id: i.id, m: a }); $('mh').textContent = '📸 ' + LXT('Ricordo salvato ✓'); track('ricordo-foto'); }, function () { $('mh').textContent = LXT('Non sono riuscito a salvare la foto: riprova.'); });
+  };
+  f.click();
+}
+// 📅 promemoria: la sera prima, la mattina stessa e il giorno dopo («Com'è andata?»). Al server arrivano solo ore e tipo, mai il piano.
+var remLast = get('remLast', '');
+function remSync() {
+  if (!me || !srvOn() || typeof pushBoxes !== 'function') return;
+  var at = function (w, dd, h, m) { var d = new Date(w + 'T00:00:00'); d.setDate(d.getDate() + dd); d.setHours(h, m, 0, 0); return d.getTime(); }, now = Date.now(), L = [], seen = {};
+  ideas.forEach(function (i) { if (!i.w || i.d) return; [['eve', -1, 19, 0], ['morn', 0, 9, 30], ['after', 1, 19, 0]].forEach(function (x) { var t = at(i.w, x[1], x[2], x[3]); if (t > now + 6e4 && !seen[x[0] + t]) { seen[x[0] + t] = 1; L.push({ at: t, k: x[0] }); } }); });
+  L.sort(function (a, b) { return a.at - b.at; }); L = L.slice(0, 30);
+  var sig = JSON.stringify(L); if (sig === remLast) return;
+  pushBoxes().then(function (bs) { var b = bs && bs[0]; if (!b) return; return mbCall({ a: 'rem', box: b, list: L }).then(function (x) { if (x && x.ok) { remLast = sig; put('remLast', sig); } }); }).catch(function () {});
+}
+setTimeout(function () { try { remSync(); } catch (e) {} }, 5000);
 function renderIdeas() {
   try { dwDot(); } catch (e) {}
   renderNov();
   // due viste sole: i piani da fare (divisi per «a che punto siamo») e quelli fatti
   if (ifilter !== 'fatte') ifilter = 'tutte';
   var nDone = ideas.filter(function (i) { return i.d; }).length, ch = $('ichips'); ch.textContent = '';
-  [['tutte', 'Da fare'], ['fatte', '✓ Fatti' + (nDone ? ' · ' + nDone : '')]].forEach(function (f) {
+  [['tutte', 'Da fare'], ['fatte', '📸 Ricordi' + (nDone ? ' · ' + nDone : '')]].forEach(function (f) {
     var b = el('button', 'chip', f[1]); b.setAttribute('aria-pressed', String(ifilter === f[0])); b.onclick = function () { ifilter = f[0]; renderIdeas(); }; ch.appendChild(b);
   });
   ch.hidden = !ideas.length;
@@ -125,7 +164,7 @@ function renderIdeas() {
   if (todo.length > 1 && ifilter !== 'fatte') { var db0 = el('button', 'aibtn love'); db0.appendChild(el('b', null, '💘 Decidete insieme')); db0.appendChild(el('span', null, todo.length + ' piani aspettano il tuo sì o no')); db0.onclick = decOpen; box.appendChild(db0); }
   var list = ideas.filter(function (i) { return ifilter === 'fatte' ? i.d : !i.d && (!ikind || i.k === ikind); });
   if (!list.length) {
-    if (ifilter === 'fatte') box.appendChild(el('div', 'empty', 'Nessun piano fatto ancora.\nQuando lo realizzate, toccate ✓ Fatto.'));
+    if (ifilter === 'fatte') box.appendChild(el('div', 'empty', 'Qui arrivano i vostri ricordi.\nIl giorno dopo un piano, Reelta vi chiede «Com’è andata?»: con un tocco diventa un ricordo, anche con una vostra foto.'));
     else box.appendChild(ideaGuide());
     return;
   }
@@ -160,7 +199,11 @@ function renderIdeas() {
     if (voters.length && !(stg === 0 && voters.length === 1 && mine)) c.appendChild(el('div', 'ptag', (i.k === 'compra' ? '😍 ' : '👍 ') + voters.join(', ')));
     return c;
   };
-  if (ifilter === 'fatte') { list.sort(function (a, b) { return (b.w || '') < (a.w || '') ? -1 : (b.w || '') > (a.w || '') ? 1 : b.ts - a.ts; }).forEach(function (i) { box.appendChild(card(i)); }); }
+  if (ifilter === 'fatte') {
+    var yr = String(new Date().getFullYear()), ny = list.filter(function (i) { return (i.w || new Date(i.da || i.ts).toISOString()).slice(0, 4) === yr; }).length;
+    var hy = el('div', 'memhead'); hy.appendChild(el('b', null, ny + ' ' + (ny === 1 ? LXT('piano fatto') : LXT('piani fatti')) + ' ' + LXT('nel') + ' ' + yr)); hy.appendChild(el('small', null, LXT('Dal Reel alla realtà: ecco cosa avete fatto davvero.'))); box.appendChild(hy);
+    list.sort(function (a, b) { return (b.w || '') < (a.w || '') ? -1 : (b.w || '') > (a.w || '') ? 1 : b.ts - a.ts; }).forEach(function (i) { box.appendChild(memCard(i)); });
+  }
   else {
     var S = [[], [], []]; list.forEach(function (i) { S[stage(i)].push(i); });
     S[0].sort(function (a, b) { return (!!a.v[me.name] || !!sk[a.id]) - (!!b.v[me.name] || !!sk[b.id]) || b.ts - a.ts; }); // prima quelli che aspettano la tua risposta

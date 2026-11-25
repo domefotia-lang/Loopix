@@ -607,3 +607,12 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 #feed .item .bar{gap:2px}
 #feed .item .bar .r-btn.plan{margin-left:auto;flex:0 1 auto;padding-left:16px;padding-right:16px;min-width:0}
 .keepb .ico{width:20px;height:20px;fill:currentColor;stroke:currentColor;margin:0;background:none}.keepb{color:var(--g)}
+.memhead{display:flex;flex-direction:column;gap:2px;margin:4px 2px 12px}.memhead b{font-size:20px}.memhead small{color:var(--m);font-size:14px}
+.card.mem{padding:0;overflow:hidden}
+.memtop{position:relative;aspect-ratio:16/10;background:#222;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.memtop img{width:100%;height:100%;object-fit:cover}.memtop .cov{position:absolute;inset:0;min-height:0;height:100%}
+.memtop.memgen.c0{background:linear-gradient(160deg,#4b2a5e,#c0504a)}.memtop.memgen.c1{background:linear-gradient(160deg,#1f3b57,#2f8f83)}.memtop.memgen.c2{background:linear-gradient(160deg,#5a2f1f,#d08a3a)}.memtop.memgen.c3{background:linear-gradient(160deg,#2d2552,#7a3a6e)}
+.memk{font-size:56px}
+.membody{padding:14px 16px 12px}.membody h3{margin:0 0 4px}.memwhen{font-size:14px;color:var(--m)}.memfeel{font-size:15px;margin-top:6px}
+.membody .inext{display:flex;gap:8px;align-items:center;margin-top:10px}.membody .inext .btn-o{flex:1}
+.card.mem{flex:none;display:block;text-align:left;max-height:none;max-width:none}
