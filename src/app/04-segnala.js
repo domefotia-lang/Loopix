@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v203', errLog = [];
+var APP_VER = 'v204', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -322,7 +322,7 @@ function coverFor(r) {
   var y = s.match(/youtube(?:-nocookie)?\.com\/embed\/([\w-]{11})/), pk = covPlat(r.u), n = 0;
   for (var i = 0; i < String(r.id).length; i++) n = (n * 31 + String(r.id).charCodeAt(i)) % 997;
   var c = el('div', 'cov ' + (y ? 'img' : 'gen c' + (n % 4))); if (y) c.dataset.yt = y[1];
-  if (y) { var im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.src = 'https://i.ytimg.com/vi/' + y[1] + '/hqdefault.jpg'; im.onerror = function () { c.className = 'cov gen c' + (n % 4); im.remove(); var k = c.querySelector('.covc'); if (k) k.remove(); c.insertBefore(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')), c.querySelector('.covp')); }; c.appendChild(im); }
+  if (y) { var im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.onload = function () { im.classList.add('in'); }; im.src = 'https://i.ytimg.com/vi/' + y[1] + '/hqdefault.jpg'; im.onerror = function () { c.className = 'cov gen c' + (n % 4); im.remove(); var k = c.querySelector('.covc'); if (k) k.remove(); c.insertBefore(el('div', 'covq', cap ? '«' + (cap.length > 90 ? cap.slice(0, 88) + '…' : cap) + '»' : LXT('Tocca per guardarlo')), c.querySelector('.covp')); }; c.appendChild(im); }
   var hd = (String(r.u).match(/tiktok\.com\/@([\w.]{2,30})/) || String(r.u).match(/instagram\.com\/(?!reel|reels|p|tv|stories)([\w.]{2,30})\//) || [])[1];
   var b = el('span', 'covb', pk[0] + (hd ? ' · @' + hd : '')); c.appendChild(b);
   var kk = typeof rcat === 'function' ? rcat(r) : ''; if (kk && RCATS[kk]) c.appendChild(el('span', 'covk', RCATS[kk]));
@@ -338,7 +338,7 @@ function coverFor(r) {
   if (!y && pk[0] === 'TikTok') ttCover(r.u, function (t) {
     if (!t) return;
     var im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
-    im.onload = function () { c.className = 'cov img tt'; c.insertBefore(im, c.firstChild); var q = c.querySelector('.covq'); if (q) { q.remove(); if (cap) c.insertBefore(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap), c.querySelector('.mtap')); } };
+    im.onload = function () { c.className = 'cov img tt'; c.insertBefore(im, c.firstChild); requestAnimationFrame(function () { im.classList.add('in'); }); var q = c.querySelector('.covq'); if (q) { q.remove(); if (cap) c.insertBefore(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap), c.querySelector('.mtap')); } };
     im.src = t;
   });
   return c;

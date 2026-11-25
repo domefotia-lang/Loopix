@@ -163,8 +163,10 @@ function reelMenu(r) {
     }
   }, { passive: true });
 })();
+var seenIds = null; setTimeout(function () { seenIds = {}; try { feed.forEach(function (r) { seenIds[r.id] = 1; }); } catch (e) {} }, 0);
 function build(r) {
   var d = el('div', 'item'), nd = { el: d, open: false }; d.dataset.id = r.id;
+  if (seenIds && !seenIds[r.id] && Date.now() - (+r.ts || 0) < 120000) d.classList.add('fresh'); if (seenIds) seenIds[r.id] = 1; // appena arrivato: entra con un'animazione
   var f = el('div', 'from'); f.appendChild(avatar(r.n)); f.appendChild(el('span', null, r.n)); var tm = el('time', null, ago(r.ts)); f.appendChild(tm); nd.sb = el('button', 'sumb'); nd.sb.hidden = true; nd.sb.onclick = function () { sumOpen(r); }; f.appendChild(nd.sb);
   nd.kb = el('button', 'keepb'); nd.kb.onclick = function () { keepToggle(r.id); }; f.appendChild(nd.kb); d.appendChild(f);
   if (r.c) d.appendChild(el('div', 'cm', r.c));

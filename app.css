@@ -574,3 +574,19 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .mph:has(.cov){min-height:240px}
 .tipb{position:fixed;left:12px;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;background:var(--s2);color:var(--t);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:12px 44px 12px 14px;font-size:15px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .tipb button{position:absolute;top:6px;right:6px;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:18px}
+@keyframes fresh{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+#feed .item.fresh{animation:fresh .42s cubic-bezier(.2,.8,.2,1)}
+.cov img{opacity:0;transition:opacity .35s ease}.cov img.in{opacity:1}
+.cov.img{background:linear-gradient(110deg,#1b1b20 30%,#26262d 50%,#1b1b20 70%);background-size:200% 100%;animation:shim 1.2s linear infinite}@keyframes shim{to{background-position:-200% 0}}
+@keyframes tipin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.tipb,.undob{animation:tipin .28s cubic-bezier(.2,.8,.2,1)}
+.undob{animation-name:tipinx}@keyframes tipinx{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translateX(-50%)}}
+.covp{transition:transform .15s ease}.mtap:active~.covp,.cov:active .covp{transform:translate(-50%,-50%) scale(.92)}
+.cov.nocap:active .covn .covp,.cov.gen:active .covp{transform:scale(.92)}
+.tabs button[aria-current=page] svg,.tabs button.on svg{animation:tabpop .3s ease}@keyframes tabpop{50%{transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){#feed .item.fresh,.tipb,.undob,.cov.img,.tabs button svg{animation:none!important}.cov img{transition:none}}
+.mod{display:flex!important;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s}
+.mod.open{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .2s ease,visibility 0s}
+.mod .card{transform:translateY(28px);transition:transform .26s cubic-bezier(.2,.8,.2,1);animation:none}
+.mod.open .card{transform:none}
+@media (prefers-reduced-motion:reduce){.mod,.mod .card{transition:none}}
