@@ -590,3 +590,20 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .mod .card{transform:translateY(28px);transition:transform .26s cubic-bezier(.2,.8,.2,1);animation:none}
 .mod.open .card{transform:none}
 @media (prefers-reduced-motion:reduce){.mod,.mod .card{transition:none}}
+.r-btn.ic{background:transparent;border-color:transparent;color:var(--t);gap:5px;font-weight:600}
+.r-btn.ic .ico{width:25px;height:25px;stroke-width:1.9}
+.r-btn.ic.mine{background:transparent;border-color:transparent}
+.r-btn.ic .ico.fill{fill:currentColor}
+.r-btn.rx.mine{color:#ff4d6a}.r-btn.rx.mine .cnt{color:var(--t)}
+.r-btn.ic .cnt{font-size:15px}.r-btn .rxe{font-size:22px;line-height:1}.r-btn .rxo{font-size:15px;margin-left:-2px}
+.r-btn.plan .ico{width:19px;height:19px;stroke-width:2.1}
+.r-btn .ico{background:none;border-radius:0;margin:0;color:inherit;stroke:currentColor}
+.r-btn.plan .ico{stroke:currentColor}
+.cov.gen .covq{inset:auto 0 0 0;display:block;text-align:left;padding:48px 18px 18px;font-size:clamp(20px,5.8vw,25px);background:linear-gradient(transparent,rgba(0,0,0,.38))}
+.cov.gen .covp,.cov.nocap .covp{top:50%;bottom:auto;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;font-size:26px;box-shadow:none}
+.cov.nocap .covn{inset:auto 0 0 0;align-items:flex-start;justify-content:flex-end;text-align:left;gap:4px;padding:48px 18px 18px;background:linear-gradient(transparent,rgba(0,0,0,.38))}
+.cov.nocap .covt{font-size:clamp(21px,6vw,26px)}.cov.nocap .covs{font-size:14px}
+#feed .item .bar .r-btn.ic,#feed .item .bar .r-btn.ic.mine{background:transparent!important;border-color:transparent!important;box-shadow:none!important;padding-left:7px;padding-right:7px;min-width:36px}
+#feed .item .bar{gap:2px}
+#feed .item .bar .r-btn.plan{margin-left:auto;flex:0 1 auto;padding-left:16px;padding-right:16px;min-width:0}
+.keepb .ico{width:20px;height:20px;fill:currentColor;stroke:currentColor;margin:0;background:none}.keepb{color:var(--g)}

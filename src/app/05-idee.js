@@ -367,6 +367,10 @@ function packLoad(keep) {
 }
 /* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
 var ICO = {
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  mark: '<path d="M6.5 4.5h11v15.5L12 16l-5.5 4z"/>',
+  dots: '<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>',
+  trash: '<path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2h9.2L17.5 7M10.3 10.5v5.5M13.7 10.5v5.5"/>',
   bag: '<path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
   bed: '<path d="M3.5 18.5v-11M3.5 14h17v4.5M20.5 14v-2.5a3 3 0 0 0-3-3h-6v5.5"/><circle cx="7.5" cy="11" r="1.8"/>',
   heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',

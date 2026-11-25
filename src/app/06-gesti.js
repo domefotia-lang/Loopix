@@ -205,22 +205,26 @@ function sumLabel(r) {
 function refresh(r) {
   var nd = nodes[r.id]; if (!nd) return; try { aiCard(r, nd); } catch (e) {}
   if (nd.sb) { var sl = sumLabel(r); if (sl && sl[1] !== 'ask') sl = null; nd.sb.hidden = !sl; if (sl) { nd.sb.textContent = sl[0]; nd.sb.className = 'sumb' + (sl[1] ? ' ' + sl[1] : ''); } }
-  if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.hidden = !kp; nd.kb.textContent = kp ? '⭐' : '☆'; nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
+  if (nd.kb) { var kp = !!keeps[r.id]; nd.kb.hidden = !kp; nd.kb.textContent = ''; nd.kb.appendChild(icoEl('mark')); nd.kb.className = 'keepb' + (kp ? ' on' : ''); nd.kb.setAttribute('aria-label', kp ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); nd.kb.title = kp ? 'Tenuto' : 'Tieni'; }
   nd.bar.textContent = '';
   // reazioni in un solo tasto: un tocco = ❤️, tenuto premuto = 😂 😮 🔥
   var xs = r.x || {}, tot = Object.keys(xs).length, mineE = xs[me.name];
   var kinds = EMO.filter(function (e) { return Object.keys(xs).some(function (k) { return xs[k] === e; }); });
-  var hb = el('button', 'r-btn rx' + (mineE ? ' mine' : ''), (kinds.length ? kinds.slice(0, 3).join('') : '🤍') + (tot ? ' ' + tot : ''));
+  // icone tutte a linea, stesso stile della barra in basso; il colore solo quando hai già fatto l'azione
+  var hb = el('button', 'r-btn rx ic' + (mineE ? ' mine' : ''));
+  if (mineE && mineE !== '❤️') hb.appendChild(el('span', 'rxe', mineE)); else { var hi = icoEl('heart'); if (mineE) hi.classList.add('fill'); hb.appendChild(hi); }
+  var others = kinds.filter(function (e) { return e !== mineE && e !== '❤️'; }); if (others.length) hb.appendChild(el('span', 'rxo', others.slice(0, 2).join('')));
+  if (tot) hb.appendChild(el('span', 'cnt', String(tot)));
   hb.setAttribute('aria-label', (mineE ? LXT('Hai reagito') + ' ' + mineE : LXT('Metti ❤️')) + '. ' + LXT('Tieni premuto per altre reazioni'));
   rxPress(hb, r); nd.bar.appendChild(hb);
-  var cb = el('button', 'r-btn', '💬 ' + (r.k || []).length); cb.setAttribute('aria-label', 'Risposte');
+  var nk0 = (r.k || []).length, cb = el('button', 'r-btn ic'); cb.appendChild(icoEl('chat')); if (nk0) cb.appendChild(el('span', 'cnt', String(nk0))); cb.setAttribute('aria-label', LXT('Risposte') + (nk0 ? ': ' + nk0 : ''));
   cb.onclick = function () { nd.open = !nd.open; nd.cp.hidden = !nd.open; if (nd.open) { nd.list.scrollTop = nd.list.scrollHeight; nd.cp.scrollIntoView({ block: 'nearest' }); } }; nd.bar.appendChild(cb);
-  var kp0 = !!keeps[r.id], sb0 = el('button', 'r-btn' + (kp0 ? ' mine' : ''), kp0 ? '⭐' : '☆'); sb0.setAttribute('aria-label', kp0 ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); sb0.setAttribute('aria-pressed', String(kp0)); sb0.onclick = function () { keepToggle(r.id); }; nd.bar.appendChild(sb0);
-  var mb = el('button', 'r-btn', '⋯'); mb.setAttribute('aria-label', 'Altro: di cosa parla, tieni, elimina…'); mb.onclick = function () { reelMenu(r); }; nd.bar.appendChild(mb);
-  var tb = el('button', 'r-btn trash', '🗑'); tb.setAttribute('aria-label', 'Cestino: togli questo Reel'); tb.onclick = function () { reelTrash(r); }; nd.bar.appendChild(tb);
+  var kp0 = !!keeps[r.id], sb0 = el('button', 'r-btn ic' + (kp0 ? ' mine' : '')); var mi = icoEl('mark'); if (kp0) mi.classList.add('fill'); sb0.appendChild(mi); sb0.setAttribute('aria-label', kp0 ? 'Tenuto: tocca per non tenerlo più' : 'Tieni questo Reel'); sb0.setAttribute('aria-pressed', String(kp0)); sb0.onclick = function () { keepToggle(r.id); }; nd.bar.appendChild(sb0);
+  var mb = el('button', 'r-btn ic'); mb.appendChild(icoEl('dots')); mb.setAttribute('aria-label', 'Altro: di cosa parla, tieni, elimina…'); mb.onclick = function () { reelMenu(r); }; nd.bar.appendChild(mb);
+  var tb = el('button', 'r-btn ic trash'); tb.appendChild(icoEl('trash')); tb.setAttribute('aria-label', 'Cestino: togli questo Reel'); tb.onclick = function () { reelTrash(r); }; nd.bar.appendChild(tb);
   var has = ideas.some(function (i) { return i.r === r.id; });
   var tip = !has && !get('ptip', 0) && !document.querySelector('.r-btn.plan.tip');
-  var ib = el('button', 'r-btn plan' + (tip ? ' tip' : ''), has ? '✓ Piano' : '✨ Piano'); if (tip) setTimeout(function () { put('ptip', 1); }, 6000); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
+  var ib = el('button', 'r-btn plan' + (tip ? ' tip' : '')); ib.appendChild(icoEl(has ? 'check' : 'spark')); ib.appendChild(document.createTextNode(LXT('Piano'))); if (tip) setTimeout(function () { put('ptip', 1); }, 6000); ib.setAttribute('aria-label', has ? 'Piano salvato' : 'Trasforma in piano'); ib.onclick = function () { openIdea(r.id); }; nd.bar.appendChild(ib);
   nd.list.textContent = '';
   (r.k || []).forEach(function (c) { var l = el('div', 'cmt'); l.appendChild(el('b', null, c.n)); l.appendChild(document.createTextNode(' ' + c.t)); nd.list.appendChild(l); });
   if (nd.open) nd.list.scrollTop = nd.list.scrollHeight; // l'ultimo messaggio resta in vista
