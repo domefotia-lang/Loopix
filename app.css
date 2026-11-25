@@ -616,3 +616,5 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .membody{padding:14px 16px 12px}.membody h3{margin:0 0 4px}.memwhen{font-size:14px;color:var(--m)}.memfeel{font-size:15px;margin-top:6px}
 .membody .inext{display:flex;gap:8px;align-items:center;margin-top:10px}.membody .inext .btn-o{flex:1}
 .card.mem{flex:none;display:block;text-align:left;max-height:none;max-width:none}
+.memrec{margin-top:10px}
+#actP{white-space:pre-line}

@@ -121,9 +121,67 @@ function memCard(i) {
   var fk = Object.keys(i.f || {}).filter(function (n) { return i.f[n] !== 'no'; }); if (fk.length) body.appendChild(el('div', 'memfeel', fk.map(function (n) { return n + ' ' + i.f[n]; }).join(' · ')));
   var go = el('div', 'inext');
   if (!i.ph) { var pb = el('button', 'btn-o', '📸 ' + LXT('Aggiungi una vostra foto')); pb.type = 'button'; pb.onclick = function () { memPic(i); }; go.appendChild(pb); }
+  var sh = el('button', 'r-btn ic'); sh.type = 'button'; sh.appendChild(icoEl('share')); sh.setAttribute('aria-label', LXT('Condividi il ricordo')); sh.onclick = function () { memShare(i); }; go.appendChild(sh);
   var mb = el('button', 'r-btn ic'); mb.type = 'button'; mb.appendChild(icoEl('dots')); mb.setAttribute('aria-label', LXT('Altre azioni per questo piano')); mb.onclick = function () { ideaMenu(i, []); }; go.appendChild(mb);
   body.appendChild(go); c.appendChild(body);
   return c;
+}
+// 🖼️ l'immagine per le storie (1080×1920): disegnata nel telefono, con la vostra foto se c'è. Esce solo se la condividete voi.
+function storyImg(o) {
+  return new Promise(function (res) {
+    var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d');
+    var G = [['#4b2a5e', '#c0504a'], ['#1f3b57', '#2f8f83'], ['#5a2f1f', '#d08a3a'], ['#2d2552', '#7a3a6e']][o.c || 0], g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, G[0]); g.addColorStop(1, G[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var font = function (w, s, serif) { x.font = w + ' ' + s + 'px ' + (serif ? 'Fraunces, Georgia, serif' : '-apple-system, system-ui, sans-serif'); };
+    var wrap = function (t, mx, y0, lh, maxL) { var ws = String(t).split(/\s+/), ln = '', n = 0; for (var k = 0; k < ws.length; k++) { var tt = ln ? ln + ' ' + ws[k] : ws[k]; if (x.measureText(tt).width > mx && ln) { x.fillText(ln, 90, y0 + n * lh); n++; ln = ws[k]; if (n >= maxL - 1) { ln = ws.slice(k).join(' '); if (x.measureText(ln).width > mx) { while (ln && x.measureText(ln + '…').width > mx) ln = ln.slice(0, -1); ln += '…'; } break; } } else ln = tt; } if (ln) { x.fillText(ln, 90, y0 + n * lh); n++; } return n; };
+    var finish = function () {
+      var sh = x.createLinearGradient(0, H * 0.42, 0, H); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.72)'); x.fillStyle = sh; x.fillRect(0, H * 0.42, W, H * 0.58);
+      x.fillStyle = '#fff'; x.textBaseline = 'alphabetic';
+      if (o.big) { font('700', 220, true); x.fillText(o.big, 90, 1080); }
+      font('600', o.big ? 64 : 92, true); var n = wrap(o.title, W - 180, o.big ? 1200 : 1260, o.big ? 80 : 110, 3);
+      var y = (o.big ? 1200 : 1260) + n * (o.big ? 80 : 110) + 20; font('500', 44); x.globalAlpha = .92;
+      (o.lines || []).forEach(function (l) { x.fillText(l, 90, y); y += 64; }); x.globalAlpha = 1;
+      var ic = new Image(); ic.onload = function () { x.drawImage(ic, 90, H - 230, 110, 110); draw(); }; ic.onerror = draw; ic.src = 'icon-192.png';
+      function draw() { font('700', 52); x.fillText('Reelta', 225, H - 168); font('500', 36); x.globalAlpha = .85; x.fillText(LXT('dal Reel alla realtà'), 225, H - 120); x.globalAlpha = 1; c.toBlob(function (b) { res(b); }, 'image/jpeg', 0.9); }
+    };
+    if (o.photo) { var im = new Image(); im.onload = function () { var s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s; x.drawImage(im, (W - w) / 2, (H - h) / 2, w, h); finish(); }; im.onerror = finish; im.src = o.photo; }
+    else { font('400', 300); x.textAlign = 'center'; x.fillText(o.emoji || '✨', W / 2, 700); x.textAlign = 'left'; finish(); }
+  });
+}
+function storyShare(blob, name) {
+  if (!blob) { $('mh').textContent = LXT('Non sono riuscito a creare l’immagine.'); return; }
+  var f = null; try { f = new File([blob], name + '.jpg', { type: 'image/jpeg' }); } catch (e) {}
+  if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(function () {}); return; }
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name + '.jpg'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+  $('mh').textContent = LXT('Immagine salvata: aggiungila alle tue storie.');
+}
+function memShare(i) {
+  var r = i.r && find(i.r), sv = r ? r.ts : i.ts, dn = i.w ? new Date(i.w + 'T12:00').getTime() : (i.da || 0);
+  var fk = Object.keys(i.f || {}).filter(function (n) { return i.f[n] !== 'no'; }).map(function (n) { return i.f[n]; }).join(' ');
+  var lines = [(sv ? LXT('Salvato il') + ' ' + memDate(sv) : '') + (dn ? ' → ' + LXT('fatto il') + ' ' + memDate(dn) : '')]; if (fk) lines.push(fk);
+  var go = function (photo) { storyImg({ title: i.p, lines: lines, photo: photo, emoji: (KINDS[i.k] || '✨').split(' ')[0], c: String(i.id).charCodeAt(0) % 4 }).then(function (b) { track('ricordo-condividi'); storyShare(b, 'reelta-' + i.id); }); };
+  if (i.ph) mediaBlob(i.ph, false).then(function (b) { go(murl(i.ph.id, b)); }, function () { go(''); }); else go('');
+}
+// ✨ il riepilogo: quanti piani, il tipo preferito, quello più amato, il primo e l'ultimo
+function recapData(yr, mon) {
+  var L = ideas.filter(function (i) { if (!i.d) return false; var d = i.w || new Date(i.da || i.ts).toISOString().slice(0, 10); return d.slice(0, 4) === yr && (!mon || d.slice(0, 7) === mon); });
+  var kc = {}; L.forEach(function (i) { kc[i.k] = (kc[i.k] || 0) + 1; }); var top = Object.keys(kc).sort(function (a, b) { return kc[b] - kc[a]; })[0];
+  var score = function (i) { return Object.keys(i.f || {}).reduce(function (s, n) { return s + ({ '❤️': 3, '😊': 2, '😐': 1 }[i.f[n]] || 0); }, 0); };
+  var fav = L.slice().sort(function (a, b) { return score(b) - score(a); })[0];
+  var srt = L.slice().sort(function (a, b) { return (a.w || '') < (b.w || '') ? -1 : 1; });
+  var waits = L.map(function (i) { var r = i.r && find(i.r); return r && i.w ? Math.max(0, Math.round((new Date(i.w + 'T12:00') - r.ts) / 864e5)) : null; }).filter(function (n) { return n != null; });
+  return { n: L.length, top: top, topN: top ? kc[top] : 0, fav: fav && score(fav) ? fav : null, first: srt[0], last: srt[srt.length - 1], wait: waits.length ? Math.round(waits.reduce(function (a, b) { return a + b; }, 0) / waits.length) : null };
+}
+function recapOpen(yr) {
+  var R = recapData(yr), mon = new Date().toISOString().slice(0, 7), M = recapData(yr, mon);
+  var lines = [];
+  if (M.n) lines.push('🗓️ ' + LXT('Questo mese') + ': ' + M.n + ' ' + (M.n === 1 ? LXT('piano fatto') : LXT('piani fatti')));
+  if (R.top) lines.push((KINDS[R.top] || '').split(' ')[0] + ' ' + LXT('Il vostro genere') + ': ' + (window.LX_T ? LX_T(KINDS[R.top]) : KINDS[R.top]).replace(/^\S+\s/, '') + ' (' + R.topN + ')');
+  if (R.fav) lines.push('❤️ ' + LXT('Il più amato') + ': ' + R.fav.p);
+  if (R.wait != null) lines.push('⏳ ' + LXT('Dal Reel al fatto, in media') + ': ' + R.wait + ' ' + LXT('giorni'));
+  if (R.first && R.n > 1) lines.push('🥇 ' + LXT('Il primo') + ': ' + R.first.p);
+  var txt = R.n ? lines.join('\n') : LXT('Ancora nessun piano fatto quest’anno: il primo è il più bello.');
+  sheet('✨ ' + LXT('Il vostro') + ' ' + yr + ': ' + R.n + ' ' + (R.n === 1 ? LXT('piano fatto') : LXT('piani fatti')), txt, R.n ? [{ t: '📤 ' + LXT('Condividi il riepilogo'), f: function () { storyImg({ big: String(R.n), title: (R.n === 1 ? LXT('piano fatto') : LXT('piani fatti')) + ' ' + LXT('nel') + ' ' + yr, lines: lines.slice(1, 4), c: 3, emoji: '✨' }).then(function (b) { track('riepilogo-condividi'); storyShare(b, 'reelta-' + yr); }); } }] : []);
+  track('riepilogo-apri');
 }
 function memPic(i) {
   if (!srvOn()) { $('mh').textContent = LXT('Le foto non sono disponibili in questo momento.'); return; }
@@ -201,7 +259,10 @@ function renderIdeas() {
   };
   if (ifilter === 'fatte') {
     var yr = String(new Date().getFullYear()), ny = list.filter(function (i) { return (i.w || new Date(i.da || i.ts).toISOString()).slice(0, 4) === yr; }).length;
-    var hy = el('div', 'memhead'); hy.appendChild(el('b', null, ny + ' ' + (ny === 1 ? LXT('piano fatto') : LXT('piani fatti')) + ' ' + LXT('nel') + ' ' + yr)); hy.appendChild(el('small', null, LXT('Dal Reel alla realtà: ecco cosa avete fatto davvero.'))); box.appendChild(hy);
+    var hy = el('div', 'memhead'); hy.appendChild(el('b', null, ny + ' ' + (ny === 1 ? LXT('piano fatto') : LXT('piani fatti')) + ' ' + LXT('nel') + ' ' + yr)); hy.appendChild(el('small', null, LXT('Dal Reel alla realtà: ecco cosa avete fatto davvero.')));
+    var nm = list.filter(function (i) { return (i.w || '').slice(0, 7) === new Date().toISOString().slice(0, 7); }).length;
+    var rb = el('button', 'btn-o wide memrec', '✨ ' + LXT('Il vostro') + ' ' + yr + (nm ? ' · ' + LXT('questo mese') + ' ' + nm : '')); rb.type = 'button'; rb.onclick = function () { recapOpen(yr); }; hy.appendChild(rb);
+    box.appendChild(hy);
     list.sort(function (a, b) { return (b.w || '') < (a.w || '') ? -1 : (b.w || '') > (a.w || '') ? 1 : b.ts - a.ts; }).forEach(function (i) { box.appendChild(memCard(i)); });
   }
   else {
