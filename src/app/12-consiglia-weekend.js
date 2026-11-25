@@ -493,8 +493,50 @@ function planNudge() {
   if (document.querySelector('.mod.open')) { put('inudge', 0); return; }
   ask(t, b, dec.length && !soon.length ? 'Decidiamo' : 'Vedi i piani').then(function (y) { if (!y) return; showPane('ideas'); if (dec.length && !soon.length) decOpen(); });
 }
+// 💞 il primo piano in 60 secondi: 5 idee vere, 👍 o 👎 come in un gioco. Le idee hanno lo stesso codice sui due telefoni:
+// dove dite entrambi 👍 nasce subito il vostro primo piano (e si sceglie la data).
+function stItems() { var c = (typeof cityGet === 'function' && cityGet()) || ''; var L = (c && !isLon(c) && packFor(c).length) ? packFor(c) : packLon(); return L.filter(function (x) { return !/^stafford-/.test(x.s); }).slice(0, 5); }
+function stKind(x) { return /[🍝🍕🍣🍜🥐🍸🫖🍔🌮🍷🍰🍦☕🥂🍽🧁🥟🍤🫕]/u.test(x.e) ? 'cibo' : /[✈🚆🚂🏖🏔🗺]/u.test(x.e) ? 'viaggio' : 'esperienza'; }
+function starterOn() { return me && circleSize() >= 2 && !ideas.some(function (i) { return !/^st-/.test(i.id); }) && stItems().length >= 3; }
+function starterOpen() {
+  var L = stItems(), n = 0, yes = 0; if (!L.length) return; put('starter', 1); track('primo-piano-apri');
+  var old = $('stM'); if (old) old.remove();
+  var M = el('div', 'mod open'); M.id = 'stM'; M.setAttribute('role', 'dialog'); M.setAttribute('aria-modal', 'true');
+  var C = el('div', 'card stcard'); M.appendChild(C); document.body.appendChild(M);
+  var show = function () {
+    C.textContent = '';
+    if (n >= L.length) {
+      C.appendChild(el('div', 'ste', yes ? '💞' : '🙂'));
+      C.appendChild(el('h2', null, yes ? LXT('Fatto!') : LXT('Nessuna idea vi ha convinto?')));
+      C.appendChild(el('p', null, yes ? LXT('Dove anche l’altra persona dice 👍, nasce il vostro primo piano: lo trovate in Piani, pronto per scegliere il giorno.') : LXT('Nessun problema: mandate un Reel che vi piace e toccate ✨ Piano sotto il video.')));
+      var ok = el('button', 'btn wide', LXT('Vai ai piani')); ok.type = 'button'; ok.onclick = function () { M.remove(); showPane('ideas'); renderIdeas(); }; C.appendChild(ok);
+      track('primo-piano-fine-' + yes); return;
+    }
+    var x = L[n]; C.appendChild(el('div', 'stp', (n + 1) + '/' + L.length));
+    var em = el('div', 'ste', x.e); C.appendChild(em); C.appendChild(el('h2', null, x.t));
+    // il video vero dell'idea (stesso archivio delle Idee in città, già pronto sul server): copertina e tocco per guardarlo
+    if (srvOn() && navigator.onLine !== false && !get('riserv', 0)) { var nn = n; mbCall({ a: 'pack', qs: [packQ(x)], lang: 'en', reg: 'GB' }, 6000).then(function (y) { var v = y && y.items && y.items[0]; if (!v || nn !== n || !em.isConnected) return; var a = el('a', 'stv'); a.href = 'https://www.youtube.com/shorts/' + v.id; a.target = '_blank'; a.rel = 'noopener'; var im = document.createElement('img'); im.alt = ''; im.referrerPolicy = 'no-referrer'; im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; a.appendChild(im); a.appendChild(el('span', 'covp', '▶')); em.replaceWith(a); }, function () {}); }
+    C.appendChild(el('p', null, typeof x.d === 'string' ? x.d : (window.LX_T || String)(x.d.f) + ' ' + x.d.c));
+    C.appendChild(el('div', 'sth', LXT('Vi andrebbe di farlo insieme?')));
+    var row = el('div', 'strow');
+    var no = el('button', 'btn-o', '👎 ' + LXT('No')); no.type = 'button'; no.onclick = function () { n++; show(); };
+    var si = el('button', 'btn', '👍 ' + LXT('Sì')); si.type = 'button'; si.onclick = function () {
+      var id = 'st-' + x.s, ex = findIdea(id);
+      if (ex) ideaAct({ t: 'idea', a: 'vote', id: id, on: true });
+      else ideaAct({ t: 'idea', a: 'add', i: { id: id, r: '', k: stKind(x), p: x.t, o: typeof x.d === 'string' ? x.d : '', n: me.name, ts: Date.now(), v: (function () { var v = {}; v[me.name] = 1; return v; })(), f: {}, d: false, w: '' } });
+      yes++; n++; show();
+    };
+    row.appendChild(no); row.appendChild(si); C.appendChild(row);
+    var sk = el('button', 'linkb', LXT('Più tardi')); sk.type = 'button'; sk.onclick = function () { M.remove(); }; C.appendChild(sk);
+  };
+  show();
+}
+// si apre da solo una volta, quando siete in due e non avete ancora piani
+function starterAuto() { try { if (window.LX_NOSTART) return; if (!get('starter', 0) && starterOn() && !document.querySelector('.mod.open') && !document.hidden) starterOpen(); } catch (e) {} }
+setTimeout(starterAuto, 3500);
 function ideaGuide() {
   var g = el('div', 'iempty');
+  if (starterOn()) { var sb = el('button', 'aibtn love'); sb.type = 'button'; sb.appendChild(el('b', null, '💞 ' + LXT('Il vostro primo piano in 60 secondi'))); sb.appendChild(el('span', null, LXT('5 idee vere vicino a voi: 👍 o 👎. Dove siete d’accordo, nasce il piano.'))); sb.onclick = starterOpen; g.appendChild(sb); }
   g.appendChild(el('h3', null, 'Dai Reel ai piani'));
   var ol = el('ol'); ['🎬 Vedete un Reel che vi piace', '✨ Toccate Piano sotto il video', '💘 Dite sì o passo: se piace a entrambi, si fa', '📅 Scegliete la data e mettetela in calendario'].forEach(function (t) { ol.appendChild(el('li', null, t)); }); g.appendChild(ol);
   var ex = el('div', 'card idea ex'); ex.appendChild(el('span', 'tag', 'ESEMPIO'));

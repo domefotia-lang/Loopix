@@ -34,6 +34,9 @@ def mini(code, loader='js'):
     if r.returncode: print('⚠️  esbuild:', r.stderr.decode()[:300]); sys.exit(1)
     return r.stdout.decode('utf-8')
 open('app.js', 'w', encoding='utf-8').write(HEAD % 'app/*.js' + mini(full))
+# l'app si scarica subito, in parallelo all'apertura dell'archivio del telefono (prima partiva solo dopo)
+_ix = open('index.html', encoding='utf-8').read(); _ix2 = re.sub(r'href="app\.js\?v\d+" as="script"', 'href="app.js?%s" as="script"' % ver, _ix)
+if _ix2 != _ix: open('index.html', 'w', encoding='utf-8').write(_ix2)
 
 for name in ('store.js', 'boot.js', 'vault.js'):
     s = open('src/' + name, encoding='utf-8').read().replace('__BUILD__', ver)

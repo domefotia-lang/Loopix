@@ -30,6 +30,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" media="print" id="lxFonts">
 <link rel="stylesheet" href="app.css">
+<link rel="preload" href="app.js?v208" as="script">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
@@ -114,7 +115,7 @@
   <div class="card"><h2 id="cT">Il tuo cerchio</h2><div id="mlist"></div><button class="btn" id="inv2">Invita una persona</button><details class="more" id="cMore"><summary>Altre opzioni</summary><button class="btn-o wide" id="invKill" style="margin-top:8px">🔒 Annulla gli inviti già mandati</button><label class="tog" id="ttlBox" style="margin-top:12px">Messaggi a tempo<select id="ttlS" aria-label="Messaggi a tempo"><option value="0">Mai</option><option value="86400000">Dopo 24 ore</option><option value="604800000">Dopo 7 giorni</option></select></label></details><div class="hint" id="ch" aria-live="polite"></div></div>
   <div class="card" id="repC" hidden><h2>🚩 Segnalazioni</h2><div id="repL"></div></div>
   <div class="card" id="mutC" hidden><h2>🔇 Persone silenziate</h2><p style="margin-top:0">Non vedi i loro Reel e messaggi su questo telefono. Loro non lo sanno.</p><div id="mutL"></div></div>
-  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio</button></div>
+  <div class="card"><h2>I tuoi cerchi</h2><div id="devC" hidden class="inv2" style="margin:0 0 10px"><span>🛠️ <b>Modalità sviluppatore</b> attiva su questo telefono</span><button class="btn-o" id="devN">📊 Numeri</button><button class="btn-o" id="devX">Disattiva</button></div><div id="clist"></div><button class="btn-o wide" id="newC">➕ Crea un altro cerchio</button></div>
   <div class="card" hidden><h2>Ricordi della settimana</h2><div id="recap"></div></div>
   <div class="card"><button class="btn-o wide" style="margin-top:0" id="refGo">💌 Consiglia Reelta ad altre persone</button></div>
 
@@ -365,7 +366,7 @@
   <button class="btn-o wide" id="lockF">Ho dimenticato il PIN</button>
 </div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" crossorigin="anonymous"></script>
+<script id="pjs" src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" crossorigin="anonymous" async></script>
 <script src="vault.js"></script>
 </body>
 </html>

@@ -14,7 +14,7 @@ function hostHi(c, d) {
         function accept() {
           var prevN = known && allowed[k] !== nm ? allowed[k] : null;
           if (prevN && people().indexOf(nm) >= 0) nm = prevN; // nome già usato da un altro: resta quello di prima
-          if (k) { if (!known) track('ospite-accettato'); allowed[k] = nm; put('allowed', allowed); }
+          if (k) { if (!known) { track('ospite-accettato'); setTimeout(starterAuto, 2500); } allowed[k] = nm; put('allowed', allowed); }
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
           if (code && srvOn()) mbBox(me.hostId + '_' + code, 'w').then(function (b) { return mbCall({ a: 'ack', box: b, upto: 9e15 }); }).catch(function () {}); // il pacchetto di benvenuto non serve più
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
@@ -120,7 +120,7 @@ function soloNudge(u, t) {
 
 /* ---- ospite ---- */
 function startGuest() {
-  if (!window.Peer) { $('mh').textContent = 'Connessione assente o lenta: riprova tra poco.'; return; }
+  if (!window.Peer) { var pj = document.getElementById('pjs'); if (pj && !startGuest.w) { startGuest.w = 1; pj.addEventListener('load', function () { startGuest.w = 0; if (me && !peer) startGuest(); }, { once: true }); } return; }
   peer = new Peer();
   peer.on('disconnected', function () { again(); });
   peer.on('error', function (e) { $('mh').textContent = e.type === 'peer-unavailable' ? (srvOn() && !me.joined ? 'Chi ti ha invitato ha Reelta chiusa: gli ho mandato un avviso. Entri da solo appena la apre, anche se chiudi l’app.' : (srvOn() ? (get('hn', '') || 'Chi ti ha invitato') + ' ora ha Reelta chiusa: quello che mandi arriva lo stesso.' : 'Chi ti ha invitato non ha Reelta aperta in questo momento. Chiedigli di aprirla: ti colleghi da solo appena lo fa.')) : 'Problema di rete (' + e.type + ').'; if (e.type === 'peer-unavailable' && !me.joined) srvJoin(); again(); });

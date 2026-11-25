@@ -235,6 +235,9 @@ $('av').addEventListener('click', function () { pplHintOff(); showPane('circle')
 $('pplProf').addEventListener('click', function () { showPane('prof'); });
 $('trGo').addEventListener('click', function () { dwGo('style', 'trC'); });
 $('goProf').addEventListener('click', function () { showPane('prof'); });
+$('devN').addEventListener('click', function () {
+  ask('📊 Il numero che conta', 'Guarda in quest\'ordine (ultimi 7 giorni):\n\n1. ospite-accettato → quante coppie sono entrate\n2. primo-piano-fine-N → hanno finito il primo piano\n3. piano-creato → hanno fatto un piano vero\n4. ricordo-foto → l\'hanno fatto davvero\n5. attivo-settimana → tornano ogni settimana\n\nSe si perdono tra 1 e 2, il problema è il primo minuto. Tra 3 e 4, i promemoria.', 'Apri i numeri').then(function (y) { if (y) window.open('https://loopix.goatcounter.com/', '_blank', 'noopener'); });
+});
 $('devX').addEventListener('click', function () { ask('Disattivare la modalità sviluppatore?', 'Per riattivarla dovrai incollare di nuovo la tua chiave.', 'Disattiva', true).then(function (y) { if (y) { lsDel(LSG + 'dev'); isDev = false; applyDev(); } }); });
 $('newC').addEventListener('click', function () { if (!canCreateAny()) return; ask('Creare un altro cerchio?', 'Sarà separato dagli altri: Reel, piani e persone non si mescolano.', 'Continua').then(function (y) { if (y) newCircle(); }); });
 $('pinB').addEventListener('click', function () { openPin('set'); });
@@ -512,6 +515,7 @@ $('ru').addEventListener('input', function () { $('rc').hidden = !$('ru').value.
 $('ru').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('add').click(); });
 if (/^https:\/\//.test(SUPPORT_URL)) { $('supA').href = SUPPORT_URL; $('supC').hidden = false; }
 startStats(); tcount(); svyCheck();
+(function () { var w = Math.floor((Date.now() / 864e5 + 3) / 7); if (get('attw', 0) !== w && me && me.role) { put('attw', w); track('attivo-settimana'); } })();
 checkDev(get('dev', '')).then(function (ok) { isDev = ok; applyDev(); });
 // un nuovo invito dello stesso creatore: il cerchio che ho già si ricollega con il codice nuovo (ripara pass non più riconosciuti)
 function markRejoin(cid, jid) {

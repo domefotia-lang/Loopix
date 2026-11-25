@@ -24,7 +24,8 @@ var GROUP_MAX = 8; // persone in un gruppo (tu compreso)
 function cap() { return !me ? 1 : me.kind === 'big' ? BIG_MAX - 1 : me.kind === 'group' ? GROUP_MAX - 1 : 1; }
 var circMax = 0;
 function startHost() {
-  if (!window.Peer) { $('mh').textContent = 'Connessione assente o lenta: riprova tra poco.'; return; }
+  // il collegamento diretto arriva in sottofondo (non blocca l'apertura): se non è ancora pronto, parte appena lo è
+  if (!window.Peer) { var pj = document.getElementById('pjs'); if (pj && !startHost.w) { startHost.w = 1; pj.addEventListener('load', function () { startHost.w = 0; if (me && !peer) startHost(); }, { once: true }); } return; }
   peer = new Peer(me.hostId);
   peer.on('open', function () { hostTries = 0; $('mh').textContent = ''; status(); });
   peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 2000); });
