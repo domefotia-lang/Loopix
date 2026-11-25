@@ -66,7 +66,30 @@ function ideasChanged(rid) {
   if (tab === 'ideas' && $('ideas').classList.contains('show')) renderIdeas();
   var r = rid && find(rid); if (r) refresh(r);
 }
+/* ---- 🎁 La lista regali del cerchio: la vedete tutti, e chi compra segna «preso» così nessuno lo compra due volte.
+   Passa sullo stesso canale (cifrato) dei piani. I regali per una persona del cerchio non entrano qui: restano sul telefono (sorpresa). ---- */
+var gifts = get('gifts', []);
+var GPER = [['bimbi', '🧸', 'Bimbi'], ['fam', '👪', 'Famiglia'], ['amici', '🤝', 'Amici'], ['casa', '🏡', 'Casa'], ['noi', '💑', 'Noi due']];
+function normGift(g, who) {
+  if (!g || typeof g.id !== 'string' || g.id.length > 40) return null;
+  var t = clean(g.t, 80); if (!t) return null;
+  return { id: clean(g.id, 40), t: t, per: GPER.some(function (x) { return x[0] === g.per; }) ? g.per : 'fam', r: typeof g.r === 'string' ? clean(g.r, 40) : '', n: who || clean(g.n, 30) || '?', ts: +g.ts || Date.now(), got: clean(g.got || '', 30), ga: Math.max(0, +g.ga || 0) || undefined };
+}
+function giftsChanged() { put('gifts', gifts); if ($('rgL')) rgShared($('inspL')); }
+function applyGift(d, who) {
+  if (d.a === 'gadd') {
+    var g = normGift(d.g, who); if (!g || gifts.some(function (y) { return y.id === g.id; })) return null;
+    gifts.push(g); if (gifts.length > 150) gifts.shift(); giftsChanged();
+    if (g.n !== me.name && Date.now() - g.ts < 3 * 864e5) actLog('idea', g.n, '🎁 ' + g.t, '');
+    return { t: 'idea', a: 'gadd', g: g };
+  }
+  var x = gifts.filter(function (y) { return y.id === d.id; })[0]; if (!x) return null;
+  if (d.a === 'ggot') { var at = Math.min(+d.at || 0, Date.now() + 6e4); if (!at && who === me.name) at = Date.now(); if (at && (+x.ga || 0) > at) return null; x.got = d.on ? (who || clean(d.n, 30) || '?') : ''; if (at) x.ga = at; giftsChanged(); return { t: 'idea', a: 'ggot', id: x.id, on: !!d.on, at: at || undefined, n: x.got || undefined }; }
+  if (d.a === 'gdel') { gifts = gifts.filter(function (y) { return y !== x; }); giftsChanged(); return { t: 'idea', a: 'gdel', id: x.id }; }
+  return null;
+}
 function applyIdea(d, who) {
+  if (/^g(add|got|del)$/.test(d.a || '')) return applyGift(d, who);
   if (d.a === 'add') {
     var i = normIdea(d.i, who); if (!i) return null;
     var old = findIdea(i.id);

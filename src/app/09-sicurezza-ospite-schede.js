@@ -18,7 +18,7 @@ function hostHi(c, d) {
           if (prevN && prevN !== nm) { renameIn(prevN, nm); Object.keys(aka).forEach(function (o) { if (aka[o] === prevN) aka[o] = nm; }); aka[prevN] = nm; put('aka', aka); cast({ t: 'ren', a: prevN, b: nm }); }
           if (code && srvOn()) mbBox(me.hostId + '_' + code, 'w').then(function (b) { return mbCall({ a: 'ack', box: b, upto: 9e15 }); }).catch(function () {}); // il pacchetto di benvenuto non serve più
           c.ok = true; c.name = nm; c.k = k; if (!c.virt) conns.push(c); if (!known && srvOn()) pushSync(); ntQuietUntil = Date.now() + 3000; trillOut(c);
-          c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
+          c.send({ t: 'hello', ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), gifts: gifts.slice(-100), people: people(), pics: pics, aka: aka }); cast({ t: 'people', people: people() }); status();
           actLog('join', nm, '', ''); $('mh').textContent = nm + ' è nel cerchio ✓'; if (!feed.length) render(); setTimeout(function () { if ($('mh').textContent.indexOf(nm) === 0) $('mh').textContent = ''; }, 6000);
         }
         if (!known && code && validCode(code)) {
@@ -48,7 +48,7 @@ function homeUrl() { return window.MIG_HOME && location.protocol.indexOf('http')
 function welcomePut(c) {
   if (!srvOn() || !me || me.role !== 'host') return;
   try {
-    var h = slimHello({ t: 'hello', w: 1, ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), people: people(), pics: {}, aka: aka });
+    var h = slimHello({ t: 'hello', w: 1, ck: circleKey(), all: roster(), ttl: ttlMs(), max: cap() + 1, gone: gone.slice(-200), msgs: msgs.slice(-200), feed: feed.slice(-100), ideas: ideas.slice(-100), gifts: gifts.slice(-100), people: people(), pics: {}, aka: aka });
     mbPut(me.hostId + '_' + c, 'w', h, true).catch(function () {});
   } catch (e) {}
 }
@@ -152,7 +152,7 @@ function guestData(d) {
       if (d.t === 'hello') ntQuietUntil = Date.now() + 3000;
       if (d.t === 'hello' && (!me.joined || me.rejoin)) { me.joined = true; delete me.rejoin; if (d.w) me.pend = 1; put('me', me); }
       else if (d.t === 'hello' && !d.w && me.pend) { delete me.pend; put('me', me); }
-      if (d.t === 'hello') { actQuiet = !feed.length; try { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); } finally { actQuiet = false; } status(); $('mh').textContent = '';
+      if (d.t === 'hello') { actQuiet = !feed.length; try { circMax = +d.max || 0; if (typeof d.ttl === 'number') put('ttl', d.ttl); (Array.isArray(d.msgs) ? d.msgs : []).forEach(function (m) { addMsg(m); }); (Array.isArray(d.gone) ? d.gone : []).forEach(function (g) { if (typeof g === 'string') dropReel(g); }); (Array.isArray(d.feed) ? d.feed : []).forEach(addReel); (Array.isArray(d.ideas) ? d.ideas : []).forEach(function (i) { applyIdea({ a: 'add', i: i }, null); }); (Array.isArray(d.gifts) ? d.gifts : []).forEach(function (g) { applyGift({ a: 'gadd', g: g }, null); }); names = (d.people || []).map(function (x) { return clean(x, 30); }); } finally { actQuiet = false; } status(); $('mh').textContent = '';
         var ob = outbox; outbox = []; put('outbox', []); ob.forEach(function (o) { gSend(o && o.t ? o : { t: 'reel', r: o }); }); if (tab === 'chat') renderChat(true);
         if (!d.w) clearTimeout(joinT); if (srvOn() && pushOK() && Notification.permission === 'granted') pushSync();
         if (d.aka && typeof d.aka === 'object') Object.keys(d.aka).slice(0, 50).forEach(function (o) { renameIn(o, d.aka[o]); });

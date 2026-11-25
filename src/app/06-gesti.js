@@ -99,6 +99,7 @@ function reelMenu(r) {
   var opts = [
     { t: keeps[r.id] ? '⭐ Non tenere più' : '⭐ Tieni questo Reel', f: function () { keepToggle(r.id); } },
     { t: '✨ Trasforma in piano', f: function () { openIdea(r.id); } },
+    { t: '🎁 ' + LXT('Nella lista regali'), f: function () { giftAdd({ t: r.c || '', r: r.id }); } },
     { t: '📝 Di cosa parla?', f: function () { sumOpen(r); } },
     { t: '🔗 Apri l’originale', f: function () { window.open(r.u, '_blank', 'noopener'); } }
   ];

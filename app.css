@@ -623,3 +623,13 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .strow{display:flex;gap:10px}.strow button{flex:1;min-height:54px;font-size:17px}
 .linkb{background:none;border:0;color:var(--m);text-decoration:underline;margin-top:10px;font-size:14px;min-height:36px}
 .stv{display:block;position:relative;width:100%;aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:#222;margin-bottom:8px}.stv img{width:100%;height:100%;object-fit:cover;transform:scale(1.3)}
+/* 🎁 lista regali del cerchio */
+#gIn{width:100%;box-sizing:border-box;margin:4px 0 10px;padding:12px;border-radius:12px;border:1px solid var(--line,#ddd);font:inherit;font-size:16px;background:var(--card,#fff);color:inherit}
+.gper{display:flex;flex-wrap:wrap;gap:6px}
+.gph{font-weight:600;font-size:.85rem;opacity:.75;margin:12px 0 2px}
+#rgL .rgrow{display:flex;align-items:center;gap:10px}
+#rgL .rgrow a{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.gck{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid currentColor;background:none;color:inherit;opacity:.55;font-weight:700;padding:0;line-height:1}
+.gck[aria-pressed=true]{background:#2f8f5b;border-color:#2f8f5b;color:#fff;opacity:1}
+.rgrow.got a{text-decoration:line-through;opacity:.55}
+.gby{flex:none;font-size:.75rem;opacity:.6;max-width:30%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

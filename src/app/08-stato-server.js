@@ -218,8 +218,8 @@ function renderPush() {
 function slimHello(m) {
   var h = Object.assign({}, m, { pics: {} });
   [100, 50, 25, 12, 5, 0].some(function (n) {
-    h.feed = (m.feed || []).slice(-n || m.feed.length); h.msgs = (m.msgs || []).slice(-2 * n || m.msgs.length); h.ideas = (m.ideas || []).slice(-n || m.ideas.length); h.gone = (m.gone || []).slice(-2 * n || m.gone.length);
-    if (!n) { h.feed = []; h.msgs = []; h.ideas = []; h.gone = []; }
+    h.feed = (m.feed || []).slice(-n || m.feed.length); h.msgs = (m.msgs || []).slice(-2 * n || m.msgs.length); h.ideas = (m.ideas || []).slice(-n || m.ideas.length); h.gone = (m.gone || []).slice(-2 * n || m.gone.length); h.gifts = (m.gifts || []).slice(-n || (m.gifts || []).length);
+    if (!n) { h.feed = []; h.msgs = []; h.ideas = []; h.gone = []; h.gifts = []; }
     return JSON.stringify(h).length < 42000;
   });
   return h;

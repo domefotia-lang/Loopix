@@ -143,6 +143,48 @@ function rgSaved(L) {
   });
   L.insertBefore(B, L.firstChild ? L.firstChild.nextSibling : null);
 }
+function giftPut(t, per, rid) {
+  t = clean(t, 80); if (!t) return false;
+  if (per === 'sorpresa') { var S = rgList().filter(function (z) { return z.n !== t; }); S.unshift({ n: t, k: 'thing', p: '', s: t }); put('regaliS', S.slice(0, 30)); track('regali-sorpresa'); return true; }
+  var out = applyGift({ a: 'gadd', g: { id: 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: t, per: per, r: rid || '', ts: Date.now() } }, me.name);
+  if (out) { sendEv(out); track('regali-lista'); } return !!out;
+}
+// ➕ aggiungere alla lista: dal Reel (tieni premuto) o a mano. Il nome si può correggere, poi si sceglie per chi.
+function giftAdd(pre) {
+  pre = pre || {}; var per = pre.per || 'fam';
+  $('actT').textContent = '🎁 ' + LXT('Nella lista regali'); $('actP').textContent = LXT('Cos’è? Scrivi il regalo, poi scegli per chi.');
+  var B = $('actB'); B.textContent = '';
+  var inp = document.createElement('input'); inp.type = 'text'; inp.maxLength = 80; inp.id = 'gIn'; inp.placeholder = LXT('es. Lego del treno'); inp.value = clean(pre.t || '', 80); inp.setAttribute('aria-label', LXT('Il regalo')); B.appendChild(inp);
+  var w = el('div', 'ogc gper');
+  GPER.concat([['sorpresa', '🤫', 'Sorpresa per qualcuno del cerchio']]).forEach(function (o) { var b = el('button', 'chip', o[1] + ' ' + LXT(o[2])); b.type = 'button'; b.dataset.per = o[0]; b.setAttribute('aria-pressed', String(per === o[0])); b.onclick = function () { per = o[0]; w.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); }); nt.textContent = per === 'sorpresa' ? LXT('Resta solo sul tuo telefono: gli altri non lo vedono.') : LXT('Lo vede tutto il cerchio.'); }; w.appendChild(b); });
+  B.appendChild(w);
+  var nt = el('p', 'refn', LXT('Lo vede tutto il cerchio.')); B.appendChild(nt);
+  var go = el('button', 'btn wide', LXT('Aggiungi')); go.type = 'button'; go.style.marginTop = '8px';
+  go.onclick = function () { if (!clean(inp.value, 80)) { inp.focus(); return; } giftPut(inp.value, per, pre.r); $('actM').classList.remove('open'); $('mh').textContent = per === 'sorpresa' ? LXT('🤫 Salvato solo sul tuo telefono · lo trovi in Idee → 🎁 Regali') : LXT('🎁 Nella lista regali · la trovi in Idee → 🎁 Regali'); };
+  B.appendChild(go);
+  $('actX').onclick = function () { $('actM').classList.remove('open'); };
+  $('actM').classList.add('open'); if (!inp.value) setTimeout(function () { try { inp.focus(); } catch (e) {} }, 300);
+}
+function rgShared(L) {
+  var old = $('rgL'), B = el('div', 'ogf'); B.id = 'rgL';
+  B.appendChild(el('h3', null, '🎁 ' + LXT('La lista regali del cerchio')));
+  B.appendChild(el('p', 'refn', gifts.length ? LXT('La vedete tutti: chi compra segna ✓, così nessuno lo prende due volte.') : LXT('Tieni premuto un Reel → «Nella lista regali», oppure aggiungilo qui. La vedete tutti.')));
+  GPER.forEach(function (g) {
+    var G = gifts.filter(function (x) { return x.per === g[0]; }); if (!G.length) return;
+    B.appendChild(el('div', 'gph', g[1] + ' ' + LXT(g[2])));
+    G.forEach(function (v) {
+      var r = el('div', 'rgrow' + (v.got ? ' got' : '')), ck = el('button', 'gck', v.got ? '✓' : ''); ck.type = 'button'; ck.setAttribute('aria-pressed', String(!!v.got)); ck.setAttribute('aria-label', v.got ? LXT('Preso: togli il segno') : LXT('Segna come preso'));
+      ck.onclick = function () { ideaAct({ t: 'idea', a: 'ggot', id: v.id, on: !v.got }); if (!v.got) return; track('regali-preso'); };
+      r.appendChild(ck);
+      var a = document.createElement('a'), sh = rgShop({ k: 'thing', s: v.t, n: v.t }, rgReg()); a.href = sh.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = v.t + ' ↗'; a.onclick = function () { track('regali-lista-cerca'); }; r.appendChild(a);
+      r.appendChild(el('span', 'gby', v.got ? LXT('preso da') + ' ' + (v.got === me.name ? LXT('te') : v.got) : (v.n === me.name ? '' : v.n)));
+      var x = el('button', 'lnk', '✕'); x.type = 'button'; x.setAttribute('aria-label', LXT('Togli dalla lista')); x.onclick = function () { ask(LXT('Togliere dalla lista?'), v.t, LXT('Togli'), true).then(function (y) { if (y) ideaAct({ t: 'idea', a: 'gdel', id: v.id }); }); }; r.appendChild(x);
+      B.appendChild(r);
+    });
+  });
+  var ad = withIco(el('button', 'btn-o wide', ''), 'plus', LXT('Aggiungi un regalo')); ad.type = 'button'; ad.onclick = function () { giftAdd({}); }; B.appendChild(ad);
+  if (old) old.replaceWith(B); else L.insertBefore(B, L.firstChild);
+}
 function rgForm() {
   var p = rgPref(), F = el('div', 'ogf');
   F.appendChild(el('h3', null, '🎁 ' + LXT('Idee regalo')));
@@ -184,10 +226,13 @@ function rgRun(p, F) {
       card.appendChild(el('div', 'intt', v.n)); card.appendChild(el('div', 'inch', [v.k === 'experience' ? LXT('Esperienza') : LXT('Oggetto'), v.p].filter(Boolean).join(' · ')));
       if (v.w) card.appendChild(el('div', 'ogw', v.w));
       var a = document.createElement('a'); a.className = 'btn-o wide'; a.href = sh.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🔍 ' + sh.b + ' ↗'; a.onclick = function () { track('regali-cerca'); }; card.appendChild(a);
+      var gp = { bimbi: 'bimbi', casa: 'casa', noi: 'noi', amici: 'amici' }[p.per];
+      if (gp) { var inL = gifts.some(function (z) { return z.t === clean(v.n, 80); }), gl = el('button', inL ? 'btn-o wide' : 'btn wide', inL ? '✓ ' + LXT('Nella lista regali') : '🎁 ' + LXT('Nella lista regali del cerchio')); gl.type = 'button'; gl.disabled = inL; gl.onclick = function () { giftPut(v.n, gp, ''); gl.textContent = '✓ ' + LXT('Nella lista regali'); gl.className = 'btn-o wide'; gl.disabled = true; }; card.appendChild(gl); } else {
       var saved = rgList().some(function (z) { return z.n === v.n; });
       var sv = el('button', saved ? 'btn-o wide' : 'btn wide', saved ? '✓ ' + LXT('Salvato') : '⭐ ' + LXT('Salva (lo vedi solo tu)')); sv.type = 'button'; sv.disabled = saved;
       sv.onclick = function () { var S = rgList().filter(function (z) { return z.n !== v.n; }); S.unshift({ n: v.n, k: v.k, p: v.p, s: v.s }); put('regaliS', S.slice(0, 30)); sv.textContent = '✓ ' + LXT('Salvato'); sv.className = 'btn-o wide'; sv.disabled = true; rgSaved(L); track('regali-salva'); };
       card.appendChild(sv);
+      }
       if (shared) {
         var k = 'rg-' + v.n.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24), o = { k: k, it: { s: k, e: v.k === 'experience' ? '🎟️' : '🎁', t: v.n, d: [v.p, v.w].filter(Boolean).join(' · '), l: sh.u, b: 'Cerca' }, st: { u: sh.u } };
         var go = withIco(el('button', 'btn-o wide', ''), 'heart', LXT('Proponilo nel cerchio')); go.type = 'button'; go.onclick = function () { ideaWhat(o); track('regali-proponi'); }; card.appendChild(go);
@@ -235,7 +280,7 @@ function inspCity(q) { var c = cityGet(); if (!c) return q; var cn = isLon(c) ? 
 function inspLoad(q, loc, qx) {
   document.querySelectorAll('#inspT .chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.q === q)); });
   if (q === '§pack') { packLoad(); return; }
-  if (q === '§regali') { var L1 = $('inspL'); L1.textContent = ''; L1.appendChild(rgForm()); rgSaved(L1); track('regali-apri'); return; }
+  if (q === '§regali') { var L1 = $('inspL'); L1.textContent = ''; L1.appendChild(rgForm()); rgSaved(L1); rgShared(L1); track('regali-apri'); return; }
   if (q === '§oggi') { var L0 = $('inspL'); L0.textContent = ''; L0.appendChild(ogForm()); packLoad(true); return; }
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   var qq = loc ? inspCity(qx || q) : (qx || q);
