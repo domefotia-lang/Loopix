@@ -635,3 +635,8 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .gby{flex:none;font-size:.75rem;opacity:.6;max-width:30%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* mentre scrivi una risposta a un Reel, l'avviso sotto non ruba spazio sopra la tastiera */
 body.kb:has(.cpanel input:focus) #mh{display:none}
+body.ctyp .feed{scroll-snap-type:none}
+.item.typing>:not(.from):not(.bar):not(.cpanel){display:none!important}
+.item.typing .cpanel{max-height:none!important;flex:1 1 auto;min-height:0}
+body.ctyp #mh{display:none}
+body.ctyp .tipb{display:none!important}

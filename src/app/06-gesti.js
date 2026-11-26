@@ -179,10 +179,12 @@ function build(r) {
   inp.placeholder = 'Rispondi…'; inp.maxLength = 300; inp.setAttribute('aria-label', 'Commento');
   go.onclick = function () { var v = clean(inp.value, 300); if (v) { comment(r.id, v); inp.value = ''; } };
   inp.onkeydown = function (e) { if (e.key === 'Enter') go.click(); };
-  // su iPhone la tastiera arriva in due tempi e rimpicciolisce la pagina dopo: riporto il campo in vista a ogni passo, finché si scrive
-  var show = function () { if (document.activeElement !== inp) return; nd.list.scrollTop = nd.list.scrollHeight; try { row.scrollIntoView({ block: 'center' }); } catch (e) { row.scrollIntoView(); } };
-  inp.onfocus = function () { [80, 350, 700].forEach(function (t) { setTimeout(show, t); }); if (window.visualViewport) visualViewport.addEventListener('resize', show); };
-  inp.onblur = function () { if (window.visualViewport) visualViewport.removeEventListener('resize', show); };
+  // mentre scrivi una risposta il Reel si fa da parte (come i commenti di Instagram): restano nome, pulsanti, risposte e il campo, subito sopra la tastiera
+  var it = function () { return nd.cp.parentNode; };
+  var show = function () { if (document.activeElement !== inp) return; nd.list.scrollTop = nd.list.scrollHeight; var d0 = it(), fd = d0 && d0.parentNode; if (fd) fd.scrollTop += d0.getBoundingClientRect().top - fd.getBoundingClientRect().top; };
+  inp.onfocus = function () { var d0 = it(); if (d0) d0.classList.add('typing'); document.body.classList.add('ctyp'); [0, 120, 350, 700].forEach(function (t) { setTimeout(show, t); }); if (window.visualViewport) visualViewport.addEventListener('resize', show); };
+  inp.onblur = function () { if (window.visualViewport) visualViewport.removeEventListener('resize', show); setTimeout(function () { if (document.activeElement === inp) return; var d0 = it(); if (d0) { d0.classList.remove('typing'); var fd = d0.parentNode; if (fd) fd.scrollTop += d0.getBoundingClientRect().top - fd.getBoundingClientRect().top; } document.body.classList.remove('ctyp'); }, 150); };
+  go.addEventListener('pointerdown', function (e) { e.preventDefault(); }); // toccare «Invia» non chiude la tastiera
   row.appendChild(inp); row.appendChild(go); nd.cp.appendChild(row); d.appendChild(nd.cp);
   nodes[r.id] = nd; refresh(r); return d;
 }
