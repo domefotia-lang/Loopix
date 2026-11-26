@@ -633,3 +633,5 @@ body.simple #inspT .chip:not([data-q="§oggi"]):not([data-q="§pack"]){display:n
 .gck[aria-pressed=true]{background:#2f8f5b;border-color:#2f8f5b;color:#fff;opacity:1}
 .rgrow.got a{text-decoration:line-through;opacity:.55}
 .gby{flex:none;font-size:.75rem;opacity:.6;max-width:30%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* mentre scrivi una risposta a un Reel, l'avviso sotto non ruba spazio sopra la tastiera */
+body.kb:has(.cpanel input:focus) #mh{display:none}
