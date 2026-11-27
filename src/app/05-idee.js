@@ -437,9 +437,9 @@ function packLoad(keep) {
   if (!c) { cityPick(function () { packLoad(); }); L.appendChild(el('p', 'refn', '📍 ' + (window.LX_T || String)('Scegli la tua città.'))); return; }
   var top = el('div'); top.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px';
   top.appendChild(el('b', null, '📍 ' + c)); var ch = el('button', 'chip', (window.LX_T || String)('Cambia città')); ch.type = 'button'; ch.onclick = function () { cityPick(function () { packLoad(); }); }; top.appendChild(ch); L.appendChild(top);
-  var loc = packFor(c), P = loc.concat(packLon()), cards = [], slug = c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
+  var hL = null, loc = packFor(c), P = loc.concat(packLon()), cards = [], slug = c.toLowerCase().replace(/[^a-z]+/g, '-').slice(0, 16);
   P.forEach(function (it, i) {
-    if (loc.length && i === loc.length) { var h = el('p', null, '✈️ ' + (window.LX_T || String)('Se venite a Londra')); h.style.cssText = 'grid-column:1/-1;font-weight:800;margin:10px 0 0'; L.appendChild(h); }
+    if (loc.length && i === loc.length) { var h = el('p', null, '✈️ ' + (window.LX_T || String)('Se venite a Londra')); h.style.cssText = 'grid-column:1/-1;font-weight:800;margin:10px 0 0'; L.appendChild(h); hL = h; }
     var k = it.s + (i < loc.length ? '-' + slug : '');
     var card = el('div', 'insc'), th = el('div', 'inth pkth'); th.appendChild(el('span', 'pke', it.e)); card.appendChild(th);
     card.appendChild(el('div', 'intt', it.t)); card.appendChild(el('div', 'inch', typeof it.d === 'string' ? it.d : (window.LX_T || String)(it.d.f) + ' ' + it.d.c));
@@ -449,12 +449,13 @@ function packLoad(keep) {
     var st = { u: it.l };
     go.onclick = function () { postAll(st.u, it.t); go.textContent = '✓ ' + (window.LX_T || String)('Mandato'); go.disabled = true; track('idea-manda-' + k); };
     if (it.v) st.u = it.v;
-    th.onclick = function () { ideaView(i); };
-    L.appendChild(card); cards.push({ th: th, st: st, it: it, k: k, reg: i < loc.length ? cityRegion(c) : 'GB' });
+    if (it.v) th.appendChild(el('span', 'inpl', '▶'));
+    th.onclick = function () { ideaView(Math.max(0, IV.list.indexOf(cards[i]))); };
+    L.appendChild(card); cards.push({ th: th, st: st, it: it, k: k, card: card, sec: i < loc.length ? 0 : 1, reg: i < loc.length ? cityRegion(c) : 'GB' });
   });
   IV.list = cards;
   var wv = withIco(el('button', 'btn wide', ''), 'play', (window.LX_T || String)('Guarda i video delle idee')); wv.type = 'button'; wv.style.gridColumn = '1/-1'; wv.onclick = function () { ideaView(0); }; L.insertBefore(wv, top.nextSibling);
-  L.appendChild(el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. I video vengono dai canali ufficiali e da YouTube.')));
+  var ft = el('p', 'refn', (window.LX_T || String)('Idee scelte da Reelta. I video vengono dai canali ufficiali e da YouTube.')); L.appendChild(ft);
   track('idee-viste-' + (loc.length ? 'altra-citta' : 'londra'));
   var fill = function (off) { return function (x) {
     if (!x || !x.items) return;
@@ -463,12 +464,23 @@ function packLoad(keep) {
       if (!o.it.v) o.st.u = 'https://www.youtube.com/shorts/' + v.id;
       var b = el('button', 'inth'); b.type = 'button'; b.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + o.it.t);
       var im = document.createElement('img'); im.src = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'; im.alt = ''; im.loading = 'lazy'; b.appendChild(im); b.appendChild(el('span', 'inpl', '▶'));
-      b.onclick = function () { ideaView(cards.indexOf(o)); };
-      o.th.replaceWith(b); o.th = b;
+      b.onclick = function () { ideaView(Math.max(0, IV.list.indexOf(o))); };
+      o.th.replaceWith(b); o.th = b; o.vid = true;
     });
   }; };
-  if (loc.length) mbCall({ a: 'pack', qs: loc.map(packQ), lang: window.LX_LANG || 'it', reg: cityRegion(c) }).then(fill(0), function () {});
-  mbCall({ a: 'pack', qs: packLon().map(packQ), lang: 'en', reg: 'GB' }).then(fill(loc.length), function () {});
+  // dove non c'è nessun video: scheda piccola, in fondo alla sua parte, con «guarda i video» su TikTok e Instagram (niente riquadro vuoto)
+  var done = function () {
+    if (!L.isConnected || !ft.isConnected) return;
+    cards.forEach(function (o) {
+      if (o.vid || o.it.v || o.nov) return; o.nov = true; o.card.classList.add('novid'); o.th.remove();
+      var w = elsewhere(o.it.t + ' ' + (o.sec ? 'London' : c)); w.classList.add('novl'); var yt = w.querySelector('a'); if (yt && /YouTube/.test(yt.textContent)) yt.remove();
+      o.card.appendChild(el('div', 'novh', LXT('Video su questo posto:'))); o.card.appendChild(w);
+    });
+    [0, 1].forEach(function (sx) { var at = sx ? ft : hL; if (!at) return; cards.filter(function (o) { return o.sec === sx && o.nov; }).forEach(function (o) { L.insertBefore(o.card, at); }); });
+    IV.list = cards.filter(function (o) { return !o.nov; });
+  };
+  var settle = function (pr) { return pr.then(function (x) { return x; }, function () { return null; }); };
+  Promise.all([loc.length ? settle(mbCall({ a: 'pack', qs: loc.map(packQ), lang: window.LX_LANG || 'it', reg: cityRegion(c) })).then(fill(0)) : null, settle(mbCall({ a: 'pack', qs: packLon().map(packQ), lang: 'en', reg: 'GB' })).then(fill(loc.length))]).then(done);
 }
 /* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
 var ICO = {
