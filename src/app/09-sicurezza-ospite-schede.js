@@ -243,7 +243,7 @@ function showPane(id) {
   if (id === 'ideas') { ideaSeen = 0; ideaTab(); renderIdeas(); }
   if (id === 'chat') { chatSeen = 0; put('chatAt', Date.now()); chatTab(); renderChat(); renderNov(); }
   if (id === 'circle') renderCircle();
-  if (id === 'xpl') { xplBuild(); var q0 = xplQ; xplQ = ''; if (q0) inspLoad(q0); else if (!$('inspL').children.length) inspLoad('§oggi'); }
+  if (id === 'xpl') { xplBuild(); var q0 = xplQ; xplQ = ''; if (q0) inspLoad(q0); }
   if (id === 'style' || id === 'prof') renderStyle();
 }
 var msgs = get('msgs', []), chatSeen = 0;

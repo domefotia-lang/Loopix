@@ -660,3 +660,5 @@ body.ctyp .tipb{display:none!important}
 .cmpn{font-size:12px;opacity:.7}
 .askc .lnk{background:none;border:0;color:var(--g);font:inherit;font-weight:600;font-size:14px;padding:10px 0 0;cursor:pointer}
 .cmpr .lnk{color:var(--g);font-weight:700;text-decoration:none}
+.xrc{display:inline-flex;align-items:center;gap:2px;padding:0 4px 0 12px}.xrc button{background:none;border:0;color:inherit;font:inherit;padding:8px 0;cursor:pointer}
+.xrc .xrx{padding:8px 8px;opacity:.6;min-width:32px}

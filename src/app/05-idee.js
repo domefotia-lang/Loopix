@@ -257,10 +257,12 @@ function xplBuild() {
   var tp = el('div', 'fview'); tp.id = 'inspT';
   var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.type = 'search'; qi.enterKeyHint = 'search'; qi.placeholder = LXT('Cosa cerchi?'); qi.setAttribute('aria-label', LXT('Cosa cerchi?'));
   var qb = el('button', 'btn', ''); qb.type = 'button'; qb.setAttribute('aria-label', LXT('Cerca')); qb.appendChild(icoEl('search'));
-  var go = function (v) { v = clean(v, 60); if (v.length < 3) { qi.focus(); return; } qi.value = v; qi.blur(); xplAuto = true; xplAns = ''; track('cerca'); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); };
+  var go = function (v) { v = clean(v, 60); if (v.length < 3) { qi.focus(); return; } qi.value = v; qi.blur(); xplAuto = true; xplAns = ''; xRecAdd(v, go); track('cerca'); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); };
   qb.onclick = function () { go(qi.value); }; qi.onkeydown = function (e) { if (e.key === 'Enter') go(qi.value); };
   var rr = el('div', 'xbar'); rr.appendChild(icoEl('search')); rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
-  var ex = el('div', 'xex'); [LXT('Regalo bimbo 10 anni'), LXT('Ristorante per sabato'), LXT('Gita con i bimbi'), LXT('Friggitrice ad aria'), LXT('Cena veloce'), LXT('Weekend a Lisbona')].forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.onclick = function () { track('cerca-esempio'); go(t); }; ex.appendChild(b); }); C.appendChild(ex);
+  // le ultime ricerche di questo telefono (mai mandate a nessuno), poi 4 esempi generici: il «commesso» fa la domanda giusta
+  var rc = el('div', 'xex xrec'); rc.id = 'xRec'; C.appendChild(rc); xRecDraw(go);
+  var ex = el('div', 'xex'); [['🎁', 'Un regalo'], ['🍽️', 'Dove mangiare'], ['🎟️', 'Cosa fare questo weekend'], ['🛒', 'Qualcosa da comprare']].forEach(function (t) { var b = el('button', 'chip', t[0] + ' ' + LXT(t[1])); b.type = 'button'; b.onclick = function () { track('cerca-esempio'); go(LXT(t[1])); }; ex.appendChild(b); }); C.appendChild(ex);
   C.appendChild(tp);
   var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
@@ -330,6 +332,12 @@ function inspLoad(q, loc, qx) {
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
 // I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
 // ⭐ In evidenza: video di attività che ce l'hanno chiesto (approvati a mano), per parole chiave. Arrivano solo link pubblici, mai email.
+function xRecList() { try { var a = JSON.parse(lsGet(LSG + 'recenti') || '[]'); return Array.isArray(a) ? a.filter(function (x) { return typeof x === 'string'; }).slice(0, 3) : []; } catch (e) { return []; } }
+function xRecAdd(v, go) { var GEN = [LXT('Un regalo'), LXT('Dove mangiare'), LXT('Cosa fare questo weekend'), LXT('Qualcosa da comprare')]; if (GEN.indexOf(v) >= 0) return; var a = xRecList().filter(function (x) { return x.toLowerCase() !== v.toLowerCase(); }); a.unshift(v); lsSet(LSG + 'recenti', JSON.stringify(a.slice(0, 3))); xRecDraw(go); }
+function xRecDraw(go) {
+  var R = $('xRec'); if (!R) return; R.textContent = ''; var a = xRecList(); R.hidden = !a.length;
+  a.forEach(function (t) { var w = el('span', 'chip xrc'), b = el('button', null, '🕘 ' + t); b.type = 'button'; b.onclick = function () { go(t); }; var x = el('button', 'xrx', '✕'); x.type = 'button'; x.setAttribute('aria-label', LXT('Togli dalle ricerche recenti')); x.onclick = function () { lsSet(LSG + 'recenti', JSON.stringify(xRecList().filter(function (y) { return y !== t; }))); xRecDraw(go); }; w.appendChild(b); w.appendChild(x); R.appendChild(w); });
+}
 function askCard(a, cb) {
   var c = el('div', 'ogf askc'); c.appendChild(el('h3', null, '💬 ' + a.q));
   var w = el('div', 'xex'); (a.o || []).forEach(function (o) { var b = el('button', 'chip', o); b.type = 'button'; b.onclick = function () { cb(o); }; w.appendChild(b); });
