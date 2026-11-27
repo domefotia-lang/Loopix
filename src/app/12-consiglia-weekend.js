@@ -171,7 +171,7 @@ function storyImg(o) {
       x.fillStyle = K; x.textBaseline = 'alphabetic'; font('800', 76); var n = wrap(o.title, PW, PX, PY + PH + 110, 88, 3);
       var y = PY + PH + 110 + n * 88 + 10; font('500', 42); x.fillStyle = '#4a4752'; (o.lines || []).slice(0, 2).forEach(function (l) { if (y < NY - 40) x.fillText(l, PX, y); y += 58; });
       x.setLineDash([22, 22]); x.lineWidth = 8; x.strokeStyle = K; x.beginPath(); x.moveTo(TX + 80, NY); x.lineTo(TX + TW - 80, NY); x.stroke(); x.setLineDash([]);
-      var ic = new Image(); ic.onload = function () { x.save(); rr(PX, NY + 90, 150, 150, 34); x.clip(); x.drawImage(ic, PX, NY + 90, 150, 150); x.restore(); x.lineWidth = 6; rr(PX, NY + 90, 150, 150, 34); x.stroke(); draw(); }; ic.onerror = draw; ic.src = 'icon-192.png';
+      var ic = new Image(); ic.onload = function () { x.save(); rr(PX, NY + 90, 150, 150, 34); x.clip(); x.drawImage(ic, PX, NY + 90, 150, 150); x.restore(); x.lineWidth = 6; rr(PX, NY + 90, 150, 150, 34); x.stroke(); draw(); }; ic.onerror = draw; ic.src = 'icon-192.png?p2';
       function draw() { x.fillStyle = K; font('800', 72); x.fillText('Reelta', PX + 190, NY + 170); font('600', 40); x.fillStyle = '#4a4752'; x.fillText(LXT('Meno scroll, più uscite.'), PX + 190, NY + 226); c.toBlob(function (b) { res(b); }, 'image/jpeg', 0.9); }
     };
     x.save(); rr(PX, PY, PW, PH, 28); x.clip();
