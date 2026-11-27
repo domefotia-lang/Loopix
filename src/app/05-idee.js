@@ -275,7 +275,7 @@ function xplBuild() {
 // quando le nostre ricerche finiscono: la stessa ricerca, già scritta, nelle app dei video (risultati veri, nessun limite)
 function elsewhere(q) {
   var w = el('div', 'ailinks elsew'), e = encodeURIComponent(q), tag = q.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
-  [['▶ YouTube', 'https://www.youtube.com/results?search_query=' + e, 'yt'], ['🎵 TikTok', 'https://www.tiktok.com/search?q=' + e, 'tt'], ['📸 Instagram', 'https://www.instagram.com/explore/tags/' + encodeURIComponent(tag) + '/', 'ig']].forEach(function (x) {
+  [['▶ YouTube', 'https://www.youtube.com/results?search_query=' + e, 'yt'], ['🎵 TikTok', 'https://www.tiktok.com/search?q=' + e, 'tt'], ['📸 Instagram', 'https://www.instagram.com/explore/search/keyword/?q=' + e, 'ig']].forEach(function (x) {
     if (x[2] === 'ig' && tag.length < 3) return;
     var a = el('a', 'chip', LXT('Guarda su') + ' ' + x[0]); a.href = x[1]; a.target = '_blank'; a.rel = 'noopener'; a.onclick = function () { track('altrove-' + x[2]); }; w.appendChild(a);
   });
@@ -473,7 +473,7 @@ function packLoad(keep) {
     if (!L.isConnected || !ft.isConnected) return;
     cards.forEach(function (o) {
       if (o.vid || o.it.v || o.nov) return; o.nov = true; o.card.classList.add('novid'); o.th.remove();
-      var w = elsewhere(o.it.t + ' ' + (o.sec ? 'London' : c)); w.classList.add('novl'); var yt = w.querySelector('a'); if (yt && /YouTube/.test(yt.textContent)) yt.remove();
+      var w = elsewhere(o.it.q || (o.it.t + ' ' + (o.sec ? 'London' : c))); w.classList.add('novl'); var yt = w.querySelector('a'); if (yt && /YouTube/.test(yt.textContent)) yt.remove();
       o.card.appendChild(el('div', 'novh', LXT('Video su questo posto:'))); o.card.appendChild(w);
     });
     [0, 1].forEach(function (sx) { var at = sx ? ft : hL; if (!at) return; cards.filter(function (o) { return o.sec === sx && o.nov; }).forEach(function (o) { L.insertBefore(o.card, at); }); });
