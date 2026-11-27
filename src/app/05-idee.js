@@ -263,6 +263,7 @@ function xplBuild() {
   // le ultime ricerche di questo telefono (mai mandate a nessuno), poi 4 esempi generici: il «commesso» fa la domanda giusta
   var rc = el('div', 'xex xrec'); rc.id = 'xRec'; C.appendChild(rc); xRecDraw(go);
   var ex = el('div', 'xex'); [['🎁', 'Un regalo'], ['🍽️', 'Dove mangiare'], ['🎟️', 'Cosa fare questo weekend'], ['🛒', 'Qualcosa da comprare']].forEach(function (t) { var b = el('button', 'chip', t[0] + ' ' + LXT(t[1])); b.type = 'button'; b.onclick = function () { track('cerca-esempio'); go(LXT(t[1])); }; ex.appendChild(b); }); C.appendChild(ex);
+  var sv0 = el('div', 'ogf xsav'); sv0.id = 'xSav'; C.appendChild(sv0); xSavDraw();
   C.appendChild(tp);
   var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
@@ -311,7 +312,7 @@ function inspLoad(q, loc, qx) {
     var items = x.via === 'cerca' ? x.items : keep.length >= 4 ? keep : x.items;
     if (buy && x.via !== 'cerca') { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
     var act = x.via === 'cerca' && x.k ? actForK(x.k, x.shop, q) : inspAct(qx || q, qq);
-    if (x.via === 'cerca' && x.cmp) { L.appendChild(cmpCard(x.cmp, x.k)); xplAuto = false; track('cerca-confronto'); }
+    if (x.via === 'cerca' && x.cmp) { L.appendChild(cmpCard(x.cmp, x.k, x.items && x.items[0] ? 'https://www.youtube.com/shorts/' + x.items[0].id : '')); xplAuto = false; track('cerca-confronto'); }
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: act ? act.u : loc ? gmaps(qq) : u, b: act ? act.t : loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
     var FT = (x.feat || []).map(function (f) { return { k: 'ft-' + f.id, it: { s: 'ft-' + f.id, e: '⭐', t: f.name, d: '⭐ ' + LXT('In evidenza'), l: f.action_url, b: f.action_label || 'Prenota' }, st: { u: f.video_url } }; });
     if (FT.length) { LV = FT.concat(LV); FT.forEach(function (o2, fi) { var c = el('div', 'insc feat'), th = el('button', 'inth'); th.type = 'button'; th.appendChild(el('span', 'inpl', '▶')); th.onclick = function () { IV.list = LV; ideaView(fi); track('feat-guarda'); }; c.appendChild(th); c.appendChild(el('div', 'ftag', '⭐ ' + LXT('In evidenza'))); c.appendChild(el('div', 'intt', o2.it.t)); var ab = el('a', 'btn wide inact', LXT(o2.it.b) + ' ↗'); ab.href = o2.it.l; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('feat-azione'); }; c.appendChild(ab); L.appendChild(c); }); }
@@ -332,6 +333,27 @@ function inspLoad(q, loc, qx) {
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
 // I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
 // ⭐ In evidenza: video di attività che ce l'hanno chiesto (approvati a mano), per parole chiave. Arrivano solo link pubblici, mai email.
+// 🔖 Salvati per dopo: video trovati in Cerca, solo su questo telefono (con il loro pulsante Compra/Prenota)
+function savList() { try { var a = JSON.parse(lsGet(LSG + 'salvati') || '[]'); return Array.isArray(a) ? a.filter(function (x) { return x && typeof x.k === 'string' && typeof x.t === 'string'; }).slice(0, 30) : []; } catch (e) { return []; } }
+function savHas(k) { return savList().some(function (x) { return x.k === k; }); }
+function savToggle(o) {
+  var a = savList(), had = a.some(function (x) { return x.k === o.k; });
+  a = a.filter(function (x) { return x.k !== o.k; });
+  if (!had) a.unshift({ k: o.k, t: clean(o.it.t, 90), d: clean(o.it.d || '', 60), u: o.st && /^https:\/\//.test(o.st.u) ? String(o.st.u).slice(0, 300) : '', l: /^https:\/\//.test(o.it.l || '') ? String(o.it.l).slice(0, 400) : '', b: clean(o.it.b || '', 30), ts: Date.now() });
+  lsSet(LSG + 'salvati', JSON.stringify(a.slice(0, 30))); xSavDraw(); return !had;
+}
+function xSavDraw() {
+  var B = $('xSav'); if (!B) return; B.textContent = ''; var a = savList(); B.hidden = !a.length; if (!a.length) return;
+  B.appendChild(el('h3', null, '🔖 ' + LXT('Salvati per dopo')));
+  a.slice(0, 8).forEach(function (x) {
+    var r = el('div', 'rgrow'), t = el('button', 'lnk savt', x.t); t.type = 'button';
+    t.onclick = function () { IV.list = savList().filter(function (y) { return y.u; }).map(function (y) { return { k: y.k, it: { s: y.k, e: '▶', t: y.t, d: y.d, l: y.l, b: y.b }, st: { u: y.u } }; }); ideaView(Math.max(0, IV.list.findIndex(function (y) { return y.k === x.k; }))); track('cerca-salvati-apri'); };
+    r.appendChild(t);
+    if (x.l) { var a2 = el('a', 'chip', LXT(x.b || 'Apri') + ' ↗'); a2.href = x.l; a2.target = '_blank'; a2.rel = 'noopener'; a2.onclick = function () { track('cerca-salvati-azione'); }; r.appendChild(a2); }
+    var d = el('button', 'lnk', '✕'); d.type = 'button'; d.setAttribute('aria-label', LXT('Togli dai salvati')); d.onclick = function () { lsSet(LSG + 'salvati', JSON.stringify(savList().filter(function (y) { return y.k !== x.k; }))); xSavDraw(); }; r.appendChild(d);
+    B.appendChild(r);
+  });
+}
 function xRecList() { try { var a = JSON.parse(lsGet(LSG + 'recenti') || '[]'); return Array.isArray(a) ? a.filter(function (x) { return typeof x === 'string'; }).slice(0, 3) : []; } catch (e) { return []; } }
 function xRecAdd(v, go) { var GEN = [LXT('Un regalo'), LXT('Dove mangiare'), LXT('Cosa fare questo weekend'), LXT('Qualcosa da comprare')]; if (GEN.indexOf(v) >= 0) return; var a = xRecList().filter(function (x) { return x.toLowerCase() !== v.toLowerCase(); }); a.unshift(v); lsSet(LSG + 'recenti', JSON.stringify(a.slice(0, 3))); xRecDraw(go); }
 function xRecDraw(go) {
@@ -344,7 +366,7 @@ function askCard(a, cb) {
   var sk = el('button', 'lnk', LXT('Salta, mostrami i video')); sk.type = 'button'; sk.onclick = function () { cb('-'); }; c.appendChild(w); c.appendChild(sk); return c;
 }
 // ⚖️ confronto rapido scritto dall'AI dai video trovati: pro, contro, prezzo indicativo, e il link per cercarlo
-function cmpCard(m, k) {
+function cmpCard(m, k, vu) {
   var c = el('div', 'ogf cmpc'); c.appendChild(el('h3', null, '⚖️ ' + LXT('Confronto rapido')));
   (m.rows || []).forEach(function (r) {
     var row = el('div', 'cmpr'), h = el('div', 'cmph'); h.appendChild(el('b', null, r.n)); if (r.p) h.appendChild(el('span', 'cmpp', r.p)); row.appendChild(h);
@@ -354,6 +376,7 @@ function cmpCard(m, k) {
   });
   if (m.tip) c.appendChild(el('p', 'refn', '💡 ' + m.tip));
   c.appendChild(el('p', 'refn cmpn', LXT('Riassunto dell’AI dai video: controlla prezzo e dettagli prima di comprare.')));
+  if (vu) { var sh = withIco(el('button', 'btn-o wide', ''), 'heart', LXT('Decidete insieme: mandalo')); sh.type = 'button'; sh.onclick = function () { var txt = '⚖️ ' + (m.rows || []).map(function (r) { return r.n + (r.p ? ' (' + r.p + ')' : ''); }).join(' · '); postAll(vu, txt.slice(0, 280)); sh.textContent = '✓ ' + LXT('Mandato'); sh.disabled = true; track('cerca-confronto-manda'); }; c.appendChild(sh); }
   return c;
 }
 function featFor(q) {
@@ -521,12 +544,13 @@ function ideaView(i) {
   if (!IV.list.length) return; var V = $('ideaV');
   if (!V) {
     V = el('div'); V.id = 'ideaV'; V.setAttribute('role', 'dialog'); V.setAttribute('aria-modal', 'true');
-    V.innerHTML = '<div class="ivtop"><button type="button" class="ivx" id="ivX" aria-label="Chiudi">✕</button><span id="ivN"></span></div><div class="ivst" id="ivS"></div><div class="ivp" id="ivP"><b id="ivT"></b><span id="ivD"></span><div class="ivb"><button type="button" class="btn" id="ivGo"></button><a class="btn-o" id="ivBk" target="_blank" rel="noopener"></a></div><div class="ivnav"><button type="button" class="btn-o" id="ivPr" aria-label="Precedente">‹</button><span id="ivC"></span><button type="button" class="btn-o" id="ivNx" aria-label="Successivo">›</button></div></div>';
+    V.innerHTML = '<div class="ivtop"><button type="button" class="ivx" id="ivX" aria-label="Chiudi">✕</button><span id="ivN"></span><button type="button" class="ivsv" id="ivSv" aria-label="Salva per dopo" aria-pressed="false"></button></div><div class="ivst" id="ivS"></div><div class="ivp" id="ivP"><b id="ivT"></b><span id="ivD"></span><div class="ivb"><button type="button" class="btn" id="ivGo"></button><a class="btn-o" id="ivBk" target="_blank" rel="noopener"></a></div><div class="ivnav"><button type="button" class="btn-o" id="ivPr" aria-label="Precedente">‹</button><span id="ivC"></span><button type="button" class="btn-o" id="ivNx" aria-label="Successivo">›</button></div></div>';
     document.body.appendChild(V);
     $('ivX').onclick = ideaViewClose; $('ivPr').onclick = function () { ideaViewAt(IV.i - 1); }; $('ivNx').onclick = function () { ideaViewAt(IV.i + 1); };
     var y0 = null; [$('ivP'), V.querySelector('.ivtop')].forEach(function (z) { z.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true }); z.addEventListener('touchend', function (e) { if (y0 === null) return; var d = e.changedTouches[0].clientY - y0; y0 = null; if (Math.abs(d) > 50) ideaViewAt(IV.i + (d < 0 ? 1 : -1)); }, { passive: true }); });
     document.addEventListener('keydown', function (e) { if (!V.classList.contains('open')) return; if (e.key === 'Escape') ideaViewClose(); if (e.key === 'ArrowDown' || e.key === 'ArrowRight') ideaViewAt(IV.i + 1); if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ideaViewAt(IV.i - 1); });
   }
+  $('ivSv').onclick = function () { var o = IV.list[IV.i]; if (!o || !o.it) return; var on = savToggle(o); $('ivSv').setAttribute('aria-pressed', String(on)); $('ivSv').textContent = ''; $('ivSv').appendChild(icoEl('mark')); $('mh').textContent = on ? LXT('🔖 Salvato · lo trovi in Cerca') : ''; track(on ? 'cerca-salva' : 'cerca-salva-togli'); };
   withIco($('ivGo'), 'heart', LXT('Fatelo insieme')); $('ivGo').onclick = function () { ideaWhat(IV.list[IV.i]); };
   V.classList.add('open'); track('idee-video-apri'); ideaViewAt(i || 0);
 }
@@ -547,6 +571,7 @@ function ideaViewAt(i) {
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
   var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' || it.b === 'Prenota' ? 'ticket' : it.b === 'Trova dove dormire' ? 'bed' : it.b === 'Dove comprarlo' || it.b === 'Compra su Amazon' ? 'bag' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); track('cerca-azione-' + (it.b === 'Compra su Amazon' ? 'compra' : it.b === 'Mappa' ? 'mappa' : 'prenota')); };
+  var sv = $('ivSv'); if (sv) { sv.textContent = ''; sv.appendChild(icoEl('mark')); sv.setAttribute('aria-pressed', String(savHas(o.k))); sv.setAttribute('aria-label', LXT('Salva per dopo')); }
   var srch = /^(yt|ft)-/.test(o.k) && it.l && !/youtube\.com/.test(it.l); bk.className = srch ? 'btn' : 'btn-o'; $('ivGo').classList.toggle('btn-o', srch); $('ivGo').classList.toggle('btn', !srch); bk.hidden = !it.l;
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }

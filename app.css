@@ -670,3 +670,6 @@ body.ctyp .tipb{display:none!important}
 .cov.igon .igcv{opacity:1}
 .cov .igcv iframe{position:absolute;left:0;top:-56px;width:100%;height:calc(100% + 360px);border:0;pointer-events:none}
 .cov.igon .covb,.cov.igon .covp,.cov.igon .covc,.cov.igon .covk{z-index:2}
+.ivsv{margin-left:auto;width:44px;height:44px;border-radius:22px;border:0;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center}
+.ivsv .ico{width:20px;height:20px;margin:0}.ivsv[aria-pressed=true]{background:var(--g);color:var(--bg,#111)}.ivsv[aria-pressed=true] .ico path{fill:currentColor}
+.xsav h3{margin:0 0 6px}.xsav .rgrow{display:flex;align-items:center;gap:8px}.xsav .savt{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
