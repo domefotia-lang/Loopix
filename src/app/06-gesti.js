@@ -1,7 +1,7 @@
 /* ---- gesti, come nelle app social ----
    ← → cambia pagina · doppio tocco = ❤️ · tieni premuto un Reel = menu · tira giù il feed = aggiorna
    nel lettore: ← → Reel dopo / prima, ↓ chiude. (Sopra il video i tocchi vanno al video stesso.) */
-var TABS = ['main', 'xpl', 'ideas', 'chat'];
+var TABS = ['xpl', 'main', 'ideas', 'chat'];
 function curPane() { var p = document.querySelector('.pane.show'); return p ? p.id : ''; }
 function gestOk(t) { return !document.querySelector('.mod.open,#dw.open') && !(t && t.closest && t.closest('input,textarea,select,.fview,.retr,#decC')); }
 // ☰ menu laterale: le cose che si usano ogni tanto. Quelle di tutti i giorni restano nelle schede in basso.

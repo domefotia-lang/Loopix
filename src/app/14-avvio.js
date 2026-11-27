@@ -17,7 +17,8 @@ function begin() {
   keepData(); setTimeout(backupNudge, 4000); setTimeout(function () { cloudSync(false); }, 20000);
   if (me.role === 'guest' && !me.tok) { me.tok = uid(12); put('me', me); }
   showPane('main'); render(); status(); seqLabel();
-  if (!feed.length && srvOn() && !navigator.webdriver) showPane('xpl');
+  // si apre su 🔍 Cerca, tranne quando ci sono Reel nuovi da vedere insieme
+  if (!navigator.webdriver && !window.LX_NOSTART && srvOn() && !newCount()) showPane('xpl');
   setTimeout(pplHint, 1500);
   if (pinRec && !window.__lxBootUnlocked) showLock(); else if (!pinRec) guide(false);
   if (me.role === 'host') startHost(); else startGuest();

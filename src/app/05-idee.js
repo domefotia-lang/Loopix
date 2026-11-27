@@ -249,15 +249,19 @@ function rgRun(p, F) {
   }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = navigator.onLine === false ? LXT('Sei offline: ecco le idee pronte. Quelle nuove tornano con la rete.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
 }
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
-var xplQ = '';
+var xplQ = '', xplAuto = false;
 function xplBuild() {
   var C = $('inspM'); if (!C || C.children.length) return;
-  C.appendChild(el('p', 'refn', 'Cose da fare insieme dove vivete e i video più visti. Mandateli alla vostra persona o prenotate.'));
-  var tp = el('div', 'fview'); tp.id = 'inspT'; C.appendChild(tp);
-  var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.placeholder = (window.LX_T || String)('Oppure scrivi un argomento…'); qi.setAttribute('aria-label', (window.LX_T || String)('Argomento'));
-  var qb = el('button', 'btn-o', '🔍'); qb.type = 'button'; qb.setAttribute('aria-label', (window.LX_T || String)('Cerca'));
-  qb.onclick = function () { var v = clean(qi.value, 60); if (v.length >= 3) { qi.blur(); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); } }; qi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); qb.click(); } });
-  var rr = el('div'); rr.style.cssText = 'display:flex;gap:6px;margin:4px 0 8px'; qi.style.cssText = 'flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--t);font-size:16px'; qb.style.width = 'auto'; rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
+  // 🔍 «Chiedi. Guarda. Compra.»: una sola barra per qualsiasi cosa (comprare, mangiare, viaggiare, fare, cucinare); escono i video e sotto il pulsante giusto
+  var hero = el('div', 'xhero'); hero.appendChild(el('h2', 'xh1', LXT('Chiedi. Guarda. Compra.'))); hero.appendChild(el('p', 'refn', LXT('Scrivi cosa ti serve: ti mostro i video veri, e da lì compri o prenoti con un tocco.'))); C.appendChild(hero);
+  var tp = el('div', 'fview'); tp.id = 'inspT';
+  var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.type = 'search'; qi.enterKeyHint = 'search'; qi.placeholder = LXT('Cosa cerchi?'); qi.setAttribute('aria-label', LXT('Cosa cerchi?'));
+  var qb = el('button', 'btn', ''); qb.type = 'button'; qb.setAttribute('aria-label', LXT('Cerca')); qb.appendChild(icoEl('search'));
+  var go = function (v) { v = clean(v, 60); if (v.length < 3) { qi.focus(); return; } qi.value = v; qi.blur(); xplAuto = true; track('cerca'); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); };
+  qb.onclick = function () { go(qi.value); }; qi.onkeydown = function (e) { if (e.key === 'Enter') go(qi.value); };
+  var rr = el('div', 'xbar'); rr.appendChild(icoEl('search')); rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
+  var ex = el('div', 'xex'); [LXT('Regalo bimbo 10 anni'), LXT('Ristorante per sabato'), LXT('Gita con i bimbi'), LXT('Friggitrice ad aria'), LXT('Cena veloce'), LXT('Weekend a Lisbona')].forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.onclick = function () { track('cerca-esempio'); go(t); }; ex.appendChild(b); }); C.appendChild(ex);
+  C.appendChild(tp);
   var L = el('div', 'insg'); L.id = 'inspL'; C.appendChild(L);
   C.appendChild(el('p', 'refn', 'Video pubblici da YouTube. Reelta manda a YouTube solo l’argomento che scegli.'));
   var T = INSP_T[window.LX_LANG] || INSP_T.it;
@@ -283,6 +287,7 @@ function inspLoad(q, loc, qx) {
   if (q === '§pack') { packLoad(); return; }
   if (q === '§regali') { var L1 = $('inspL'); L1.textContent = ''; L1.appendChild(rgForm()); rgSaved(L1); rgShared(L1); track('regali-apri'); return; }
   if (q === '§oggi') { var L0 = $('inspL'); L0.textContent = ''; L0.appendChild(ogForm()); packLoad(true); return; }
+  if (q.charAt(0) === '§') xplAuto = false;
   var L = $('inspL'); L.textContent = ''; for (var sk = 0; sk < 4; sk++) { var sc = el('div', 'insc skel'); sc.appendChild(el('div', 'inth')); sc.appendChild(el('div', 'skl')); sc.appendChild(el('div', 'skl s2')); L.appendChild(sc); }
   var qq = loc ? inspCity(qx || q) : (qx || q);
   // un oggetto da comprare: cerco recensioni e confronti, non video qualsiasi dove compare per caso
@@ -299,6 +304,7 @@ function inspLoad(q, loc, qx) {
     if (buy) { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
     var act = inspAct(qx || q, qq);
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: act ? act.u : loc ? gmaps(qq) : u, b: act ? act.t : loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
+    if (xplAuto) { xplAuto = false; IV.list = LV; setTimeout(function () { ideaView(0); }, 60); track('cerca-video'); }
     items.forEach(function (v, vi) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
       var c = el('div', 'insc'), th = el('button', 'inth'); th.type = 'button'; th.setAttribute('aria-label', (window.LX_T || String)('Guarda') + ': ' + v.t);
@@ -321,7 +327,7 @@ function inspAct(q, qq) {
   if (/ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cocktail|pizz|sushi|restaurant|dinner|lunch|cafe|coffee|food|comer|cenar|restaurante|mercat|market|parc|park|cosa fare|things to do|date|serata|night/.test(t)) return { k: 'mappa', t: 'Mappa', b: '📍 ' + LXT('Vedi sulla mappa'), u: gmaps(qq) };
   if (/ricett|recipe|receta|cucinar|cook/.test(t)) return null;
   var d = { GB: 'amazon.co.uk', IE: 'amazon.co.uk', IT: 'amazon.it', ES: 'amazon.es', US: 'amazon.com' }[reg] || 'amazon.co.uk';
-  return { k: 'compra', t: 'Dove comprarlo', b: '🛒 ' + LXT('Dove comprarlo'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
+  return { k: 'compra', t: 'Compra su Amazon', b: '🛒 ' + LXT('Compra su Amazon'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
 }
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
@@ -413,6 +419,7 @@ function packLoad(keep) {
 }
 /* ---- icone disegnate (stesso tratto della barra in basso) al posto delle emoji nei tasti ---- */
 var ICO = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   mark: '<path d="M6.5 4.5h11v15.5L12 16l-5.5 4z"/>',
   dots: '<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>',
@@ -474,7 +481,8 @@ function ideaViewAt(i) {
   else { var ph = el('div', 'ivph'); ph.appendChild(el('span', null, it.e)); S.appendChild(ph); }
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
-  var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' || it.b === 'Prenota' ? 'ticket' : it.b === 'Trova dove dormire' ? 'bed' : it.b === 'Dove comprarlo' ? 'bag' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); };
+  var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' || it.b === 'Prenota' ? 'ticket' : it.b === 'Trova dove dormire' ? 'bed' : it.b === 'Dove comprarlo' || it.b === 'Compra su Amazon' ? 'bag' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); track('cerca-azione-' + (it.b === 'Compra su Amazon' ? 'compra' : it.b === 'Mappa' ? 'mappa' : 'prenota')); };
+  var srch = /^yt-/.test(o.k) && it.l && !/youtube\.com/.test(it.l); bk.className = srch ? 'btn' : 'btn-o'; $('ivGo').classList.toggle('btn-o', srch); $('ivGo').classList.toggle('btn', !srch); bk.hidden = !it.l;
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }
 function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; try { storiesRender(); } catch (e) {} }

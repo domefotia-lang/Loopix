@@ -30,7 +30,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,600;9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" media="print" id="lxFonts">
 <link rel="stylesheet" href="app.css">
-<link rel="preload" href="app.js?v213" as="script">
+<link rel="preload" href="app.js?v214" as="script">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".5" stop-color="#F6E2B4"/><stop offset="1" stop-color="#3BE8D8"/></linearGradient><linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#FF4FA3"/><stop offset=".35" stop-color="#9A6BFF"/><stop offset=".65" stop-color="#3BE8D8"/><stop offset="1" stop-color="#F6E2B4"/></linearGradient></defs></svg>
@@ -103,7 +103,7 @@
   <div class="pbar"><div class="bar" id="pr"></div><div class="nav"><button class="btn-o" id="pp">⏮ Prima</button><button class="btn-o pfsb" id="pfs" aria-label="Schermo intero">⛶</button><button class="btn-o" id="p3" hidden>3·2·1</button><button class="btn-o" id="pzB" hidden aria-label="Metti in pausa per tutti">⏸</button><button class="btn go" id="pn" style="flex:1">Prossimo ⏭</button></div></div>
 </section>
 
-<section class="pane" id="xpl" aria-label="Idee per uscire"><div class="head"><h2>✨ Idee per uscire</h2></div><div id="inspM" class="xplb"></div></section>
+<section class="pane" id="xpl" aria-label="Cerca"><div class="head"><h2>Cerca</h2></div><div id="inspM" class="xplb"></div></section>
 
 <section class="pane" id="ideas" aria-label="Piani">
   <div class="head"><h2>Piani</h2><button class="btn-o" id="inew">+ Nuovo piano</button></div>
@@ -189,8 +189,8 @@
 </div></section>
 
 <nav class="tabs" id="tabs" hidden aria-label="Sezioni">
-  <button data-p="main"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg>Reel</button>
-  <button data-p="xpl"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Idee</button>
+  <button data-p="xpl"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Cerca</button>
+  <button data-p="main"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg>Insieme</button>
   <button class="fab" id="paste" aria-label="Manda un Reel: incolla il link che hai copiato"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="4" rx="1.5"/><path d="M7 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M12 11v6M9 14h6"/></svg></span>Incolla</button>
   <button data-p="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span id="tIdea">Piani</span></button>
   <button data-p="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg><span id="tChat">Messaggi</span></button>

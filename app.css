@@ -640,3 +640,15 @@ body.ctyp .feed{scroll-snap-type:none}
 .item.typing .cpanel{max-height:none!important;flex:1 1 auto;min-height:0}
 body.ctyp #mh{display:none}
 body.ctyp .tipb{display:none!important}
+/* 🔍 Cerca: chiedi, guarda, compra */
+.xhero{padding:4px 0 10px}.xh1{font-size:30px;line-height:1.08;margin:0 0 6px;letter-spacing:-.02em}
+.xbar{display:flex;align-items:center;gap:8px;height:56px;border-radius:28px;background:var(--s2);border:2px solid var(--g);padding:0 6px 0 16px;margin:0 0 10px}
+.xbar>.ico{width:20px;height:20px;flex:none;opacity:.7}
+.xbar input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--t);font:inherit;font-size:17px;font-weight:600;padding:0;margin:0;-webkit-appearance:none;appearance:none}
+.xbar input::-webkit-search-cancel-button{display:none}
+.xbar .btn{width:44px;height:44px;min-width:44px;border-radius:22px;padding:0;margin:0;display:flex;align-items:center;justify-content:center}
+.xbar .btn .ico{width:20px;height:20px}
+.xex{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.xex .chip{padding:8px 12px;font-size:13.5px}
+.xbar .ico{margin:0}
+#xpl>.head{display:none}
+.xbar input{background:transparent!important;border:0!important;box-shadow:none!important;height:auto!important;min-height:0!important}
