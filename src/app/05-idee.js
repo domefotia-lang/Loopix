@@ -22,7 +22,7 @@ function ogForm() {
   F.appendChild(el('h3', null, '🗓️ ' + LXT('Cosa facciamo oggi?')));
   F.appendChild(el('p', 'refn', LXT('Scegli e trovo idee vere vicino a voi: con il video se c’è, altrimenti il sito.')));
   var row = function (lab, key, opts) {
-    var r = el('div', 'ogr'); r.appendChild(el('span', 'ogl', LXT(lab))); var w = el('div', 'ogc');
+    var r = el('div', 'ogr'); r.dataset.k = key; r.appendChild(el('span', 'ogl', LXT(lab))); var w = el('div', 'ogc');
     opts.forEach(function (o) { var b = el('button', 'chip', LXT(o[1])); b.type = 'button'; b.setAttribute('aria-pressed', String(p[key] === o[0])); b.onclick = function () { if (o[0] === 'near') { b.textContent = '📍 …'; ogNear(function (a) { if (!a) { b.textContent = '📍 ' + LXT('Vicino a me'); $('mh').textContent = LXT('Non riesco a sapere la zona: scegline una qui sotto.'); return; } p.where = a; p.wl = a; b.textContent = '📍 ' + a; mark(); }); return; } p[key] = o[0]; if (key === 'where') p.wl = ''; mark(); }; b._k = o[0]; w.appendChild(b); });
     function mark() { w.querySelectorAll('.chip').forEach(function (b) { b.setAttribute('aria-pressed', String(key === 'where' ? (b._k === 'near' ? !!p.wl : p.where === b._k && !p.wl) : p[key] === b._k)); }); lsSet(LSG + 'oggi', JSON.stringify(p)); }
     r.appendChild(w); F.appendChild(r);
@@ -119,13 +119,13 @@ function ogPrompt(p, city) {
 }
 function rgPrompt(p) {
   var en = window.LX_LANG === 'en';
-  var per = { lei: en ? 'her (my partner)' : 'lei (la mia compagna)', lui: en ? 'him (my partner)' : 'lui (il mio compagno)', noi: en ? 'the two of us' : 'noi due', bimbi: en ? 'young children' : 'bambini piccoli', amici: en ? 'a friend' : 'un amico', casa: en ? 'our home' : 'la casa' }[p.per];
+  var per = { lei: en ? 'her (my partner)' : 'lei (la mia compagna)', lui: en ? 'him (my partner)' : 'lui (il mio compagno)', noi: en ? 'the two of us' : 'noi due', bimbi: (en ? 'children aged ' : 'bambini di ') + (p.eta || '4-6') + (en ? '' : ' anni'), amici: en ? 'a friend' : 'un amico', casa: en ? 'our home' : 'la casa' }[p.per];
   var occ = { pensiero: en ? 'just because' : 'un pensiero senza occasione', compleanno: en ? 'a birthday' : 'un compleanno', anniversario: en ? 'an anniversary' : 'un anniversario', natale: en ? 'Christmas' : 'Natale' }[p.occ];
   var bud = { any: en ? 'any reasonable budget' : 'qualsiasi budget ragionevole', low: en ? 'under £25' : 'sotto le 25 £', mid: en ? '£25–75' : 'tra 25 e 75 £', high: en ? '£75–250' : 'tra 75 e 250 £' }[p.bud];
   return en ? 'Suggest 6 concrete, original gift ideas for ' + per + ', for ' + occ + ', budget ' + bud + ', buyable in the UK. Mix things and experiences, no clichés, with a typical price.'
     : 'Suggeriscimi 6 idee regalo concrete e originali per ' + per + ', per ' + occ + ', budget ' + bud + ', acquistabili nel Regno Unito. Mescola oggetti ed esperienze, niente idee banali, con il prezzo indicativo.';
 }
-function rgPref() { var p = {}; try { p = JSON.parse(lsGet(LSG + 'regali') || '{}') || {}; } catch (e) {} return { per: p.per || 'lei', occ: p.occ || 'pensiero', bud: p.bud || 'any' }; }
+function rgPref() { var p = {}; try { p = JSON.parse(lsGet(LSG + 'regali') || '{}') || {}; } catch (e) {} return { per: p.per || 'lei', occ: p.occ || 'pensiero', bud: p.bud || 'any', eta: p.eta || '4-6' }; }
 function rgReg() { var c = cityGet(); if (c && isLon(c)) return 'GB'; var r = ((navigator.language || '').split('-')[1] || '').toUpperCase(); return ['GB', 'IT', 'ES', 'US', 'IE'].indexOf(r) >= 0 ? r : (window.LX_LANG === 'it' ? 'IT' : window.LX_LANG === 'es' ? 'ES' : 'GB'); }
 function rgShop(v, reg) {
   if (v.k === 'experience') return { u: reg === 'GB' || reg === 'IE' ? gyg(v.s || v.n) : 'https://www.google.com/search?q=' + encodeURIComponent((v.s || v.n) + ' gift experience'), b: LXT('Cerca l’esperienza') };
@@ -191,10 +191,11 @@ function rgForm() {
   F.appendChild(el('p', 'refn', LXT('Scegli per chi e trovo 6 idee concrete, con il link per cercarle. Quello che salvi lo vedi solo tu.')));
   var row = function (lab, key, opts) {
     var r = el('div', 'ogr'); r.appendChild(el('span', 'ogl', LXT(lab))); var w = el('div', 'ogc');
-    opts.forEach(function (o) { var b = el('button', 'chip', LXT(o[1])); b.type = 'button'; b.setAttribute('aria-pressed', String(p[key] === o[0])); b.onclick = function () { p[key] = o[0]; lsSet(LSG + 'regali', JSON.stringify(p)); w.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); }); }; w.appendChild(b); });
+    opts.forEach(function (o) { var b = el('button', 'chip', LXT(o[1])); b.type = 'button'; b.setAttribute('aria-pressed', String(p[key] === o[0])); b.onclick = function () { p[key] = o[0]; lsSet(LSG + 'regali', JSON.stringify(p)); if (key === 'per') { var ra = F.querySelector('.ogr[data-k="eta"]'); if (ra) ra.hidden = o[0] !== 'bimbi'; } w.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); }); }; w.appendChild(b); });
     r.appendChild(w); F.appendChild(r);
   };
   row('Per chi', 'per', [['lei', '💁‍♀️ Per lei'], ['lui', '🙋‍♂️ Per lui'], ['noi', '💑 Per noi due'], ['bimbi', '🧸 Per i bimbi'], ['amici', '🤝 Per un amico'], ['casa', '🏡 Per la casa']]);
+  row('Età', 'eta', [['0-3', '0–3'], ['4-6', '4–6'], ['7-9', '7–9'], ['10-12', '10–12'], ['13-16', '13–16']]); F.lastChild.hidden = p.per !== 'bimbi';
   row('Occasione', 'occ', [['pensiero', 'Un pensiero'], ['compleanno', 'Compleanno'], ['anniversario', 'Anniversario'], ['natale', 'Natale']]);
   row('Budget', 'bud', [['any', 'Qualsiasi'], ['low', '£'], ['mid', '££'], ['high', '£££']]);
   var go = withIco(el('button', 'btn wide', ''), 'spark', LXT('Trova idee regalo')); go.type = 'button';
@@ -211,7 +212,7 @@ function rgRun(p, F) {
   hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
   track('regali-' + p.per + '-' + p.occ);
   var shared = p.per === 'noi' || p.per === 'casa' || p.per === 'bimbi'; // per lei / per lui / per un amico: niente nel cerchio, è una sorpresa
-  mbCall({ a: 'regali', per: p.per, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 16000).catch(function () { return { error: 'net' }; }).then(function (x) {
+  mbCall({ a: 'regali', per: p.per, eta: p.per === 'bimbi' ? p.eta : undefined, occ: p.occ, bud: p.bud, reg: reg, lang: window.LX_LANG || 'it' }, 16000).catch(function () { return { error: 'net' }; }).then(function (x) {
     L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); });
     var fb = !x || x.error || !x.items || !x.items.length; // AI occupata: idee pronte, scelte da noi
     if (fb) x = { items: rgFallback(p.per) };
