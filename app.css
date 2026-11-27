@@ -653,3 +653,10 @@ body.ctyp .tipb{display:none!important}
 #xpl>.head{display:none}
 .xbar input{background:transparent!important;border:0!important;box-shadow:none!important;height:auto!important;min-height:0!important}
 .insc.feat{border:1px solid var(--g)}.ftag{font-size:12px;font-weight:700;color:var(--g);margin:6px 0 0}
+.askc h3,.cmpc h3{margin:0 0 10px}
+.cmpr{padding:10px 0;border-top:1px solid var(--line)}.cmpr:first-of-type{border-top:0}
+.cmph{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.cmpp{font-weight:700;color:var(--g);white-space:nowrap}
+.cmpo{font-size:14px;opacity:.85;margin-top:3px}.cmpr .lnk{display:inline-block;margin-top:6px;font-size:14px}
+.cmpn{font-size:12px;opacity:.7}
+.askc .lnk{background:none;border:0;color:var(--g);font:inherit;font-weight:600;font-size:14px;padding:10px 0 0;cursor:pointer}
+.cmpr .lnk{color:var(--g);font-weight:700;text-decoration:none}

@@ -122,7 +122,7 @@ function mbSeal(sec, obj) { var iv = crypto.getRandomValues(new Uint8Array(12));
 function mbOpen(sec, p) { var q = String(p).split('.'); return mbKey(sec).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mbDec(q[0]) }, k, mbDec(q[1])); }).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); }); }
 function mbCall(body, ms) { // con rete pessima la richiesta si ferma da sola invece di restare appesa per minuti
   var ac = typeof AbortController === 'function' ? new AbortController() : null, tt = ac ? setTimeout(function () { ac.abort(); }, ms || (body && (body.a === 'ai' || body.a === 'pack' || body.a === 'mix' || body.a === 'oggi') ? 40000 : 15000)) : 0;
-  return fetch(SRV.url + '/functions/v1/relay', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
+  return fetch(SRV.url + '/functions/v1/' + (body && body.a === 'cerca' ? 'cerca' : 'relay'), { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SRV.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined })
     .then(function (r) { clearTimeout(tt); if (r.status === 429 || r.status === 503) return r.json().catch(function () { return { error: r.status === 429 ? 'limite' : 'srv' }; }); if (!r.ok) throw new Error('srv ' + r.status); return r.json(); }, function (e) { clearTimeout(tt); throw e; });
 }
 function mbPut(sec, dir, m, quiet) {

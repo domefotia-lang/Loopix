@@ -249,7 +249,7 @@ function rgRun(p, F) {
   }, function () { L.querySelectorAll('.og.skel').forEach(function (n) { n.remove(); }); hd.textContent = navigator.onLine === false ? LXT('Sei offline: ecco le idee pronte. Quelle nuove tornano con la rete.') : LXT('Non sono riuscito a trovare idee adesso: riprova tra poco.'); });
 }
 // ✨ Idee per uscire: ora è una scheda fissa in basso (prima era una finestra). inspOpen(q) ci porta e, se serve, apre un argomento.
-var xplQ = '', xplAuto = false;
+var xplQ = '', xplAuto = false, xplAns = '';
 function xplBuild() {
   var C = $('inspM'); if (!C || C.children.length) return;
   // 🔍 «Chiedi. Guarda. Compra.»: una sola barra per qualsiasi cosa (comprare, mangiare, viaggiare, fare, cucinare); escono i video e sotto il pulsante giusto
@@ -257,7 +257,7 @@ function xplBuild() {
   var tp = el('div', 'fview'); tp.id = 'inspT';
   var qi = document.createElement('input'); qi.id = 'inspQ'; qi.maxLength = 60; qi.type = 'search'; qi.enterKeyHint = 'search'; qi.placeholder = LXT('Cosa cerchi?'); qi.setAttribute('aria-label', LXT('Cosa cerchi?'));
   var qb = el('button', 'btn', ''); qb.type = 'button'; qb.setAttribute('aria-label', LXT('Cerca')); qb.appendChild(icoEl('search'));
-  var go = function (v) { v = clean(v, 60); if (v.length < 3) { qi.focus(); return; } qi.value = v; qi.blur(); xplAuto = true; track('cerca'); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); };
+  var go = function (v) { v = clean(v, 60); if (v.length < 3) { qi.focus(); return; } qi.value = v; qi.blur(); xplAuto = true; xplAns = ''; track('cerca'); inspLoad(v, /ristorant|cena|pranzo|brunch|colazion|\bbar\b|pub|caff|cosa fare|parc|muse|mercat|event|concert|mostr|teatr|bimbi|famiglia|serata|appuntament|weekend|gita|restaurant|dinner|lunch|cafe|coffee|things to do|park|museum|market|kids|date|night out|show|comer|cenar|restaurante|parque|museo|plan/i.test(v)); };
   qb.onclick = function () { go(qi.value); }; qi.onkeydown = function (e) { if (e.key === 'Enter') go(qi.value); };
   var rr = el('div', 'xbar'); rr.appendChild(icoEl('search')); rr.appendChild(qi); rr.appendChild(qb); C.appendChild(rr);
   var ex = el('div', 'xex'); [LXT('Regalo bimbo 10 anni'), LXT('Ristorante per sabato'), LXT('Gita con i bimbi'), LXT('Friggitrice ad aria'), LXT('Cena veloce'), LXT('Weekend a Lisbona')].forEach(function (t) { var b = el('button', 'chip', t); b.type = 'button'; b.onclick = function () { track('cerca-esempio'); go(t); }; ex.appendChild(b); }); C.appendChild(ex);
@@ -294,16 +294,22 @@ function inspLoad(q, loc, qx) {
   var buy = !loc && (inspAct(qx || q, qq) || {}).k === 'compra' && !/recension|review|reseña|migliori|best|mejores/i.test(qq);
   var qe = qq; if (buy) qq = qq + ' ' + ({ it: 'recensione', es: 'reseña' }[window.LX_LANG] || 'review');
   var featP = featFor(qe);
-  mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) { return featP.then(function (F) { if (x && F.length) x.feat = F; return x; }); }).then(function (x) {
+  var RG2 = ((navigator.language || '').split('-')[1] || '').slice(0, 2), ins = function () { return mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: RG2 }); };
+  // 🔍 dalla barra: l'AI capisce la richiesta (una domanda se serve), sceglie i video giusti e confronta; se non risponde, la ricerca di prima
+  var call = xplAuto ? mbCall({ a: 'cerca', q: q, ans: xplAns, lang: window.LX_LANG || 'it', reg: RG2 || 'GB' }, 28000).then(function (c) { if (c && (c.ask || (c.items && c.items.length))) { c.via = 'cerca'; return c; } return ins(); }, ins) : ins();
+  call.then(function (x) { return featP.then(function (F) { if (x && F.length) x.feat = F; return x; }); }).then(function (x) {
     L.textContent = '';
+    if (x && x.ask) { xplAuto = false; L.appendChild(askCard(x.ask, function (a) { xplAns = a; xplAuto = true; track('cerca-domanda'); inspLoad(q, loc, qx); })); return; }
+    xplAns = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le nostre ricerche sono finite (domani si ricaricano): intanto guarda i video veri direttamente lì.' : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); if (!x || x.error !== 'insp-off') L.appendChild(elsewhere(qe)); return; }
     if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); L.appendChild(elsewhere(qe)); return; }
     // via i video fuori tema: tengo quelli che nel titolo o nel canale nominano qualcosa della ricerca (se ne restano almeno 4)
     var STOP = { best: 1, from: 1, tips: 1, ideas: 1, with: 1, easy: 1, quick: 1, london: 1, londra: 1, londres: 1 }, W = qq.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (w) { return w.length > 3 && !STOP[w]; });
     var keep = x.items.filter(function (v) { var t = (v.t + ' ' + v.ch).toLowerCase(); return !W.length || W.some(function (w) { return t.indexOf(w) >= 0 || t.indexOf(w.slice(0, -1)) >= 0; }); });
-    var items = keep.length >= 4 ? keep : x.items;
-    if (buy) { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
-    var act = inspAct(qx || q, qq);
+    var items = x.via === 'cerca' ? x.items : keep.length >= 4 ? keep : x.items;
+    if (buy && x.via !== 'cerca') { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
+    var act = x.via === 'cerca' && x.k ? actForK(x.k, x.shop, q) : inspAct(qx || q, qq);
+    if (x.via === 'cerca' && x.cmp) { L.appendChild(cmpCard(x.cmp, x.k)); xplAuto = false; track('cerca-confronto'); }
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: act ? act.u : loc ? gmaps(qq) : u, b: act ? act.t : loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
     var FT = (x.feat || []).map(function (f) { return { k: 'ft-' + f.id, it: { s: 'ft-' + f.id, e: '⭐', t: f.name, d: '⭐ ' + LXT('In evidenza'), l: f.action_url, b: f.action_label || 'Prenota' }, st: { u: f.video_url } }; });
     if (FT.length) { LV = FT.concat(LV); FT.forEach(function (o2, fi) { var c = el('div', 'insc feat'), th = el('button', 'inth'); th.type = 'button'; th.appendChild(el('span', 'inpl', '▶')); th.onclick = function () { IV.list = LV; ideaView(fi); track('feat-guarda'); }; c.appendChild(th); c.appendChild(el('div', 'ftag', '⭐ ' + LXT('In evidenza'))); c.appendChild(el('div', 'intt', o2.it.t)); var ab = el('a', 'btn wide inact', LXT(o2.it.b) + ' ↗'); ab.href = o2.it.l; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('feat-azione'); }; c.appendChild(ab); L.appendChild(c); }); }
@@ -324,6 +330,24 @@ function inspLoad(q, loc, qx) {
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
 // I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
 // ⭐ In evidenza: video di attività che ce l'hanno chiesto (approvati a mano), per parole chiave. Arrivano solo link pubblici, mai email.
+function askCard(a, cb) {
+  var c = el('div', 'ogf askc'); c.appendChild(el('h3', null, '💬 ' + a.q));
+  var w = el('div', 'xex'); (a.o || []).forEach(function (o) { var b = el('button', 'chip', o); b.type = 'button'; b.onclick = function () { cb(o); }; w.appendChild(b); });
+  var sk = el('button', 'lnk', LXT('Salta, mostrami i video')); sk.type = 'button'; sk.onclick = function () { cb('-'); }; c.appendChild(w); c.appendChild(sk); return c;
+}
+// ⚖️ confronto rapido scritto dall'AI dai video trovati: pro, contro, prezzo indicativo, e il link per cercarlo
+function cmpCard(m, k) {
+  var c = el('div', 'ogf cmpc'); c.appendChild(el('h3', null, '⚖️ ' + LXT('Confronto rapido')));
+  (m.rows || []).forEach(function (r) {
+    var row = el('div', 'cmpr'), h = el('div', 'cmph'); h.appendChild(el('b', null, r.n)); if (r.p) h.appendChild(el('span', 'cmpp', r.p)); row.appendChild(h);
+    if (r.pro) row.appendChild(el('div', 'cmpo', '👍 ' + r.pro)); if (r.con) row.appendChild(el('div', 'cmpo', '👎 ' + r.con));
+    var a = actForK(k || 'compra', r.n); if (a) { var l = el('a', 'lnk', LXT(a.t) + ' ↗'); l.href = a.u; l.target = '_blank'; l.rel = 'noopener'; l.onclick = function () { track('cerca-confronto-link'); }; row.appendChild(l); }
+    c.appendChild(row);
+  });
+  if (m.tip) c.appendChild(el('p', 'refn', '💡 ' + m.tip));
+  c.appendChild(el('p', 'refn cmpn', LXT('Riassunto dell’AI dai video: controlla prezzo e dettagli prima di comprare.')));
+  return c;
+}
 function featFor(q) {
   var w = String(q || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (x) { return x.length > 2; }).slice(0, 8);
   if (!w.length || !window.fetch || navigator.onLine === false) return Promise.resolve([]);
@@ -340,6 +364,15 @@ function inspAct(q, qq) {
   if (/ricett|recipe|receta|cucinar|cook/.test(t)) return null;
   var d = { GB: 'amazon.co.uk', IE: 'amazon.co.uk', IT: 'amazon.it', ES: 'amazon.es', US: 'amazon.com' }[reg] || 'amazon.co.uk';
   return { k: 'compra', t: 'Compra su Amazon', b: '🛒 ' + LXT('Compra su Amazon'), u: 'https://www.' + d + '/s?k=' + encodeURIComponent(q) + (RG_AFF[d] ? '&tag=' + encodeURIComponent(RG_AFF[d]) : '') };
+}
+// il pulsante giusto dal tipo capito dall'AI (🔍 Cerca)
+function actForK(k, shop, q) {
+  var x = clean(shop || q, 60);
+  if (k === 'compra') { var a = inspAct('compra ' + x, x); return a && a.k === 'compra' ? (a.u = a.u.replace(/k=[^&]*/, 'k=' + encodeURIComponent(x)), a) : a; }
+  if (k === 'viaggio') return { k: 'prenota-viaggio', t: 'Trova dove dormire', b: '🏨 ' + LXT('Trova dove dormire'), u: 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(x) };
+  if (k === 'esperienza') return { k: 'prenota-esperienza', t: 'Prenota', b: '🎟️ ' + LXT('Prenota'), u: gyg(x) };
+  if (k === 'cibo') return { k: 'mappa', t: 'Mappa', b: '📍 ' + LXT('Vedi sulla mappa'), u: gmaps(x) };
+  return null;
 }
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gyg(q) { return 'https://www.getyourguide.com/s/?q=' + encodeURIComponent(q); }
