@@ -665,3 +665,8 @@ body.ctyp .tipb{display:none!important}
 .insc.novid .intt{margin-top:2px}.novh{font-size:12.5px;opacity:.7;margin:10px 0 4px}
 .novl{display:flex;flex-wrap:wrap;gap:6px}.novl .chip{font-size:13px;padding:7px 11px}
 .pkth{position:relative}
+/* 📸 copertina Instagram: lettore ufficiale ritagliato (testa e piede nascosti), sotto la copertina colorata finché non arriva */
+.cov .igcv{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity .4s;pointer-events:none;background:#000}
+.cov.igon .igcv{opacity:1}
+.cov .igcv iframe{position:absolute;left:0;top:-56px;width:100%;height:calc(100% + 360px);border:0;pointer-events:none}
+.cov.igon .covb,.cov.igon .covp,.cov.igon .covc,.cov.igon .covk{z-index:2}

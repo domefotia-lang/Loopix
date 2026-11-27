@@ -1,5 +1,5 @@
 /* ---- segnala un problema ---- */
-var APP_VER = 'v219', errLog = [];
+var APP_VER = 'v220', errLog = [];
 // errori segnalati da soli, anonimi: solo cosa si è rotto e dove (mai nomi, cerchi, link o testi). Al massimo 3 al giorno, uno per tipo; spenti con la modalità riservata.
 function errAuto(msg, where, prova) {
   try {
@@ -316,6 +316,25 @@ var feedNear = null, feedFar = null;
 // nel feed: la copertina (come la griglia di Instagram) al posto della finestra del sito; il video parte a schermo intero.
 // YouTube ci dà la foto vera; per Instagram e gli altri, finché Meta non ce la dà, una copertina nostra con il commento.
 function covPlat(u) { var h = ''; try { h = new URL(u).hostname.replace(/^(www|m|vm|vt)\./, ''); } catch (e) {} return { 'tiktok.com': ['TikTok', 'ti-brand-tiktok'], 'instagram.com': ['Instagram', 'ti-brand-instagram'], 'youtube.com': ['YouTube', 'ti-brand-youtube'], 'youtu.be': ['YouTube', 'ti-brand-youtube'], 'facebook.com': ['Facebook', 'ti-brand-facebook'], 'fb.watch': ['Facebook', 'ti-brand-facebook'], 'snapchat.com': ['Snapchat', 'ti-brand-snapchat'], 'vimeo.com': ['Vimeo', 'ti-brand-vimeo'] }[h] || [h || 'Video', '']; }
+// 📸 copertina dei Reel di Instagram: il lettore ufficiale, ritagliato sull'immagine; si carica solo quando la scheda arriva sullo schermo
+// (pochi alla volta) e se non arriva resta la copertina colorata. Tocchi e gesti restano a Reelta (il lettore non riceve i tocchi).
+var igLive = [], igObs = null;
+function igCover(c, src, cap) {
+  if (navigator.connection && navigator.connection.saveData) return;
+  c.dataset.igs = src; c.dataset.igc = cap ? (cap.length > 80 ? cap.slice(0, 78) + '…' : cap) : '';
+  if (!('IntersectionObserver' in window)) return;
+  if (!igObs) igObs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { igObs.unobserve(e.target); igLoad(e.target); } }); }, { rootMargin: '300px 0px' });
+  igObs.observe(c);
+}
+function igLoad(c) {
+  if (!c.isConnected || c.querySelector('.igcv')) return;
+  var w = el('div', 'igcv'), fr = document.createElement('iframe');
+  fr.src = c.dataset.igs; fr.loading = 'lazy'; fr.tabIndex = -1; fr.title = 'Instagram'; fr.setAttribute('aria-hidden', 'true'); fr.setAttribute('scrolling', 'no');
+  fr.referrerPolicy = 'strict-origin-when-cross-origin'; fr.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  fr.onload = function () { setTimeout(function () { if (!c.isConnected) return; c.classList.add('igon'); var q = c.querySelector('.covq'); if (q) q.remove(); var n = c.querySelector('.covn'); if (n) n.remove(); if (c.dataset.igc && !c.querySelector('.covc')) c.appendChild(el('div', 'covc', c.dataset.igc)); }, 900); };
+  w.appendChild(fr); c.insertBefore(w, c.firstChild);
+  igLive.push(c); while (igLive.length > 6) { var o = igLive.shift(), x = o.querySelector('.igcv'); if (x) x.remove(); o.classList.remove('igon'); if (o.isConnected) igObs.observe(o); }
+}
 function coverFor(r) {
   if (get('riserv', 0)) return null;
   var s = embedFor(r.u); if (!s || s.indexOf('video:') === 0) return null;
@@ -336,6 +355,7 @@ function coverFor(r) {
     c.appendChild(w);
   } else c.appendChild(el('span', 'covp', '▶'));
   if (y && cap) c.appendChild(el('div', 'covc', cap.length > 80 ? cap.slice(0, 78) + '…' : cap));
+  if (!y && /instagram\.com\/p\//.test(s)) igCover(c, s, cap);
   if (!y && pk[0] === 'TikTok') ttCover(r.u, function (t, a) {
     if (a && /^[\w.]{2,40}$/.test(a)) b.textContent = 'TikTok · @' + a;
     if (!t) return;
