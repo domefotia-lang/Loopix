@@ -53,15 +53,16 @@ function goReel(id) {
 function ideaFocus() { var w = $('iFoc'); if (!w) { w = aiFocusRow(function (t, img) { aiPlan(t, img); }); w.id = 'iFoc'; var R = $('iAiR'); R.parentNode.insertBefore(w, R.nextSibling); } w.hidden = !(ideaRid && srvOn()); }
 function openIdea(rid, opts) {
   ideaRid = rid || ''; $('ip').value = ''; $('io').value = ''; $('iH').textContent = ''; $('idm').classList.remove('note'); $('inote').onclick = function () { $('idm').classList.add('note'); $('io').focus(); };
-  var g = $('ikg'); if (!g.children.length) { Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { setKind(k); }; g.appendChild(b); }); var mo = el('button', 'ikmore', '＋ ' + LXT('Altro')); mo.type = 'button'; mo.onclick = function () { g.classList.add('all'); }; g.appendChild(mo); }
-  var r0 = rid && find(rid), k0 = guessKind(r0 && r0.c) || 'viaggio'; setKind(k0);
+  var g = $('ikg'); if (!g.children.length) { Object.keys(KINDS).forEach(function (k) { var b = el('button', null, KINDS[k]); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'radio'); b.onclick = function () { var re = aiLast && aiLast.k !== k && ideaRid && srvOn() && !$('iAi').classList.contains('busy'); setKind(k); if (re) { $('ip').value = ''; $('io').value = ''; aiPlan(); } }; g.appendChild(b); }); var mo = el('button', 'ikmore', '＋ ' + LXT('Altro')); mo.type = 'button'; mo.onclick = function () { g.classList.add('all'); }; g.appendChild(mo); }
+  var r0 = rid && find(rid), prev = rid && !(opts && opts.again) ? ideas.filter(function (i) { return i.r === rid; }).slice(-1)[0] : null, k0 = (prev && prev.k) || guessKind(r0 && r0.c) || 'viaggio'; setKind(k0);
   // tre scelte in vista (posto, mangiare, fare); le altre con «＋ Altro», o già aperte se l'idea è di quel tipo
   g.classList.toggle('all', ['viaggio', 'cibo', 'esperienza'].indexOf(k0) < 0);
   if (!(opts && opts.again)) aiLast = null; $('iok2').hidden = !r0;
   $('iAi').hidden = !(r0 && srvOn()); $('iAi').disabled = false; $('iAi').classList.remove('busy'); $('iAi').querySelector('b').textContent = aiLast ? '✨ Un’altra idea dal video' : '✨ Riconosci dal video'; $('iAi').querySelector('span').textContent = aiLast ? 'Oppure scegli prima un tipo: es. ✈️ per il viaggio' : 'L’AI compila il piano per te'; $('iAiR').hidden = true; $('iQ').textContent = r0 && srvOn() ? 'Oppure scegli tu:' : 'Cosa vi ha colpito?';
   if (!get('ptip', 0)) put('ptip', 1); document.querySelectorAll('.r-btn.plan.tip').forEach(function (b) { b.classList.remove('tip'); });
   $('idT').textContent = rid ? 'Trasforma in piano' : 'Nuovo piano';
-  var auto = !!(r0 && srvOn()) && !(opts && opts.again);
+  var auto = !!(r0 && srvOn()) && !(opts && opts.again) && !prev;
+  if (prev) $('iH').textContent = '✓ ' + LXT('Da questo Reel hai già il piano') + ' «' + prev.p + '» (' + (window.LX_T ? LX_T(KINDS[prev.k] || '') : KINDS[prev.k] || '') + '). ' + LXT('Puoi farne un altro qui sotto.');
   $('idm').classList.toggle('auto', auto); $('ikS').hidden = !auto; $('ikS').onclick = function () { $('idm').classList.remove('auto'); $('ikS').hidden = true; };
   $('idm').classList.add('open');
   if (auto) { $('iAi').hidden = true; $('iAiR').hidden = false; aiPlan(); if (!r0.aiX) { $('iAiR').textContent = '✨ Guardo il video…'; $('iAiR').hidden = false; } }

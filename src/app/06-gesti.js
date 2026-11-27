@@ -191,9 +191,11 @@ function build(r) {
 // ✨ la scheda automatica: appena l'AI ha letto il video, sotto compare cosa è, dove, quanto costa e il tasto per andarci
 var AIC_IC = { cibo: 'pin', esperienza: 'ticket', viaggio: 'pin', compra: 'share', ricetta: 'spark' };
 function aiCard(r, nd) {
-  var x = r.aiX, c = nd.ac; if (!c) return;
+  // il piano salvato da voi vince sulla proposta dell'AI (se l'avete cambiato da «ricetta» a «compra», la scheda segue la vostra scelta)
+  var pl = typeof ideas !== 'undefined' ? ideas.filter(function (i) { return i.r === r.id && i.p; }).slice(-1)[0] : null;
+  var x = pl ? { k: pl.k, p: pl.p, o: pl.o, shop: pl.q || '' } : r.aiX, c = nd.ac; if (!c) return;
   if (!x || !x.p || x.k === 'altro' || x.ask) { c.hidden = true; return; }
-  if (c.dataset.k === x.k + x.p) { c.hidden = false; return; } c.dataset.k = x.k + x.p; c.textContent = ''; c.hidden = false;
+  if (c.dataset.k === x.k + x.p + (x.o || '')) { c.hidden = false; return; } c.dataset.k = x.k + x.p + (x.o || ''); c.textContent = ''; c.hidden = false;
   var L = linksFor0({ k: x.k, p: x.p, q: x.shop || '' }), pick = L[0];
   if (x.k === 'compra') pick = L[2] || L[0]; if (x.k === 'viaggio') pick = L.filter(function (l) { return /Hotel/.test(l.t); })[0] || L[0]; if (x.k === 'esperienza') pick = L.filter(function (l) { return /Attivit/.test(l.t); })[0] || L[0];
   var lab = { cibo: 'Prenota', esperienza: 'Prenota', viaggio: 'Hotel', compra: 'Dove comprarlo', ricetta: 'Ricetta' }[x.k] || 'Mappa';
