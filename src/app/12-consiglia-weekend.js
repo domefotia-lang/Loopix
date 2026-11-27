@@ -150,24 +150,33 @@ function memCard(i) {
   return c;
 }
 // 🖼️ l'immagine per le storie (1080×1920): disegnata nel telefono, con la vostra foto se c'è. Esce solo se la condividete voi.
+// 🎟️ la card da condividere nelle storie: un biglietto in stile pop (come l'icona), con la foto del ricordo dentro
 function storyImg(o) {
   return new Promise(function (res) {
     var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d');
-    var G = [['#4b2a5e', '#c0504a'], ['#1f3b57', '#2f8f83'], ['#5a2f1f', '#d08a3a'], ['#2d2552', '#7a3a6e']][o.c || 0], g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, G[0]); g.addColorStop(1, G[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
-    var font = function (w, s, serif) { x.font = w + ' ' + s + 'px ' + (serif ? 'Fraunces, Georgia, serif' : '-apple-system, system-ui, sans-serif'); };
-    var wrap = function (t, mx, y0, lh, maxL) { var ws = String(t).split(/\s+/), ln = '', n = 0; for (var k = 0; k < ws.length; k++) { var tt = ln ? ln + ' ' + ws[k] : ws[k]; if (x.measureText(tt).width > mx && ln) { x.fillText(ln, 90, y0 + n * lh); n++; ln = ws[k]; if (n >= maxL - 1) { ln = ws.slice(k).join(' '); if (x.measureText(ln).width > mx) { while (ln && x.measureText(ln + '…').width > mx) ln = ln.slice(0, -1); ln += '…'; } break; } } else ln = tt; } if (ln) { x.fillText(ln, 90, y0 + n * lh); n++; } return n; };
-    var finish = function () {
-      var sh = x.createLinearGradient(0, H * 0.42, 0, H); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.72)'); x.fillStyle = sh; x.fillRect(0, H * 0.42, W, H * 0.58);
-      x.fillStyle = '#fff'; x.textBaseline = 'alphabetic';
-      if (o.big) { font('700', 220, true); x.fillText(o.big, 90, 1080); }
-      font('600', o.big ? 64 : 92, true); var n = wrap(o.title, W - 180, o.big ? 1200 : 1260, o.big ? 80 : 110, 3);
-      var y = (o.big ? 1200 : 1260) + n * (o.big ? 80 : 110) + 20; font('500', 44); x.globalAlpha = .92;
-      (o.lines || []).forEach(function (l) { x.fillText(l, 90, y); y += 64; }); x.globalAlpha = 1;
-      var ic = new Image(); ic.onload = function () { x.drawImage(ic, 90, H - 230, 110, 110); draw(); }; ic.onerror = draw; ic.src = 'icon-192.png';
-      function draw() { font('700', 52); x.fillText('Reelta', 225, H - 168); font('500', 36); x.globalAlpha = .85; x.fillText(LXT('dal Reel alla realtà'), 225, H - 120); x.globalAlpha = 1; c.toBlob(function (b) { res(b); }, 'image/jpeg', 0.9); }
+    var K = '#16151A', CO = '#FF5A3C', YE = '#FFD23F', VI = '#4F46E5';
+    var font = function (w, sz) { x.font = w + ' ' + sz + 'px "Plus Jakarta Sans", -apple-system, system-ui, sans-serif'; };
+    var wrap = function (t, mx, x0, y0, lh, maxL) { var ws = String(t || '').split(/\s+/), ln = '', n = 0; for (var k = 0; k < ws.length; k++) { var tt = ln ? ln + ' ' + ws[k] : ws[k]; if (x.measureText(tt).width > mx && ln) { x.fillText(ln, x0, y0 + n * lh); n++; ln = ws[k]; if (n >= maxL - 1) { var rest = ws.slice(k).join(' '); while (rest.length > 1 && x.measureText(rest + '…').width > mx) rest = rest.slice(0, -1); x.fillText(rest + (rest !== ws.slice(k).join(' ') ? '…' : ''), x0, y0 + n * lh); return n + 1; } } else ln = tt; } if (ln) { x.fillText(ln, x0, y0 + n * lh); n++; } return n; };
+    // biglietto: angoli tondi e due tacche ai lati all'altezza ny
+    var ticket = function (X, Y, w, h, r, ny, nr) { x.beginPath(); x.moveTo(X + r, Y); x.lineTo(X + w - r, Y); x.quadraticCurveTo(X + w, Y, X + w, Y + r); x.lineTo(X + w, ny - nr); x.arc(X + w, ny, nr, -Math.PI / 2, Math.PI / 2, true); x.lineTo(X + w, Y + h - r); x.quadraticCurveTo(X + w, Y + h, X + w - r, Y + h); x.lineTo(X + r, Y + h); x.quadraticCurveTo(X, Y + h, X, Y + h - r); x.lineTo(X, ny + nr); x.arc(X, ny, nr, Math.PI / 2, -Math.PI / 2, true); x.lineTo(X, Y + r); x.quadraticCurveTo(X, Y, X + r, Y); x.closePath(); };
+    var rr = function (X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
+    x.fillStyle = CO; x.fillRect(0, 0, W, H);
+    var TX = 90, TY = 250, TW = 900, TH = 1380, NY = TY + 1060;
+    x.save(); x.translate(W / 2, H / 2); x.rotate(-0.07); x.translate(-W / 2, -H / 2); x.fillStyle = K; ticket(TX + 22, TY - 20, TW, TH, 44, NY - 40, 52); x.fill(); x.fillStyle = YE; ticket(TX, TY - 40, TW, TH, 44, NY - 60, 52); x.fill(); x.lineWidth = 10; x.strokeStyle = K; x.stroke(); x.restore();
+    x.fillStyle = K; ticket(TX + 20, TY + 20, TW, TH, 44, NY + 20, 52); x.fill();
+    x.fillStyle = '#fff'; ticket(TX, TY, TW, TH, 44, NY, 52); x.fill(); x.lineWidth = 10; x.strokeStyle = K; x.stroke();
+    var PX = TX + 44, PY = TY + 44, PW = TW - 88, PH = 640;
+    var rest = function () {
+      x.lineWidth = 8; x.strokeStyle = K; rr(PX, PY, PW, PH, 28); x.stroke();
+      x.fillStyle = K; x.textBaseline = 'alphabetic'; font('800', 76); var n = wrap(o.title, PW, PX, PY + PH + 110, 88, 3);
+      var y = PY + PH + 110 + n * 88 + 10; font('500', 42); x.fillStyle = '#4a4752'; (o.lines || []).slice(0, 2).forEach(function (l) { if (y < NY - 40) x.fillText(l, PX, y); y += 58; });
+      x.setLineDash([22, 22]); x.lineWidth = 8; x.strokeStyle = K; x.beginPath(); x.moveTo(TX + 80, NY); x.lineTo(TX + TW - 80, NY); x.stroke(); x.setLineDash([]);
+      var ic = new Image(); ic.onload = function () { x.save(); rr(PX, NY + 90, 150, 150, 34); x.clip(); x.drawImage(ic, PX, NY + 90, 150, 150); x.restore(); x.lineWidth = 6; rr(PX, NY + 90, 150, 150, 34); x.stroke(); draw(); }; ic.onerror = draw; ic.src = 'icon-192.png';
+      function draw() { x.fillStyle = K; font('800', 72); x.fillText('Reelta', PX + 190, NY + 170); font('600', 40); x.fillStyle = '#4a4752'; x.fillText(LXT('Meno scroll, più uscite.'), PX + 190, NY + 226); c.toBlob(function (b) { res(b); }, 'image/jpeg', 0.9); }
     };
-    if (o.photo) { var im = new Image(); im.onload = function () { var s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s; x.drawImage(im, (W - w) / 2, (H - h) / 2, w, h); finish(); }; im.onerror = finish; im.src = o.photo; }
-    else { font('400', 300); x.textAlign = 'center'; x.fillText(o.emoji || '✨', W / 2, 700); x.textAlign = 'left'; finish(); }
+    x.save(); rr(PX, PY, PW, PH, 28); x.clip();
+    if (o.photo) { var im = new Image(); im.onload = function () { var sc = Math.max(PW / im.width, PH / im.height), w = im.width * sc, h = im.height * sc; x.drawImage(im, PX + (PW - w) / 2, PY + (PH - h) / 2, w, h); x.restore(); rest(); }; im.onerror = function () { x.fillStyle = YE; x.fillRect(PX, PY, PW, PH); x.restore(); rest(); }; im.src = o.photo; }
+    else { x.fillStyle = [YE, VI, '#2EC4B6', '#FF7AC6'][o.c || 0]; x.fillRect(PX, PY, PW, PH); x.fillStyle = (o.c || 0) === 1 ? '#fff' : K; x.textAlign = 'center'; x.textBaseline = 'middle'; if (o.big) { font('800', 260); x.fillText(o.big, PX + PW / 2, PY + PH / 2); } else { font('400', 280); x.fillText(o.emoji || '✨', PX + PW / 2, PY + PH / 2 + 10); } x.textAlign = 'left'; x.restore(); rest(); }
   });
 }
 function storyShare(blob, name) {
