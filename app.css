@@ -652,3 +652,4 @@ body.ctyp .tipb{display:none!important}
 .xbar .ico{margin:0}
 #xpl>.head{display:none}
 .xbar input{background:transparent!important;border:0!important;box-shadow:none!important;height:auto!important;min-height:0!important}
+.insc.feat{border:1px solid var(--g)}.ftag{font-size:12px;font-weight:700;color:var(--g);margin:6px 0 0}

@@ -293,7 +293,8 @@ function inspLoad(q, loc, qx) {
   // un oggetto da comprare: cerco recensioni e confronti, non video qualsiasi dove compare per caso
   var buy = !loc && (inspAct(qx || q, qq) || {}).k === 'compra' && !/recension|review|reseña|migliori|best|mejores/i.test(qq);
   var qe = qq; if (buy) qq = qq + ' ' + ({ it: 'recensione', es: 'reseña' }[window.LX_LANG] || 'review');
-  mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) {
+  var featP = featFor(qe);
+  mbCall({ a: 'insp', q: qq, lang: window.LX_LANG || 'it', reg: ((navigator.language || '').split('-')[1] || '').slice(0, 2) }).then(function (x) { return featP.then(function (F) { if (x && F.length) x.feat = F; return x; }); }).then(function (x) {
     L.textContent = '';
     if (!x || x.error || !x.items) { L.appendChild(el('p', null, x && x.error === 'insp-off' ? 'L’ispirazione non è ancora attiva: arriva a breve.' : x && x.error === 'limite' ? 'Per oggi le nostre ricerche sono finite (domani si ricaricano): intanto guarda i video veri direttamente lì.' : 'Non sono riuscito a cercare adesso: intanto guarda i video veri direttamente lì.')); if (!x || x.error !== 'insp-off') L.appendChild(elsewhere(qe)); return; }
     if (!x.items.length) { L.appendChild(el('p', null, 'Niente su questo argomento: provane un altro.')); L.appendChild(elsewhere(qe)); return; }
@@ -304,6 +305,8 @@ function inspLoad(q, loc, qx) {
     if (buy) { var RV = /recension|review|reseña|miglior|best|mejor|vs\b|confronto|comparison|unboxing|prova|test|consigli|guida|guide|quale|which|top \d/i, rv = items.filter(function (v) { return RV.test(v.t); }); if (rv.length >= 3) items = rv; }
     var act = inspAct(qx || q, qq);
     var LV = items.map(function (v) { var u = 'https://www.youtube.com/shorts/' + v.id; return { k: 'yt-' + v.id, it: { s: 'yt-' + v.id, e: '▶', t: v.t, d: v.ch, l: act ? act.u : loc ? gmaps(qq) : u, b: act ? act.t : loc ? 'Mappa' : 'YouTube' }, st: { u: u } }; });
+    var FT = (x.feat || []).map(function (f) { return { k: 'ft-' + f.id, it: { s: 'ft-' + f.id, e: '⭐', t: f.name, d: '⭐ ' + LXT('In evidenza'), l: f.action_url, b: f.action_label || 'Prenota' }, st: { u: f.video_url } }; });
+    if (FT.length) { LV = FT.concat(LV); FT.forEach(function (o2, fi) { var c = el('div', 'insc feat'), th = el('button', 'inth'); th.type = 'button'; th.appendChild(el('span', 'inpl', '▶')); th.onclick = function () { IV.list = LV; ideaView(fi); track('feat-guarda'); }; c.appendChild(th); c.appendChild(el('div', 'ftag', '⭐ ' + LXT('In evidenza'))); c.appendChild(el('div', 'intt', o2.it.t)); var ab = el('a', 'btn wide inact', LXT(o2.it.b) + ' ↗'); ab.href = o2.it.l; ab.target = '_blank'; ab.rel = 'noopener'; ab.onclick = function () { track('feat-azione'); }; c.appendChild(ab); L.appendChild(c); }); }
     if (xplAuto) { xplAuto = false; IV.list = LV; setTimeout(function () { ideaView(0); }, 60); track('cerca-video'); }
     items.forEach(function (v, vi) {
       var u = 'https://www.youtube.com/shorts/' + v.id, sent = feed.some(function (r) { return r.u === u; });
@@ -320,6 +323,15 @@ function inspLoad(q, loc, qx) {
 /* ---- 📍 Idee in città: cose da fare in due (o in gruppo) dove vivi, con il link per prenotare. Contiamo chi lo tocca. ---- */
 // dal video alla realtà: sotto ogni video trovato, dove comprarlo o prenotarlo, in base a cosa si cerca.
 // I codici affiliato (RG_AFF e simili) si aggiungono solo dopo il via libera: finché sono vuoti è un link normale.
+// ⭐ In evidenza: video di attività che ce l'hanno chiesto (approvati a mano), per parole chiave. Arrivano solo link pubblici, mai email.
+function featFor(q) {
+  var w = String(q || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (x) { return x.length > 2; }).slice(0, 8);
+  if (!w.length || !window.fetch || navigator.onLine === false) return Promise.resolve([]);
+  var ctl = window.AbortController ? new AbortController() : null, t = setTimeout(function () { if (ctl) ctl.abort(); }, 1500);
+  return fetch(SRV.url + '/rest/v1/featured?select=id,name,video_url,action_url,action_label&tags=ov.' + encodeURIComponent('{' + w.map(function (x) { return '"' + x.replace(/"/g, '') + '"'; }).join(',') + '}') + '&limit=2', { headers: { apikey: SRV.key, Authorization: 'Bearer ' + SRV.key }, signal: ctl ? ctl.signal : undefined })
+    .then(function (r) { return r.ok ? r.json() : []; }).then(function (a) { return (Array.isArray(a) ? a : []).filter(function (f) { return /^https:\/\//.test(f.video_url || '') && /^https:\/\//.test(f.action_url || '') && f.name; }).map(function (f) { return { id: +f.id, name: clean(f.name, 60), video_url: String(f.video_url).slice(0, 300), action_url: String(f.action_url).slice(0, 300), action_label: clean(f.action_label || 'Prenota', 30) }; }); })
+    .catch(function () { return []; }).then(function (a) { clearTimeout(t); return a; });
+}
 function inspAct(q, qq) {
   var t = String(q || '').toLowerCase(), reg = rgReg();
   if (/hotel|soggiorn|vacanz|viaggi|weekend a|weekend in|gita|trip|holiday|getaway|stay|city break|vacacion|escapada/.test(t)) return { k: 'prenota-viaggio', t: 'Trova dove dormire', b: '🏨 ' + LXT('Trova dove dormire'), u: 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(qq) };
@@ -482,7 +494,7 @@ function ideaViewAt(i) {
   $('ivN').textContent = '📍 ' + (cityGet() || '');
   $('ivT').textContent = LXT(it.t); $('ivD').textContent = typeof it.d === 'string' ? LXT(it.d) : LXT(it.d.f) + ' ' + it.d.c;
   var bk = $('ivBk'); bk.href = it.l; withIco(bk, it.b === 'Biglietti' || it.b === 'Prenota' ? 'ticket' : it.b === 'Trova dove dormire' ? 'bed' : it.b === 'Dove comprarlo' || it.b === 'Compra su Amazon' ? 'bag' : 'pin', LXT(it.b) + ' ↗'); bk.onclick = function () { track('idea-link-' + o.k); track('cerca-azione-' + (it.b === 'Compra su Amazon' ? 'compra' : it.b === 'Mappa' ? 'mappa' : 'prenota')); };
-  var srch = /^yt-/.test(o.k) && it.l && !/youtube\.com/.test(it.l); bk.className = srch ? 'btn' : 'btn-o'; $('ivGo').classList.toggle('btn-o', srch); $('ivGo').classList.toggle('btn', !srch); bk.hidden = !it.l;
+  var srch = /^(yt|ft)-/.test(o.k) && it.l && !/youtube\.com/.test(it.l); bk.className = srch ? 'btn' : 'btn-o'; $('ivGo').classList.toggle('btn-o', srch); $('ivGo').classList.toggle('btn', !srch); bk.hidden = !it.l;
   $('ivC').textContent = (IV.i + 1) + ' / ' + n;
 }
 function ideaViewClose() { var V = $('ideaV'); if (!V) return; V.classList.remove('open'); $('ivS').textContent = ''; try { storiesRender(); } catch (e) {} }
