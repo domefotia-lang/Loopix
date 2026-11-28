@@ -52,7 +52,7 @@ function welcomePut(c) {
     mbPut(me.hostId + '_' + c, 'w', h, true).catch(function () {});
   } catch (e) {}
 }
-function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); welcomePut(c); return homeUrl() + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
+function link(lg) { var cs = codesNow(), c = uid(5); cs.push({ c: c, ts: Date.now() }); put('codes', cs.slice(-10)); welcomePut(c); return homeUrl() + (lg === 'en' || lg === 'es' ? lg + '.html' : '') + '#j=' + me.hostId + '_' + c + (lg ? '&l=' + lg : '') + '&n=' + encodeURIComponent(clean(me.name, 30)); }
 function invLangUI() {
   var box = $('invL'); if (!box) return; box.textContent = '';
   [['it', '🇮🇹 Italiano'], ['en', '🇬🇧 English'], ['es', '🇪🇸 Español']].forEach(function (x) {
