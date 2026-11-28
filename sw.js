@@ -1,4 +1,4 @@
-var C='loopix-v225',X='reelta-ext-1',F=['./','index.html','privacy.html','termini.html','scopri.html','manifest.webmanifest','icon-180.png?p2','icon-192.png?p2','icon-512.png?p2', 'logo-reelta.webp?p2', 'lang.js','lang-dict.js','app.css','store.js','boot.js','vault.js','app.js'];
+var C='loopix-v226',X='reelta-ext-1',F=['./','index.html','privacy.html','termini.html','scopri.html','manifest.webmanifest','icon-180.png?p2','icon-192.png?p2','icon-512.png?p2', 'logo-reelta.webp?p2', 'lang.js','lang-dict.js','app.css','store.js','boot.js','vault.js','app.js'];
 // installa la versione nuova scaricando i file freschi (non dalla cache del browser)
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return Promise.all(F.map(function(f){return fetch(f,{cache:'reload'}).then(function(r){if(r.ok)return c.put(f,r)})}))}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C&&x!==X}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});

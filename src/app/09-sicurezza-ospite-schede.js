@@ -69,7 +69,7 @@ function invText() {
 }
 function invText0() {
   var lg = invLang(), T = lg === 'it' ? String : (window.LX_TL ? function (x) { return window.LX_TL(x, lg); } : (window.LX_T || String));
-  return T('Ciao! ' + me.name + ' ti invita su Reelta 🔒, il nostro posto privato per Reel e piani.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore.');
+  return T('Ciao! ' + me.name + ' ti invita su Reelta: chiedi cosa comprare o cosa fare, guardi video veri e decidiamo insieme.\n\n👉 Tocca il link e scrivi il tuo nome, fatto:\n' + link(lg) + '\n\n⏱️ Vale 24 ore.');
 }
 function invite() { try { window.LX_NEEDD && window.LX_NEEDD(); } catch (e) {}
   if (me.role !== 'host') return;

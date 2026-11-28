@@ -541,7 +541,7 @@ else {
     $('setup').classList.add('inv');
     var hh = document.querySelector('#setup .hero h1'), hp = document.querySelector('#setup .hero p');
     if (hh) hh.textContent = invBy ? '💌 ' + invBy + (window.LX_T || String)(' ti ha invitato') : (window.LX_T || String)('💌 Ti hanno invitato su Reelta');
-    if (hp) hp.textContent = 'Un posto privato solo per voi: Reel, piani e messaggi.';
+    if (hp) hp.textContent = 'Chiedi, guarda video veri e decidete insieme cosa comprare, dove mangiare e cosa fare.';
     $('sT').textContent = 'Ti hanno invitato'; $('kindBox').hidden = true; $('haveInv').hidden = true; $('sP').textContent = 'Scrivi il tuo nome e tocca il bottone: entri subito nel cerchio.'; $('go').textContent = 'Entra nel cerchio'; $('ic').hidden = true;
     var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
     var andr = /android/i.test(navigator.userAgent);
